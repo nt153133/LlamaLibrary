@@ -59,10 +59,10 @@
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
+    <Compile Include="RemoteWindows\RetainerList.cs" />
     <Compile Include="Repair.cs" />
     <Compile Include="Retainers\HelperFunctions.cs" />
     <Compile Include="Retainers\RetainerInventory.cs" />
-    <Compile Include="Retainers\RetainerList.cs" />
     <Compile Include="Retainers\Retainers.cs" />
     <Compile Include="Retainers\RetainerSettings.cs" />
     <Compile Include="Retainers\RetainerTasks.cs" />

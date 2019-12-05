@@ -16,6 +16,7 @@ using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
  using LlamaLibrary.Memory;
+ using LlamaLibrary.RemoteWindows;
  using LlamaLibrary.Retainers;
  using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;

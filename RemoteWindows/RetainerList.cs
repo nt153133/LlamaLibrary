@@ -1,13 +1,11 @@
-﻿﻿using System;
+﻿using System;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot.Helpers;
-using ff14bot.Managers;
 using ff14bot.RemoteWindows;
- using LlamaLibrary.RemoteWindows;
- using static ff14bot.RemoteWindows.Talk;
+using static ff14bot.RemoteWindows.Talk;
 
-namespace Retainers
+namespace LlamaLibrary.RemoteWindows
 {
     internal class RetainerList : RemoteWindow<RetainerList>
     {
