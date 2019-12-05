@@ -14,7 +14,8 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
-using TreeSharp;
+ using LlamaLibrary.Memory;
+ using TreeSharp;
 
 namespace Reduce
 {
@@ -87,8 +88,8 @@ namespace Reduce
         #else
 
                 
-                static GreyMagic.PatternFinder  patternFinder = new GreyMagic.PatternFinder(Core.Memory);
-                private readonly IntPtr offset = patternFinder.Find("48 85 D2 0F 84 ? ? ? ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 80 7A ? ? 41 8B E8 48 8B FA 48 8B F1 74 ? 48 8B CA E8 ? ? ? ? 48 8B C8 E8 ? ? ? ? EB ? 0F B6 42 ? A8 ? 74 ? 8B 42 ? 05 ? ? ? ? EB ? A8 ? 8B 42 ? 74 ? 05 ? ? ? ? 85 C0 0F 84 ? ? ? ? 48 89 9C 24 ? ? ? ? 48 8B CE 4C 89 B4 24 ? ? ? ? E8 ? ? ? ? 8B 9E ? ? ? ?");
+                //static GreyMagic.PatternFinder  patternFinder = new GreyMagic.PatternFinder(Core.Memory);
+                //private readonly IntPtr offset = patternFinder.Find("48 85 D2 0F 84 ? ? ? ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 80 7A ? ? 41 8B E8 48 8B FA 48 8B F1 74 ? 48 8B CA E8 ? ? ? ? 48 8B C8 E8 ? ? ? ? EB ? 0F B6 42 ? A8 ? 74 ? 8B 42 ? 05 ? ? ? ? EB ? A8 ? 8B 42 ? 74 ? 05 ? ? ? ? 85 C0 0F 84 ? ? ? ? 48 89 9C 24 ? ? ? ? 48 8B CE 4C 89 B4 24 ? ? ? ? E8 ? ? ? ? 8B 9E ? ? ? ?");
                 //private IntPtr offsetInt = Core.Memory.GetAbsolute(new IntPtr(0xA6E170)); //0xA90fd0;        
         #endif
         //private const int offsetInt = 0xa910c0;
@@ -154,7 +155,7 @@ namespace Reduce
             Log($"Include DE index < 10000: {ReduceSettings.Instance.IncludeDE10000}");
             Log($"Stay running: {ReduceSettings.Instance.StayRunning}");
             Log($"Zone: {ReduceSettings.Instance.AEZoneCheck} {ReduceSettings.Instance.AEZone}");*/
-            Log($"Offset Desynth: {offset.ToInt64():x}");
+            Log($"Offset Desynth: {Offsets.SalvageAgent.ToInt64():x}");
             _root = new ActionRunCoroutine(r => Run());
             done = false;
         }
@@ -205,7 +206,7 @@ namespace Reduce
         {
             //Desynthesis
             var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
-            var agentSalvage = offset;
+            var agentSalvage = Offsets.SalvageAgent;
 
             //if (MovementManager.IsOccupied) return false;
             if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
@@ -236,13 +237,13 @@ namespace Reduce
                     if (SalvageDialog.IsOpen)
                     {
                         RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
-                        await Coroutine.Sleep(500);
+                        await Coroutine.Sleep(300);
                         await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
 
                         if (SalvageResult.IsOpen)
                         {
                             SalvageResult.Close();
-                            await Coroutine.Sleep(500);
+                            await Coroutine.Sleep(300);
                             await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
                         }
                         else
