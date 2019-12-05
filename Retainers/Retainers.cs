@@ -130,6 +130,8 @@ namespace Retainers
                 Log(" ");
                 
                 Log($"Window name {RetainerList.Instance.Name}");
+                Log($"Window byname {RetainerList.Instance.WindowByName}");
+                Log($"Window byname {RetainerList.Instance.IsOpen}");
 
                 //var retainerIndex = 0;
 

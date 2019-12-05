@@ -10,16 +10,18 @@ namespace LlamaLibrary.RemoteWindows
     internal class RetainerList : RemoteWindow<RetainerList>
     {
         private const string WindowName = "RetainerList";
+        //public override string Name => WindowName;
 
         public RetainerList() : base(WindowName)
         {
+            _name = WindowName;
         }
 
         public async Task<bool> SelectRetainer(int index)
         {
-            if (IsOpen)
+            if ( !IsOpen)
             {
-                Logging.Write("Retainer selection window not open");
+                Logging.Write($"Odd Retainer selection window not open {Name} - {IsOpen}");
                 return false;
             }
 

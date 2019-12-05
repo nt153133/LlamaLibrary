@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using ff14bot;
 using ff14bot.Managers;
 using ff14bot.RemoteWindows;
@@ -9,11 +8,11 @@ namespace LlamaLibrary.RemoteWindows
     public class RemoteWindow<T> : RemoteWindow where T : RemoteWindow<T>, new()
     {
         private static T _instance;
-        public static T Instance => _instance ;
+        public static T Instance => _instance ?? (_instance = new T());
 
         protected RemoteWindow(string name) : base(name)
         {
-            _instance = new T();
+           // _instance = new T();
         }
     }
     
@@ -29,11 +28,11 @@ namespace LlamaLibrary.RemoteWindows
         var offset2 = (int)struct158.FieldType.GetFields()[2].GetValue(struct158.GetValue(off.GetValue(null)));
 */
 
-        public virtual bool IsOpen => RaptureAtkUnitManager.GetWindowByName(_name) != null;
+        public virtual bool IsOpen => WindowByName != null;
 
-        public string Name => _name;
+        public virtual string Name => _name;
 
-        protected AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(_name);
+        internal AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(Name);
         
         protected bool HasAgentInterfaceId => GetAgentInterfaceId() != 0;
 
