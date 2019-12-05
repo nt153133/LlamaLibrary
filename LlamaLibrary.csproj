@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{196EE308-0205-4CC4-B449-51064F7E9960}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LlamaLibrary</RootNamespace>
+    <AssemblyName>LlamaLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GreyMagic, Version=1.0.41.0, Culture=neutral, PublicKeyToken=260525fa2b0e778a">
+      <HintPath>Ext\GreyMagic.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="RebornBuddy, Version=1.0.335.0, Culture=neutral, PublicKeyToken=48d7174f8a943034">
+      <HintPath>Ext\RebornBuddy.exe</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoTradeAccept.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Memory\Attributes\OffsetAttribute.cs" />
+    <Compile Include="Memory\Attributes\OffsetValue.cs" />
+    <Compile Include="Memory\OffsetManager.cs" />
+    <Compile Include="Memory\Offsets.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reduce.cs" />
+    <Compile Include="RemoteAgents\AgentDawn.cs" />
+    <Compile Include="RemoteWindows\Dawn.cs" />
+    <Compile Include="RemoteWindows\HWDSupply.cs" />
+    <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
+    <Compile Include="RemoteWindows\RemoteWindow.cs" />
+    <Compile Include="Repair.cs" />
+    <Compile Include="Retainers\HelperFunctions.cs" />
+    <Compile Include="Retainers\RetainerInventory.cs" />
+    <Compile Include="Retainers\RetainerList.cs" />
+    <Compile Include="Retainers\Retainers.cs" />
+    <Compile Include="Retainers\RetainerSettings.cs" />
+    <Compile Include="Retainers\RetainerTasks.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+</Project>
