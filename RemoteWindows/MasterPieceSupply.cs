@@ -6,12 +6,13 @@ using ff14bot.RemoteWindows;
 
 namespace LlamaLibrary.RemoteWindows
 {
-    public class MasterPieceSupply : RemoteWindow
+    public class MasterPieceSupply : RemoteWindow<MasterPieceSupply>
     {
         private const string WindowName = "MasterPieceSupply";
         
         public MasterPieceSupply() : base(WindowName)
         {
+            _name = WindowName;
         }
 
         public int ClassSelected

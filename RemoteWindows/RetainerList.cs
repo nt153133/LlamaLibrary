@@ -10,7 +10,6 @@ namespace LlamaLibrary.RemoteWindows
     internal class RetainerList : RemoteWindow<RetainerList>
     {
         private const string WindowName = "RetainerList";
-        //public override string Name => WindowName;
 
         public RetainerList() : base(WindowName)
         {
@@ -21,7 +20,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             if ( !IsOpen)
             {
-                Logging.Write($"Odd Retainer selection window not open {Name} - {IsOpen}");
+                Logging.Write($"Retainer selection window not open");
                 return false;
             }
 

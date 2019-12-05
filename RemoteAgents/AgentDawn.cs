@@ -1,6 +1,7 @@
 ﻿using System;
 using ff14bot;
 using ff14bot.Managers;
+using LlamaLibrary.Memory;
 
 namespace LlamaLibrary.RemoteAgents
 {
@@ -18,14 +19,14 @@ namespace LlamaLibrary.RemoteAgents
 
         public int TrustId
         {
-            get => Core.Memory.Read<byte>(Pointer + 0x28);
-            set => Core.Memory.Write(Pointer + 0x28, (byte) value);
+            get => Core.Memory.Read<byte>(Pointer + Offsets.DawnTrustId);
+            set => Core.Memory.Write(Pointer + Offsets.DawnTrustId, (byte) value);
         }
 
         public bool IsScenario
         {
-            get => Core.Memory.Read<byte>(Pointer + 0x29) == 0;
-            set => Core.Memory.Write(Pointer + 0x29, value ? (byte) 0 : (byte) 1);
+            get => Core.Memory.Read<byte>(Pointer + Offsets.DawnIsScenario) == 0;
+            set => Core.Memory.Write(Pointer + Offsets.DawnIsScenario, value ? (byte) 0 : (byte) 1);
         }
     }
 }

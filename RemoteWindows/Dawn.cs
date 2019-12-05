@@ -8,16 +8,12 @@ using ff14bot.RemoteWindows;
 
 namespace LlamaLibrary.RemoteWindows
 {
-    public class Dawn : RemoteWindow
+    public class Dawn : RemoteWindow<Dawn>
     {
         private readonly List<TrustNPC> NpcList;
-
-
         private static readonly string WindowName = "Dawn";
-        private static Dawn _instance;
-        public static Dawn Instance => _instance ?? (_instance = new Dawn());
 
-        private Dawn() : base(WindowName)
+        public Dawn() : base(WindowName)
         {
             NpcList = new List<TrustNPC>
             {
@@ -33,6 +29,8 @@ namespace LlamaLibrary.RemoteWindows
                 new TrustNPC("Crystal Exarch", 82069, 82089, 9),
                 new TrustNPC("Crystal Exarch", 82069, 82089, 9)
             };
+
+            _name = WindowName;
         }
 
         public int NumberOfTrustsAvailable => ___Elements()[73].TrimmedData;
