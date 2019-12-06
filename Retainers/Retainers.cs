@@ -247,12 +247,17 @@ namespace Retainers
                     
                     AgentModule.ToggleAgentInterfaceById(274);
                     await Coroutine.Sleep(200);
-                    var chocobags = (InventoryManager.GetBagByInventoryBagId((InventoryBagId) 4000).FilledSlots).Concat(InventoryManager.GetBagByInventoryBagId((InventoryBagId) 4001).FilledSlots);
-                    foreach (var item in chocobags.Where(FilterStackable).Where(item => inventory.HasItem(item.TrueItemId)))
+                    var cho1 = InventoryManager.GetBagByInventoryBagId((InventoryBagId) 4000);
+                    var cho2 = InventoryManager.GetBagByInventoryBagId((InventoryBagId) 4001);
+                    if (cho1 != null && cho2 != null)
                     {
-                        Log($"Chocobo AND RETAINER both have Name: {item.Item.CurrentLocaleName}\tId: {item.Item.Id}");
-                        Log("Moved: " + MoveItem(item, inventory.GetItem(item.TrueItemId)));
-                        await Coroutine.Sleep(100);
+                        var chocobags = (cho1.FilledSlots).Concat(cho2.FilledSlots);
+                        foreach (var item in chocobags.Where(FilterStackable).Where(item => inventory.HasItem(item.TrueItemId)))
+                        {
+                            Log($"Chocobo AND RETAINER both have Name: {item.Item.CurrentLocaleName}\tId: {item.Item.Id}");
+                            Log("Moved: " + MoveItem(item, inventory.GetItem(item.TrueItemId)));
+                            await Coroutine.Sleep(100);
+                        }
                     }
 
                     RetainerTasks.CloseInventory();
