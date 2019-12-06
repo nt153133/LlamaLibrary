@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ff14bot;
-using ff14bot.Managers;
-using ff14bot.RemoteWindows;
 
 namespace LlamaLibrary.RemoteWindows
 {
     public class Dawn : RemoteWindow<Dawn>
     {
-        private readonly List<TrustNPC> NpcList;
         private static readonly string WindowName = "Dawn";
+        private readonly List<TrustNPC> NpcList;
 
         public Dawn() : base(WindowName)
         {

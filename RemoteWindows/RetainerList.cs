@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
+using ff14bot;
 using ff14bot.Helpers;
 using ff14bot.RemoteWindows;
 using static ff14bot.RemoteWindows.Talk;
@@ -15,6 +17,20 @@ namespace LlamaLibrary.RemoteWindows
         {
             _name = WindowName;
         }
+        
+        public int NumberOfRetainers => ___Elements()[2].TrimmedData;
+        
+        public int NumberOfVentures => ___Elements()[1].TrimmedData;
+
+        public string RetainerName(int index)
+        {
+            return Core.Memory.ReadString((IntPtr) ___Elements()[(index * 9) + 3].Data, Encoding.UTF8);
+        }
+
+        public int GetRetainerJobLevel(int index)
+        {
+            return ___Elements()[(index * 9) + 5].TrimmedData;
+        }
 
         public async Task<bool> SelectRetainer(int index)
         {
@@ -24,19 +40,19 @@ namespace LlamaLibrary.RemoteWindows
                 return false;
             }
 
-            Logging.Write("Selecting retainer: {0}", index);
+            Logging.Write($"Selecting {RetainerName(index)}: {index}");
 
             try
             {
                 SendAction(2, 3UL, 2UL, 3UL, (ulong) index);
 
-                await Coroutine.Sleep(500);
+                await Coroutine.Sleep(300);
 
                 await Coroutine.Wait(9000, () => DialogOpen);
 
                 if (DialogOpen) Next();
 
-                await Coroutine.Sleep(500);
+                await Coroutine.Sleep(300);
 
                 if (SelectString.IsOpen)
                     return true;
