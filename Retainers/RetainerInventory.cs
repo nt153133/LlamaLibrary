@@ -6,14 +6,14 @@ namespace Retainers
 {
     internal class RetainerInventory
     {
-        internal IDictionary<uint, BagSlot> dict = new Dictionary<uint, BagSlot>();
+        private IDictionary<uint, BagSlot> dict = new Dictionary<uint, BagSlot>();
 
         public void AddItem(BagSlot slot)
         {
             if (HasItem(slot.TrueItemId))
             {
-                Logging.Write($"ERROR: Trying to add item twice \t Name: {0} Count: {1} BagId: {2} IsHQ: {3}",
-                    slot.Item.EnglishName, slot.Count, slot.BagId, slot.Item.IsHighQuality);
+                Logging.Write(
+                $"ERROR: Trying to add item twice \t Name: {slot.Item.CurrentLocaleName} Count: {slot.Count} BagId: {slot.BagId} IsHQ: {slot.Item.IsHighQuality}");
                 return;
             }
 
@@ -22,9 +22,7 @@ namespace Retainers
 
         public BagSlot GetItem(uint trueItemId)
         {
-            if (dict.TryGetValue(trueItemId, out var returnBagSlot))
-                return returnBagSlot;
-            return null;
+            return dict.TryGetValue(trueItemId, out var returnBagSlot) ? returnBagSlot : null;
         }
 
         public bool HasItem(uint trueItemId)
@@ -37,8 +35,7 @@ namespace Retainers
             foreach (var slot in dict)
             {
                 var item = slot.Value;
-                Logging.Write("Name: {0} Count: {1} RawId: {2} IsHQ: {3} TrueID: {4} ", item.Item.EnglishName,
-                    item.Count, item.RawItemId, item.Item.IsHighQuality, item.TrueItemId);
+                Logging.Write($"Name: {item.Item.CurrentLocaleName} Count: {item.Count} RawId: {item.RawItemId} IsHQ: {item.Item.IsHighQuality} TrueID: {item.TrueItemId}");
             }
         }
     }

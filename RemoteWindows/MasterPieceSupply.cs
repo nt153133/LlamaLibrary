@@ -20,9 +20,8 @@ namespace LlamaLibrary.RemoteWindows
             get => ___Elements()[45].TrimmedData;
             set
             {
-                var windowByName = RaptureAtkUnitManager.GetWindowByName(WindowName);
-                if (windowByName != null && ___Elements()[45].TrimmedData != value)
-                    windowByName.SendAction(2, 1, 2, 1, (ulong) value);
+                if (WindowByName != null && ___Elements()[45].TrimmedData != value)
+                    SendAction(2, 1, 2, 1, (ulong) value);
             }
         }
 
@@ -59,9 +58,7 @@ namespace LlamaLibrary.RemoteWindows
 
         public void ClickItem(int index)
         {
-            var windowByName = RaptureAtkUnitManager.GetWindowByName(WindowName);
-            if (windowByName != null)
-                windowByName.SendAction(2, 3, 1, 3, (ulong) index);
+            SendAction(2, 3, 1, 3, (ulong) index);
         }
     }
 }

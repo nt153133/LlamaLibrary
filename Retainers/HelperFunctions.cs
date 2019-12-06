@@ -34,7 +34,7 @@ namespace LlamaLibrary.Retainers
 
         public const InventoryBagId PlayerGilId = InventoryBagId.Currency;
 
-        public static readonly int GilItemId = 1;
+        private static readonly uint GilItemId = DataManager.GetItem("Gil").Id;// 1;
 
 
         public static bool FilterStackable(BagSlot item)
@@ -61,10 +61,7 @@ namespace LlamaLibrary.Retainers
 
         public static bool MoveItem(BagSlot fromBagSlot, BagSlot toBagSlot)
         {
-            if (fromBagSlot.Count + toBagSlot.Count > toBagSlot.Item.StackSize)
-                return false;
-
-            return fromBagSlot.Move(toBagSlot);
+            return fromBagSlot.Count + toBagSlot.Count <= toBagSlot.Item.StackSize && fromBagSlot.Move(toBagSlot);
         }
 
         public static int GetNumberOfRetainers()
@@ -116,14 +113,14 @@ namespace LlamaLibrary.Retainers
 
             var bell = list[0];
 
-            LogCritical("Found nearest bell: {0} Distance: {1}", bell, bell.Distance2D(Core.Me.Location));
+            LogCritical($"Found nearest bell: {bell} Distance: {bell.Distance2D(Core.Me.Location)}");
 
             return bell;
         }
 
         private static void LogCritical(string text, params object[] args)
         {
-            var msg = string.Format("[Helpers] " + text, args);
+            var msg = $"[Helpers] {text}";
             Logging.Write(Colors.OrangeRed, msg);
         }
 
