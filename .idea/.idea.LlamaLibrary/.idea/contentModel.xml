@@ -25,6 +25,9 @@
         <e p="Offsets.cs" t="Include" />
       </e>
       <e p="obj" t="ExcludeRecursive" />
+      <e p="OrderbotTags" t="Include">
+        <e p="ChangeClass.cs" t="Include" />
+      </e>
       <e p="packages" t="ExcludeRecursive" />
       <e p="Properties" t="Include">
         <e p="AssemblyInfo.cs" t="Include" />
@@ -41,6 +44,8 @@
       </e>
       <e p="RemoteWindows" t="Include">
         <e p="Dawn.cs" t="Include" />
+        <e p="GcArmyCapture.cs" t="Include" />
+        <e p="GcArmyExpeditionResult.cs" t="Include" />
         <e p="HWDSupply.cs" t="Include" />
         <e p="MasterPieceSupply.cs" t="Include" />
         <e p="RemoteWindow.cs" t="Include" />
