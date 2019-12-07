@@ -1,4 +1,6 @@
-﻿namespace LlamaLibrary.RemoteWindows
+﻿using System;
+
+namespace LlamaLibrary.RemoteWindows
 {
     public class HWDSupply : RemoteWindow<HWDSupply>
     {
@@ -8,18 +10,25 @@
         {
             _name = WindowName;
         }
+
         public int ClassSelected
         {
             get => ___Elements()[29].TrimmedData;
             set
             {
                 if (WindowByName != null && ___Elements()[29].TrimmedData != value)
-                    SendAction(2, 0, 1, 1, (ulong) value);
+                    SendAction(2, 0, 1, 1, (ulong)value);
             }
         }
+
         public void ClickItem(int index)
         {
-            SendAction(2, 3, 1, 3, (ulong) index);
+            SendAction(2, 3, 1, 3, (ulong)index);
+        }
+
+        public override void Close()
+        {
+            SendAction(1, 3, UInt64.MaxValue);
         }
     }
 }

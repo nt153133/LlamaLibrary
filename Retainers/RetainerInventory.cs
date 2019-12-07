@@ -1,8 +1,8 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 
-namespace Retainers
+namespace LlamaLibrary.Retainers
 {
     internal class RetainerInventory
     {

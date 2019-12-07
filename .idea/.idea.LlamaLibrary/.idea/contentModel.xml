@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\Users\Francis Magretto\.Rider2019.2\system\extResources" t="IncludeRecursive" />
@@ -7,11 +7,15 @@
       <e p="AutoTradeAccept.cs" t="Include" />
       <e p="bin" t="ExcludeRecursive" />
       <e p="Class1.cs" t="Include" />
+      <e p="Forms" t="Include" />
       <e p="Helpers" t="Include">
         <e p="Logger.cs" t="Include" />
       </e>
+      <e p="IshgardHandin.cs" t="Include" />
+      <e p="IshgardHandinBase.cs" t="Include" />
       <e p="LlamaLibrary.csproj" t="IncludeRecursive" />
       <e p="LlamaLibrary.sln" t="IncludeFlat" />
+      <e p="MastPieceSupplyTester.cs" t="Include" />
       <e p="Memory" t="Include">
         <e p="Attributes" t="Include">
           <e p="OffsetAttribute.cs" t="Include" />
@@ -25,7 +29,13 @@
       <e p="Properties" t="Include">
         <e p="AssemblyInfo.cs" t="Include" />
       </e>
-      <e p="Reduce.cs" t="Include" />
+      <e p="Reduce" t="Include">
+        <e p="Reduce.cs" t="Include" />
+        <e p="ReduceSettings.cs" t="Include" />
+        <e p="ReduceSettingsForm.cs" t="Include" />
+        <e p="ReduceSettingsForm.designer.cs" t="Include" />
+        <e p="ReduceSettingsForm.resx" t="Include" />
+      </e>
       <e p="RemoteAgents" t="Include">
         <e p="AgentDawn.cs" t="Include" />
       </e>
@@ -34,14 +44,17 @@
         <e p="HWDSupply.cs" t="Include" />
         <e p="MasterPieceSupply.cs" t="Include" />
         <e p="RemoteWindow.cs" t="Include" />
+        <e p="RetainerList.cs" t="Include" />
       </e>
       <e p="Repair.cs" t="Include" />
       <e p="Retainers" t="Include">
         <e p="HelperFunctions.cs" t="Include" />
         <e p="RetainerInventory.cs" t="Include" />
-        <e p="RetainerList.cs" t="Include" />
         <e p="Retainers.cs" t="Include" />
         <e p="RetainerSettings.cs" t="Include" />
+        <e p="RetainersSettingsForm.cs" t="Include" />
+        <e p="RetainersSettingsForm.designer.cs" t="Include" />
+        <e p="RetainersSettingsForm.resx" t="Include" />
         <e p="RetainerTasks.cs" t="Include" />
       </e>
     </e>

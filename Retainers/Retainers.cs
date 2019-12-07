@@ -16,13 +16,11 @@ using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteWindows;
-using LlamaLibrary.Retainers;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
 
-
-namespace Retainers
+namespace LlamaLibrary.Retainers
 {
     public class Retainers : BotBase
     {
@@ -44,7 +42,7 @@ namespace Retainers
 
         private bool debug;
 
-        //private SettingsForm settings;
+        private SettingsForm settings;
 
         public override string Name
         {
@@ -75,16 +73,16 @@ namespace Retainers
 
         public override void OnButtonPress()
         {
-/*            if (settings == null || settings.IsDisposed)
+            if (settings == null || settings.IsDisposed)
                 settings = new SettingsForm();
             try
             {
                 settings.Show();
                 settings.Activate();
-            }*/
-/*            catch (ArgumentOutOfRangeException ee)
+            }
+            catch (ArgumentOutOfRangeException ee)
             {
-            }*/
+            }
         }
 
         private void Log(string text, params object[] args)
@@ -115,13 +113,13 @@ namespace Retainers
             done = false;
         }
 
-
         /*The await sleeps shouldn't be necessary but if they aren't there the game crashes some times since
         it tries to send commands to a window that isn't open even though it reports it as open (guess it didn't load yet)*/
+
         private async Task<bool> RetainerTest()
         {
             if (done) return true;
-            
+
             Log(" ");
             Log("==================================================");
             Log("====================Retainers=====================");
@@ -150,7 +148,6 @@ namespace Retainers
                 LogCritical("Can't find number of retainers either you have none or not near a bell");
                 RetainerList.Instance.Close();
 
-
                 TreeRoot.Stop("Failed: Find a bell or some retainers");
                 return true;
             }
@@ -162,7 +159,6 @@ namespace Retainers
             {
                 moveFrom[retainerIndex] = new List<uint>();
             }
-
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
@@ -186,8 +182,6 @@ namespace Retainers
                 await RetainerList.Instance.SelectRetainer(retainerIndex);
                 await Coroutine.Sleep(200);
                 //await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
-
- 
 
                 Log("Selected Retainer: " + retainerNames[retainerIndex]);
 
@@ -230,7 +224,7 @@ namespace Retainers
                     LogVerbose("Inventory done");
 
                     Log("Checking retainer[{0}] against player inventory", retainerNames[retainerIndex]);
-                    
+
                     foreach (var item in InventoryManager.FilledSlots.Where(x => x.BagId == InventoryBagId.Bag1 || x.BagId == InventoryBagId.Bag2 || x.BagId == InventoryBagId.Bag3 || x.BagId == InventoryBagId.Bag4)
                         .Where(FilterStackable).Where(item => inventory.HasItem(item.TrueItemId)))
                     {
@@ -244,11 +238,11 @@ namespace Retainers
                     }
 
                     Log("Done checking against player inventory");
-                    
+
                     AgentModule.ToggleAgentInterfaceById(274);
                     await Coroutine.Sleep(200);
-                    var cho1 = InventoryManager.GetBagByInventoryBagId((InventoryBagId) 4000);
-                    var cho2 = InventoryManager.GetBagByInventoryBagId((InventoryBagId) 4001);
+                    var cho1 = InventoryManager.GetBagByInventoryBagId((InventoryBagId)4000);
+                    var cho2 = InventoryManager.GetBagByInventoryBagId((InventoryBagId)4001);
                     if (cho1 != null && cho2 != null)
                     {
                         var chocobags = (cho1.FilledSlots).Concat(cho2.FilledSlots);
@@ -261,17 +255,17 @@ namespace Retainers
                     }
 
                     RetainerTasks.CloseInventory();
-                    
+
                     await Coroutine.Sleep(200);
-                        
+
                     await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
-                        
+
                     await Coroutine.Sleep(200);
 
                     RetainerTasks.CloseTasks();
 
                     await Coroutine.Wait(1500, () => DialogOpen);
-                        
+
                     await Coroutine.Sleep(200);
 
                     if (DialogOpen) Next();
@@ -294,11 +288,9 @@ namespace Retainers
             {
                 RetainerList.Instance.Close();
 
-
                 TreeRoot.Stop("Done playing with retainers (Don't organize or don't deposit items.)");
                 return true;
             }
-
 
             if (debug)
                 foreach (var itemId in masterInventory)
@@ -345,7 +337,6 @@ namespace Retainers
                 var retainers = "";
 
                 retListInv.RemoveAt(0);
-
 
                 foreach (var retainerId in retListInv)
                 {
@@ -406,7 +397,7 @@ namespace Retainers
                     await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
 
                     if (!RetainerTasks.IsInventoryOpen()) continue;
-                        
+
                     LogVerbose("Inventory open");
                     foreach (var retbag in InventoryManager.GetBagsByInventoryBagId(RetainerBagIds))
                     {
@@ -438,7 +429,6 @@ namespace Retainers
                     LogVerbose("Inventory done");
 
                     Log("Checking retainer[{0}] against move list", retainerNames[retainerIndex]);
-
 
                     foreach (var item in moveFrom[retainerIndex])
                     {
@@ -494,14 +484,12 @@ namespace Retainers
                     LogCritical("No duplicate stacks found so no moved needed.");
                     RetainerList.Instance.Close();
 
-
                     TreeRoot.Stop("Done playing with retainers");
                     return true;
                 }
 
                 LogCritical("Crap, we don't have enough player inventory to dump it all here");
                 RetainerList.Instance.Close();
-
 
                 TreeRoot.Stop("Done playing with retainers");
                 return false;
@@ -619,11 +607,9 @@ namespace Retainers
                 retList.Add(inventory);
             }
 
-
             LogVerbose("Closing Retainer List");
 
             RetainerList.Instance.Close();
-
 
             TreeRoot.Stop("Done playing with retainers");
 
@@ -655,7 +641,6 @@ namespace Retainers
 
             return true;
         }
-
 
         private static async Task<bool> MoveSummoningBell(Vector3 loc)
         {

@@ -1,10 +1,8 @@
-﻿using System;
-using System.ComponentModel;
-using System.Configuration;
+﻿using System.ComponentModel;
 using System.IO;
 using ff14bot.Helpers;
 
-namespace Retainers
+namespace LlamaLibrary.Retainers
 {
     public class RetainerSettings : JsonSettings
     {

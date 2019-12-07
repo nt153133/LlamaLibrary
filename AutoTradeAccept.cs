@@ -5,6 +5,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Memory;
+
 using TreeSharp;
 
 namespace LlamaLibrary
@@ -18,9 +19,15 @@ namespace LlamaLibrary
         public override bool RequiresProfile => false;
         public override Composite Root => _root;
         public override bool WantButton { get; } = false;
+
         public override void Initialize()
         {
             OffsetManager.Init();
+
+            // var pmc = new PluginContainer(); pmc.Plugin = new AutoRepair.AutoRepair();
+            // pmc.Enabled = true;
+
+            // PluginManager.Plugins.Add(pmc);
         }
 
         public Composite TradeAcceptBehavior
@@ -49,7 +56,6 @@ namespace LlamaLibrary
                 );
             }
         }
-
 
         public override void Start()
         {
