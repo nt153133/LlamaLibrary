@@ -1,5 +1,8 @@
 ﻿namespace LlamaLibrary.RemoteWindows
-{
+{    
+    /// <summary>
+    ///     Class for using the GC squadron window
+    /// </summary>
     public class GcArmyCapture: RemoteWindow<GcArmyCapture>
     {
         private const string WindowName = "GcArmyCapture";
