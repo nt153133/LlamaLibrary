@@ -142,14 +142,19 @@ namespace LlamaLibrary.Reduce
             var msg = string.Format("[" + botName + "] " + text, args);
             Logging.WriteVerbose(msg);
         }
+        
+        public override void Initialize()
+        {
+            OffsetManager.Init();
+        }
 
         public override void Start()
         {
             Log("Settings:");
-            /*            Log($"Armory: {ReduceSettings.Instance.IncludeArmory}");
-                        Log($"Include DE index < 10000: {ReduceSettings.Instance.IncludeDE10000}");
-                        Log($"Stay running: {ReduceSettings.Instance.StayRunning}");
-                        Log($"Zone: {ReduceSettings.Instance.AEZoneCheck} {ReduceSettings.Instance.AEZone}");*/
+            Log($"Armory: {ReduceSettings.Instance.IncludeArmory}");
+            Log($"Include DE index < 10000: {ReduceSettings.Instance.IncludeDE10000}");
+            Log($"Stay running: {ReduceSettings.Instance.StayRunning}");
+            Log($"Zone: {ReduceSettings.Instance.AEZoneCheck} {ReduceSettings.Instance.AEZone}");
             Log($"Offset Desynth: {Offsets.SalvageAgent.ToInt64():x}");
             _root = new ActionRunCoroutine(r => Run());
             done = false;
@@ -168,11 +173,11 @@ namespace LlamaLibrary.Reduce
         private async Task<bool> Reduction()
         {
             //Reduce
-            /*            if (ReduceSettings.Instance.AEZoneCheck && ReduceSettings.Instance.AEZone != 0)
-                        {
-                            if (WorldManager.ZoneId != (ushort) ReduceSettings.Instance.AEZone) return false;
-                            await Coroutine.Sleep(5000);
-                        }*/
+            if (ReduceSettings.Instance.AEZoneCheck && ReduceSettings.Instance.AEZone != 0)
+            {
+                if (WorldManager.ZoneId != (ushort) ReduceSettings.Instance.AEZone) return false;
+                await Coroutine.Sleep(5000);
+            }
 
             if (MovementManager.IsOccupied) return false;
 
@@ -255,14 +260,14 @@ namespace LlamaLibrary.Reduce
 
         private bool ExtraCheck(BagSlot bs)
         {
-            //return ReduceSettings.Instance.IncludeDE10000 && bs.Item.DesynthesisIndex < 10000;
-            return false;
+            return ReduceSettings.Instance.IncludeDE10000 && bs.Item.DesynthesisIndex < 10000;
+            //return false;
         }
 
         private InventoryBagId[] BagsToCheck()
         {
-            //return ReduceSettings.Instance.IncludeArmory ? inventoryBagIds.Concat(armoryBagIds).ToArray() : inventoryBagIds;
-            return inventoryBagIds;
+            return ReduceSettings.Instance.IncludeArmory ? inventoryBagIds.Concat(armoryBagIds).ToArray() : inventoryBagIds;
+            //return inventoryBagIds;
         }
     }
 }

@@ -145,5 +145,25 @@ namespace LlamaLibrary.Retainers
 
             return retainerGilSlot.Move(playerGilSlot);
         }
+
+        public static List<BagSlot> GetItemsByCategory()
+        {
+            var result = new List<BagSlot>();
+            foreach (var item in InventoryManager.FilledSlots.Where(x =>
+                x.BagId == InventoryBagId.Bag1 || x.BagId == InventoryBagId.Bag2 ||
+                x.BagId == InventoryBagId.Bag3 || x.BagId == InventoryBagId.Bag4))
+            {
+                string test = $"Name: {item.Item.CurrentLocaleName}\tCategory {item.Item.EquipmentCatagory}";
+                //Log(test);
+            }
+            
+            foreach (var item in InventoryManager.FilledArmorySlots.Where(i=> i.BagId == InventoryBagId.Armory_MainHand))
+            {
+                string test = $"Name: {item.Item.CurrentLocaleName}\tCategory {item.Item.EquipmentCatagory}";
+                //Log(test);
+            }
+
+            return result;
+        }
     }
 }
