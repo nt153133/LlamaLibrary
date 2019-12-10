@@ -133,7 +133,9 @@ namespace LlamaLibrary.Retainers
 
             await UseSummoningBell();
             await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            await Coroutine.Sleep(1000);
+            await Coroutine.Wait(5000, () => RetainerList.Instance.IsVisible());
+            //Log("Visible:" + RetainerList.Instance.IsOpen);
+            //await Coroutine.Sleep(1000);
 
             var numRetainers = RetainerList.Instance.NumberOfRetainers; //GetNumberOfRetainers();
 
@@ -181,6 +183,7 @@ namespace LlamaLibrary.Retainers
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
                 await RetainerList.Instance.SelectRetainer(retainerIndex);
                 await Coroutine.Sleep(200);
+                
                 //await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
 
                 Log("Selected Retainer: " + retainerNames[retainerIndex]);

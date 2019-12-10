@@ -13,6 +13,8 @@ namespace LlamaLibrary.RemoteWindows
     {
         private const string WindowName = "RetainerList";
 
+        //public override bool IsOpen => IsOpen;
+
         public RetainerList() : base(WindowName)
         {
             _name = WindowName;

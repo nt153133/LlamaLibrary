@@ -83,6 +83,7 @@
     <Compile Include="Retainers\RetainerInventory.cs" />
     <Compile Include="Retainers\Retainers.cs" />
     <Compile Include="Retainers\RetainerSettings.cs" />
+    <Compile Include="Retainers\RetainersPull.cs" />
     <Compile Include="Retainers\RetainerTasks.cs" />
     <Compile Include="Retainers\RetainersSettingsForm.cs">
       <SubType>Form</SubType>

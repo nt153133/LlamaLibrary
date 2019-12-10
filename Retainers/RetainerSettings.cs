@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using ff14bot.Enums;
 using ff14bot.Helpers;
+using LlamaLibrary.Enums;
 
 namespace LlamaLibrary.Retainers
 {
@@ -15,9 +17,13 @@ namespace LlamaLibrary.Retainers
         private bool _gil;
 
         private bool _merge;
+        private bool _role;
+
+        private bool _category;
 
         private int _numOfRetainers;
-
+        private MyItemRole _itemRole;
+        private ItemUiCategory _itemCategory;
 
         public RetainerSettings() : base(Path.Combine(CharacterSettingsDirectory, "RetainerSettings.json"))
         {
@@ -67,6 +73,65 @@ namespace LlamaLibrary.Retainers
                     _gil = value;
                     Save();
                 }
+            }
+        }
+
+
+
+        
+        [Description("Pull by role")]
+        [DefaultValue(true)] //shift +x
+        public bool RoleCheck
+        {
+            get => _role;
+            set
+            {
+                if (_role != value)
+                {
+                    _role = value;
+                    Save();
+                }
+            }
+        }
+        
+        [Description("Role to pull from retainers")]
+        [DefaultValue(MyItemRole.Housing)] //shift +x
+        public MyItemRole ItemRoleToPull
+        {
+            get => _itemRole;
+            set
+            {
+                if (_itemRole == value) return;
+                _itemRole = value;
+                Save();
+            }
+        }
+        
+        [Description("Pull by Category")]
+        [DefaultValue(true)] //shift +x
+        public bool CategoryCheck
+        {
+            get => _category;
+            set
+            {
+                if (_category != value)
+                {
+                    _category = value;
+                    Save();
+                }
+            }
+        }
+        
+        [Description("Category to pull from retainers")]
+        [DefaultValue(ItemUiCategory.Window)] //shift +x
+        public ItemUiCategory ItemCategoryToPull
+        {
+            get => _itemCategory;
+            set
+            {
+                if (_itemCategory == value) return;
+                _itemCategory = value;
+                Save();
             }
         }
 
