@@ -38,7 +38,8 @@ namespace LlamaLibrary.RemoteWindows
 
         public virtual bool IsVisible()
         {
-            if (WindowByName != null) return WindowByName.IsVisible;
+            if (WindowByName != null) 
+                return ((Core.Memory.Read<uint>(RetainerList.Instance.WindowByName.Pointer + 0x180) & 0xF00000u) == 3145728);
             return false;
         } 
         protected bool HasAgentInterfaceId => GetAgentInterfaceId() != 0;

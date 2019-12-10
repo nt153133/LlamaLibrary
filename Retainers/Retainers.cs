@@ -132,7 +132,12 @@ namespace LlamaLibrary.Retainers
             debug = RetainerSettings.Instance.DebugLogging;
 
             await UseSummoningBell();
-            await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            //await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+/*            while (RetainerList.Instance.IsOpen)
+            {
+                Log($"{Core.Memory.Read<uint>(RetainerList.Instance.WindowByName.Pointer + 0x180) & 0xF00000u}");
+                await Coroutine.Sleep(50);
+            }*/
             await Coroutine.Wait(5000, () => RetainerList.Instance.IsVisible());
             //Log("Visible:" + RetainerList.Instance.IsOpen);
             //await Coroutine.Sleep(1000);
@@ -170,7 +175,7 @@ namespace LlamaLibrary.Retainers
                 {
                     await UseSummoningBell();
                     await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-                    await Coroutine.Sleep(500);
+                    //await Coroutine.Sleep(500);
                 }
 
                 if (!RetainerList.Instance.IsOpen) Log("Failed opening retainer list");
@@ -179,10 +184,10 @@ namespace LlamaLibrary.Retainers
 
                 await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
 
-                await Coroutine.Sleep(500);
+                //await Coroutine.Sleep(500);
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
                 await RetainerList.Instance.SelectRetainer(retainerIndex);
-                await Coroutine.Sleep(200);
+                //await Coroutine.Sleep(200);
                 
                 //await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
 
@@ -259,11 +264,11 @@ namespace LlamaLibrary.Retainers
 
                     RetainerTasks.CloseInventory();
 
-                    await Coroutine.Sleep(200);
+                    //await Coroutine.Sleep(200);
 
                     await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
 
-                    await Coroutine.Sleep(200);
+                    //await Coroutine.Sleep(200);
 
                     RetainerTasks.CloseTasks();
 
@@ -273,13 +278,13 @@ namespace LlamaLibrary.Retainers
 
                     if (DialogOpen) Next();
 
-                    await Coroutine.Sleep(200);
+                    //await Coroutine.Sleep(200);
 
                     await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
 
                     LogVerbose("Should be back at retainer list by now");
 
-                    await Coroutine.Sleep(200);
+                   // await Coroutine.Sleep(200);
                 }
 
                 retList.Add(inventory);

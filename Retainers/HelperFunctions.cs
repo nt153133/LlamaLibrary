@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using ff14bot;
@@ -163,6 +164,12 @@ namespace LlamaLibrary.Retainers
                 //Log(test);
             }
 
+            foreach (var action in ActionManager.CurrentActions)
+            {
+               // Log(string.Format("{0} - {1}",action.Key, action.Value.Name));
+            }
+
+            //ActionManager.CurrentActions
             return result;
         }
 
