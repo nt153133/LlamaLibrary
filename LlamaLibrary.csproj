@@ -49,6 +49,9 @@
   <ItemGroup>
     <Compile Include="AutoTradeAccept.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="Enums\MyItemRole.cs" />
+    <Compile Include="Extensions\BagExtensions.cs" />
+    <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />

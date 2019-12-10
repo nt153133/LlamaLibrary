@@ -112,7 +112,7 @@ namespace LlamaLibrary.Retainers
             _root = new ActionRunCoroutine(r => RetainerTest());
             done = false;
         }
-
+        
         /*The await sleeps shouldn't be necessary but if they aren't there the game crashes some times since
         it tries to send commands to a window that isn't open even though it reports it as open (guess it didn't load yet)*/
 

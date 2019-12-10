@@ -165,5 +165,10 @@ namespace LlamaLibrary.Retainers
 
             return result;
         }
+
+        public static bool FilterByCategory(BagSlot item, ItemUiCategory category)
+        {
+            return (item.Item.EquipmentCatagory == category);
+        }
     }
 }
