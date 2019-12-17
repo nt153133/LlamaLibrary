@@ -19,6 +19,7 @@ using ff14bot.Managers;
 using GreyMagic;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory.Attributes;
+using LlamaLibrary.RemoteAgents;
 
  namespace LlamaLibrary.Memory
 {
@@ -26,7 +27,8 @@ using LlamaLibrary.Memory.Attributes;
     {
         private static string Name => "OffsetManager";
         private static bool initDone = false;
-        
+
+
         internal static void Init()
         {
             if (initDone)
@@ -65,7 +67,16 @@ using LlamaLibrary.Memory.Attributes;
                 }
             );
 
+            bool retaineragent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerAskVtable), typeof(AgentRetainerVenture));
+            bool retainerchar = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerCharacterVtable), typeof(AgentRetainerCharacter));
+            bool dawnAgent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.DawnVtable), typeof(AgentDawn));
+
+            Log($"Added Venture Agent: {retaineragent}");
+            Log($"Added RetainerChar Agent: {retainerchar}");
+            Log($"Added Dawn(Trust) Agent: {dawnAgent}");
             initDone = true;
+            
+            
         }
 
         private static IntPtr ParseField(FieldInfo field, PatternFinder pf)

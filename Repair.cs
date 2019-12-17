@@ -8,7 +8,9 @@ Original work done by Kayla D'orden
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
@@ -38,6 +40,8 @@ namespace AutoRepair
         public override string Name => _Name;
         public override bool WantButton => false;
         public static string _Name => "AutoRepair";
+        
+        
 
         public Composite CreateVendorBehavior
         {
@@ -73,6 +77,7 @@ namespace AutoRepair
                                     new Sleep(500),
                                     //new Action(r => Thread.Sleep(1000)),
                                     new Action(r => SelectYesno.ClickYes()),
+                                    new Sleep(1000),
                                     new Action(r => Repairing = false),
                                     new Action(r => Repair.Close())
                                 )
@@ -80,14 +85,14 @@ namespace AutoRepair
                             new Decorator(r => Repair.IsOpen,
                                 new Sequence(
                                     new Action(r => Log("Window open so repairing")),
-                                    new Sleep(500),
                                     new Action(r => Repair.RepairAll())
                                 )
                             ),
                             new Decorator(r => !Repair.IsOpen,
                                 new Sequence(
                                     new Action(r => Log("Window not open so opening")),
-                                    new Action(r => OpenRepair())
+                                    new Action(r => OpenRepair()),
+                                    new WaitContinue(TimeSpan.FromMilliseconds(1500.0), r => !Repair.IsOpen, new Action(r => RunStatus.Success))
                                 )
                             )
                         )
@@ -123,6 +128,8 @@ namespace AutoRepair
         private void OnBotStop(BotBase bot)
         {
             RemoveHooks();
+            
+            
         }
 
         private void OnBotStart(BotBase bot)
@@ -175,9 +182,11 @@ namespace AutoRepair
             RemoveHooks();
         }
 
-        public static void OpenRepair()
+        public async static Task OpenRepair()
         {
             Core.Memory.CallInjected64<IntPtr>(func, AgentModule.GetAgentInterfaceById(AgentId).Pointer, 0, 0, off);
+
+            await Coroutine.Wait(5000, () => Repair.IsOpen);
         }
 
         public static void Log(string text)

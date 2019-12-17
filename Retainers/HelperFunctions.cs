@@ -177,5 +177,12 @@ namespace LlamaLibrary.Retainers
         {
             return (item.Item.EquipmentCatagory == category);
         }
+
+
+
+        private static void Log(string test)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

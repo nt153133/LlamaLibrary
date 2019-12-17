@@ -68,6 +68,11 @@ namespace LlamaLibrary.Retainers
 
         public override void Initialize()
         {
+            
+        }
+
+        public Retainers()
+        {
             OffsetManager.Init();
         }
 

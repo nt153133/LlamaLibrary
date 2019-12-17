@@ -38,5 +38,6 @@ namespace LlamaLibrary.Retainers
                 Logging.Write($"Name: {item.Item.CurrentLocaleName} Count: {item.Count} RawId: {item.RawItemId} IsHQ: {item.Item.IsHighQuality} TrueID: {item.TrueItemId}");
             }
         }
+        
     }
 }

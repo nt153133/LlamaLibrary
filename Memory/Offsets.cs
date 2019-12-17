@@ -22,6 +22,9 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 41 88 46 ? 0F B6 42 ? Add 3 Read8")]
         internal static int DawnTrustId;
         
+        [Offset("Search 48 8D 05 ? ? ? ? 48 C7 43 ? ? ? ? ? 48 8D 4B ? 48 89 03 66 C7 43 ? ? ? Add 3 TraceRelative")]
+        internal static IntPtr DawnVtable;
+        
         [Offset("Search 41 88 46 ? E8 ? ? ? ? C6 43 ? ? Add 3 Read8")]
         internal static int DawnIsScenario;
 
@@ -30,7 +33,18 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
 
         [Offset("Search 48 89 5C 24 ? 57 48 83 EC ? 88 51 ? 49 8B F9")] 
         internal static IntPtr RepairWindowOpen;
-
+        
+        [Offset("Search 48 8B 0D ? ? ? ? 4C 8B C0 33 D2 Add 3 TraceRelative")] 
+        internal static IntPtr SearchResultPtr;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 4E ? 48 8D 05 ? ? ? ? 48 89 46 ? E8 ? ? ? ? 33 ED Add 3 TraceRelative")]
+        internal static IntPtr AgentRetainerCharacterVtable;
+            
+        [Offset("Search 48 8D 05 ? ? ? ? 48 89 03 B9 ? ? ? ? 89 53 ? Add 3 TraceRelative")]
+        internal static IntPtr AgentRetainerAskVtable;
+            
+        [Offset("Search 4C 8D 2D ? ? ? ? 66 0F 7F 44 24 ? 41 8B DF Add 3 TraceRelative")]
+        internal static IntPtr RetainerStats;
     //    [Offset("Search 0F B7 82 ? ? ? ? 2B C8 48 8D 0C 89 Add 3 Read32")] // 0x332
     //    internal static int WallStartingPoint;
 

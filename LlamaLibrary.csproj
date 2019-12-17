@@ -49,9 +49,14 @@
   <ItemGroup>
     <Compile Include="AutoTradeAccept.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="Enums\ClassJobCategory.cs" />
     <Compile Include="Enums\MyItemRole.cs" />
+    <Compile Include="Enums\RetainerRole.cs" />
     <Compile Include="Extensions\BagExtensions.cs" />
+    <Compile Include="Extensions\BagSlotExtentions.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />
+    <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
@@ -71,6 +76,8 @@
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="RemoteAgents\AgentDawn.cs" />
+    <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
+    <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
@@ -78,6 +85,7 @@
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
+    <Compile Include="RemoteWindows\RetainerTaskList.cs" />
     <Compile Include="Repair.cs" />
     <Compile Include="Retainers\HelperFunctions.cs" />
     <Compile Include="Retainers\RetainerInventory.cs" />
