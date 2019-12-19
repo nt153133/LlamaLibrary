@@ -29,18 +29,18 @@ using ff14bot.Managers;
             return false;
         }
         
-        public static bool Discard(this BagSlot bagSlot)
+        public static void Discard(this BagSlot bagSlot)
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
                 using (Core.Memory.TemporaryCacheState(false))
                 {
-                    return Core.Memory.CallInjected64<uint>(Offsets.ItemDiscardFunc, new object[3]
+                    Core.Memory.CallInjected64<uint>(Offsets.ItemDiscardFunc, new object[3]
                     {
                         Offsets.ItemFuncParam,
                         (uint)bagSlot.BagId,
                         bagSlot.Slot,
-                    }) == 0;
+                    });
                 }
             }
         }
