@@ -45,6 +45,18 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
             
         [Offset("Search 4C 8D 2D ? ? ? ? 66 0F 7F 44 24 ? 41 8B DF Add 3 TraceRelative")]
         internal static IntPtr RetainerStats;
+        
+        [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 85 C0 74 ? 4C 63 78 ? Add 3 TraceRelative")]
+        internal static IntPtr ItemFuncParam;
+        
+        [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 56 48 83 EC ? 8B DA 41 0F B7 E8")]
+        internal static IntPtr ItemDiscardFunc;
+        
+        [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 83 EC ? 8B FA 33 DB")]
+        internal static IntPtr ItemLowerQualityFunc;
+        
+        [Offset("Search 40 55 53 56 41 56 41 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 45 ? 8D 82 ? ? ? ?")]
+        internal static IntPtr ItemSplitFunc;
     //    [Offset("Search 0F B7 82 ? ? ? ? 2B C8 48 8D 0C 89 Add 3 Read32")] // 0x332
     //    internal static int WallStartingPoint;
 

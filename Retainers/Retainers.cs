@@ -204,6 +204,7 @@ namespace LlamaLibrary.Retainers
                 RetainerTasks.OpenInventory();
                 await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
 
+
                 if (RetainerTasks.IsInventoryOpen())
                 {
                     LogVerbose("Inventory open");
