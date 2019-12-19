@@ -35,13 +35,7 @@ namespace LlamaLibrary.RemoteWindows
         public virtual string Name => _name;
 
         internal AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(Name);
-
-        public virtual bool IsVisible()
-        {
-            if (WindowByName != null) 
-                return ((Core.Memory.Read<uint>(RetainerList.Instance.WindowByName.Pointer + 0x180) & 0xF00000u) == 3145728);
-            return false;
-        } 
+        
         protected bool HasAgentInterfaceId => GetAgentInterfaceId() != 0;
 
         protected RemoteWindow(string name)
