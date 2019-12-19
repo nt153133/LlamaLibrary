@@ -68,5 +68,25 @@ using ff14bot.Managers;
             return false;
         }
         
+        public static void RetainerRetrieveQuantity(this BagSlot bagSlot, int amount)
+        {
+            if (bagSlot.Count < amount)
+                amount = (int) bagSlot.Count;
+            
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.RetainerRetrieveQuantiy, new object[4]
+                    {
+                        Offsets.ItemFuncParam,
+                        (uint)bagSlot.BagId,
+                        bagSlot.Slot,
+                        amount
+                    });
+                }
+            }
+        }
+        
     }
 }
