@@ -143,7 +143,7 @@ namespace LlamaLibrary.Retainers
                 Log($"{Core.Memory.Read<uint>(RetainerList.Instance.WindowByName.Pointer + 0x180) & 0xF00000u}");
                 await Coroutine.Sleep(50);
             }*/
-            await Coroutine.Wait(5000, () => RetainerList.Instance.IsVisible());
+            await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
             //Log("Visible:" + RetainerList.Instance.IsOpen);
             //await Coroutine.Sleep(1000);
 

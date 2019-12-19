@@ -30,7 +30,7 @@ namespace LlamaLibrary.RemoteWindows
         var offset2 = (int)struct158.FieldType.GetFields()[2].GetValue(struct158.GetValue(off.GetValue(null)));
 */
 
-        public virtual bool IsOpen => IsVisible();//WindowByName != null;
+        public virtual bool IsOpen => WindowByName != null;
 
         public virtual string Name => _name;
 
