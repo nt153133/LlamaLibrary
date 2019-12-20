@@ -2,6 +2,7 @@
 using ff14bot;
 using ff14bot.Managers;
 using LlamaLibrary.Memory;
+using LlamaLibrary.RemoteAgents;
 
 namespace LlamaLibrary.Extensions
 {
@@ -115,6 +116,40 @@ namespace LlamaLibrary.Extensions
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
                         amount
+                    });
+                }
+            }
+        }
+        
+        public static void RetainerEntrustQuantity(this BagSlot bagSlot, int amount)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.EntrustRetainerFunc, new object[5]
+                    {
+                        AgentRetainerInventory.Instance.Pointer,
+                        0,
+                        (uint)bagSlot.BagId,
+                        bagSlot.Slot,
+                        amount
+                    });
+                }
+            }
+        }
+        
+        public static void RetainerSellItem(this BagSlot bagSlot)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.EntrustRetainerFunc, new object[3]
+                    {
+                        AgentRetainerInventory.Instance.RetainerShopPointer,
+                        (uint)bagSlot.BagId,
+                        bagSlot.Slot
                     });
                 }
             }

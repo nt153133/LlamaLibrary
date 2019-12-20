@@ -67,6 +67,21 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
 
         [Offset("Search 48 89 5C 24 ? 57 48 83 EC ? 41 0F B7 F8 48 8D 0D ? ? ? ?")]
         internal static IntPtr ConvertToMateria;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? 33 D2 48 89 03 48 8D 4B ? 33 C0 Add 3 TraceRelative")]
+        internal static IntPtr ItemAppraisalAgentVtable;
+
+        [Offset("Search 66 C7 87 ? ? ? ? ? ? 48 8D 4D ? Add 3 Read8")]
+        internal static int ItemAppraisalReady;
+
+        [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 0F B6 DA 48 8B F9")]
+        internal static IntPtr EntrustRetainerFunc;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? 48 89 6F ? 48 89 07 48 8D 9F ? ? ? ? Add 3 TraceRelative")]
+        internal static IntPtr AgentRetainerInventoryVtable;
+        
+        [Offset("Search 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 80 B9 ? ? ? ? ? 41 8B F0")]
+        internal static IntPtr SellFunc;
     //    [Offset("Search 0F B7 82 ? ? ? ? 2B C8 48 8D 0C 89 Add 3 Read32")] // 0x332
     //    internal static int WallStartingPoint;
 

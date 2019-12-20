@@ -77,6 +77,7 @@
     </Compile>
     <Compile Include="RemoteAgents\AgentDawn.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
+    <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
