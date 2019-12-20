@@ -12,6 +12,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
 using TreeSharp;
 
@@ -221,36 +222,18 @@ namespace LlamaLibrary.Reduce
             {
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
 
-                lock (Core.Memory.Executor.AssemblyLock)
+                item.Desynth();
+                
+                await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+
+                if (SalvageResult.IsOpen)
                 {
-                    Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
-                }
-
-                await Coroutine.Sleep(500);
-
-                await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
-
-                if (SalvageDialog.IsOpen)
-                {
-                    RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
-                    await Coroutine.Sleep(300);
-                    await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
-
-                    if (SalvageResult.IsOpen)
-                    {
-                        SalvageResult.Close();
-                        await Coroutine.Sleep(300);
-                        await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
-                    }
-                    else
-                    {
-                        Log("Result didn't open");
-                        break;
-                    }
+                    SalvageResult.Close();
+                    await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
                 }
                 else
                 {
-                    Log("SalvageDialog didn't open");
+                    Log("Result didn't open");
                     break;
                 }
             }
