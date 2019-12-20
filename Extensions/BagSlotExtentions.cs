@@ -145,7 +145,7 @@ namespace LlamaLibrary.Extensions
             {
                 using (Core.Memory.TemporaryCacheState(false))
                 {
-                    Core.Memory.CallInjected64<uint>(Offsets.EntrustRetainerFunc, new object[3]
+                    Core.Memory.CallInjected64<uint>(Offsets.SellFunc, new object[3]
                     {
                         AgentRetainerInventory.Instance.RetainerShopPointer,
                         (uint)bagSlot.BagId,
