@@ -148,8 +148,8 @@ namespace LlamaLibrary.Extensions
                     Core.Memory.CallInjected64<uint>(Offsets.SellFunc, new object[4]
                     {
                         AgentRetainerInventory.Instance.RetainerShopPointer,
-                        (uint)bagSlot.BagId,
                         bagSlot.Slot,
+                        (uint)bagSlot.BagId,
                         0
                     });
                 }
