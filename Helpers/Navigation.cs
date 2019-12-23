@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Windows.Media;
 using Buddy.Coroutines;
 using Clio.Utilities;
 using ff14bot;
+using ff14bot.Helpers;
 using ff14bot.Navigation;
 using TreeSharp;
 
@@ -25,7 +27,7 @@ namespace LlamaLibrary.Helpers
             
             if (path.Count < 1)
             {
-                Logger.LogCritical($"Couldn't get a path to {XYZ} on {ZoneId}, Stopping.");
+                LogCritical($"Couldn't get a path to {XYZ} on {ZoneId}, Stopping.");
                 return false;
             }
             
@@ -47,6 +49,11 @@ namespace LlamaLibrary.Helpers
             Navigator.Stop();
 
             return Navigator.InPosition(Core.Me.Location, XYZ, 3);
+        }
+        
+        public static void LogCritical(string text)
+        {
+            Logging.Write(Colors.OrangeRed, text);
         }
     }
 }
