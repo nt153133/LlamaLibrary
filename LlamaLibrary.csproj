@@ -58,6 +58,7 @@
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Helpers\Navigation.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
     <Compile Include="MastPieceSupplyTester.cs" />
