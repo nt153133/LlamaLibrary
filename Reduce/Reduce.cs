@@ -52,13 +52,16 @@ namespace LlamaLibrary.Reduce
 
         private readonly List<string> desynthList = new List<string>
         {
-            "Warg",
-            "Amaurotine",
-            "Lakeland",
-            "Voeburtite",
-            "Fae",
-            "Ravel",
-            "Nabaath"
+            "Mirrorfish",
+            "Gilded Batfish",
+            "Peallaidh",
+            "Jenanna",
+            "Everdark",
+            "Xanthic",
+            "Ronkan",
+            "Megapiranha",
+            "Megapiranha",
+            "Hermit"
         };
 
         //private IntPtr offset => offsetInt;
@@ -187,6 +190,8 @@ namespace LlamaLibrary.Reduce
                 ActionManager.Dismount();
             }
             await Coroutine.Wait(5000, () => !MovementManager.IsOccupied && !Core.Me.IsMounted);
+
+            
 
             while (InventoryManager.FilledSlots.Any(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce))//&& WorldManager.ZoneId == (ushort) ReduceSettings.Instance.AEZone )
             {
