@@ -120,7 +120,7 @@ namespace LlamaLibrary.Materia
                 {
                     Log($"Removing materia {count - i }");
                     bagSlot.RemoveMateria();
-                    await Coroutine.Sleep(3500);
+                    await Coroutine.Sleep(6000);
                 }
             }
             
