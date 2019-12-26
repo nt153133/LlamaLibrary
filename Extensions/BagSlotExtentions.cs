@@ -174,5 +174,59 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
+        
+        public static void AffixMateria(this BagSlot bagSlot, BagSlot materia)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.AffixMateriaFunc, new object[3]
+                    {
+                        Offsets.AffixMateriaParam,
+                        bagSlot,
+                        materia,
+                    });
+                }
+            }
+        }
+        
+        public static void OpenMeldInterface(this BagSlot bagSlot)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.MeldWindowFunc, new object[2]
+                    {
+                        AgentMeld.Instance.Pointer,
+                        bagSlot,
+                    });
+                }
+            }
+        }
+        
+        public static bool HasMateria(this BagSlot bagSlot)
+        {
+            var materiaType = Core.Memory.ReadArray<ushort>(bagSlot.Pointer + 0x20, 5);
+            for (var i = 0; i < 5; i++)
+            {
+                if (materiaType[i] > 0) return true;
+            }
+
+            return false;
+        }
+        
+        public static int MateriaCount(this BagSlot bagSlot)
+        {
+            var materiaType = Core.Memory.ReadArray<ushort>(bagSlot.Pointer + 0x20, 5);
+            int count = 0;
+            for (var i = 0; i < 5; i++)
+            {
+                if (materiaType[i] > 0) count++;
+            }
+
+            return count;
+        }
     }
 }

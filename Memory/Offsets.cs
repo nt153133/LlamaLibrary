@@ -88,17 +88,19 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         
         [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? EB ? 44 0F B7 41 ? Add 3 TraceRelative")]
         internal static IntPtr MateriaParam;
-    //    [Offset("Search 0F B7 82 ? ? ? ? 2B C8 48 8D 0C 89 Add 3 Read32")] // 0x332
-    //    internal static int WallStartingPoint;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? 48 8D 4B ? 48 89 03 E8 ? ? ? ? 48 8D 4B ? E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
+        internal static IntPtr AgentMeldVtable;
+        
+        [Offset("Search 48 89 91 ? ? ? ? 33 D2 C7 81 ? ? ? ? ? ? ? ?")]
+        internal static IntPtr MeldWindowFunc;
+        
+        [Offset("Search 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 49 8B E8 48 8B F2 48 8B F9 48 85 D2 0F 84 ? ? ? ?")]
+        internal static IntPtr AffixMateriaFunc;
+        
+        [Offset("Search 48 8D 0D ? ? ? ? 74 ? E8 ? ? ? ? 85 C0 Add 3 TraceRelative")]
+        internal static IntPtr AffixMateriaParam;
 
-     //   [Offset("Search 49 8D BE ? ? ? ? 0F 1F 44 00 ? 8B 17 Add 3 Read32")] //0x140
-     //   internal static int Starting;
-
-      //  [Offset("Search 41 8B 96 ? ? ? ? 84 C9 Add 3 Read32")] //0x13c
-       // internal static int UNK_StartingCircle;
-
-        //[Offset("Search 42 0F B6 8C 28 ? ? ? ? 84 0E Add 5 Read32")] //0x1860
-        //internal static int WallGroupEnabled;
     }
 #pragma warning restore CS0649
 }

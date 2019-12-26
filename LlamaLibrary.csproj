@@ -90,6 +90,7 @@
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="RemoteAgents\AgentDawn.cs" />
+    <Compile Include="RemoteAgents\AgentMeld.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
@@ -98,6 +99,8 @@
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
+    <Compile Include="RemoteWindows\MateriaAttach.cs" />
+    <Compile Include="RemoteWindows\MateriaAttachDialog.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
     <Compile Include="RemoteWindows\RetainerTaskList.cs" />
