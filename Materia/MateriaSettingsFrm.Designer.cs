@@ -149,6 +149,7 @@ namespace LlamaLibrary.Materia
             // 
             // affixLb
             // 
+            this.affixLb.BackColor = System.Drawing.SystemColors.Info;
             this.affixLb.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.affixLb.FormattingEnabled = true;
             this.affixLb.ItemHeight = 15;
