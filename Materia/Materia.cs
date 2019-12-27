@@ -13,6 +13,7 @@ using ff14bot.Managers;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
 using LlamaLibrary.Properties;
+using LlamaLibrary.RemoteWindows;
 using Newtonsoft.Json;
 using TreeSharp;
 
@@ -26,6 +27,9 @@ namespace LlamaLibrary.Materia
         private Composite _root;
         private MateriaSettingsFrm _settings;
         internal static BagSlot ItemToRemoveMateria;
+        internal static BagSlot ItemToAffixMateria;
+        internal static List<BagSlot> MateriaToAdd;
+        internal static MateriaTask MateriaTask = MateriaTask.None;
 
         public MateriaBase()
         {
@@ -73,12 +77,27 @@ namespace LlamaLibrary.Materia
                 return false;
             }
 
-            if (ItemToRemoveMateria != null && ItemToRemoveMateria.IsValid)
-                await RemoveMateria(ItemToRemoveMateria);
-            else
+            if (MateriaTask == MateriaTask.Remove)
             {
-                Log("Error: Choose an item in the settings and click Remove Materia");
+                if (ItemToRemoveMateria != null && ItemToRemoveMateria.IsValid)
+                    await RemoveMateria(ItemToRemoveMateria);
+                else
+                {
+                    Log("Error: Choose an item in the settings and click Remove Materia");
+                }
             }
+            
+            if (MateriaTask == MateriaTask.Affix)
+            {
+                if (ItemToAffixMateria != null && ItemToAffixMateria.IsValid)
+                    await AffixMateria(ItemToAffixMateria, MateriaToAdd);
+                else
+                {
+                    Log("Error: Choose an item in the settings and click Affix Materia");
+                }
+            }
+
+            MateriaTask = MateriaTask.None;
 
             TreeRoot.Stop("Done playing with Materia");
             return false;
@@ -108,6 +127,73 @@ namespace LlamaLibrary.Materia
         private static T loadResource<T>(string text)
         {
             return JsonConvert.DeserializeObject<T>(text);
+        }
+
+        public static async Task<bool> AffixMateria(BagSlot bagSlot, List<BagSlot> materiaList)
+        {
+            Log($"MateriaList count {materiaList.Count}");
+            if (bagSlot != null && bagSlot.IsValid)
+            {
+                Log($"Want to affix Materia to {bagSlot}");
+                
+
+                for (int i = 0; i < materiaList.Count; i++)
+                {
+                    if (materiaList[i] == null)
+                        continue;
+
+                    Log($"Want to affix materia {i} {materiaList[i]}");
+
+                    if (!materiaList[i].IsFilled) continue;
+                    
+                    int count = MateriaCount(bagSlot);
+
+                    while (materiaList[i].IsFilled && (count == MateriaCount(bagSlot)))
+                    {
+                        if (!MateriaAttach.Instance.IsOpen)
+                        {
+                            bagSlot.OpenMeldInterface();
+                            await Coroutine.Wait(5000, () => MateriaAttach.Instance.IsOpen);
+
+                            if (!MateriaAttach.Instance.IsOpen)
+                            {
+                                Log($"Can't open meld window");
+                                return false;
+                            }
+                                
+                            MateriaAttach.Instance.ClickItem(0);
+                            await Coroutine.Sleep(1000);
+                            MateriaAttach.Instance.ClickMateria(0);
+                            await Coroutine.Sleep(1000);
+                            await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen);
+                        }
+
+                        if (!MateriaAttachDialog.Instance.IsOpen)
+                        {
+                            MateriaAttach.Instance.ClickItem(0);
+                            await Coroutine.Sleep(1000);
+                            MateriaAttach.Instance.ClickMateria(0);
+                            await Coroutine.Sleep(1000);
+                            await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen);
+
+                            if (!MateriaAttachDialog.Instance.IsOpen)
+                            {
+                                Log($"Can't open meld dialog");
+                                return false;
+                            }
+                        }
+                            
+                        //Log($"{Offsets.AffixMateriaFunc.ToInt64():X}  {Offsets.AffixMateriaParam.ToInt64():X}   {bagSlot.Pointer.ToInt64():X}  {materiaList[i].Pointer.ToInt64():X}");
+                        bagSlot.AffixMateria(materiaList[i]);
+                        await Coroutine.Sleep(7000);
+                            
+                        await Coroutine.Wait(7000, () => MateriaAttach.Instance.IsOpen || MateriaAttachDialog.Instance.IsOpen);
+                    }
+
+                }
+            }
+
+            return true;
         }
 
         public static async Task<bool> RemoveMateria(BagSlot bagSlot)
@@ -166,5 +252,12 @@ namespace LlamaLibrary.Materia
 
             return count;
         }
+    }
+
+    public enum MateriaTask
+    {
+        None,
+        Remove,
+        Affix
     }
 }

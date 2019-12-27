@@ -11,7 +11,8 @@
 
         public void ClickItem(int index)
         {
-            SendAction( 2, 3uL, 6,3,(ulong) index);
+            //SendAction( 2, 3uL, 6,3,(ulong) index);
+            SendAction( 3, 3uL, 1,3,(ulong) index,3,1);
         }
         
         public void ClickMateria(int index)

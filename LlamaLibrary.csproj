@@ -53,7 +53,7 @@
     <Compile Include="Enums\MyItemRole.cs" />
     <Compile Include="Enums\RetainerRole.cs" />
     <Compile Include="Extensions\BagExtensions.cs" />
-    <Compile Include="Extensions\BagSlotExtentions.cs" />
+    <Compile Include="Extensions\BagSlotExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />

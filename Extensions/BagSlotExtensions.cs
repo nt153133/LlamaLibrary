@@ -9,7 +9,7 @@ using LlamaLibrary.RemoteAgents;
 
 namespace LlamaLibrary.Extensions
 {
-    public static class BagSlotExtentions
+    public static class BagSlotExtensions
     {
         public static bool Split(this BagSlot bagSlot, int amount)
         {
@@ -179,15 +179,12 @@ namespace LlamaLibrary.Extensions
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
-                using (Core.Memory.TemporaryCacheState(false))
-                {
-                    Core.Memory.CallInjected64<uint>(Offsets.AffixMateriaFunc, new object[3]
+                Core.Memory.CallInjected64<uint>(Offsets.AffixMateriaFunc, new object[3]
                     {
                         Offsets.AffixMateriaParam,
-                        bagSlot,
-                        materia,
+                        bagSlot.Pointer,
+                        materia.Pointer
                     });
-                }
             }
         }
         
@@ -200,7 +197,7 @@ namespace LlamaLibrary.Extensions
                     Core.Memory.CallInjected64<uint>(Offsets.MeldWindowFunc, new object[2]
                     {
                         AgentMeld.Instance.Pointer,
-                        bagSlot,
+                        bagSlot.Pointer,
                     });
                 }
             }
