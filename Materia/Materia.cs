@@ -190,6 +190,9 @@ namespace LlamaLibrary.Materia
                         await Coroutine.Wait(7000, () => MateriaAttach.Instance.IsOpen || MateriaAttachDialog.Instance.IsOpen);
                     }
 
+                    if (!materiaList[i].IsFilled)
+                        return false;
+
                 }
             }
 
