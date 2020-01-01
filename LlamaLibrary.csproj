@@ -47,6 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoFollow\AutoFollowBase.cs" />
+    <Compile Include="AutoFollow\AutoFollowSettings.cs" />
+    <Compile Include="AutoFollow\AutoFollowSettingsFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoFollow\AutoFollowSettingsFrm.Designer.cs">
+      <DependentUpon>AutoFollowSettingsFrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="AutoTradeAccept.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Enums\ClassJobCategory.cs" />
@@ -119,6 +127,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AutoFollow\AutoFollowSettingsFrm.resx">
+      <DependentUpon>AutoFollowSettingsFrm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Materia\MateriaSettingsFrm.resx">
       <DependentUpon>MateriaSettingsFrm.cs</DependentUpon>
     </EmbeddedResource>

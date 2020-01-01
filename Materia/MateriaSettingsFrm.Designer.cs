@@ -59,9 +59,6 @@ namespace LlamaLibrary.Materia
             ((System.ComponentModel.ISupportInitialize) (this.bindingSourceAffix)).BeginInit();
             ((System.ComponentModel.ISupportInitialize) (this.bindingSourceInventoryMateria)).BeginInit();
             this.SuspendLayout();
-            // 
-            // itemCb
-            // 
             this.itemCb.BackColor = System.Drawing.SystemColors.Info;
             this.itemCb.DataSource = this.bindingSourceInventory;
             this.itemCb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -71,9 +68,6 @@ namespace LlamaLibrary.Materia
             this.itemCb.Name = "itemCb";
             this.itemCb.Size = new System.Drawing.Size(250, 23);
             this.itemCb.TabIndex = 0;
-            // 
-            // materiaListBox
-            // 
             this.materiaListBox.BackColor = System.Drawing.SystemColors.Info;
             this.materiaListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.materiaListBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
@@ -84,9 +78,6 @@ namespace LlamaLibrary.Materia
             this.materiaListBox.Name = "materiaListBox";
             this.materiaListBox.Size = new System.Drawing.Size(325, 189);
             this.materiaListBox.TabIndex = 1;
-            // 
-            // button1
-            // 
             this.button1.BackColor = System.Drawing.Color.Salmon;
             this.button1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.button1.FlatAppearance.BorderColor = System.Drawing.Color.Black;
@@ -100,9 +91,6 @@ namespace LlamaLibrary.Materia
             this.button1.Text = "Remove All Materia";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
             this.button2.BackColor = System.Drawing.Color.LimeGreen;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Location = new System.Drawing.Point(267, 6);
@@ -113,9 +101,6 @@ namespace LlamaLibrary.Materia
             this.button2.Text = "Refresh";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // tabControl1
-            // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -125,9 +110,6 @@ namespace LlamaLibrary.Materia
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(349, 302);
             this.tabControl1.TabIndex = 4;
-            // 
-            // tabPage1
-            // 
             this.tabPage1.BackColor = System.Drawing.Color.SaddleBrown;
             this.tabPage1.Controls.Add(this.itemCb);
             this.tabPage1.Controls.Add(this.button2);
@@ -140,9 +122,6 @@ namespace LlamaLibrary.Materia
             this.tabPage1.Size = new System.Drawing.Size(341, 274);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Remove";
-            // 
-            // tabPage2
-            // 
             this.tabPage2.BackColor = System.Drawing.Color.SaddleBrown;
             this.tabPage2.Controls.Add(this.panel1);
             this.tabPage2.Controls.Add(this.affixCb);
@@ -155,9 +134,6 @@ namespace LlamaLibrary.Materia
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Affix";
             this.tabPage2.Click += new System.EventHandler(this.tabPage2_Click);
-            // 
-            // panel1
-            // 
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.MateriaCb5);
             this.panel1.Controls.Add(this.MateriaCb4);
@@ -169,9 +145,6 @@ namespace LlamaLibrary.Materia
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(321, 173);
             this.panel1.TabIndex = 7;
-            // 
-            // MateriaCb5
-            // 
             this.MateriaCb5.BackColor = System.Drawing.SystemColors.Info;
             this.MateriaCb5.Dock = System.Windows.Forms.DockStyle.Top;
             this.MateriaCb5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -183,9 +156,6 @@ namespace LlamaLibrary.Materia
             this.MateriaCb5.Size = new System.Drawing.Size(321, 23);
             this.MateriaCb5.TabIndex = 4;
             this.MateriaCb5.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
-            // 
-            // MateriaCb4
-            // 
             this.MateriaCb4.BackColor = System.Drawing.SystemColors.Info;
             this.MateriaCb4.Dock = System.Windows.Forms.DockStyle.Top;
             this.MateriaCb4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -196,9 +166,6 @@ namespace LlamaLibrary.Materia
             this.MateriaCb4.Name = "MateriaCb4";
             this.MateriaCb4.Size = new System.Drawing.Size(321, 23);
             this.MateriaCb4.TabIndex = 3;
-            // 
-            // MateriaCb3
-            // 
             this.MateriaCb3.BackColor = System.Drawing.SystemColors.Info;
             this.MateriaCb3.Dock = System.Windows.Forms.DockStyle.Top;
             this.MateriaCb3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -209,9 +176,6 @@ namespace LlamaLibrary.Materia
             this.MateriaCb3.Name = "MateriaCb3";
             this.MateriaCb3.Size = new System.Drawing.Size(321, 23);
             this.MateriaCb3.TabIndex = 2;
-            // 
-            // MateriaCb2
-            // 
             this.MateriaCb2.BackColor = System.Drawing.SystemColors.Info;
             this.MateriaCb2.Dock = System.Windows.Forms.DockStyle.Top;
             this.MateriaCb2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -222,9 +186,6 @@ namespace LlamaLibrary.Materia
             this.MateriaCb2.Name = "MateriaCb2";
             this.MateriaCb2.Size = new System.Drawing.Size(321, 23);
             this.MateriaCb2.TabIndex = 1;
-            // 
-            // MateriaCb1
-            // 
             this.MateriaCb1.BackColor = System.Drawing.SystemColors.Info;
             this.MateriaCb1.Dock = System.Windows.Forms.DockStyle.Top;
             this.MateriaCb1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -235,9 +196,6 @@ namespace LlamaLibrary.Materia
             this.MateriaCb1.Name = "MateriaCb1";
             this.MateriaCb1.Size = new System.Drawing.Size(321, 23);
             this.MateriaCb1.TabIndex = 0;
-            // 
-            // affixCb
-            // 
             this.affixCb.BackColor = System.Drawing.SystemColors.Info;
             this.affixCb.DataSource = this.bindingSourceAffix;
             this.affixCb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -248,9 +206,6 @@ namespace LlamaLibrary.Materia
             this.affixCb.Size = new System.Drawing.Size(249, 23);
             this.affixCb.TabIndex = 4;
             this.affixCb.SelectedIndexChanged += new System.EventHandler(this.affixCb_SelectedIndexChanged);
-            // 
-            // button3
-            // 
             this.button3.BackColor = System.Drawing.Color.LimeGreen;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Location = new System.Drawing.Point(266, 6);
@@ -261,9 +216,6 @@ namespace LlamaLibrary.Materia
             this.button3.Text = "Refresh";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
             this.button4.BackColor = System.Drawing.Color.Salmon;
             this.button4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -274,9 +226,6 @@ namespace LlamaLibrary.Materia
             this.button4.Text = "Affix";
             this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // MateriaSettingsFrm
-            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SaddleBrown;
