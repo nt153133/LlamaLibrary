@@ -52,16 +52,13 @@ namespace LlamaLibrary.Reduce
 
         private readonly List<string> desynthList = new List<string>
         {
-            "Mirrorfish",
-            "Gilded Batfish",
-            "Peallaidh",
-            "Jenanna",
-            "Everdark",
-            "Xanthic",
-            "Ronkan",
-            "Megapiranha",
-            "Megapiranha",
-            "Hermit"
+            "Warg",
+            "Amaurotine",
+            "Lakeland",
+            "Voeburtite",
+            "Fae",
+            "Ravel",
+            "Nabaath"
         };
 
         //private IntPtr offset => offsetInt;
