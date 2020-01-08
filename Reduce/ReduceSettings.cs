@@ -17,8 +17,9 @@ namespace LlamaLibrary.Reduce
         private bool _stayRunning;
         private int _AEZone;
         private bool _AEZoneCheck;
+        private bool _openCoffers;
 
-        public ReduceSettings() : base(Path.Combine(GetSettingsFilePath(Core.Me.Name, $"{Name}.json")))
+        public ReduceSettings() : base(Path.Combine(CharacterSettingsDirectory, "Reduce.json"))
         {
         }
         
@@ -72,6 +73,19 @@ namespace LlamaLibrary.Reduce
             get => _stayRunning;
             set { 
                 _stayRunning = value;
+                Save();
+            }
+        }
+        
+        [Setting]
+        [Description("Open Coffers")]
+        [DefaultValue(false)]
+        [JsonProperty("OpenCoffers")]
+        public bool OpenCoffers
+        {
+            get => _openCoffers;
+            set { 
+                _openCoffers = value;
                 Save();
             }
         }

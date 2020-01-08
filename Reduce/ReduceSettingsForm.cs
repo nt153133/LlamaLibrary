@@ -29,6 +29,7 @@ namespace LlamaLibrary.Reduce
             RunCheck.Checked = ReduceSettings.Instance.StayRunning;
             checkBox1.Checked = ReduceSettings.Instance.AEZoneCheck; //yeah i'll rename it later
             textZone.Text = ReduceSettings.Instance.AEZone.ToString();
+            checkBox2.Checked = ReduceSettings.Instance.OpenCoffers;//yeah i'll rename it later...this one too
         }
 
         private void RunCheck_CheckedChanged(object sender, EventArgs e)
@@ -57,6 +58,12 @@ namespace LlamaLibrary.Reduce
         {
             ReduceSettings.Instance.AEZone = WorldManager.ZoneId;
             textZone.Text = ReduceSettings.Instance.AEZone.ToString();
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            ReduceSettings.Instance.OpenCoffers = checkBox2.Checked;
+            ReduceSettings.Instance.Save();
         }
     }
 }

@@ -40,6 +40,7 @@ namespace LlamaLibrary.Reduce
             this.textZone = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -94,7 +95,7 @@ namespace LlamaLibrary.Reduce
             // 
             // setCurrentZoneBtn
             // 
-            this.setCurrentZoneBtn.Location = new System.Drawing.Point(17, 106);
+            this.setCurrentZoneBtn.Location = new System.Drawing.Point(18, 106);
             this.setCurrentZoneBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.setCurrentZoneBtn.Name = "setCurrentZoneBtn";
             this.setCurrentZoneBtn.Size = new System.Drawing.Size(130, 27);
@@ -105,7 +106,7 @@ namespace LlamaLibrary.Reduce
             // 
             // setZoneBtn
             // 
-            this.setZoneBtn.Location = new System.Drawing.Point(95, 77);
+            this.setZoneBtn.Location = new System.Drawing.Point(94, 77);
             this.setZoneBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.setZoneBtn.Name = "setZoneBtn";
             this.setZoneBtn.Size = new System.Drawing.Size(52, 23);
@@ -127,7 +128,7 @@ namespace LlamaLibrary.Reduce
             this.checkBox1.Location = new System.Drawing.Point(8, 22);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(139, 49);
+            this.checkBox1.Size = new System.Drawing.Size(139, 48);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Only Reduce in zone";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -147,11 +148,23 @@ namespace LlamaLibrary.Reduce
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Desynthesis";
             // 
+            // checkBox2
+            // 
+            this.checkBox2.Location = new System.Drawing.Point(471, 27);
+            this.checkBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(110, 33);
+            this.checkBox2.TabIndex = 6;
+            this.checkBox2.Text = "Open Coffers";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(502, 181);
+            this.ClientSize = new System.Drawing.Size(607, 181);
+            this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -175,5 +188,6 @@ namespace LlamaLibrary.Reduce
         private System.Windows.Forms.TextBox textZone;
         private System.Windows.Forms.Button setZoneBtn;
         private System.Windows.Forms.Button setCurrentZoneBtn;
+        private System.Windows.Forms.CheckBox checkBox2;
     }
 }
