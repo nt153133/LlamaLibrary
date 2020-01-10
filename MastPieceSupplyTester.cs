@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
@@ -9,7 +10,9 @@ using ff14bot.Behavior;
 using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
+using Generate;
 using LlamaLibrary.RemoteWindows;
+using Newtonsoft.Json;
 using TreeSharp;
 
 //using UI_Checker;
@@ -19,7 +22,7 @@ namespace MasterPieceSupplyTest
     public class MasterPieceSupplyTester : BotBase
     {
         private Composite _root;
-        public override string Name => "MasterPieceSupplyTester";
+        public override string Name => "GCSupplyOrderLisbeth";
         public override PulseFlags PulseFlags => PulseFlags.All;
 
         public override bool IsAutonomous => true;
@@ -82,20 +85,39 @@ namespace MasterPieceSupplyTest
                 Logging.Write($"Nope failed");
                 return false;
             }
-
+            List<LisbethOrder> outList = new List<LisbethOrder>();
+            int id = 0;
             foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems())
             {
-                Logging.Write($"{item.Key} Qty: {item.Value}");
+                Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
+                var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, item.Value.Value);
+                outList.Add(order);
+                
+                id++;
             }
 
             foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems())
             {
-                Logging.Write($"{item.Key} Qty: {item.Value}");
+                Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
+                var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, "Gather");
+                if (!item.Value.Value.Equals("Fisher"))
+                    outList.Add(order);
+                id++;
             }
             
             ContentsInfoDetail.Instance.Close();
             ContentsInfo.Instance.Close();
 
+            foreach (var order in outList)
+            {
+                Logging.Write($"{order}");
+            }
+
+            using (StreamWriter outputFile = new StreamWriter("GCSupply.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(outList, Formatting.None));
+            }
+            
             return true;
         }
 
