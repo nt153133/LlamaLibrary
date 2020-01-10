@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
@@ -30,7 +31,8 @@ namespace MasterPieceSupplyTest
 
         private async Task<bool> Run()
         {
-            await PrintMasterPieceList();
+            //await PrintMasterPieceList();
+            await PrintGCSupplyList();
 
             TreeRoot.Stop("Stop Requested");
             return true;
@@ -44,6 +46,57 @@ namespace MasterPieceSupplyTest
         public override void Stop()
         {
             _root = null;
+        }
+        
+        public async Task<bool> PrintGCSupplyList()
+        {
+
+            if (!ContentsInfo.Instance.IsOpen)
+            {
+                
+            }
+            
+            
+            if (!ContentsInfoDetail.Instance.IsOpen)
+            {
+                Logging.Write($"Trying to open window");
+                
+                if (!ContentsInfo.Instance.IsOpen)
+                {
+                    if (await ContentsInfo.Instance.Open())
+                        ContentsInfo.Instance.OpenGCSupplyWindow();
+                }
+                
+                await Coroutine.Wait(5000, () => ContentsInfoDetail.Instance.IsOpen);
+
+                if (!ContentsInfoDetail.Instance.IsOpen)
+                {
+                    Logging.Write($"Nope failed opening GC Supply window");
+                    return false;
+                }
+
+            }
+
+            if (!ContentsInfoDetail.Instance.IsOpen)
+            {
+                Logging.Write($"Nope failed");
+                return false;
+            }
+
+            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems())
+            {
+                Logging.Write($"{item.Key} Qty: {item.Value}");
+            }
+
+            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems())
+            {
+                Logging.Write($"{item.Key} Qty: {item.Value}");
+            }
+            
+            ContentsInfoDetail.Instance.Close();
+            ContentsInfo.Instance.Close();
+
+            return true;
         }
 
         public async Task<bool> PrintMasterPieceList()
@@ -102,6 +155,8 @@ namespace MasterPieceSupplyTest
                     Logging.Write($"{item.Key} Starred: {item.Value}");
                 }
             }
+            
+            MasterPieceSupply.Instance.Close();
 
             return true;
         }

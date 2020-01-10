@@ -119,7 +119,7 @@ namespace LlamaLibrary.Reduce
                     Text = "Reduce and Desynth v" + v //title
                 };
 
-                _settings.Closed += (o, e) => {ReduceSettings.Instance.Save();  _settings = null; };
+                _settings.Closed += (o, e) => { _settings = null; };
             }
 
             try
@@ -151,8 +151,7 @@ namespace LlamaLibrary.Reduce
         
         private async Task<bool> CofferTask()
         {
-            foreach (var bagslot in InventoryManager.GetBagsByInventoryBagId(inventoryBagIds).Select(i => i.FilledSlots).SelectMany(x => x).ToList()
-                .Where(bagslot => bagslot.Item.ItemAction == 388))
+            foreach (var bagslot in InventoryManager.FilledSlots.Where(bagslot => bagslot.Item.ItemAction == 388))
             {
                 Log(string.Format("Opening Coffer {0}", bagslot.Name));
                 bagslot.UseItem();
@@ -184,7 +183,7 @@ namespace LlamaLibrary.Reduce
             await Reduction();
             await Desynth();
             if (ReduceSettings.Instance.OpenCoffers) await CofferTask();
-            ReduceSettings.Instance.Save();
+            //ReduceSettings.Instance.Save();
             //if (!ReduceSettings.Instance.StayRunning)
             TreeRoot.Stop("Stop Requested");
             return true;

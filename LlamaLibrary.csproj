@@ -102,6 +102,8 @@
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
+    <Compile Include="RemoteWindows\ContentsInfo.cs" />
+    <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
