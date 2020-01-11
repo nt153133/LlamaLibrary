@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using Buddy.Coroutines;
+using Clio.Utilities;
 using ff14bot;
 using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Objects;
+using ff14bot.Pathing;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.Retainers
 {
@@ -178,7 +183,43 @@ namespace LlamaLibrary.Retainers
             return (item.Item.EquipmentCatagory == category);
         }
 
+        internal static async Task<bool> UseSummoningBell()
+        {
+            var bell = NearestSummoningBell();
 
+            if (bell == null)
+            {
+                LogCritical("No summoning bell near by");
+                return false;
+            }
+
+            if (bell.Distance2D(Core.Me.Location) >= 3)
+            {
+                await MoveSummoningBell(bell.Location);
+                if (bell.Distance2D(Core.Me.Location) >= 3) return false;
+            }
+
+            bell.Interact();
+            await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            return true;
+        }
+        
+        internal static async Task<bool> MoveSummoningBell(Vector3 loc)
+        {
+            var moving = MoveResult.GeneratingPath;
+            while (!(moving == MoveResult.Done ||
+                     moving == MoveResult.ReachedDestination ||
+                     moving == MoveResult.Failed ||
+                     moving == MoveResult.Failure ||
+                     moving == MoveResult.PathGenerationFailed))
+            {
+                moving = Flightor.MoveTo(new FlyToParameters(loc));
+
+                await Coroutine.Yield();
+            }
+
+            return true;
+        }
 
         private static void Log(string test)
         {

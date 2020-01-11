@@ -14,6 +14,7 @@ using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
+using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;
@@ -24,7 +25,7 @@ namespace LlamaLibrary.Retainers
 {
     public class Retainers : BotBase
     {
-        private static readonly string botName = "Retainers Test";
+        private static readonly string botName = "Retainer Manage";
 
         private static bool done;
 
@@ -43,6 +44,11 @@ namespace LlamaLibrary.Retainers
         private bool debug;
 
         private SettingsForm settings;
+
+        public Retainers()
+        {
+            OffsetManager.Init();
+        }
 
         public override string Name
         {
@@ -68,12 +74,6 @@ namespace LlamaLibrary.Retainers
 
         public override void Initialize()
         {
-            
-        }
-
-        public Retainers()
-        {
-            OffsetManager.Init();
         }
 
         public override void OnButtonPress()
@@ -117,7 +117,7 @@ namespace LlamaLibrary.Retainers
             _root = new ActionRunCoroutine(r => RetainerTest());
             done = false;
         }
-        
+
         /*The await sleeps shouldn't be necessary but if they aren't there the game crashes some times since
         it tries to send commands to a window that isn't open even though it reports it as open (guess it didn't load yet)*/
 
@@ -174,86 +174,50 @@ namespace LlamaLibrary.Retainers
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
-                var inventory = new RetainerInventory();
-
-                if (!RetainerList.Instance.IsOpen)
-                {
-                    await UseSummoningBell();
-                    await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-                    //await Coroutine.Sleep(500);
-                }
-
-                if (!RetainerList.Instance.IsOpen) Log("Failed opening retainer list");
-
-                LogVerbose("Open:" + RetainerList.Instance.IsOpen);
-
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-
-                //await Coroutine.Sleep(500);
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
-                await RetainerList.Instance.SelectRetainer(retainerIndex);
-                //await Coroutine.Sleep(200);
-                
-                //await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
+                Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");
+                await RetainerRoutine.SelectRetainer(retainerIndex);
 
-                Log("Selected Retainer: " + retainerNames[retainerIndex]);
+                var inventory = new RetainerInventory();
 
                 if (RetainerSettings.Instance.GetGil)
                     GetRetainerGil();
 
-                RetainerTasks.OpenInventory();
-                await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
-
-
-                if (RetainerTasks.IsInventoryOpen())
+                LogVerbose("Inventory open");
+                foreach (var item in InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).Where(FilterStackable))
                 {
-                    LogVerbose("Inventory open");
-                    foreach (var retbag in InventoryManager.GetBagsByInventoryBagId(RetainerBagIds))
+                    try
                     {
-                        foreach (var item in retbag.FilledSlots.Where(FilterStackable))
+                        inventory.AddItem(item);
+                        if (masterInventory.ContainsKey(item.TrueItemId))
                         {
-                            try
-                            {
-                                inventory.AddItem(item);
-                                if (masterInventory.ContainsKey(item.TrueItemId))
-                                {
-                                    masterInventory[item.TrueItemId]
-                                        .Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
-                                }
-                                else
-                                {
-                                    masterInventory.Add(item.TrueItemId, new List<KeyValuePair<int, uint>>());
-                                    masterInventory[item.TrueItemId]
-                                        .Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                LogCritical("SHIT:" + e);
-                                throw;
-                            }
+                            masterInventory[item.TrueItemId]
+                                .Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
+                        }
+                        else
+                        {
+                            masterInventory.Add(item.TrueItemId, new List<KeyValuePair<int, uint>>());
+                            masterInventory[item.TrueItemId]
+                                .Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
                         }
                     }
-
-                    LogVerbose("Inventory done");
-
-                    Log("Checking retainer[{0}] against player inventory", retainerNames[retainerIndex]);
-
-                    foreach (var item in InventoryManager.FilledSlots.Where(x => x.BagId == InventoryBagId.Bag1 || x.BagId == InventoryBagId.Bag2 || x.BagId == InventoryBagId.Bag3 || x.BagId == InventoryBagId.Bag4)
-                        .Where(FilterStackable).Where(item => inventory.HasItem(item.TrueItemId)))
+                    catch (Exception e)
                     {
-                        Log($"PLAYER AND RETAINER both have Name: {item.Item.CurrentLocaleName}\tId: {item.Item.Id}");
-
-                        if (RetainerSettings.Instance.DepositFromPlayer)
-                        {
-                            Log("Moved: " + MoveItem(item, inventory.GetItem(item.TrueItemId)));
-                            await Coroutine.Sleep(100);
-                        }
+                        LogCritical("SHIT:" + e);
+                        throw;
                     }
+                }
 
-                    Log("Done checking against player inventory");
+                LogVerbose("Inventory done");
 
-                    AgentModule.ToggleAgentInterfaceById(274);
+                Log("Checking retainer[{0}] against player inventory", retainerNames[retainerIndex]);
+
+                if (RetainerSettings.Instance.DepositFromPlayer) await RetainerRoutine.DumpItems();
+
+
+                Log("Done checking against player inventory");
+
+/*                   AgentModule.ToggleAgentInterfaceById(274);
                     await Coroutine.Sleep(200);
                     var cho1 = InventoryManager.GetBagByInventoryBagId((InventoryBagId)4000);
                     var cho2 = InventoryManager.GetBagByInventoryBagId((InventoryBagId)4001);
@@ -266,32 +230,18 @@ namespace LlamaLibrary.Retainers
                             Log("Moved: " + MoveItem(item, inventory.GetItem(item.TrueItemId)));
                             await Coroutine.Sleep(100);
                         }
-                    }
+                    }*/
 
-                    RetainerTasks.CloseInventory();
+                //RetainerTasks.CloseInventory();
 
-                    //await Coroutine.Sleep(200);
+                //await Coroutine.Sleep(200);
 
-                    await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
+                await RetainerRoutine.DeSelectRetainer();
 
-                    //await Coroutine.Sleep(200);
+                LogVerbose("Should be back at retainer list by now");
 
-                    RetainerTasks.CloseTasks();
-
-                    await Coroutine.Wait(1500, () => DialogOpen);
-
-                    await Coroutine.Sleep(200);
-
-                    if (DialogOpen) Next();
-
-                    //await Coroutine.Sleep(200);
-
-                    await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
-
-                    LogVerbose("Should be back at retainer list by now");
-
-                   // await Coroutine.Sleep(200);
-                }
+                // await Coroutine.Sleep(200);
+                // }
 
                 retList.Add(inventory);
             }
@@ -389,12 +339,8 @@ namespace LlamaLibrary.Retainers
                     {
                         await UseSummoningBell();
                         await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-                        await Coroutine.Sleep(1000);
+                        //await Coroutine.Sleep(1000);
                     }
-
-                    await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-
-                    await Coroutine.Sleep(200);
 
                     if (!RetainerList.Instance.IsOpen) Log("Failed opening retainer list");
 
@@ -406,89 +352,39 @@ namespace LlamaLibrary.Retainers
 
                     await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
 
-                    RetainerTasks.OpenInventory();
+                    //    RetainerTasks.OpenInventory();
+//
+                    //    await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
 
-                    await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
-
-                    if (!RetainerTasks.IsInventoryOpen()) continue;
-
-                    LogVerbose("Inventory open");
-                    foreach (var retbag in InventoryManager.GetBagsByInventoryBagId(RetainerBagIds))
-                    {
-                        foreach (var item in retbag.FilledSlots.Where(FilterStackable))
-                        {
-                            try
-                            {
-                                inventory.AddItem(item);
-                                if (masterInventory.ContainsKey(item.TrueItemId))
-                                {
-                                    masterInventory[item.TrueItemId].Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
-                                }
-                                else
-                                {
-                                    masterInventory.Add(item.TrueItemId, new List<KeyValuePair<int, uint>>());
-                                    masterInventory[item.TrueItemId].Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
-                                }
-
-                                //Logging.Write("Name: {0} Count: {1} BagId: {2} IsHQ: {3}", item.Item.EnglishName, item.Item.StackSize, item.BagId, item.Item.IsHighQuality);
-                            }
-                            catch (Exception e)
-                            {
-                                Log("SHIT:" + e);
-                                throw;
-                            }
-                        }
-                    }
-
-                    LogVerbose("Inventory done");
+                    //   if (!RetainerTasks.IsInventoryOpen()) continue;
+                    //await Coroutine.Sleep(500);
 
                     Log("Checking retainer[{0}] against move list", retainerNames[retainerIndex]);
 
                     foreach (var item in moveFrom[retainerIndex])
                     {
-                        var moved = false;
-                        if (inventory.HasItem(item))
-                            foreach (var bagId in InventoryManager.GetBagsByInventoryBagId(inventoryBagId_0))
-                            {
-                                if (moved)
-                                    break;
+                        if (!InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).Any(i => i.TrueItemId == item)) continue;
 
-                                foreach (var bagslot in bagId)
-                                {
-                                    if (!bagslot.IsFilled)
-                                    {
-                                        Log("Moved: " + inventory.GetItem(item).Move(bagslot));
-                                        await Coroutine.Sleep(200);
-                                        moved = true;
-                                        break;
-                                    }
-                                }
-                            }
+                        Log("Moved: " + InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).First(i => i.TrueItemId == item)
+                                .Move(InventoryManager.GetBagsByInventoryBagId(inventoryBagId_0).First(bag => bag.FreeSlots > 0).GetFirstFreeSlot()));
+                        await Coroutine.Sleep(200);
                     }
 
                     Log("Done checking against player inventory");
 
-                    RetainerTasks.CloseInventory();
-
-                    await Coroutine.Sleep(500);
+                    //        RetainerTasks.CloseInventory();
 
                     await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
 
                     RetainerTasks.CloseTasks();
 
-                    await Coroutine.Sleep(500);
-
                     await Coroutine.Wait(3000, () => DialogOpen);
 
                     if (DialogOpen) Next();
 
-                    await Coroutine.Sleep(200);
-
                     await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
 
                     LogVerbose("Should be back at retainer list by now");
-
-                    //inventory.PrintList();
                 }
             }
             else
@@ -509,117 +405,18 @@ namespace LlamaLibrary.Retainers
                 return false;
             }
 
+
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
-                var inventory = new RetainerInventory();
+                Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");
+                await RetainerRoutine.SelectRetainer(retainerIndex);
 
-                if (!RetainerList.Instance.IsOpen)
-                {
-                    await UseSummoningBell();
-                    await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-                    await Coroutine.Sleep(1000);
-                }
+                await RetainerRoutine.DumpItems();
 
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-
-                await Coroutine.Sleep(1000);
-
-                if (!RetainerList.Instance.IsOpen) Log("Failed opening retainer list");
-
-                LogVerbose("Open:" + RetainerList.Instance.IsOpen);
-
-                await RetainerList.Instance.SelectRetainer(retainerIndex);
-
-                Log("Selected Retainer: " + retainerNames[retainerIndex]);
-
-                await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
-
-                RetainerTasks.OpenInventory();
-
-                await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
-
-                if (RetainerTasks.IsInventoryOpen())
-                {
-                    LogVerbose("Inventory open");
-                    foreach (var retbag in InventoryManager.GetBagsByInventoryBagId(RetainerBagIds))
-                    {
-                        foreach (var item in retbag.FilledSlots.Where(FilterStackable))
-                        {
-                            try
-                            {
-                                inventory.AddItem(item);
-                                if (masterInventory.ContainsKey(item.TrueItemId))
-                                {
-                                    masterInventory[item.TrueItemId]
-                                        .Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
-                                }
-                                else
-                                {
-                                    masterInventory.Add(item.TrueItemId, new List<KeyValuePair<int, uint>>());
-                                    masterInventory[item.TrueItemId]
-                                        .Add(new KeyValuePair<int, uint>(retainerIndex, item.Count));
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Log("SHIT:" + e);
-                                throw;
-                            }
-                        }
-                    }
-
-                    LogVerbose("Inventory done");
-
-                    Log("Checking retainer[{0}] against player inventory", retainerNames[retainerIndex]);
-
-                    foreach (var item in InventoryManager.FilledSlots.Where(x => x.BagId == InventoryBagId.Bag1 || x.BagId == InventoryBagId.Bag2 || x.BagId == InventoryBagId.Bag3 || x.BagId == InventoryBagId.Bag4)
-                        .Where(FilterStackable))
-                    {
-                        if (inventory.HasItem(item.TrueItemId))
-                        {
-                            Log("BOTH PLAYER AND RETAINER HAVE Name: " + item.Item.EnglishName +
-                                "\tItemCategory: " + item.Item.EquipmentCatagory + "\tId: " + item.Item.Id);
-
-                            if (RetainerSettings.Instance.DepositFromPlayer)
-                            {
-                                Log("Moved: " + MoveItem(item,
-                                        inventory.GetItem(item.TrueItemId)));
-                                await Coroutine.Sleep(200);
-                            }
-                        }
-                    }
-
-                    Log("Done checking against player inventory");
-
-                    RetainerTasks.CloseInventory();
-
-                    await Coroutine.Sleep(500);
-
-                    await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
-
-                    //await Coroutine.Sleep(1000);
-
-                    //Call quit in tasks and get through dialog
-
-                    RetainerTasks.CloseTasks();
-
-                    await Coroutine.Sleep(500);
-
-                    await Coroutine.Wait(3000, () => DialogOpen);
-
-                    if (DialogOpen) Next();
-
-                    await Coroutine.Sleep(200);
-
-                    await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
-
-                    LogVerbose("Should be back at retainer list by now");
-
-                    //inventory.PrintList();
-                }
-
-                retList.Add(inventory);
+                await RetainerRoutine.DeSelectRetainer();
+                Log($"Done with {RetainerList.Instance.RetainerName(retainerIndex)}");
             }
+            //   await RetainerRoutine.ReadRetainers(RetainerRoutine.DumpItems());
 
             LogVerbose("Closing Retainer List");
 
