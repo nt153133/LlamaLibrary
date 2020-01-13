@@ -70,11 +70,13 @@ namespace LlamaLibrary
             //Logger.LogCritical("Ready");
             if (await PlayBotanist())
             {
-                Logger.LogCritical("Loop");
+                Logger.LogCritical("First win");
                 do
                 {
+                    Logger.LogCritical("Loop");
                     if (!SelectYesno.IsOpen)
                     {
+                        Logger.LogCritical("Waiting on window");
                         await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
                         await Coroutine.Sleep(_random.Next(300,500));
                     }
@@ -82,18 +84,21 @@ namespace LlamaLibrary
                     if (SelectYesno.IsOpen && (GetDoubleDownInfo().Key <= 2 || GetDoubleDownInfo().Value < 15))
                     {
                         SelectYesno.No();
+                        Logger.LogCritical("Click No");
                         await Coroutine.Sleep(_random.Next(300,500));
                         break;
                     }
 
-                    if (SelectYesno.IsOpen && GetDoubleDownInfo().Key > 2)
+                    if (SelectYesno.IsOpen && GetDoubleDownInfo().Key > 1 && GetDoubleDownInfo().Value > 15)
                     {
+                        Logger.LogCritical("Click Yes");
                         SelectYesno.ClickYes();
                         await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
                         //await PlayBotanist();
                     }
                     else if (SelectYesno.IsOpen)
                     {
+                        Logger.LogCritical("Click No");
                         SelectYesno.No();
                         await Coroutine.Sleep(_random.Next(300,500));
                         break;
@@ -114,7 +119,7 @@ namespace LlamaLibrary
                         TreeRoot.Stop("Won zero...issue");
                     }
                 }
-
+                Logger.LogCritical("Starting over");
             }
             if (GoldSaucerReward.Instance.IsOpen)
                 GoldSaucerReward.Instance.Close();
@@ -463,11 +468,14 @@ namespace LlamaLibrary
 
         private async Task<MiniGameResult> StopAtLocation(int location)
         {
+            if (!AgentOutOnLimb.Instance.IsReadyBotanist)
+                 await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
+            
             if (!MiniGameBotanist.Instance.IsOpen || !AgentOutOnLimb.Instance.IsReadyBotanist || MiniGameBotanist.Instance.GetNumberOfTriesLeft < 1) return MiniGameResult.Error;
 
             if (!AgentOutOnLimb.Instance.CursorLocked)
             {
-                //await Coroutine.Sleep(100);
+                
                 Logger.Info("Lock Cursor");
                 MiniGameBotanist.Instance.PauseCursor();
                 await Coroutine.Sleep(200);
@@ -477,6 +485,7 @@ namespace LlamaLibrary
             
             GamelogManager.MessageRecevied += GamelogManagerOnMessageRecevied;
             HitResult = MiniGameResult.None;
+            await Coroutine.Sleep(100);
             MiniGameBotanist.Instance.PressButton();
             int timeleft = MiniGameBotanist.Instance.GetTimeLeft * 1000;
             await Coroutine.Wait(timeleft, () => HitResult != MiniGameResult.None || SelectYesno.IsOpen);
