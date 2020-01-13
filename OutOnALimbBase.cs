@@ -43,6 +43,8 @@ namespace LlamaLibrary
         Random _random = new Random();
 
         private int totalMGP = 0;
+
+        private int threashold = 0;
         
         Vector3 goldenSaucer = new Vector3(-2.129811f, 1.042503f, -8.071652f);
 
@@ -80,25 +82,35 @@ namespace LlamaLibrary
                         await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
                         await Coroutine.Sleep(_random.Next(300,500));
                     }
-
+                    
+                    if (SelectYesno.IsOpen && GetDoubleDownReward() == 0)
+                    {
+                        SelectYesno.No();
+                        Logger.LogCritical($"Won Nothing Reward: {GetDoubleDownReward()} total so far {totalMGP}");
+                        await Coroutine.Sleep(_random.Next(300,500));
+                        //await Coroutine.Sleep(_random.Next(4000,5000));
+                        break;
+                    }
+                    
                     if (SelectYesno.IsOpen && (GetDoubleDownInfo().Key <= 2 || GetDoubleDownInfo().Value < 15))
                     {
                         SelectYesno.No();
-                        Logger.LogCritical("Click No");
+                        Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()}");
                         await Coroutine.Sleep(_random.Next(300,500));
                         break;
                     }
 
                     if (SelectYesno.IsOpen && GetDoubleDownInfo().Key > 1 && GetDoubleDownInfo().Value > 15)
                     {
-                        Logger.LogCritical("Click Yes");
+                        Logger.LogCritical($"Click Yes Reward: {GetDoubleDownReward()}");
+                        await Coroutine.Sleep(_random.Next(500,1000));
                         SelectYesno.ClickYes();
                         await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
                         //await PlayBotanist();
                     }
                     else if (SelectYesno.IsOpen)
                     {
-                        Logger.LogCritical("Click No");
+                        Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()}");
                         SelectYesno.No();
                         await Coroutine.Sleep(_random.Next(300,500));
                         break;
@@ -126,7 +138,24 @@ namespace LlamaLibrary
             
             await Coroutine.Wait(5000, () => !GoldSaucerReward.Instance.IsOpen);
             Logger.LogCritical("Done");
-            await Coroutine.Sleep(_random.Next(800,1800));
+            await Coroutine.Sleep(_random.Next(1500,3000));
+
+            if (totalMGP > threashold)
+            {
+                
+                var _target = PlayLocations[_random.Next(0, PlayLocations.Count - 1)];
+                Logger.LogCritical($"Moving to {_target}");
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+                threashold = _random.Next(totalMGP + 3000, totalMGP + 6000);
+                Logger.LogCritical($"At to {Core.Me.Location} new Threshold set to {threashold}");
+            }
 
             //TreeRoot.Stop("Stop Requested");
             return true;
@@ -134,7 +163,9 @@ namespace LlamaLibrary
 
         public override void Start()
         {
-            GamelogManager.MessageRecevied += GamelogManagerOnMessageRecevied;
+           // GamelogManager.MessageRecevied += GamelogManagerOnMessageRecevied;
+           totalMGP = 0;
+           threashold = 5000;
             _root = new ActionRunCoroutine(r => Run());
         }
 
@@ -449,12 +480,12 @@ namespace LlamaLibrary
                 Logger.Info($"Very Close location {lastVeryCloseLocation}");
                 while (MiniGameBotanist.Instance.GetProgressLeft > 0 || !SelectYesno.IsOpen)
                 {
-                    var result = await StopAtLocation(_random.Next(lastVeryCloseLocation -2, lastVeryCloseLocation +2));
+                    var result = await StopAtLocation(_random.Next(lastVeryCloseLocation -4, lastVeryCloseLocation +4));
                     //Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} result {result}");
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
-                    await Coroutine.Sleep(_random.Next(250, 400));
+                    await Coroutine.Sleep(_random.Next(350, 500));
                 }
             }
 
@@ -532,7 +563,38 @@ namespace LlamaLibrary
             return new KeyValuePair<int, int>(count, sec);
         }
         
-        
+        public static int GetDoubleDownReward()
+        {
+            Regex RewardRegex = new Regex(@".*Current payout: .*[^\d](\d+)[^\d].* MGP", RegexOptions.Compiled);
+
+            //Regex TimeRegex = new Regex(@"Time Remaining: (\d):(\d+).*", RegexOptions.Compiled);
+
+            int offset0 = 458;
+            int offset2 = 352;
+            int count = 0;
+            int sec = 0;
+
+            AtkAddonControl windowByName = RaptureAtkUnitManager.GetWindowByName("SelectYesno");
+            if (windowByName != null)
+            {
+                ushort elementCount = Core.Memory.Read<ushort>(windowByName.Pointer + offset0);
+
+                IntPtr addr = Core.Memory.Read<IntPtr>(windowByName.Pointer + offset2);
+                var elements = Core.Memory.ReadArray<TwoInt>(addr, elementCount);
+
+                var data = Core.Memory.ReadString((IntPtr) elements[0].Data, Encoding.UTF8);
+
+                foreach (var line in data.Split('\n').Skip(2))
+                {
+                    if (RewardRegex.IsMatch(line))
+                    {
+                        count = int.Parse(RewardRegex.Match(line).Groups[1].Value.Trim());
+                    }
+                }
+            }
+            
+            return count;
+        }
         
     }
     
