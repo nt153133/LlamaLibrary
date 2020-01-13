@@ -126,6 +126,7 @@ namespace LlamaLibrary
             
             await Coroutine.Wait(5000, () => !GoldSaucerReward.Instance.IsOpen);
             Logger.LogCritical("Done");
+            await Coroutine.Sleep(_random.Next(800,1800));
 
             //TreeRoot.Stop("Stop Requested");
             return true;
@@ -394,7 +395,7 @@ namespace LlamaLibrary
                     lastLocation = stopLoc;
                     Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} stop {stopLoc}");
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
-                    await Coroutine.Sleep(_random.Next(100,200));
+                    await Coroutine.Sleep(_random.Next(150,200));
                     if (stop)
                         break;
                 }
@@ -433,7 +434,7 @@ namespace LlamaLibrary
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist|| SelectYesno.IsOpen);
-                    await Coroutine.Sleep(_random.Next(100,200));
+                    await Coroutine.Sleep(_random.Next(150,250));
                     if (stop)
                         break;
                 }
@@ -453,7 +454,7 @@ namespace LlamaLibrary
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
-                    await Coroutine.Sleep(_random.Next(100, 300));
+                    await Coroutine.Sleep(_random.Next(250, 400));
                 }
             }
 
