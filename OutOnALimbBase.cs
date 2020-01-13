@@ -73,7 +73,12 @@ namespace LlamaLibrary
                 Logger.LogCritical("Loop");
                 do
                 {
-                    await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
+                    if (!SelectYesno.IsOpen)
+                    {
+                        await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                        await Coroutine.Sleep(_random.Next(300,500));
+                    }
+
                     if (SelectYesno.IsOpen && (GetDoubleDownInfo().Key <= 2 || GetDoubleDownInfo().Value < 15))
                     {
                         SelectYesno.No();
@@ -102,6 +107,12 @@ namespace LlamaLibrary
                     int gained = GoldSaucerReward.Instance.MGPReward;
                     totalMGP += gained;
                     Logger.LogCritical($"Won {gained} - Total {totalMGP}");
+
+                    if (gained == 0)
+                    {
+                        Logger.LogCritical($"Won {gained}");
+                        TreeRoot.Stop("Won zero...issue");
+                    }
                 }
 
             }
@@ -313,6 +324,7 @@ namespace LlamaLibrary
 
             //Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft}");
             List<int> stops1 = new List<int>(){20, 60, 40, 80};
+            stops1.Shuffle();
             foreach (var stopLoc in stops1)
             {
                 if (MiniGameBotanist.Instance.IsOpen && MiniGameBotanist.Instance.GetNumberOfTriesLeft < 1)
@@ -349,6 +361,7 @@ namespace LlamaLibrary
             if (lastCloseLocation > 1 && lastVeryCloseLocation < 1)
             {
                 List<int> stops = new List<int>(){lastCloseLocation -12, lastCloseLocation +12, lastCloseLocation -7, lastCloseLocation +17};
+                
                 foreach (var stopLoc in stops)
                 {
                     if (MiniGameBotanist.Instance.IsOpen && MiniGameBotanist.Instance.GetNumberOfTriesLeft < 1)
@@ -385,6 +398,7 @@ namespace LlamaLibrary
             if (lastCloseLocation < 1 && lastVeryCloseLocation < 1)
             {
                 List<int> stops = new List<int>(){5, 95, 50, 10, 70, 30,0};
+                stops.Shuffle();
                 foreach (var stopLoc in stops)
                 {
                     if (MiniGameBotanist.Instance.IsOpen && MiniGameBotanist.Instance.GetNumberOfTriesLeft < 1)
@@ -429,12 +443,12 @@ namespace LlamaLibrary
                 Logger.Info($"Very Close location {lastVeryCloseLocation}");
                 while (MiniGameBotanist.Instance.GetProgressLeft > 0 || !SelectYesno.IsOpen)
                 {
-                    var result = await StopAtLocation(lastVeryCloseLocation);
+                    var result = await StopAtLocation(_random.Next(lastVeryCloseLocation -2, lastVeryCloseLocation +2));
                     //Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} result {result}");
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
-                    await Coroutine.Sleep(_random.Next(100));
+                    await Coroutine.Sleep(_random.Next(100, 300));
                 }
             }
 
@@ -508,5 +522,9 @@ namespace LlamaLibrary
             return new KeyValuePair<int, int>(count, sec);
         }
         
+        
+        
     }
+    
+    
 }
