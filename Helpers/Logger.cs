@@ -14,6 +14,11 @@ namespace LlamaLibrary.Helpers
         {
             Logging.Write(Colors.OrangeRed, text);
         }
+        
+        public static void Info(string text)
+        {
+            Logging.Write(Colors.Aqua, text);
+        }
 
     }
 }

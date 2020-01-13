@@ -72,12 +72,15 @@ using LlamaLibrary.RemoteAgents;
             bool dawnAgent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.DawnVtable), typeof(AgentDawn));
             bool retainerInventory = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerInventoryVtable), typeof(AgentRetainerInventory)); //60
             bool MateriaMelding = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentMeldVtable), typeof(AgentMeld)); //63
+            bool OutOnLimb = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable), typeof(AgentOutOnLimb)); //159
+            
 
             Log($"Added Venture Agent: {retaineragent}");
             Log($"Added RetainerChar Agent: {retainerchar}");
             Log($"Added Dawn(Trust) Agent: {dawnAgent}");
             Log($"Added RetainerInventory Agent: {retainerInventory}");
             Log($"Added MateriaMelding Agent: {MateriaMelding}");
+            Log($"Added OutOnLimb Agent: {OutOnLimb} {AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable)}");
             initDone = true;
             
             
