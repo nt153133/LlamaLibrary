@@ -133,6 +133,20 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(3000);
 
                 var unit = GameObjectManager.GetObjectByNPCId(70);
+
+                if (!unit.IsWithinInteractRange)
+                {
+                    var _target = unit.Location;
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    while (_target.Distance2D(Core.Me.Location) >= 4)
+                    {
+                        Navigator.PlayerMover.MoveTowards(_target);
+                        await Coroutine.Sleep(100);
+                    }
+
+                    Navigator.PlayerMover.MoveStop();
+                }
+                
                 unit.Target();
                 unit.Interact();
                 await Coroutine.Sleep(1000);
