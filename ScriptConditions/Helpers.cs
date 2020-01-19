@@ -15,7 +15,7 @@ namespace LlamaLibrary.ScriptConditions
         
         public static int HasIshgardItem()
         {
-            return InventoryManager.FilledSlots.Count(i => idList.Contains(i.RawItemId)); 
+            return InventoryManager.FilledSlots.Count(i => idList.Contains(i.RawItemId) && i.IsCollectable && i.Collectability > 50); 
         }
 
         public static int GetSkybuilderScrips()
