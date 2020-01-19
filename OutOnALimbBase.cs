@@ -32,6 +32,9 @@ namespace LlamaLibrary
 
         private MiniGameResult HitResult = MiniGameResult.None;
 
+        private int baseDelay = 550;
+        private int maxDelay = 700;
+
         private readonly List<Vector3> PlayLocations = new List<Vector3>
         {
             new Vector3(36.15812f, 0.00596046f, 28.72554f),
@@ -387,7 +390,7 @@ namespace LlamaLibrary
                 lastLocation = stopLoc;
                 //Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft}");
                 await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
-                await Coroutine.Sleep(_random.Next(400, 550));
+                await Coroutine.Sleep(_random.Next(baseDelay, maxDelay));
                 if (stop)
                     break;
             }
@@ -426,7 +429,7 @@ namespace LlamaLibrary
                     lastLocation = stopLoc;
                     Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} stop {stopLoc}");
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
-                    await Coroutine.Sleep(_random.Next(400, 550));
+                    await Coroutine.Sleep(_random.Next(baseDelay, maxDelay));
                     if (stop)
                         break;
                 }
@@ -467,7 +470,7 @@ namespace LlamaLibrary
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
-                    await Coroutine.Sleep(_random.Next(400, 550));
+                    await Coroutine.Sleep(_random.Next(baseDelay, maxDelay));
                     if (stop)
                         break;
                 }
@@ -496,7 +499,7 @@ namespace LlamaLibrary
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
-                    await Coroutine.Sleep(_random.Next(400, 550));
+                    await Coroutine.Sleep(_random.Next(baseDelay, maxDelay));
                     i++;
                 }
             }
@@ -526,7 +529,7 @@ namespace LlamaLibrary
 
             GamelogManager.MessageRecevied += GamelogManagerOnMessageRecevied;
             HitResult = MiniGameResult.None;
-            await Coroutine.Sleep(150);
+            await Coroutine.Sleep(250);
             MiniGameBotanist.Instance.PressButton();
             var timeleft = MiniGameBotanist.Instance.GetTimeLeft * 1000;
             await Coroutine.Wait(timeleft, () => HitResult != MiniGameResult.None || SelectYesno.IsOpen);

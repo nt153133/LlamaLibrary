@@ -119,9 +119,9 @@ namespace LlamaLibrary.Materia
         {
             OffsetManager.Init();
 
-            Log("Load venture.json");
+            Log("Load Materia.json");
             MateriaList = loadResource<Dictionary<int, List<MateriaItem>>>(Resources.Materia);
-            Log("Loaded venture.json");
+            Log("Loaded Materia.json");
         }
 
         private static T loadResource<T>(string text)

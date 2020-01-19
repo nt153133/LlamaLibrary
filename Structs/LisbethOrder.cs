@@ -10,10 +10,10 @@ namespace Generate
         public bool Enabled = true;
         public string Type;
 
-        public LisbethOrder(int id, int @group, int item, int amount, string type)
+        public LisbethOrder(int id, int group, int item, int amount, string type)
         {
             Id = id;
-            Group = @group;
+            Group = group;
             Item = item;
             Amount = amount;
             Type = type;

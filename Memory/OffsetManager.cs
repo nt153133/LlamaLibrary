@@ -9,10 +9,12 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
                                                                                  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Clio.Utilities;
 using ff14bot;
 using ff14bot.Enums;
 using ff14bot.Managers;
@@ -81,10 +83,46 @@ using LlamaLibrary.RemoteAgents;
             Log($"Added RetainerInventory Agent: {retainerInventory}");
             Log($"Added MateriaMelding Agent: {MateriaMelding}");
             Log($"Added OutOnLimb Agent: {OutOnLimb} {AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable)}");
+            AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions"});//
             initDone = true;
             
             
         }
+        
+        internal static void AddNamespacesToScriptManager(params string[] param)
+        {
+            var field =
+                typeof(ScriptManager).GetFields(BindingFlags.Static | BindingFlags.NonPublic)
+                    .FirstOrDefault(f => f.FieldType == typeof(List<string>));
+
+            if (field == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var list = field.GetValue(null) as List<string>;
+                if (list == null)
+                {
+                    return;
+                }
+
+                foreach (var ns in param)
+                {
+                    if (!list.Contains(ns))
+                    {
+                        list.Add(ns);
+                        Log($"Added namespace '{ns}' to ScriptManager");
+                    }
+                }
+            }
+            catch
+            {
+                Log("Failed to add namespaces to ScriptManager, this can cause issues with some profiles.");
+            }
+        }
+
 
         private static IntPtr ParseField(FieldInfo field, PatternFinder pf)
         {

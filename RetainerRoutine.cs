@@ -62,13 +62,88 @@ namespace LlamaLibrary
             return true;
         }
         
+        internal async static Task<bool> ReadRetainers(Func<Task> retainerTask)
+        {
+            if (!RetainerList.Instance.IsOpen)
+            {
+                await UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't find open bell either you have none or not near a bell");
+                return false;
+            }
+
+            var numRetainers = RetainerList.Instance.NumberOfRetainers;
+
+            if (numRetainers <= 0)
+            {
+                LogCritical("Can't find number of retainers either you have none or not near a bell");
+                RetainerList.Instance.Close();
+                TreeRoot.Stop("Failed: Find a bell or some retainers");
+                return true;
+            }
+
+            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
+            {
+                Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");
+                await SelectRetainer(retainerIndex);
+                
+                await retainerTask();
+                
+                await DeSelectRetainer();
+                Log($"Done with {RetainerList.Instance.RetainerName(retainerIndex)}");
+            }
+
+            RetainerList.Instance.Close();
+
+            return true;
+        }
+        
+        internal async static Task<bool> ReadRetainers(Func<int,Task> retainerTask)
+        {
+            if (!RetainerList.Instance.IsOpen)
+            {
+                await UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't find open bell either you have none or not near a bell");
+                return false;
+            }
+
+            var numRetainers = RetainerList.Instance.NumberOfRetainers;
+
+            if (numRetainers <= 0)
+            {
+                LogCritical("Can't find number of retainers either you have none or not near a bell");
+                RetainerList.Instance.Close();
+                TreeRoot.Stop("Failed: Find a bell or some retainers");
+                return true;
+            }
+
+            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
+            {
+                Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");
+                await SelectRetainer(retainerIndex);
+                
+                await retainerTask(retainerIndex);
+                
+                await DeSelectRetainer();
+                Log($"Done with {RetainerList.Instance.RetainerName(retainerIndex)}");
+            }
+
+            RetainerList.Instance.Close();
+
+            return true;
+        }
+        
         internal static async Task DumpItems()
         {
-          //  RetainerTasks.OpenInventory();
-         //   await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
-
-         //   if (RetainerTasks.IsInventoryOpen())
-        //    {
                 var playerItems = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).Select(i => i.FilledSlots).SelectMany(x => x).AsParallel()
                     .Where(FilterStackable);
                 
@@ -82,11 +157,9 @@ namespace LlamaLibrary
                     slot.RetainerEntrustQuantity((int) slot.Count);
                     await Coroutine.Sleep(100);
                 }
-       //     }
-
-       //     RetainerTasks.CloseInventory();
-        //    await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
         }
+        
+
         
         
         internal static async Task<bool> SelectRetainer(int retainerIndex)
@@ -150,7 +223,7 @@ namespace LlamaLibrary
             Logging.Write(Colors.Green, msg);
         }
 
-        private static void LogLoud(string text, params object[] args)
+        public static void LogLoud(string text, params object[] args)
         {
             var msg = string.Format("[" + Name + "] " + text, args);
             Logging.Write(Colors.Goldenrod, msg);

@@ -1,20 +1,22 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
+using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing.Service_Navigation;
-using Ishgard;
+using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;
 
-namespace IshgardHandinBase
+namespace LlamaLibrary
 {
     public class IshgardHandinBase : BotBase
     {
+
+
         private Composite _root;
         public override string Name => "Ishgard Handin";
         public override PulseFlags PulseFlags => PulseFlags.All;
@@ -45,6 +47,12 @@ namespace IshgardHandinBase
         {
             _root = null;
         }
+
+        public IshgardHandinBase()
+        {
+            OffsetManager.Init();
+        }
+
 
         public async Task<bool> Handin()
         {

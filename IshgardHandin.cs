@@ -13,7 +13,7 @@ using ff14bot.Pathing;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.RemoteWindows;
 
-namespace Ishgard
+namespace LlamaLibrary
 {
     public class IshgardHandin
     {
@@ -25,6 +25,8 @@ namespace Ishgard
         public uint ZoneId;
         public uint FoundationZoneId;
         public uint AetheryteId = 70;
+        
+
 
         public async Task<bool> HandInItem(uint itemId, int index, int job)
         {
