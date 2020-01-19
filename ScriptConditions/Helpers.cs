@@ -13,8 +13,14 @@ namespace LlamaLibrary.ScriptConditions
             28758, 28759, 28760, 28761, 28762, 28763, 28764
         };
         
-        
-        public static int HasIshgardItem => InventoryManager.FilledSlots.Count(i => idList.Contains(i.RawItemId));
-        
+        public static int HasIshgardItem()
+        {
+            return InventoryManager.FilledSlots.Count(i => idList.Contains(i.RawItemId)); 
+        }
+
+        public static int GetSkybuilderScrips()
+        {
+             return (int) SpecialCurrencyManager.GetCurrencyCount((SpecialCurrency) 28063); 
+        }
     }
 }

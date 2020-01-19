@@ -83,7 +83,8 @@ using LlamaLibrary.RemoteAgents;
             Log($"Added RetainerInventory Agent: {retainerInventory}");
             Log($"Added MateriaMelding Agent: {MateriaMelding}");
             Log($"Added OutOnLimb Agent: {OutOnLimb} {AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable)}");
-            AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions"});//
+            AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers"});//
+            ScriptManager.Init(typeof(ScriptConditions.Helpers));
             initDone = true;
             
             

@@ -54,7 +54,7 @@ namespace LlamaLibrary
         }
 
 
-        public async Task<bool> Handin()
+        public static async Task<bool> Handin()
         {
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             Navigator.PlayerMover = new SlideMover();
