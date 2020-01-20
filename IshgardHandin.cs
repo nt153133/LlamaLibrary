@@ -138,7 +138,7 @@ namespace LlamaLibrary
                 {
                     var _target = unit.Location;
                     Navigator.PlayerMover.MoveTowards(_target);
-                    while (_target.Distance2D(Core.Me.Location) >= 4)
+                    while (!unit.IsWithinInteractRange)
                     {
                         Navigator.PlayerMover.MoveTowards(_target);
                         await Coroutine.Sleep(100);
