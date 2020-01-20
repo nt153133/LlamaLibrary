@@ -8,7 +8,7 @@ using ff14bot.Managers;
 using ff14bot.NeoProfiles;
 using TreeSharp;
 
-namespace ff14bot
+namespace ff14bot.NeoProfiles
 {
     [XmlElement("ChangeClass")]
     public class ChangeClass : ProfileBehavior
