@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TreeSharp;
 
-namespace ff14bot
+namespace ff14bot.NeoProfiles
 {
     [XmlElement("Lisbeth")]
     public class LisbethOrderBot : ProfileBehavior
