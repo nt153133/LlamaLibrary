@@ -115,6 +115,8 @@
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
+    <Compile Include="RemoteWindows\GrandCompanySupplyList.cs" />
+    <Compile Include="RemoteWindows\GrandCompanySupplyReward.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />

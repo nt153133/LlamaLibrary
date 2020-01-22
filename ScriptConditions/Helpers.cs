@@ -31,5 +31,10 @@ namespace LlamaLibrary.ScriptConditions
         {
             return (int) SpecialCurrencyManager.GetCurrencyCount((SpecialCurrency) 28063);
         }
+
+        public static int AverageItemLevel()
+        {
+            return InventoryManager.EquippedItems.Where(k => k.IsFilled).Sum(i => i.Item.ItemLevel) / InventoryManager.EquippedItems.Count(k => k.IsFilled);
+        }
     }
 }
