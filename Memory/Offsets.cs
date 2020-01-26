@@ -101,9 +101,14 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 8D 0D ? ? ? ? 74 ? E8 ? ? ? ? 85 C0 Add 3 TraceRelative")]
         internal static IntPtr AffixMateriaParam;
         
-        
         [Offset("Search 48 8D 05 ? ? ? ? 48 8D 4F ? 48 89 07 E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
         internal static IntPtr AgentOutOnLimbVtable;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? 48 89 01 48 8D 05 ? ? ? ? 48 89 41 ? 48 8B D9 Add 3 TraceRelative")]
+        internal static IntPtr AgentOutHandIn;
+        
+        [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B 41 ? 48 8B E9 48 83 C1 ?")]
+        internal static IntPtr HandInFunc;
 
     }
 #pragma warning restore CS0649

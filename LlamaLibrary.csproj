@@ -104,6 +104,7 @@
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="RemoteAgents\AgentDawn.cs" />
+    <Compile Include="RemoteAgents\AgentHandIn.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyList.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyReward.cs" />
+    <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />

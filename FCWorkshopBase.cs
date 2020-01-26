@@ -120,7 +120,9 @@ namespace LlamaLibrary
             
             //await Pullorder();
 
-            await MoveItemsAroundMain();
+            //await MoveItemsAroundMain();
+
+            await Facet();
 
             TreeRoot.Stop("Stop Requested");
             return true;
@@ -227,6 +229,55 @@ namespace LlamaLibrary
             }
             
             
+        }
+
+        public async Task<bool> Facet()
+        {
+            var npcId = GameObjectManager.GetObjectByNPCId(1027236);
+
+            if (!npcId.IsWithinInteractRange)
+            {
+                var _target = npcId.Location;
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+            }
+            
+            npcId.Interact();
+            
+            await Coroutine.Wait(5000, () => Talk.DialogOpen);
+
+            while (Talk.DialogOpen)
+            {
+                Talk.Next();
+                await Coroutine.Sleep(1000);
+            }
+
+            await Coroutine.Wait(5000, () => HugeCraftworksSupply.Instance.IsOpen);
+
+            if (HugeCraftworksSupply.Instance.IsOpen)
+            {
+                Logger.Info($"Checking against {HugeCraftworksSupply.Instance.TurnInItemId}");
+                if (InventoryManager.FilledSlots.Count(i => i.RawItemId == HugeCraftworksSupply.Instance.TurnInItemId) > 0)
+                {
+                    Logger.Info($"Found {HugeCraftworksSupply.Instance.TurnInItemId}");
+                    
+                    
+                    await HugeCraftworksSupply.Instance.HandOverItems();
+                    return true;
+                }
+                else
+                {
+                    HugeCraftworksSupply.Instance.Close();
+                }
+            }
+
+            return false;
         }
 
         public async Task<bool> Shop()
