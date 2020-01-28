@@ -53,12 +53,6 @@ namespace MasterPieceSupplyTest
         
         public async Task<bool> PrintGCSupplyList()
         {
-
-            if (!ContentsInfo.Instance.IsOpen)
-            {
-                
-            }
-            
             
             if (!ContentsInfoDetail.Instance.IsOpen)
             {
@@ -112,6 +106,8 @@ namespace MasterPieceSupplyTest
             {
                 Logging.Write($"{order}");
             }
+            
+            
 
             using (StreamWriter outputFile = new StreamWriter("GCSupply.json", false))
             {
@@ -123,7 +119,7 @@ namespace MasterPieceSupplyTest
 
         public async Task<bool> PrintMasterPieceList()
         {
-            Dictionary<ff14bot.Enums.ClassJobType, int> Classes = new Dictionary<ClassJobType, int>
+            Dictionary<ClassJobType, int> Classes = new Dictionary<ClassJobType, int>
             {
                 {ClassJobType.Carpenter,0},
                 {ClassJobType.Blacksmith,1},

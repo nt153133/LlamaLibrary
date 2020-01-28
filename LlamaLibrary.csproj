@@ -67,6 +67,7 @@
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
+    <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
     <Compile Include="IshgardHandin.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyList.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyReward.cs" />
+    <Compile Include="RemoteWindows\GuildLeve.cs" />
     <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
@@ -147,6 +149,7 @@
     <Compile Include="Structs\FCWorkshopItem.cs" />
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />
+    <Compile Include="TesterBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AutoFollow\AutoFollowSettingsFrm.resx">
