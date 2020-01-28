@@ -20,7 +20,7 @@ using TreeSharp;
 
 namespace ff14bot.NeoProfiles
 {
-    [XmlElement("Lisbeth")]
+    [XmlElement("LLisbeth")]
     public class LisbethOrderBot : ProfileBehavior
     {
         public static bool loaded;
