@@ -89,6 +89,7 @@
     <Compile Include="OrderbotTags\LisbethOrderBot.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
+    <Compile Include="OrderbotTags\LowerCollectable.cs" />
     <Compile Include="OutOnALimbBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

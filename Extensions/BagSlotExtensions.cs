@@ -83,7 +83,7 @@ namespace LlamaLibrary.Extensions
 
         public static bool LowerQuality(this BagSlot bagSlot)
         {
-            if (bagSlot.IsHighQuality)
+            if (bagSlot.IsHighQuality || bagSlot.IsCollectable)
             {
                 lock (Core.Memory.Executor.AssemblyLock)
                 {
