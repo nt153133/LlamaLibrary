@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
@@ -7,6 +8,7 @@ using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing.Service_Navigation;
+using ff14bot.RemoteWindows;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;
@@ -32,8 +34,8 @@ namespace LlamaLibrary
 
         private async Task<bool> Run()
         {
-            await Handin();
-
+            //await Handin();
+            await BuyItem(13630);
             TreeRoot.Stop("Stop Requested");
             return true;
         }
@@ -223,6 +225,17 @@ namespace LlamaLibrary
             HWDSupply.Instance.Close();
 
             //TreeRoot.Stop("Stop Requested");
+            return true;
+        }
+
+        public static async Task<bool> BuyItem(uint ItemId)
+        {
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            Navigator.PlayerMover = new SlideMover();
+            var ishgardHandin = new IshgardHandin();
+
+            await ishgardHandin.BuyItem(ItemId);
+            
             return true;
         }
     }

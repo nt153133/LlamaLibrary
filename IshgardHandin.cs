@@ -1,41 +1,40 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.Utilities;
 using ff14bot;
 using ff14bot.Behavior;
-using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
 using ff14bot.Objects;
-using ff14bot.Pathing;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Helpers;
 using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary
 {
     public class IshgardHandin
     {
+        public uint AetheryteId = 70;
+        public string EnglishName = "Potkin";
+
+        public uint FoundationZoneId;
+
         //public uint NpcId = 1031690;
-        public uint[] ids = new uint[] { 1031690, 1031677 };
+        public uint[] ids = {1031690, 1031677};
+        public uint ZoneId;
 
         private GameObject Npc => GameObjectManager.GameObjects.FirstOrDefault(i => ids.Contains(i.NpcId) && i.IsVisible);
-        public string EnglishName = "Potkin";
-        public uint ZoneId;
-        public uint FoundationZoneId;
-        public uint AetheryteId = 70;
-        
+        private GameObject VendorNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031680 && i.IsVisible);
 
 
         public async Task<bool> HandInItem(uint itemId, int index, int job)
         {
             //GameObjectType.EventNpc;
 
-            if (!HWDSupply.Instance.IsOpen && Npc == null)
-            {
-                await GetToNpc();
-            }
+            if (!HWDSupply.Instance.IsOpen && Npc == null) await GetToNpc();
 
             if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 5f)
             {
@@ -47,6 +46,7 @@ namespace LlamaLibrary
                     Navigator.PlayerMover.MoveTowards(_target);
                     await Coroutine.Sleep(100);
                 }
+
                 Navigator.PlayerMover.MoveStop();
                 await Coroutine.Sleep(1000);
             }
@@ -63,6 +63,7 @@ namespace LlamaLibrary
                     Talk.Next();
                     await Coroutine.Wait(5000, () => !Talk.DialogOpen);
                 }
+
                 await Coroutine.Sleep(1000);
             }
 
@@ -92,8 +93,110 @@ namespace LlamaLibrary
 
             return false;
         }
+        
+        public async Task<bool> BuyItem(uint itemId)
+        {
+            if (!ShopExchangeCurrency.Open && VendorNpc == null) await GetToVendorNpc();
 
-        public async Task<bool> GetToNpc()
+            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 5f)
+            {
+                var _target = VendorNpc.Location;
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+                await Coroutine.Sleep(1000);
+            }
+
+            if (!ShopExchangeCurrency.Open)
+            {
+                VendorNpc.Interact();
+                await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open || Talk.DialogOpen);
+            }
+
+            if (ShopExchangeCurrency.Open)
+            {
+                var items = SpecialShopManager.Items;
+                var specialShopItem = items?.Cast<SpecialShopItem?>().FirstOrDefault(i => i.HasValue && i.Value.ItemIds.Contains(itemId));
+
+                if (!specialShopItem.HasValue) return false;
+                
+                var count = CanAffordScrip(specialShopItem.Value);
+
+                if (count > 0)
+                {
+                    Purchase(itemId, count);
+                }
+                
+                await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                
+                SelectYesno.ClickYes();
+                
+                await Coroutine.Sleep(1000);
+                
+                ShopExchangeCurrency.Close();
+                
+                return true;
+            }
+
+            return false;
+        }
+        
+        internal static uint Purchase(uint itemId, uint itemCount)
+        {
+            var windowByName = RaptureAtkUnitManager.GetWindowByName("ShopExchangeCurrency");
+            if (windowByName == null) return 0u;
+            
+            var items = SpecialShopManager.Items;
+
+            var specialShopItem = items?.Cast<SpecialShopItem?>().FirstOrDefault(i => i.HasValue && i.Value.ItemIds.Contains(itemId));
+            
+            if (!specialShopItem.HasValue) return 0u;
+                    
+            if (itemCount > specialShopItem.Value.Item0.StackSize)
+            {
+                itemCount = specialShopItem.Value.Item0.StackSize;
+            }
+            
+            var count = CanAffordScrip(specialShopItem.Value);
+            
+            if (itemCount > count)
+            {
+                itemCount = count;
+            }
+            var index = items.IndexOf(specialShopItem.Value);
+            ulong[] obj = new ulong[8]
+            {
+                3uL,
+                0uL,
+                3uL,
+                0uL,
+                3uL,
+                0uL,
+                0uL,
+                0uL
+            };
+            obj[3] = (uint)index;
+            obj[5] = itemCount;
+            windowByName.SendAction(4,obj);
+            return itemCount;
+        }
+
+        private static uint CanAffordScrip(SpecialShopItem item)
+        {
+            var scrips = SpecialCurrencyManager.GetCurrencyCount((SpecialCurrency) 28063);
+            if (scrips == 0)
+            {
+                return 0u;
+            }
+            return scrips / item.CurrencyCosts[0];
+        }
+
+        public async Task<bool> GetToVendorNpc()
         {
             if (WorldManager.ZoneId != ZoneId && WorldManager.ZoneId != 886)
             {
@@ -104,15 +207,15 @@ namespace LlamaLibrary
 
                 if (!ConditionParser.HasAetheryte(AetheryteId))
                 {
-                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. You don't have that Aetheryte so do something about it...");
-                    //TreeRoot.Stop();
+                    Logger.LogCritical("We can't get to Foundation. You don't have that Aetheryte so do something about it...");
+                    TreeRoot.Stop();
                     return false;
                 }
 
                 if (!WorldManager.TeleportById(AetheryteId))
                 {
-                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. something is very wrong...");
-                    //TreeRoot.Stop();
+                    Logger.LogCritical($"We can't get to {AetheryteId}. something is very wrong...");
+                    TreeRoot.Stop();
                     return false;
                 }
 
@@ -121,10 +224,7 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(1000);
                 }
 
-                if (CommonBehaviors.IsLoading)
-                {
-                    await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
-                }
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
 
                 await Coroutine.Wait(10000, () => WorldManager.ZoneId == FoundationZoneId);
                 await Coroutine.Sleep(3000);
@@ -146,7 +246,7 @@ namespace LlamaLibrary
 
                     Navigator.PlayerMover.MoveStop();
                 }
-                
+
                 unit.Target();
                 unit.Interact();
                 await Coroutine.Sleep(1000);
@@ -157,10 +257,94 @@ namespace LlamaLibrary
 
                 await Coroutine.Sleep(5000);
 
-                if (CommonBehaviors.IsLoading)
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+
+                await Coroutine.Sleep(3000);
+            }
+
+            if (!(VendorNpc.Location.Distance(Core.Me.Location) > 5f)) return Npc.Location.Distance(Core.Me.Location) <= 5f;
+
+            var target = new Vector3(10.58188f, -15.96282f, 163.8702f);
+            Navigator.PlayerMover.MoveTowards(target);
+            while (target.Distance2D(Core.Me.Location) >= 4)
+            {
+                Navigator.PlayerMover.MoveTowards(target);
+                await Coroutine.Sleep(100);
+            }
+
+            Navigator.PlayerMover.MoveStop();
+
+            target = VendorNpc.Location;
+            Navigator.PlayerMover.MoveTowards(target);
+            while (target.Distance2D(Core.Me.Location) >= 4)
+            {
+                Navigator.PlayerMover.MoveTowards(target);
+                await Coroutine.Sleep(100);
+            }
+
+            Navigator.PlayerMover.MoveStop();
+
+            return Npc.Location.Distance(Core.Me.Location) <= 5f;
+        }
+
+        public async Task<bool> GetToNpc()
+        {
+            if (WorldManager.ZoneId != ZoneId && WorldManager.ZoneId != 886)
+            {
+                while (Core.Me.IsCasting)
                 {
-                    await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+                    await Coroutine.Sleep(1000);
                 }
+
+                if (!ConditionParser.HasAetheryte(AetheryteId))
+                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. You don't have that Aetheryte so do something about it...");
+                    //TreeRoot.Stop();
+                    return false;
+
+                if (!WorldManager.TeleportById(AetheryteId))
+                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. something is very wrong...");
+                    //TreeRoot.Stop();
+                    return false;
+
+                while (Core.Me.IsCasting)
+                {
+                    await Coroutine.Sleep(1000);
+                }
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+
+                await Coroutine.Wait(10000, () => WorldManager.ZoneId == FoundationZoneId);
+                await Coroutine.Sleep(3000);
+
+                await Coroutine.Wait(10000, () => GameObjectManager.GetObjectByNPCId(70) != null);
+                await Coroutine.Sleep(3000);
+
+                var unit = GameObjectManager.GetObjectByNPCId(70);
+
+                if (!unit.IsWithinInteractRange)
+                {
+                    var _target = unit.Location;
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    while (!unit.IsWithinInteractRange)
+                    {
+                        Navigator.PlayerMover.MoveTowards(_target);
+                        await Coroutine.Sleep(100);
+                    }
+
+                    Navigator.PlayerMover.MoveStop();
+                }
+
+                unit.Target();
+                unit.Interact();
+                await Coroutine.Sleep(1000);
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                await Coroutine.Sleep(500);
+                if (SelectString.IsOpen)
+                    SelectString.ClickSlot(1);
+
+                await Coroutine.Sleep(5000);
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
 
                 await Coroutine.Sleep(3000);
             }
