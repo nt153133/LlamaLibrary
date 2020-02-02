@@ -34,8 +34,8 @@ namespace LlamaLibrary
 
         private async Task<bool> Run()
         {
-            //await Handin();
-            await BuyItem(13630);
+            await Handin();
+            //await BuyItem(13630);
             TreeRoot.Stop("Stop Requested");
             return true;
         }
