@@ -89,6 +89,7 @@
     <Compile Include="OrderbotTags\BuyWhiteScriptItem.cs" />
     <Compile Include="OrderbotTags\ChangeClass.cs" />
     <Compile Include="OrderbotTags\LisbethOrderBot.cs" />
+    <Compile Include="OrderbotTags\LLDesynth.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
     <Compile Include="OrderbotTags\LowerCollectable.cs" />
