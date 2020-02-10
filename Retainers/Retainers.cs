@@ -55,7 +55,7 @@ namespace LlamaLibrary.Retainers
             get
             {
 #if RB_CN
-                return "雇员";
+                return "雇员整理";
 #else
                 return "Retainers Test";
 #endif

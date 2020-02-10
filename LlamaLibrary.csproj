@@ -88,6 +88,7 @@
     <Compile Include="Memory\Offsets.cs" />
     <Compile Include="OrderbotTags\BuyWhiteScriptItem.cs" />
     <Compile Include="OrderbotTags\ChangeClass.cs" />
+    <Compile Include="OrderbotTags\GetTo.cs" />
     <Compile Include="OrderbotTags\LisbethOrderBot.cs" />
     <Compile Include="OrderbotTags\LLDesynth.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />

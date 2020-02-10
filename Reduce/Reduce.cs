@@ -263,7 +263,7 @@ namespace LlamaLibrary.Reduce
 
         private bool ExtraCheck(BagSlot bs)
         {
-            return ReduceSettings.Instance.IncludeDE10000 && bs.Item.DesynthesisIndex < 10000;
+            return ReduceSettings.Instance.IncludeDE10000 && bs.Item.RequiredLevel < 70 ||  bs.Item.DesynthesisIndex < 10000;
             //return false;
         }
 

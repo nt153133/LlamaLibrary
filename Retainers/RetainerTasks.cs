@@ -1,6 +1,8 @@
-﻿using ff14bot.Helpers;
+﻿using Buddy.Coroutines;
+using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.Retainers
 {
@@ -10,7 +12,13 @@ namespace LlamaLibrary.Retainers
 
         public static bool OpenInventory()
         {
-            if (IsOpen) return SelectString.ClickLineEquals(RetainerTaskStrings.Inventory);
+            if (IsOpen)
+            {
+                SelectString.ClickSlot(0);
+                //await Coroutine.Wait(5000, IsInventoryOpen);
+                //return IsInventoryOpen();
+                return true;
+            }
             Logging.Write("Retainer task window not open");
             return false;
 

@@ -33,22 +33,23 @@ namespace LlamaLibrary
         public async Task<bool> HandInItem(uint itemId, int index, int job)
         {
             //GameObjectType.EventNpc;
-
+            
             if (!HWDSupply.Instance.IsOpen && Npc == null) await GetToNpc();
 
             if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 5f)
             {
                 // NpcId = Npc.NpcId;
-                var _target = Npc.Location;
-                Navigator.PlayerMover.MoveTowards(_target);
+                await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
+               // var _target = Npc.Location;
+/*                Navigator.PlayerMover.MoveTowards(_target);
                 while (_target.Distance2D(Core.Me.Location) >= 4)
                 {
                     Navigator.PlayerMover.MoveTowards(_target);
                     await Coroutine.Sleep(100);
-                }
+                }*/
 
                 Navigator.PlayerMover.MoveStop();
-                await Coroutine.Sleep(1000);
+                await Coroutine.Sleep(500);
             }
 
             if (!HWDSupply.Instance.IsOpen)
@@ -264,7 +265,7 @@ namespace LlamaLibrary
 
             if (!(VendorNpc.Location.Distance(Core.Me.Location) > 5f)) return Npc.Location.Distance(Core.Me.Location) <= 5f;
 
-            var target = new Vector3(10.58188f, -15.96282f, 163.8702f);
+/*            var target = new Vector3(10.58188f, -15.96282f, 163.8702f);
             Navigator.PlayerMover.MoveTowards(target);
             while (target.Distance2D(Core.Me.Location) >= 4)
             {
@@ -280,7 +281,9 @@ namespace LlamaLibrary
             {
                 Navigator.PlayerMover.MoveTowards(target);
                 await Coroutine.Sleep(100);
-            }
+            }*/
+            
+            await CommonTasks.MoveTo(VendorNpc.Location, "Moving To HandinVendor");
 
             Navigator.PlayerMover.MoveStop();
 
@@ -348,13 +351,11 @@ namespace LlamaLibrary
 
                 await Coroutine.Sleep(3000);
             }
+            
+            await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
 
-            /*            if (GameObjectManager.GetObjectByNPCId(NpcId) != null)
-                            await CommonTasks.MoveAndStop(
-                                new MoveToParameters(GameObjectManager.GetObjectByNPCId(NpcId).Location,
-                                    "Moving toward NPC"), 5f, true);*/
-            //NpcId = GameObjectManager.GameObjects.First(i => i.EnglishName == EnglishName).NpcId;
-            if (Npc.Location.Distance(Core.Me.Location) > 5f)
+
+/*            if (Npc.Location.Distance(Core.Me.Location) > 5f)
             {
                 var _target = new Vector3(10.58188f, -15.96282f, 163.8702f);
                 Navigator.PlayerMover.MoveTowards(_target);
@@ -377,7 +378,7 @@ namespace LlamaLibrary
 
                 //await Buddy.Coroutines.Coroutine.Sleep(1500); // (again, probably better to just wait until distance to destination is < 2.0f or something)
                 Navigator.PlayerMover.MoveStop();
-            }
+            }*/
 
             return Npc.Location.Distance(Core.Me.Location) <= 5f;
         }

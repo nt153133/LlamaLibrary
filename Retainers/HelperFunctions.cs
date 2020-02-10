@@ -107,7 +107,7 @@ namespace LlamaLibrary.Retainers
         public static GameObject NearestSummoningBell()
         {
             var list = GameObjectManager.GameObjects
-                .Where(r => r.EnglishName == "Summoning Bell")
+                .Where(r => r.EnglishName == "Summoning Bell" || r.EnglishName == "传唤铃")
                 .OrderBy(j => j.Distance())
                 .ToList();
 
