@@ -45,7 +45,12 @@ namespace LlamaLibrary.Retainers
 
         public static bool CloseTasks()
         {
-            return !IsOpen || SelectString.ClickLineEquals(RetainerTaskStrings.Quit);
+            if (IsOpen)
+            {
+                SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
+            }
+
+            return !IsOpen;
         }
 
         public static bool IsInventoryOpen()
