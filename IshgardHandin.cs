@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.Utilities;
@@ -33,20 +32,36 @@ namespace LlamaLibrary
         public async Task<bool> HandInItem(uint itemId, int index, int job)
         {
             //GameObjectType.EventNpc;
-            
+
             if (!HWDSupply.Instance.IsOpen && Npc == null) await GetToNpc();
 
             if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 5f)
             {
                 // NpcId = Npc.NpcId;
-                await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
-               // var _target = Npc.Location;
-/*                Navigator.PlayerMover.MoveTowards(_target);
+                // await CommonTasks.MoveAndStop(
+                //     new MoveToParameters(Npc.Location, "Moving To HandinVendor"), 2f);
+                //await CommonTasks.MoveAndStop(Npc.Location, "Moving To HandinVendor");
+
+                var _target = new Vector3(10.58188f, -15.96282f, 163.8702f);
+                Navigator.PlayerMover.MoveTowards(_target);
                 while (_target.Distance2D(Core.Me.Location) >= 4)
                 {
                     Navigator.PlayerMover.MoveTowards(_target);
                     await Coroutine.Sleep(100);
-                }*/
+                }
+
+                Navigator.PlayerMover.MoveStop();
+
+                _target = Npc.Location;
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+
 
                 Navigator.PlayerMover.MoveStop();
                 await Coroutine.Sleep(500);
@@ -94,7 +109,7 @@ namespace LlamaLibrary
 
             return false;
         }
-        
+
         public async Task<bool> BuyItem(uint itemId)
         {
             if (!ShopExchangeCurrency.Open && VendorNpc == null) await GetToVendorNpc();
@@ -125,52 +140,43 @@ namespace LlamaLibrary
                 var specialShopItem = items?.Cast<SpecialShopItem?>().FirstOrDefault(i => i.HasValue && i.Value.ItemIds.Contains(itemId));
 
                 if (!specialShopItem.HasValue) return false;
-                
+
                 var count = CanAffordScrip(specialShopItem.Value);
 
-                if (count > 0)
-                {
-                    Purchase(itemId, count);
-                }
-                
+                if (count > 0) Purchase(itemId, count);
+
                 await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
-                
+
                 SelectYesno.ClickYes();
-                
+
                 await Coroutine.Sleep(1000);
-                
+
                 ShopExchangeCurrency.Close();
-                
+
                 return true;
             }
 
             return false;
         }
-        
+
         internal static uint Purchase(uint itemId, uint itemCount)
         {
             var windowByName = RaptureAtkUnitManager.GetWindowByName("ShopExchangeCurrency");
             if (windowByName == null) return 0u;
-            
+
             var items = SpecialShopManager.Items;
 
             var specialShopItem = items?.Cast<SpecialShopItem?>().FirstOrDefault(i => i.HasValue && i.Value.ItemIds.Contains(itemId));
-            
+
             if (!specialShopItem.HasValue) return 0u;
-                    
-            if (itemCount > specialShopItem.Value.Item0.StackSize)
-            {
-                itemCount = specialShopItem.Value.Item0.StackSize;
-            }
-            
+
+            if (itemCount > specialShopItem.Value.Item0.StackSize) itemCount = specialShopItem.Value.Item0.StackSize;
+
             var count = CanAffordScrip(specialShopItem.Value);
-            
-            if (itemCount > count)
-            {
-                itemCount = count;
-            }
+
+            if (itemCount > count) itemCount = count;
             var index = items.IndexOf(specialShopItem.Value);
-            ulong[] obj = new ulong[8]
+            var obj = new ulong[8]
             {
                 3uL,
                 0uL,
@@ -181,19 +187,16 @@ namespace LlamaLibrary
                 0uL,
                 0uL
             };
-            obj[3] = (uint)index;
+            obj[3] = (uint) index;
             obj[5] = itemCount;
-            windowByName.SendAction(4,obj);
+            windowByName.SendAction(4, obj);
             return itemCount;
         }
 
         private static uint CanAffordScrip(SpecialShopItem item)
         {
             var scrips = SpecialCurrencyManager.GetCurrencyCount((SpecialCurrency) 28063);
-            if (scrips == 0)
-            {
-                return 0u;
-            }
+            if (scrips == 0) return 0u;
             return scrips / item.CurrencyCosts[0];
         }
 
@@ -265,7 +268,7 @@ namespace LlamaLibrary
 
             if (!(VendorNpc.Location.Distance(Core.Me.Location) > 5f)) return Npc.Location.Distance(Core.Me.Location) <= 5f;
 
-/*            var target = new Vector3(10.58188f, -15.96282f, 163.8702f);
+            var target = new Vector3(10.58188f, -15.96282f, 163.8702f);
             Navigator.PlayerMover.MoveTowards(target);
             while (target.Distance2D(Core.Me.Location) >= 4)
             {
@@ -281,9 +284,12 @@ namespace LlamaLibrary
             {
                 Navigator.PlayerMover.MoveTowards(target);
                 await Coroutine.Sleep(100);
-            }*/
-            
-            await CommonTasks.MoveTo(VendorNpc.Location, "Moving To HandinVendor");
+            }
+
+            //await CommonTasks.MoveTo(VendorNpc.Location, "Moving To HandinVendor");
+
+            // await CommonTasks.MoveAndStop(
+            //      new MoveToParameters(VendorNpc.Location, "Moving To HandinVendor"), 2f);
 
             Navigator.PlayerMover.MoveStop();
 
@@ -351,11 +357,11 @@ namespace LlamaLibrary
 
                 await Coroutine.Sleep(3000);
             }
-            
-            await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
+
+            //await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
 
 
-/*            if (Npc.Location.Distance(Core.Me.Location) > 5f)
+            if (Npc.Location.Distance(Core.Me.Location) > 5f)
             {
                 var _target = new Vector3(10.58188f, -15.96282f, 163.8702f);
                 Navigator.PlayerMover.MoveTowards(_target);
@@ -365,7 +371,6 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(100);
                 }
 
-                //await Buddy.Coroutines.Coroutine.Sleep(1500); // (again, probably better to just wait until distance to destination is < 2.0f or something)
                 Navigator.PlayerMover.MoveStop();
 
                 _target = Npc.Location;
@@ -376,9 +381,8 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(100);
                 }
 
-                //await Buddy.Coroutines.Coroutine.Sleep(1500); // (again, probably better to just wait until distance to destination is < 2.0f or something)
                 Navigator.PlayerMover.MoveStop();
-            }*/
+            }
 
             return Npc.Location.Distance(Core.Me.Location) <= 5f;
         }
