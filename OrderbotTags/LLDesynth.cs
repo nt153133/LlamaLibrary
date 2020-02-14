@@ -12,13 +12,13 @@ using TreeSharp;
 namespace LlamaLibrary.OrderbotTags
 {
     [XmlElement("LLDesynth")]
-    public class LLDesynth: ProfileBehavior
+    public class LLDesynth : ProfileBehavior
     {
         private bool _isDone;
 
-        [XmlAttribute("ItemIds")] 
+        [XmlAttribute("ItemIds")]
         public int[] ItemIds { get; set; }
-        
+
         [DefaultValue(500)]
         [XmlAttribute("DesynthDelay")]
         public int DesynthDelay { get; set; }
@@ -47,27 +47,26 @@ namespace LlamaLibrary.OrderbotTags
 
         private async Task DesynthItems(int[] itemId)
         {
-            var itemsToDesynth = InventoryManager.FilledSlots.Where(bs => bs.IsDesynthesizable && itemId.Contains((int) bs.RawItemId));
+            var itemsToDesynth = InventoryManager.FilledSlots.Where(bs => bs.IsDesynthesizable && itemId.Contains((int)bs.RawItemId));
 
             //Log($"{itemsToDesynth.Count()}");
-            
+
             foreach (var item in itemsToDesynth)
             {
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
 
                 item.Desynth();
-                
-                await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+
+                await Coroutine.Wait(6000, () => SalvageResult.IsOpen);
+
+                await Coroutine.Sleep(500);
+
+                Log($"Result open: {SalvageResult.IsOpen}");
 
                 if (SalvageResult.IsOpen)
                 {
                     SalvageResult.Close();
                     await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
-                }
-                else
-                {
-                    Log("Result didn't open");
-                    break;
                 }
 
                 await Coroutine.Sleep(DesynthDelay);
