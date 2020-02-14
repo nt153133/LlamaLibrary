@@ -69,7 +69,7 @@ namespace LlamaLibrary.OrderbotTags
                     await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
                 }
 
-                await Coroutine.Sleep(DesynthDelay);
+                //await Coroutine.Sleep(DesynthDelay);
             }
 
             _isDone = true;
