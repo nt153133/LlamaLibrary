@@ -21,7 +21,7 @@ namespace LlamaLibrary.Materia
 {
     public class MateriaBase : BotBase
     {
-        private static Dictionary<int, List<MateriaItem>> MateriaList;
+        public static Dictionary<int, List<MateriaItem>> MateriaList;
         private static bool _init;
         private PulseFlags _pulseFlags;
         private Composite _root;
@@ -86,7 +86,7 @@ namespace LlamaLibrary.Materia
                     Log("Error: Choose an item in the settings and click Remove Materia");
                 }
             }
-            
+
             if (MateriaTask == MateriaTask.Affix)
             {
                 if (ItemToAffixMateria != null && ItemToAffixMateria.IsValid)
@@ -135,7 +135,6 @@ namespace LlamaLibrary.Materia
             if (bagSlot != null && bagSlot.IsValid)
             {
                 Log($"Want to affix Materia to {bagSlot}");
-                
 
                 for (int i = 0; i < materiaList.Count; i++)
                 {
@@ -145,7 +144,7 @@ namespace LlamaLibrary.Materia
                     Log($"Want to affix materia {i} {materiaList[i]}");
 
                     if (!materiaList[i].IsFilled) continue;
-                    
+
                     int count = MateriaCount(bagSlot);
 
                     while (materiaList[i].IsFilled && (count == MateriaCount(bagSlot)))
@@ -160,7 +159,7 @@ namespace LlamaLibrary.Materia
                                 Log($"Can't open meld window");
                                 return false;
                             }
-                                
+
                             MateriaAttach.Instance.ClickItem(0);
                             await Coroutine.Sleep(1000);
                             MateriaAttach.Instance.ClickMateria(0);
@@ -182,17 +181,16 @@ namespace LlamaLibrary.Materia
                                 return false;
                             }
                         }
-                            
+
                         //Log($"{Offsets.AffixMateriaFunc.ToInt64():X}  {Offsets.AffixMateriaParam.ToInt64():X}   {bagSlot.Pointer.ToInt64():X}  {materiaList[i].Pointer.ToInt64():X}");
                         bagSlot.AffixMateria(materiaList[i]);
                         await Coroutine.Sleep(7000);
-                            
+
                         await Coroutine.Wait(7000, () => MateriaAttach.Instance.IsOpen || MateriaAttachDialog.Instance.IsOpen);
                     }
 
                     if (!materiaList[i].IsFilled)
                         return false;
-
                 }
             }
 
@@ -212,7 +210,7 @@ namespace LlamaLibrary.Materia
                     await Coroutine.Sleep(6000);
                 }
             }
-            
+
             Log($"Materia now has {MateriaCount(ItemToRemoveMateria)}");
 
             return true;
@@ -243,7 +241,7 @@ namespace LlamaLibrary.Materia
 
             return false;
         }
-        
+
         public static int MateriaCount(BagSlot bagSlot)
         {
             var materiaType = Core.Memory.ReadArray<ushort>(bagSlot.Pointer + 0x20, 5);
