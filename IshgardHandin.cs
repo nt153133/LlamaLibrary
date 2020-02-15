@@ -114,11 +114,11 @@ namespace LlamaLibrary
         {
             if (!ShopExchangeCurrency.Open && VendorNpc == null) await GetToVendorNpc();
 
-            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 5f)
+            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 6f)
             {
                 var _target = VendorNpc.Location;
                 Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
+                while (_target.Distance2D(Core.Me.Location) >= 6)
                 {
                     Navigator.PlayerMover.MoveTowards(_target);
                     await Coroutine.Sleep(100);
