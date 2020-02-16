@@ -244,19 +244,25 @@ namespace LlamaLibrary.Reduce
 
                 item.Desynth();
                 
-                await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+                await Coroutine.Wait(6000, () => SalvageResult.IsOpen);
+
+                await Coroutine.Sleep(500);
+                
+                Log($"Result open: {SalvageResult.IsOpen}");
 
                 if (SalvageResult.IsOpen)
                 {
                     SalvageResult.Close();
                     await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
                 }
-                else
+/*                else
                 {
                     Log("Result didn't open");
                     break;
-                }
+                }*/
             }
+            
+            
 
             return true;
         }
