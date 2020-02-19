@@ -159,7 +159,7 @@ using LlamaLibrary.RemoteAgents;
 
                 var b1 = true;
                 var results = pf.FindMany(offset.Pattern, ref b1);
-                if (results != null)
+                if (results != null && results.Length > 0)
                     result = results[0];
             }
 
