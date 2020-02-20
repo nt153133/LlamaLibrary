@@ -91,6 +91,7 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? EB ? 44 0F B7 41 ? Add 3 TraceRelative")]
         internal static IntPtr MateriaParam;
         
+        [OffsetCN("Search 48 8D 05 ? ? ? ? 48 8D 4B ? 48 89 03 E8 ? ? ? ? 48 8D 4B ? E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
         [Offset("Search 48 8D 05 ? ? ? ? 48 8D 4E ? 48 89 06 48 89 6E ? Add 3 TraceRelative")]
         internal static IntPtr AgentMeldVtable;
         
