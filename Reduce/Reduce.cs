@@ -240,26 +240,43 @@ namespace LlamaLibrary.Reduce
             Log($"{itemsToDesynth.Count()}");
             foreach (var item in itemsToDesynth)
             {
+               // Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
+
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
 
-                item.Desynth();
-                
-                await Coroutine.Wait(6000, () => SalvageResult.IsOpen);
-
-                await Coroutine.Sleep(500);
-                
-                Log($"Result open: {SalvageResult.IsOpen}");
-
-                if (SalvageResult.IsOpen)
+                lock (Core.Memory.Executor.AssemblyLock)
                 {
-                    SalvageResult.Close();
-                    await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
+                    Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
                 }
-/*                else
+
+               // await Coroutine.Sleep(500);
+
+
+                await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
+
+                if (SalvageDialog.IsOpen)
                 {
-                    Log("Result didn't open");
+                    RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
+                    //await Coroutine.Sleep(500);
+                    await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+
+                    if (SalvageResult.IsOpen)
+                    {
+                        SalvageResult.Close();
+                        //await Coroutine.Sleep(500);
+                        await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
+                    }
+                    else
+                    {
+                        Log("Result didn't open");
+                        break;
+                    }
+                }
+                else
+                {
+                    Log("SalvageDialog didn't open");
                     break;
-                }*/
+                }
             }
             
             
