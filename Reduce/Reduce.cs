@@ -50,7 +50,7 @@ namespace LlamaLibrary.Reduce
             InventoryBagId.Armory_Rings
         };
 
-        private readonly List<string> desynthList = new List<string>
+        private static readonly List<string> desynthList = new List<string>
         {
             "Warg",
             "Amaurotine",
@@ -105,7 +105,7 @@ namespace LlamaLibrary.Reduce
 
         private string NameStarts1 => "Amaurotine";
 
-        private bool ShouldDesynth(string name)
+        private static bool ShouldDesynth(string name)
         {
             return desynthList.Any(name.Contains);
         }
@@ -220,7 +220,7 @@ namespace LlamaLibrary.Reduce
             return true;
         }
 
-        private async Task<bool> Desynth()
+        public static async Task<bool> Desynth()
         {
             //Desynthesis
             var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
@@ -284,13 +284,13 @@ namespace LlamaLibrary.Reduce
             return true;
         }
 
-        private bool ExtraCheck(BagSlot bs)
+        private static bool ExtraCheck(BagSlot bs)
         {
             return ReduceSettings.Instance.IncludeDE10000 && bs.Item.RequiredLevel < 70 ||  bs.Item.DesynthesisIndex < 10000;
             //return false;
         }
 
-        private InventoryBagId[] BagsToCheck()
+        private static InventoryBagId[] BagsToCheck()
         {
             return ReduceSettings.Instance.IncludeArmory ? inventoryBagIds.Concat(armoryBagIds).ToArray() : inventoryBagIds;
             //return inventoryBagIds;
