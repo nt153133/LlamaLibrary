@@ -175,6 +175,23 @@ namespace LlamaLibrary.Extensions
             }
         }
         
+        public static void ExtractMateria(this BagSlot bagSlot)
+        {
+            if ((int) bagSlot.SpiritBond != 100) return;
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.ExtractMateriaFunc, new object[3]
+                    {
+                        Offsets.ExtractMateriaParam,
+                        (uint) bagSlot.BagId,
+                        bagSlot.Slot,
+                    });
+                }
+            }
+        }
+        
         public static void AffixMateria(this BagSlot bagSlot, BagSlot materia)
         {
             lock (Core.Memory.Executor.AssemblyLock)

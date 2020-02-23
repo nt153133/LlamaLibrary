@@ -71,6 +71,7 @@
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
+    <Compile Include="HouseChecker.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
     <Compile Include="MastPieceSupplyTester.cs" />
@@ -111,6 +112,7 @@
     </Compile>
     <Compile Include="RemoteAgents\AgentDawn.cs" />
     <Compile Include="RemoteAgents\AgentHandIn.cs" />
+    <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="RemoteWindows\GrandCompanySupplyList.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyReward.cs" />
     <Compile Include="RemoteWindows\GuildLeve.cs" />
+    <Compile Include="RemoteWindows\HousingSelectBlock.cs" />
     <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
@@ -152,6 +155,7 @@
     </Compile>
     <Compile Include="ScriptConditions\Helpers.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
+    <Compile Include="Structs\HousingPlot.cs" />
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />
     <Compile Include="TesterBase.cs" />

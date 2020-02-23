@@ -48,7 +48,11 @@ namespace LlamaLibrary
         private int threashold;
 
         private int totalMGP;
+#if RB_CN
+        public override string Name => "孤树无援";
+#else
         public override string Name => "Out On A Limb";
+#endif
         public override PulseFlags PulseFlags => PulseFlags.All;
 
         public override bool IsAutonomous => true;
@@ -63,7 +67,7 @@ namespace LlamaLibrary
             var lang = (Language) typeof(DataManager).GetFields(BindingFlags.Static | BindingFlags.NonPublic)
                 .First(i => i.FieldType == typeof(Language)).GetValue(null);
 
-            if (lang != Language.Eng) TreeRoot.Stop("Only works on English Clients for now");
+            if (lang != Language.Eng && lang != Language.Chn) TreeRoot.Stop("Only works on English and Chinese Clients for now");
 
             await StartOutOnLimb();
             //Logger.LogCritical("Start Done");
@@ -287,6 +291,19 @@ namespace LlamaLibrary
             unit.Target();
             unit.Interact();
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
+#if RB_CN			
+
+            if (SelectString.IsOpen)
+                SelectString.ClickLineContains("都市传送网");
+
+            await Coroutine.Sleep(500);
+
+            await Coroutine.Wait(5000, () => SelectString.IsOpen);
+            if (SelectString.IsOpen)
+                SelectString.ClickLineContains("宠物广场");
+
+#else
+
             if (SelectString.IsOpen)
                 SelectString.ClickLineContains("Aethernet");
 
@@ -295,6 +312,8 @@ namespace LlamaLibrary
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
             if (SelectString.IsOpen)
                 SelectString.ClickLineContains("Minion");
+
+#endif
 
             await Coroutine.Sleep(1000);
 
@@ -308,13 +327,46 @@ namespace LlamaLibrary
         private void GamelogManagerOnMessageRecevied(object sender, ChatEventArgs e)
         {
             if (e.ChatLogEntry.MessageType == MessageType.SystemMessages)
+#if RB_CN			
+                if (e.ChatLogEntry.FullLine.IndexOf("寻找目标位置", StringComparison.OrdinalIgnoreCase) >= 0)
+#else
                 if (e.ChatLogEntry.FullLine.IndexOf("hatchet", StringComparison.OrdinalIgnoreCase) >= 0)
+#endif
                 {
                     Logger.Info("Ready");
                     Logger.Info(e.ChatLogEntry.FullLine);
                 }
 
             //Hatchet Ready
+#if RB_CN			
+            if (e.ChatLogEntry.MessageType == (MessageType) 2105)
+            {
+                if (e.ChatLogEntry.FullLine.IndexOf("手感", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    //Logger.Info("Not Close");
+                    HitResult = MiniGameResult.NotClose;
+                    GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
+                }
+                else if (e.ChatLogEntry.FullLine.IndexOf("什么东西", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    //Logger.Info("Close");
+                    HitResult = MiniGameResult.Close;
+                    GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
+                }
+                else if (e.ChatLogEntry.FullLine.IndexOf("相当接近", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    //Logger.Info("Very Close");
+                    HitResult = MiniGameResult.VeryClose;
+                    GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
+                }
+                else if (e.ChatLogEntry.FullLine.IndexOf("正中目标", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    //Logger.Info("On Top");
+                    HitResult = MiniGameResult.OnTop;
+                    GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
+                }
+            }
+#else
             if (e.ChatLogEntry.MessageType == (MessageType) 2105)
             {
                 if (e.ChatLogEntry.FullLine.IndexOf("nothing", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -342,8 +394,8 @@ namespace LlamaLibrary
                     GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
                 }
             }
+#endif
         }
-
 
         private async Task<bool> PlayBotanist()
         {
@@ -540,9 +592,16 @@ namespace LlamaLibrary
 
         public static KeyValuePair<int, int> GetDoubleDownInfo()
         {
+#if RB_CN			
+            var OpportunitiesRegex = new Regex(@"还能够挑战(\d)次", RegexOptions.Compiled);
+
+            var TimeRegex = new Regex(@"剩余时间：(\d):(\d+).*", RegexOptions.Compiled);
+#else
             var OpportunitiesRegex = new Regex(@".* opportunities remaining: (\d)", RegexOptions.Compiled);
 
             var TimeRegex = new Regex(@"Time Remaining: (\d):(\d+).*", RegexOptions.Compiled);
+#endif
+
 
             var offset0 = 458;
             var offset2 = 352;
@@ -559,7 +618,12 @@ namespace LlamaLibrary
 
                 var data = Core.Memory.ReadString((IntPtr) elements[0].Data, Encoding.UTF8);
 
-                foreach (var line in data.Split('\n').Skip(5))
+
+#if RB_CN			
+               foreach (var line in data.Split('\n').Skip(3))
+#else
+               foreach (var line in data.Split('\n').Skip(5))
+#endif
                 {
                     if (OpportunitiesRegex.IsMatch(line))
                         count = int.Parse(OpportunitiesRegex.Match(line).Groups[1].Value.Trim());
@@ -572,7 +636,12 @@ namespace LlamaLibrary
 
         public static int GetDoubleDownReward()
         {
+#if RB_CN			
+			var RewardRegex = new Regex(@"(\d+) ⇒", RegexOptions.Compiled);
+#else
             var RewardRegex = new Regex(@".*Current payout: .*[^\d](\d+)[^\d].* MGP", RegexOptions.Compiled);
+#endif
+
 
             //Regex TimeRegex = new Regex(@"Time Remaining: (\d):(\d+).*", RegexOptions.Compiled);
 
@@ -582,6 +651,7 @@ namespace LlamaLibrary
             var sec = 0;
 
             var windowByName = RaptureAtkUnitManager.GetWindowByName("SelectYesno");
+
             if (windowByName != null)
             {
                 var elementCount = Core.Memory.Read<ushort>(windowByName.Pointer + offset0);
@@ -590,11 +660,18 @@ namespace LlamaLibrary
                 var elements = Core.Memory.ReadArray<TwoInt>(addr, elementCount);
 
                 var data = Core.Memory.ReadString((IntPtr) elements[0].Data, Encoding.UTF8);
-
+#if RB_CN			
+                foreach (var line in data.Split('\n').Skip(5))
+                {
+                    if (RewardRegex.IsMatch(line)) count = int.Parse(RewardRegex.Match(line).Groups[1].Value.Trim());
+                }
+#else
                 foreach (var line in data.Split('\n').Skip(2))
                 {
                     if (RewardRegex.IsMatch(line)) count = int.Parse(RewardRegex.Match(line).Groups[1].Value.Trim());
                 }
+#endif
+
             }
 
             return count;

@@ -1,26 +1,36 @@
 ﻿using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Buddy.Coroutines;
+using Clio.Utilities;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
+using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
+using ff14bot.NeoProfiles;
+using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using Generate;
+using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
+using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;
+using static ff14bot.RemoteWindows.Talk;
 
 namespace LlamaLibrary
 {
-    public class TesterBase: BotBase
+    public class TesterBase : BotBase
     {
         private Composite _root;
 
         public TesterBase()
         {
-
         }
 
         public override string Name => "Tester";
@@ -33,14 +43,7 @@ namespace LlamaLibrary
 
         public override bool WantButton { get; } = false;
 
-        private async Task<bool> Run()
-        {
-            await LeveWindow(1018997);
-
-            TreeRoot.Stop("Stop Requested");
-            return true;
-        }
-
+        
         public override void Start()
         {
             _root = new ActionRunCoroutine(r => Run());
@@ -50,7 +53,41 @@ namespace LlamaLibrary
         {
             _root = null;
         }
-        
+
+        private async Task<bool> Run()
+        {
+            await LeveWindow(1018997);
+            //await HousingWards();
+            
+            //Navigator.PlayerMover = new SlideMover();
+            //Navigator.NavigationProvider = new ServiceNavigationProvider();
+
+
+           
+            TreeRoot.Stop("Stop Requested");
+            return true;
+        }
+
+
+      
+
+        private void Log(string text, params object[] args)
+        {
+            var msg = string.Format("[" + Name + "] " + text, args);
+            Logging.Write(Colors.Pink, msg);
+        }
+
+        public async Task<bool> testExtract()
+        {
+            var item = InventoryManager.FilledInventoryAndArmory.Where(i => i.Item.EngName.Contains("Voeburtite Ring of Slaying")).FirstOrDefault();
+            
+
+            if (item != null)
+                item.ExtractMateria();
+
+            return true;
+        }
+
         public async Task<bool> LeveWindow(uint NpcId)
         {
             var npcId = GameObjectManager.GetObjectByNPCId(NpcId);
@@ -69,7 +106,7 @@ namespace LlamaLibrary
             }
 
             npcId.Interact();
-            
+
             await Coroutine.Wait(5000, () => Talk.DialogOpen);
 
             while (Talk.DialogOpen)
@@ -81,14 +118,14 @@ namespace LlamaLibrary
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
 
             SelectString.ClickSlot(0);
-            
+
             await Coroutine.Wait(5000, () => GuildLeve.Instance.IsOpen);
 
             if (GuildLeve.Instance.Window == RemoteWindows.LeveWindow.Battle)
             {
                 Logger.Info("Battle");
                 Logger.Info(GuildLeve.Instance.PrintWindow());
-                
+
                 GuildLeve.Instance.SwitchType(1);
                 await Coroutine.Sleep(500);
                 Logger.Info("Gathering");
@@ -101,7 +138,7 @@ namespace LlamaLibrary
                         Logger.Info(GuildLeve.Instance.PrintWindow());
                     }
                 }
-                
+
                 GuildLeve.Instance.SwitchType(2);
                 await Coroutine.Sleep(500);
                 Logger.Info("Crafting");
@@ -127,7 +164,7 @@ namespace LlamaLibrary
                         Logger.Info(GuildLeve.Instance.PrintWindow());
                     }
                 }
-                
+
                 GuildLeve.Instance.SwitchType(1);
                 await Coroutine.Sleep(500);
                 Logger.Info("Crafting");
@@ -145,13 +182,13 @@ namespace LlamaLibrary
             var output = GuildLeve.Instance.PrintWindow();
 
             await Coroutine.Sleep(500);
-            
+
             GuildLeve.Instance.Close();
-            
+
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
 
-            SelectString.ClickSlot((uint) (SelectString.LineCount -1));
-            
+            SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
+
             Logger.Info(output);
 
             return true;

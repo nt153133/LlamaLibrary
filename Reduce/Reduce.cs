@@ -50,7 +50,7 @@ namespace LlamaLibrary.Reduce
             InventoryBagId.Armory_Rings
         };
 
-        private readonly List<string> desynthList = new List<string>
+        private static readonly List<string> desynthList = new List<string>
         {
             "Warg",
             "Amaurotine",
@@ -105,7 +105,7 @@ namespace LlamaLibrary.Reduce
 
         private string NameStarts1 => "Amaurotine";
 
-        private bool ShouldDesynth(string name)
+        private static bool ShouldDesynth(string name)
         {
             return desynthList.Any(name.Contains);
         }
@@ -220,7 +220,7 @@ namespace LlamaLibrary.Reduce
             return true;
         }
 
-        private async Task<bool> Desynth()
+        public static async Task<bool> Desynth()
         {
             //Desynthesis
             var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
@@ -240,26 +240,43 @@ namespace LlamaLibrary.Reduce
             Log($"{itemsToDesynth.Count()}");
             foreach (var item in itemsToDesynth)
             {
+               // Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
+
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
 
-                item.Desynth();
-                
-                await Coroutine.Wait(6000, () => SalvageResult.IsOpen);
-
-                await Coroutine.Sleep(500);
-                
-                Log($"Result open: {SalvageResult.IsOpen}");
-
-                if (SalvageResult.IsOpen)
+                lock (Core.Memory.Executor.AssemblyLock)
                 {
-                    SalvageResult.Close();
-                    await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
+                    Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
                 }
-/*                else
+
+               // await Coroutine.Sleep(500);
+
+
+                await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
+
+                if (SalvageDialog.IsOpen)
                 {
-                    Log("Result didn't open");
+                    RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
+                    //await Coroutine.Sleep(500);
+                    await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+
+                    if (SalvageResult.IsOpen)
+                    {
+                        SalvageResult.Close();
+                        //await Coroutine.Sleep(500);
+                        await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
+                    }
+                    else
+                    {
+                        Log("Result didn't open");
+                        break;
+                    }
+                }
+                else
+                {
+                    Log("SalvageDialog didn't open");
                     break;
-                }*/
+                }
             }
             
             
@@ -267,13 +284,13 @@ namespace LlamaLibrary.Reduce
             return true;
         }
 
-        private bool ExtraCheck(BagSlot bs)
+        private static bool ExtraCheck(BagSlot bs)
         {
             return ReduceSettings.Instance.IncludeDE10000 && bs.Item.RequiredLevel < 70 ||  bs.Item.DesynthesisIndex < 10000;
             //return false;
         }
 
-        private InventoryBagId[] BagsToCheck()
+        private static InventoryBagId[] BagsToCheck()
         {
             return ReduceSettings.Instance.IncludeArmory ? inventoryBagIds.Concat(armoryBagIds).ToArray() : inventoryBagIds;
             //return inventoryBagIds;
