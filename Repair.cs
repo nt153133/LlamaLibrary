@@ -116,7 +116,7 @@ namespace AutoRepair
 
             var repairAgent = AgentModule.FindAgentIdByVtable(vtable);
 
-
+            //Core.Memory.CallInjected64<IntPtr>(func, AgentModule.GetAgentInterfaceById(AgentId).Pointer, 0, 0, off);
             Log($"AgentId {AgentId} Offset {off.ToInt64():X} Func {func.ToInt64():X}");
 
             AgentId = repairAgent;
