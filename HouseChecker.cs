@@ -220,9 +220,9 @@ namespace LlamaLibrary
 
         public static async Task GetToLavenderWindow()
         {
-            await Navigation.GetTo(133, new Vector3(180.3376f, -2.291125f, -240.7838f));
+            await Navigation.GetTo(148, new Vector3(199.5991f, -32.04532f, 324.2699f));
 
-            uint FerryNpc = 1001263;
+            uint FerryNpc = 1005656;
 
             var unit = GameObjectManager.GetObjectByNPCId(FerryNpc);
 
