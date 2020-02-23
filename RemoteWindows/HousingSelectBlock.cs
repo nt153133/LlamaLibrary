@@ -38,5 +38,10 @@ namespace LlamaLibrary.RemoteWindows
         {
             SendAction(2,3,1,3,(ulong) index);
         }
+        
+        public void GoToWard(int index)
+        {
+            SendAction(2,3,0,3,(ulong) index);
+        }
     }
 }

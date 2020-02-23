@@ -122,6 +122,9 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         
         [Offset("Search 4C 8D 2D ? ? ? ? 48 89 74 24 ? Add 3 TraceRelative")]
         internal static IntPtr AgentHousingSelectBlock;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? C6 43 ? ? 48 89 03 48 8B C3 C7 43 ? ? ? ? ? Add 3 TraceRelative")]
+        internal static IntPtr AgentRecommendEquip;
 
     }
 #pragma warning restore CS0649

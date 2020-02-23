@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -64,6 +65,9 @@ namespace LlamaLibrary
 
             if (ConditionParser.HasAetheryte(111))
                 output.AddRange(await GetShiroganePlots());
+            
+            if(!output.Any())
+                Log1($"No Housing Plots For Sale");
 
             foreach (var line in output)
             {
@@ -239,6 +243,8 @@ namespace LlamaLibrary
             unit.Interact();
 
             await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
+            
+            
 
             if (SelectIconString.IsOpen)
             {
@@ -252,7 +258,7 @@ namespace LlamaLibrary
             await Coroutine.Wait(3000, () => SelectString.IsOpen);
         }
 
-        private static async Task OpenHousingWards()
+        public static async Task OpenHousingWards()
         {
             if (SelectString.IsOpen)
             {
@@ -262,7 +268,7 @@ namespace LlamaLibrary
             }
         }
 
-        private static async Task GetToGobletWindow()
+        public static async Task GetToGobletWindow()
         {
             await Navigation.GetTo(140, new Vector3(317.0663f, 67.27534f, 232.8395f));
 
@@ -276,9 +282,10 @@ namespace LlamaLibrary
             }
 
             Navigator.PlayerMover.MoveStop();
+            await Coroutine.Wait(3000, () => SelectString.IsOpen);
         }
 
-        private static async Task GetToMistsWindow()
+        public static async Task GetToMistsWindow()
         {
             await Navigation.GetTo(135, new Vector3(597.4801f, 61.59979f, -110.7737f));
 
@@ -292,9 +299,10 @@ namespace LlamaLibrary
             }
 
             Navigator.PlayerMover.MoveStop();
+            await Coroutine.Wait(3000, () => SelectString.IsOpen);
         }
 
-        private static async Task GetToShiroganeWindow()
+        public static async Task GetToShiroganeWindow()
         {
             await Navigation.GetTo(628, new Vector3(-116.2294f, -7.010099f, -40.55866f));
 
@@ -325,7 +333,7 @@ namespace LlamaLibrary
             await Coroutine.Wait(3000, () => SelectString.IsOpen);
         }
 
-        private static async Task CloseHousingWards()
+        public static async Task CloseHousingWards()
         {
             if (HousingSelectBlock.Instance.IsOpen)
             {
