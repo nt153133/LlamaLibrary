@@ -218,7 +218,7 @@ namespace LlamaLibrary
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
         }
 
-        private static async Task GetToLavenderWindow()
+        public static async Task GetToLavenderWindow()
         {
             await Navigation.GetTo(133, new Vector3(180.3376f, -2.291125f, -240.7838f));
 
