@@ -58,7 +58,8 @@ namespace LlamaLibrary.Reduce
             "Voeburtite",
             "Fae",
             "Ravel",
-            "Nabaath"
+            "Nabaath",
+            "Anamnesis"
         };
 
         //private IntPtr offset => offsetInt;
@@ -184,8 +185,8 @@ namespace LlamaLibrary.Reduce
             await Desynth();
             if (ReduceSettings.Instance.OpenCoffers) await CofferTask();
             //ReduceSettings.Instance.Save();
-            //if (!ReduceSettings.Instance.StayRunning)
-            TreeRoot.Stop("Stop Requested");
+            if (!ReduceSettings.Instance.StayRunning)
+                TreeRoot.Stop("Stop Requested");
             return true;
         }
 
@@ -206,7 +207,7 @@ namespace LlamaLibrary.Reduce
             }
             await Coroutine.Wait(5000, () => !MovementManager.IsOccupied && !Core.Me.IsMounted);
 
-            
+            Console.WriteLine("{" + string.Join($"", Core.Me.Name) + "}");
 
             while (InventoryManager.FilledSlots.Any(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce))//&& WorldManager.ZoneId == (ushort) ReduceSettings.Instance.AEZone )
             {
@@ -227,15 +228,20 @@ namespace LlamaLibrary.Reduce
             var agentSalvage = Offsets.SalvageAgent;
 
             //if (MovementManager.IsOccupied) return false;
-            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
+  //          if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
+            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => ShouldDesynth(bs.Item.EnglishName))))
             {
                 Log($"None found");
                 return false;
             }
 
+/*            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
+                .SelectMany(bag => bag.FilledSlots
+                    .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));*/
+
             var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                 .SelectMany(bag => bag.FilledSlots
-                    .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));
+                    .FindAll(bs => (ShouldDesynth(bs.Item.EnglishName) )));
 
             Log($"{itemsToDesynth.Count()}");
             foreach (var item in itemsToDesynth)

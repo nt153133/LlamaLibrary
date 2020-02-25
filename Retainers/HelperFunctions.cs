@@ -12,6 +12,7 @@ using ff14bot.Managers;
 using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Helpers;
 using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.Retainers
@@ -107,7 +108,7 @@ namespace LlamaLibrary.Retainers
         public static GameObject NearestSummoningBell()
         {
             var list = GameObjectManager.GameObjects
-                .Where(r => r.EnglishName == "Summoning Bell" || r.EnglishName == "传唤铃")
+                .Where(r => r.Name == Translator.SummoningBell)
                 .OrderBy(j => j.Distance())
                 .ToList();
 
