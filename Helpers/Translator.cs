@@ -12,6 +12,12 @@ namespace LlamaLibrary.Helpers
 
         public static string SummoningBell => Summoning_Bell[Language];
 
+        public static string VentureCompleteText => Addon2385[Language];
+        
+        public static string AssignVentureText => Addon2386[Language];
+        
+        public static string AssignVentureInProgressText => Addon2387[Language];
+
         static Translator()
         {
             Language = (Language) typeof(DataManager).GetFields(BindingFlags.Static | BindingFlags.NonPublic)
