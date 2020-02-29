@@ -12,6 +12,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
+using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Helpers;
@@ -197,14 +198,15 @@ namespace LlamaLibrary
             if (!unit.IsWithinInteractRange)
             {
                 var target = unit.Location;
-                Navigator.PlayerMover.MoveTowards(target);
+                await CommonTasks.MoveAndStop(new MoveToParameters(target, unit.Name), 5f, true);
+/*                Navigator.PlayerMover.MoveTowards(target);
                 while (!unit.IsWithinInteractRange)
                 {
                     Navigator.PlayerMover.MoveTowards(target);
                     await Coroutine.Sleep(100);
                 }
 
-                Navigator.PlayerMover.MoveStop();
+                Navigator.PlayerMover.MoveStop();*/
             }
 
             unit.Target();
