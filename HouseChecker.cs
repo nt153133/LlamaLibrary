@@ -198,7 +198,7 @@ namespace LlamaLibrary
             if (!unit.IsWithinInteractRange)
             {
                 var target = unit.Location;
-                await CommonTasks.MoveAndStop(new MoveToParameters(target, unit.Name), 5f, true);
+                await CommonTasks.MoveAndStop(new MoveToParameters(target, unit.Name), 3f, true);
 /*                Navigator.PlayerMover.MoveTowards(target);
                 while (!unit.IsWithinInteractRange)
                 {
