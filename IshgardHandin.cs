@@ -102,8 +102,13 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(200);
                     await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
                     Request.HandOver();
+                    await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
 
-                    await Coroutine.Sleep(2000);
+                    if (SelectYesno.IsOpen)
+                    {
+                        SelectYesno.Yes();
+                        await Coroutine.Sleep(2000);
+                    }
                 }
             }
 
