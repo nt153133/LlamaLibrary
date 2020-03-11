@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.CodeDom;
+using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.Utilities;
@@ -283,6 +284,7 @@ namespace LlamaLibrary
 
             Navigator.PlayerMover.MoveStop();
 
+            
             target = VendorNpc.Location;
             Navigator.PlayerMover.MoveTowards(target);
             while (target.Distance2D(Core.Me.Location) >= 4)
