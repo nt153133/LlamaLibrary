@@ -65,7 +65,10 @@ namespace LlamaLibrary
                 else
                 {
                         await HandinNew();
+                        await GatheringHandin();
                 }
+                
+                
                 
                 return true;
         }
@@ -240,6 +243,22 @@ namespace LlamaLibrary
 
             //TreeRoot.Stop("Stop Requested");
             return true;
+        }
+
+        public static async Task<bool> GatheringHandin()
+        {
+                Navigator.NavigationProvider = new ServiceNavigationProvider();
+                Navigator.PlayerMover = new SlideMover();
+                var ishgardHandin = new IshgardHandin();
+                if (LlamaLibrary.ScriptConditions.Helpers.HasIshgardGatheringBotanist())
+                        await ishgardHandin.HandInGatheringItem(1);
+                if (LlamaLibrary.ScriptConditions.Helpers.HasIshgardGatheringMining())
+                        await ishgardHandin.HandInGatheringItem(0);
+
+                if (HWDGathereInspect.Instance.IsOpen)
+                        HWDGathereInspect.Instance.Close();
+                
+                return false;
         }
 
         public static async Task<bool> HandinNew()

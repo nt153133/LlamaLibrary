@@ -28,8 +28,71 @@ namespace LlamaLibrary
 
         private GameObject Npc => GameObjectManager.GameObjects.FirstOrDefault(i => ids.Contains(i.NpcId) && i.IsVisible);
         private GameObject VendorNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031680 && i.IsVisible);
+        
+        private GameObject GatherNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031693 && i.IsVisible);
+
+        public async Task<bool> HandInGatheringItem(int job)
+        {
+            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) await GetToNpc();
+
+            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 15f)
+            {
+                var _target = new Vector3(-21.62485f, -16f, 141.3661f);
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+
+                _target = GatherNpc.Location;
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
 
 
+                Navigator.PlayerMover.MoveStop();
+                await Coroutine.Sleep(500);
+            }
+
+            if (!HWDGathereInspect.Instance.IsOpen)
+            {
+                GatherNpc.Interact();
+                await Coroutine.Wait(5000, () => HWDGathereInspect.Instance.IsOpen || Talk.DialogOpen);
+                await Coroutine.Sleep(1000);
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(5000, () => !Talk.DialogOpen);
+                }
+
+                await Coroutine.Wait(5000, () => HWDGathereInspect.Instance.IsOpen);
+            }
+
+            if (HWDGathereInspect.Instance.IsOpen)
+            {
+                HWDGathereInspect.Instance.ClickClass(job);
+                await Coroutine.Sleep(1000);
+                
+                if(HWDGathereInspect.Instance.CanAutoSubmit());
+                {
+                   HWDGathereInspect.Instance.ClickAutoSubmit();
+                   await Coroutine.Wait(6000, () => HWDGathereInspect.Instance.CanRequestInspection());
+                   if (HWDGathereInspect.Instance.CanRequestInspection())
+                       HWDGathereInspect.Instance.ClickRequestInspection();
+                }
+            }
+
+            return false;
+        }
         public async Task<bool> HandInItem(uint itemId, int index, int job)
         {
             //GameObjectType.EventNpc;
@@ -381,6 +444,97 @@ namespace LlamaLibrary
                 Navigator.PlayerMover.MoveStop();
 
                 _target = Npc.Location;
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+            }
+
+            return Npc.Location.Distance(Core.Me.Location) <= 5f;
+        }
+        
+        public async Task<bool> GetToGatherNpc()
+        {
+            if (WorldManager.ZoneId != ZoneId && WorldManager.ZoneId != 886)
+            {
+                while (Core.Me.IsCasting)
+                {
+                    await Coroutine.Sleep(1000);
+                }
+
+                if (!ConditionParser.HasAetheryte(AetheryteId))
+                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. You don't have that Aetheryte so do something about it...");
+                    //TreeRoot.Stop();
+                    return false;
+
+                if (!WorldManager.TeleportById(AetheryteId))
+                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. something is very wrong...");
+                    //TreeRoot.Stop();
+                    return false;
+
+                while (Core.Me.IsCasting)
+                {
+                    await Coroutine.Sleep(1000);
+                }
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+
+                await Coroutine.Wait(10000, () => WorldManager.ZoneId == FoundationZoneId);
+                await Coroutine.Sleep(3000);
+
+                await Coroutine.Wait(10000, () => GameObjectManager.GetObjectByNPCId(70) != null);
+                await Coroutine.Sleep(3000);
+
+                var unit = GameObjectManager.GetObjectByNPCId(70);
+
+                if (!unit.IsWithinInteractRange)
+                {
+                    var _target = unit.Location;
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    while (!unit.IsWithinInteractRange)
+                    {
+                        Navigator.PlayerMover.MoveTowards(_target);
+                        await Coroutine.Sleep(100);
+                    }
+
+                    Navigator.PlayerMover.MoveStop();
+                }
+
+                unit.Target();
+                unit.Interact();
+                await Coroutine.Sleep(1000);
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                await Coroutine.Sleep(500);
+                if (SelectString.IsOpen)
+                    SelectString.ClickSlot(1);
+
+                await Coroutine.Sleep(5000);
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+
+                await Coroutine.Sleep(3000);
+            }
+
+            //await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
+
+
+            if (GatherNpc.Location.Distance(Core.Me.Location) > 5f)
+            {
+                var _target = new Vector3(-21.62485f, -16f, 141.3661f);
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+
+                _target = GatherNpc.Location;
                 Navigator.PlayerMover.MoveTowards(_target);
                 while (_target.Distance2D(Core.Me.Location) >= 4)
                 {
