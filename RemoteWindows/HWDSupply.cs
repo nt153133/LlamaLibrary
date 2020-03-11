@@ -1,4 +1,6 @@
 ﻿using System;
+using ff14bot.Enums;
+using LlamaLibrary.Helpers;
 
 namespace LlamaLibrary.RemoteWindows
 {
@@ -11,12 +13,22 @@ namespace LlamaLibrary.RemoteWindows
             _name = WindowName;
         }
 
+        public int CurrentClassSelected()
+        {
+            if (Translator.Language == Language.Chn)
+                return ___Elements()[29].TrimmedData;
+            else
+            {
+                return ___Elements()[62].TrimmedData;
+            }
+        }
+
         public int ClassSelected
         {
-            get => ___Elements()[29].TrimmedData;
+            get => CurrentClassSelected();
             set
             {
-                if (WindowByName != null && ___Elements()[29].TrimmedData != value)
+                if (WindowByName != null && CurrentClassSelected() != value)
                     SendAction(2, 0, 1, 1, (ulong)value);
             }
         }
