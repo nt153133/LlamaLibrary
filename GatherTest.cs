@@ -163,7 +163,8 @@ namespace LlamaLibrary
                 switch (WorldManager.CurrentWeatherId)
                 {
                     case 133:
-                        if (lastWeather == 133) break; await MineWeather(ClassJobType.Miner, umbralFlareAbove, umbralFlare);
+                        if (lastWeather == 133) break;
+                        await FlyTo(new Vector3(-295.9257f, 268.4518f, -370.327f)); await MineWeather(ClassJobType.Miner, umbralFlareAbove, umbralFlare);
                         standBy = afkSpots[time.Next(0, afkSpots.Length)];
                         await StandBy();
                         break;
