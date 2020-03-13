@@ -34,8 +34,6 @@ namespace LlamaLibrary.RemoteAgents
 
         public void Refresh()
         {
-            //var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
-            //IntPtr struct119_0_intptr_7= patternFinder.Find("48 8B 0D ? ? ? ? 4C 8B C0 33 D2 Add 3 TraceRelative");
             IntPtr intptr_0 = Core.Memory.Read<IntPtr>(Offsets.SearchResultPtr);
             IntPtr intptr_1 = Core.Memory.Read<IntPtr>(intptr_0 + 0x38);
             IntPtr intptr_2 = Core.Memory.Read<IntPtr>(intptr_1 + 0x18);
