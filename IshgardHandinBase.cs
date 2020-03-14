@@ -27,6 +27,8 @@ namespace LlamaLibrary
 
         public override bool RequiresProfile => false;
 
+        public static bool DiscardCollecable = false;
+
         public override Composite Root => _root;
 
         public override bool WantButton { get; } = false;
@@ -270,43 +272,44 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             var ishgardHandin = new IshgardHandin();
 
-            /*
-            foreach (var item in InventoryManager.FilledSlots.Where(i => items20.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 50))
+            if (DiscardCollecable)
             {
-                item.Discard();
-                await Coroutine.Sleep(3000);
-            }
+                foreach (var item in InventoryManager.FilledSlots.Where(i => items20.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 50))
+                {
+                    item.Discard();
+                    await Coroutine.Sleep(3000);
+                }
             
-            foreach (var item in InventoryManager.FilledSlots.Where(i => items40.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 90))
-            {
-                item.Discard();
-                await Coroutine.Sleep(3000);
-            }
+                foreach (var item in InventoryManager.FilledSlots.Where(i => items40.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 90))
+                {
+                    item.Discard();
+                    await Coroutine.Sleep(3000);
+                }
             
-            foreach (var item in InventoryManager.FilledSlots.Where(i => items150.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 300))
-            {
-                item.Discard();
-                await Coroutine.Sleep(3000);
-            }
+                foreach (var item in InventoryManager.FilledSlots.Where(i => items150.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 300))
+                {
+                    item.Discard();
+                    await Coroutine.Sleep(3000);
+                }
             
-            foreach (var item in InventoryManager.FilledSlots.Where(i => items290.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 480))
-            {
-                item.Discard();
-                await Coroutine.Sleep(3000);
-            }
+                foreach (var item in InventoryManager.FilledSlots.Where(i => items290.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 480))
+                {
+                    item.Discard();
+                    await Coroutine.Sleep(3000);
+                }
             
-            foreach (var item in InventoryManager.FilledSlots.Where(i => items430.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 1350))
-            {
-                item.Discard();
-                await Coroutine.Sleep(3000);
-            }
+                foreach (var item in InventoryManager.FilledSlots.Where(i => items430.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 1350))
+                {
+                    item.Discard();
+                    await Coroutine.Sleep(3000);
+                }
             
-            foreach (var item in InventoryManager.FilledSlots.Where(i => items481.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 4500))
-            {
-                item.Discard();
-                await Coroutine.Sleep(3000);
+                foreach (var item in InventoryManager.FilledSlots.Where(i => items481.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 4500))
+                {
+                    item.Discard();
+                    await Coroutine.Sleep(3000);
+                }
             }
-            */
 
             // Skybuilders' Plywood (carpenter)
             if (InventoryManager.FilledSlots.Any(i => i.RawItemId == 28725))
