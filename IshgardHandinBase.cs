@@ -27,7 +27,7 @@ namespace LlamaLibrary
 
         public override bool RequiresProfile => false;
 
-        public static bool DiscardCollecable = false;
+        public static bool DiscardCollectable = false;
 
         public override Composite Root => _root;
 
@@ -272,7 +272,7 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             var ishgardHandin = new IshgardHandin();
 
-            if (DiscardCollecable)
+            if (DiscardCollectable)
             {
                 foreach (var item in InventoryManager.FilledSlots.Where(i => items20.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 50))
                 {
