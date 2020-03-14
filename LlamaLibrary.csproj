@@ -66,9 +66,11 @@
     <Compile Include="Extensions\BagExtensions.cs" />
     <Compile Include="Extensions\BagSlotExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\GatheringPointObjectExtensions.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
+    <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="RemoteWindows\GuildLeve.cs" />
     <Compile Include="RemoteWindows\HousingSelectBlock.cs" />
     <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
+    <Compile Include="RemoteWindows\HWDGathereInspect.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />
