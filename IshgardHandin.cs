@@ -1,10 +1,13 @@
 ﻿using System.CodeDom;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Buddy.Coroutines;
 using Clio.Utilities;
 using ff14bot;
 using ff14bot.Behavior;
+using ff14bot.Enums;
+using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
@@ -33,9 +36,9 @@ namespace LlamaLibrary
 
         public async Task<bool> HandInGatheringItem(int job)
         {
-            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) await GetToNpc();
+            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) await GetToGatherNpc();
 
-            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 15f)
+            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 5f)
             {
                 var _target = new Vector3(-21.62485f, -16f, 141.3661f);
                 Navigator.PlayerMover.MoveTowards(_target);
@@ -66,7 +69,7 @@ namespace LlamaLibrary
             {
                 GatherNpc.Interact();
                 await Coroutine.Wait(5000, () => HWDGathereInspect.Instance.IsOpen || Talk.DialogOpen);
-                await Coroutine.Sleep(1000);
+                await Coroutine.Sleep(100);
 
                 while (Talk.DialogOpen)
                 {
@@ -80,7 +83,7 @@ namespace LlamaLibrary
             if (HWDGathereInspect.Instance.IsOpen)
             {
                 HWDGathereInspect.Instance.ClickClass(job);
-                await Coroutine.Sleep(1000);
+                await Coroutine.Sleep(500);
                 
                 if(HWDGathereInspect.Instance.CanAutoSubmit());
                 {
@@ -161,18 +164,33 @@ namespace LlamaLibrary
                     HWDSupply.Instance.ClickItem(index);
 
                     await Coroutine.Wait(5000, () => Request.IsOpen);
-                    await Coroutine.Sleep(1000);
+                    await Coroutine.Sleep(700);
                     item.Handover();
-                    await Coroutine.Sleep(200);
+                    await Coroutine.Sleep(100);
                     await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
                     Request.HandOver();
-                    await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
-
-                    if (SelectYesno.IsOpen)
+                    
+                    if (ScriptConditions.Helpers.GetSkybuilderScrips() > 9000 )
+                        await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+                    else
                     {
-                        SelectYesno.Yes();
-                        await Coroutine.Sleep(2000);
+                        await Coroutine.Sleep(100);
                     }
+
+                    if (Translator.Language != Language.Chn)
+                    {
+                        Log($"Kupo Tickets: {HWDSupply.Instance.NumberOfKupoTickets()}");
+                        
+                        
+                    }
+
+                    if (!SelectYesno.IsOpen)
+                    {
+                        continue;
+                    }
+
+                    SelectYesno.Yes();
+                    await Coroutine.Sleep(2000);
                 }
             }
 
@@ -546,6 +564,12 @@ namespace LlamaLibrary
             }
 
             return Npc.Location.Distance(Core.Me.Location) <= 5f;
+        }
+        
+        private static void Log(string text, params object[] args)
+        {
+            var msg = string.Format("[Ishgard Handin] " + text, args);
+            Logging.Write(Colors.Aquamarine, msg);
         }
     }
 }
