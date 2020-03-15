@@ -134,6 +134,7 @@
     <Compile Include="RemoteWindows\HousingSelectBlock.cs" />
     <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
     <Compile Include="RemoteWindows\HWDGathereInspect.cs" />
+    <Compile Include="RemoteWindows\HWDLottery.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />

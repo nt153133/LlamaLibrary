@@ -33,6 +33,8 @@ namespace LlamaLibrary
         private GameObject VendorNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031680 && i.IsVisible);
         
         private GameObject GatherNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031693 && i.IsVisible);
+        
+        private GameObject KupoNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031692 && i.IsVisible);
 
         public async Task<bool> HandInGatheringItem(int job)
         {
@@ -94,6 +96,65 @@ namespace LlamaLibrary
                 }
             }
 
+            return false;
+        }
+        
+        public async Task<bool> HandInKupoTicket(int slot)
+        {
+            if ((!HWDLottery.Instance.IsOpen && KupoNpc == null) || KupoNpc.Location.Distance(Core.Me.Location) > 5f) await Navigation.GetTo(886,new Vector3(50.8388f, -16f, 170.6745f));
+
+            if (!HWDLottery.Instance.IsOpen && KupoNpc != null)
+            {
+                KupoNpc.Interact();
+                Log("Interact with npc");
+                await Coroutine.Wait(5000, () => HWDLottery.Instance.IsOpen || Talk.DialogOpen);
+                await Coroutine.Sleep(100);
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(5000, () => !Talk.DialogOpen);
+                }
+                Log("Talking done");
+                await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+
+                if (SelectYesno.IsOpen)
+                {
+                    SelectYesno.Yes();
+                    Log("Select Yes/No open");
+                    await Coroutine.Wait(5000, () => HWDLottery.Instance.IsOpen);
+                    await Coroutine.Sleep(4000);
+                    Log("Ticket Should be loaded");
+                }
+            }
+
+            if (HWDLottery.Instance.IsOpen)
+            {
+                Log("Clicking");
+                await HWDLottery.Instance.ClickSpot(slot);
+                await Coroutine.Sleep(1000);
+                HWDLottery.Instance.Close();
+                Log("Close");
+                
+                await Coroutine.Wait(5000, () => SelectYesno.IsOpen || Talk.DialogOpen);
+                Log($"Select Yes/No {SelectYesno.IsOpen} Talk {Talk.DialogOpen}");
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(2000, () => !Talk.DialogOpen);
+                    await Coroutine.Wait(2000, () => Talk.DialogOpen || SelectYesno.IsOpen);
+                }
+
+                await Coroutine.Sleep(1000);
+
+                await HandInKupoTicket(slot);
+
+            }
+            else
+            {
+                Log("Out of Tickets");
+            }
+            Log("Done with Kupo Tickets");
             return false;
         }
         public async Task<bool> HandInItem(uint itemId, int index, int job)
@@ -180,8 +241,22 @@ namespace LlamaLibrary
                     if (Translator.Language != Language.Chn)
                     {
                         Log($"Kupo Tickets: {HWDSupply.Instance.NumberOfKupoTickets()}");
-                        
-                        
+
+                        if (HWDSupply.Instance.NumberOfKupoTickets() >= 9)
+                        {
+                            Log($"Going to turn in Kupo Tickets: {HWDSupply.Instance.NumberOfKupoTickets()}");
+                            if (SelectYesno.IsOpen)
+                            {
+                                SelectYesno.Yes();
+                                await Coroutine.Sleep(1000);
+                            }
+
+                            HWDSupply.Instance.Close();
+                            await Coroutine.Sleep(2000);
+                            await HandInKupoTicket(1);
+                            break;
+
+                        }
                     }
 
                     if (!SelectYesno.IsOpen)
@@ -194,6 +269,8 @@ namespace LlamaLibrary
                 }
             }
 
+            if (InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
+                await HandInItem(itemId, index, job);
             return false;
         }
 
