@@ -229,7 +229,7 @@ namespace LlamaLibrary.Reduce
 
             //if (MovementManager.IsOccupied) return false;
   //          if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
-            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => ShouldDesynth(bs.Item.EnglishName))))
+            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs))))
             {
                 Log($"None found");
                 return false;
@@ -241,7 +241,7 @@ namespace LlamaLibrary.Reduce
 
             var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                 .SelectMany(bag => bag.FilledSlots
-                    .FindAll(bs => (ShouldDesynth(bs.Item.EnglishName) )));
+                    .FindAll(bs => (ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs))));
 
             Log($"{itemsToDesynth.Count()}");
             foreach (var item in itemsToDesynth)
