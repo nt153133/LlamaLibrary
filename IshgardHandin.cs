@@ -38,32 +38,12 @@ namespace LlamaLibrary
 
         public async Task<bool> HandInGatheringItem(int job)
         {
-            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) await GetToGatherNpc();
-
-            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 5f)
+            if ((!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) || GatherNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(-20.04274f, -16f, 141.3337f));
+            
+            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 4f)
             {
-                var _target = new Vector3(-21.62485f, -16f, 141.3661f);
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-
-                _target = GatherNpc.Location;
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-
-
-                Navigator.PlayerMover.MoveStop();
+                await Navigation.OffMeshMove(GatherNpc.Location);
                 await Coroutine.Sleep(500);
             }
 
@@ -101,8 +81,15 @@ namespace LlamaLibrary
         
         public async Task<bool> HandInKupoTicket(int slot)
         {
-            if ((!HWDLottery.Instance.IsOpen && KupoNpc == null) || KupoNpc.Location.Distance(Core.Me.Location) > 5f) await Navigation.GetTo(886,new Vector3(50.8388f, -16f, 170.6745f));
+            if ((!HWDLottery.Instance.IsOpen && KupoNpc == null) || KupoNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(43.59162f, -16f, 170.3864f));
 
+            if (!HWDLottery.Instance.IsOpen && KupoNpc.Location.Distance(Core.Me.Location) > 4f)
+            {
+                await Navigation.OffMeshMove(KupoNpc.Location);
+                await Coroutine.Sleep(500);
+            }
+            
             if (!HWDLottery.Instance.IsOpen && KupoNpc != null)
             {
                 KupoNpc.Interact();
@@ -159,42 +146,15 @@ namespace LlamaLibrary
         }
         public async Task<bool> HandInItem(uint itemId, int index, int job)
         {
-            //GameObjectType.EventNpc;
+            if ((!HWDSupply.Instance.IsOpen && Npc == null) || Npc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(43.59162f, -16f, 170.3864f));
 
-            if (!HWDSupply.Instance.IsOpen && Npc == null) await GetToNpc();
-
-            if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 5f)
+            if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 4f)
             {
-                // NpcId = Npc.NpcId;
-                // await CommonTasks.MoveAndStop(
-                //     new MoveToParameters(Npc.Location, "Moving To HandinVendor"), 2f);
-                //await CommonTasks.MoveAndStop(Npc.Location, "Moving To HandinVendor");
-
-                var _target = new Vector3(10.58188f, -15.96282f, 163.8702f);
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-
-                _target = Npc.Location;
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-
-
-                Navigator.PlayerMover.MoveStop();
+                await Navigation.OffMeshMove(Npc.Location);
                 await Coroutine.Sleep(500);
             }
-
+            
             if (!HWDSupply.Instance.IsOpen)
             {
                 //NpcId = GameObjectManager.GameObjects.First(i => i.EnglishName == EnglishName).NpcId;
@@ -269,6 +229,12 @@ namespace LlamaLibrary
                 }
             }
 
+            if (Request.IsOpen)
+            {
+                Request.Cancel();
+                await Coroutine.Sleep(2000);
+            }
+            
             if (InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
                 await HandInItem(itemId, index, job);
             return false;
@@ -276,20 +242,13 @@ namespace LlamaLibrary
 
         public async Task<bool> BuyItem(uint itemId)
         {
-            if (!ShopExchangeCurrency.Open && VendorNpc == null) await GetToVendorNpc();
+            if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(36.33978f, -16f, 145.3877f));
 
-            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 6f)
+            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 4f)
             {
-                var _target = VendorNpc.Location;
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 6)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-                await Coroutine.Sleep(1000);
+                await Navigation.OffMeshMove(VendorNpc.Location);
+                await Coroutine.Sleep(500);
             }
 
             if (!ShopExchangeCurrency.Open)

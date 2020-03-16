@@ -55,5 +55,17 @@ namespace LlamaLibrary.Helpers
         {
             Logging.Write(Colors.OrangeRed, text);
         }
+
+        public static async Task OffMeshMove(Vector3 _target)
+        {
+            Navigator.PlayerMover.MoveTowards(_target);
+            while (_target.Distance2D(Core.Me.Location) >= 4)
+            {
+                Navigator.PlayerMover.MoveTowards(_target);
+                await Coroutine.Sleep(100);
+            }
+
+            Navigator.PlayerMover.MoveStop();
+        }
     }
 }
