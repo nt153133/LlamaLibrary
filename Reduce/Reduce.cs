@@ -229,7 +229,7 @@ namespace LlamaLibrary.Reduce
 
             //if (MovementManager.IsOccupied) return false;
   //          if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
-            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs))))
+            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable &&(ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs)))))
             {
                 Log($"None found");
                 return false;
@@ -241,7 +241,7 @@ namespace LlamaLibrary.Reduce
 
             var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                 .SelectMany(bag => bag.FilledSlots
-                    .FindAll(bs => (ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs))));
+                    .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs))));
 
             Log($"{itemsToDesynth.Count()}");
             foreach (var item in itemsToDesynth)
@@ -292,7 +292,7 @@ namespace LlamaLibrary.Reduce
 
         private static bool ExtraCheck(BagSlot bs)
         {
-            return ReduceSettings.Instance.IncludeDE10000 && bs.Item.RequiredLevel < 70 ||  bs.Item.DesynthesisIndex < 10000;
+            return ReduceSettings.Instance.IncludeDE10000 && (bs.Item.RequiredLevel < 70 ||  bs.Item.DesynthesisIndex < 10000);
             //return false;
         }
 
