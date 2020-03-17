@@ -292,8 +292,8 @@ namespace LlamaLibrary.Reduce
 
         private static bool ExtraCheck(BagSlot bs)
         {
-            return ReduceSettings.Instance.IncludeDE10000 && (bs.Item.RequiredLevel < 70 && bs.Item.DesynthesisIndex < 10000);
-            //return false;
+            //return ReduceSettings.Instance.IncludeDE10000 && (bs.Item.RequiredLevel < 70 && bs.Item.DesynthesisIndex < 10000);
+            return false;
         }
 
         private static InventoryBagId[] BagsToCheck()
