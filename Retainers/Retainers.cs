@@ -25,7 +25,7 @@ namespace LlamaLibrary.Retainers
 {
     public class Retainers : BotBase
     {
-        private static readonly string botName = "Retainer Manage";
+        private static readonly string botName = "Retainers";
 
         private static bool done;
 
@@ -57,14 +57,14 @@ namespace LlamaLibrary.Retainers
 #if RB_CN
                 return "雇员整理";
 #else
-                return "Retainers Test";
+                return botName;
 #endif
             }
         }
 
         public override bool WantButton => true;
 
-        public override string EnglishName => "Retainers Test";
+        public override string EnglishName => "Retainers";
 
         public override PulseFlags PulseFlags => PulseFlags.All;
 
