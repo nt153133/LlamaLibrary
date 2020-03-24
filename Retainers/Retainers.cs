@@ -236,7 +236,7 @@ namespace LlamaLibrary.Retainers
 
                 Log("Done checking against player inventory");
                 
-                if (hasJob && ventures > 2)
+                if (RetainerSettings.Instance.GetVentures && hasJob && ventures > 2)
                 {
                     Log("Checking Ventures");
                     await CheckVentures();

@@ -24,6 +24,7 @@ namespace LlamaLibrary.Retainers
         private int _numOfRetainers;
         private MyItemRole _itemRole;
         private ItemUiCategory _itemCategory;
+        private bool _ventures;
 
         public RetainerSettings() : base(Path.Combine(CharacterSettingsDirectory, "RetainerSettings.json"))
         {
@@ -76,7 +77,20 @@ namespace LlamaLibrary.Retainers
             }
         }
 
-
+        [Description("Reassign Ventures")]
+        [DefaultValue(true)] //shift +x
+        public bool GetVentures
+        {
+            get => _ventures;
+            set
+            {
+                if (_ventures != value)
+                {
+                    _ventures = value;
+                    Save();
+                }
+            }
+        }
 
         
         [Description("Pull by role")]
