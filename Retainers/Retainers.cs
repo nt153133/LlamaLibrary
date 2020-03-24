@@ -93,10 +93,12 @@ namespace LlamaLibrary.Retainers
             VentureData = loadResource<List<RetainerTaskData>>(Resources.Ventures);
             Log("Loaded venture.json");
         }
+
         private static T loadResource<T>(string text)
         {
             return JsonConvert.DeserializeObject<T>(text);
         }
+
         public override void Initialize()
         {
         }
@@ -195,7 +197,7 @@ namespace LlamaLibrary.Retainers
             }
 
             ventures = RetainerList.Instance.NumberOfVentures;
-            
+
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
@@ -240,7 +242,7 @@ namespace LlamaLibrary.Retainers
                 if (RetainerSettings.Instance.DepositFromPlayer) await RetainerRoutine.DumpItems();
 
                 Log("Done checking against player inventory");
-                
+
                 if (RetainerSettings.Instance.ReassignVentures && hasJob && ventures > 2)
                 {
                     Log("Checking Ventures");
@@ -367,12 +369,12 @@ namespace LlamaLibrary.Retainers
 
                     await Coroutine.Wait(5000, () => RetainerTasks.IsOpen);
 
-                    //    RetainerTasks.OpenInventory();
-//
-                    //    await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
+                    RetainerTasks.OpenInventory();
+                    //
+                    await Coroutine.Wait(5000, RetainerTasks.IsInventoryOpen);
 
-                    //   if (!RetainerTasks.IsInventoryOpen()) continue;
-                    //await Coroutine.Sleep(500);
+                    if (!RetainerTasks.IsInventoryOpen()) continue;
+                    await Coroutine.Sleep(500);
 
                     Log("Checking retainer[{0}] against move list", retainerNames[retainerIndex]);
 
@@ -387,7 +389,7 @@ namespace LlamaLibrary.Retainers
 
                     Log("Done checking against player inventory");
 
-                    //        RetainerTasks.CloseInventory();
+                    RetainerTasks.CloseInventory();
 
                     await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
 
@@ -484,7 +486,7 @@ namespace LlamaLibrary.Retainers
 
             return true;
         }
-        
+
         public async Task<bool> CheckVentures()
         {
             if (!SelectString.IsOpen)
@@ -510,12 +512,12 @@ namespace LlamaLibrary.Retainers
                     var taskId = AgentRetainerVenture.Instance.RetainerTask;
 
                     var task = VentureData.First(i => i.Id == taskId);
-                        
+
                     Log($"Finished Venture {task.Name}");
                     Log($"Reassigning Venture {task.Name}");
-                        
+
                     RetainerTaskResult.Reassign();
-                        
+
                     await Coroutine.Wait(5000, () => RetainerTaskAsk.IsOpen);
                     if (!RetainerTaskAsk.IsOpen)
                     {
@@ -534,13 +536,12 @@ namespace LlamaLibrary.Retainers
                         Log($"RetainerTaskAsk Error: {RetainerTaskAskExtensions.GetErrorReason()}");
                         RetainerTaskAsk.Close();
                     }
-                        
+
                     await Coroutine.Wait(1500, () => DialogOpen);
                     await Coroutine.Sleep(200);
                     if (DialogOpen) Next();
                     await Coroutine.Sleep(200);
                     await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                        
                 }
                 else
                 {
@@ -551,6 +552,7 @@ namespace LlamaLibrary.Retainers
             {
                 Log("Venture Not Done");
             }
+
             return true;
         }
     }
