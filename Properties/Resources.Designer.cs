@@ -61,11 +61,44 @@ namespace LlamaLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {&quot;1&quot;:[{&quot;Key&quot;:5724,&quot;Tier&quot;:0,&quot;Value&quot;:0},{&quot;Key&quot;:5725,&quot;Tier&quot;:1,&quot;Value&quot;:0},{&quot;Key&quot;:5726,&quot;Tier&quot;:2,&quot;Value&quot;:0},{&quot;Key&quot;:5727,&quot;Tier&quot;:3,&quot;Value&quot;:0}],&quot;2&quot;:[{&quot;Key&quot;:5604,&quot;Tier&quot;:0,&quot;Value&quot;:0},{&quot;Key&quot;:5605,&quot;Tier&quot;:1,&quot;Value&quot;:0},{&quot;Key&quot;:5606,&quot;Tier&quot;:2,&quot;Value&quot;:0},{&quot;Key&quot;:5607,&quot;Tier&quot;:3,&quot;Value&quot;:0},{&quot;Key&quot;:5608,&quot;Tier&quot;:4,&quot;Value&quot;:0},{&quot;Key&quot;:18006,&quot;Tier&quot;:5,&quot;Value&quot;:0}],&quot;3&quot;:[{&quot;Key&quot;:5609,&quot;Tier&quot;:0,&quot;Value&quot;:0},{&quot;Key&quot;:5610,&quot;Tier&quot;:1,&quot;Value&quot;:0},{&quot;Key&quot;:5611,&quot;Tier&quot;:2,&quot;Value&quot;:0},{&quot;Key&quot;:5612,&quot;Tier&quot;:3,&quot;Value&quot;:0},{&quot;Key&quot;:5613,&quot;Tier&quot;:4,&quot;Value&quot;:0},{&quot;Key&quot;:18007, [rest of string wa....
+        ///   Looks up a localized string similar to {&quot;1&quot;:[{&quot;Key&quot;:5724,&quot;Tier&quot;:0,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;},{&quot;Key&quot;:5725,&quot;Tier&quot;:1,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;},{&quot;Key&quot;:5726,&quot;Tier&quot;:2,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;},{&quot;Key&quot;:5727,&quot;Tier&quot;:3,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;}],&quot;2&quot;:[{&quot;Key&quot;:5604,&quot;Tier&quot;:0,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5605,&quot;Tier&quot;:1,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5606,&quot;Tier&quot;:2,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5607,&quot;Tier&quot;:3,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5608,&quot;Tier&quot;:4,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:18006,&quot;Tier&quot;:5,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;}],&quot;3&quot;:[{&qu....
         /// </summary>
         internal static string Materia {
             get {
                 return ResourceManager.GetString("Materia", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [
+        ///  {
+        ///    &quot;Id&quot;: 1,
+        ///    &quot;ClassJobCategory&quot;: 34,
+        ///    &quot;IsRandom&quot;: false,
+        ///    &quot;RetainerLevel&quot;: 1,
+        ///    &quot;VentureCost&quot;: 1,
+        ///    &quot;MaxTime&quot;: 60,
+        ///    &quot;Experience&quot;: 1300,
+        ///    &quot;RequiredItemLevel&quot;: 0,
+        ///    &quot;RequiredGathering&quot;: 0,
+        ///    &quot;NameRaw&quot;: &quot;Animal Skin&quot;,
+        ///    &quot;ItemId&quot;: 5291
+        ///  },
+        ///  {
+        ///    &quot;Id&quot;: 2,
+        ///    &quot;ClassJobCategory&quot;: 34,
+        ///    &quot;IsRandom&quot;: false,
+        ///    &quot;RetainerLevel&quot;: 2,
+        ///    &quot;VentureCost&quot;: 1,
+        ///    &quot;MaxTime&quot;: 60,
+        ///    &quot;Experience&quot;: 1900,
+        ///    &quot;RequiredItemLevel&quot;: 0,
+        ///    &quot;RequiredGathering&quot;: 0,
+        ///    &quot;N [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Ventures {
+            get {
+                return ResourceManager.GetString("Ventures", resourceCulture);
             }
         }
     }

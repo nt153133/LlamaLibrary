@@ -5,7 +5,7 @@ namespace LlamaLibrary.Extensions
 {
     public static class RetainerTaskAskExtensions
     {
-        public static bool CanAssign(this RetainerTaskAsk retainerTaskAsk)
+        internal static bool CanAssign()
         {
             var WindowByName = RaptureAtkUnitManager.GetWindowByName("RetainerTaskAsk");
             if (WindowByName == null) return false;
@@ -13,7 +13,7 @@ namespace LlamaLibrary.Extensions
             return remoteButton != null && remoteButton.Clickable;
         }
 
-        public static string GetErrorReason(this RetainerTaskAsk retainerTaskAsk)
+        internal static string GetErrorReason()
         {
             var WindowByName = RaptureAtkUnitManager.GetWindowByName("RetainerTaskAsk");
             if (WindowByName == null || WindowByName.FindLabel(39) == null) return "";

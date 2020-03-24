@@ -5,6 +5,7 @@ using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Helpers;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Enums;
 using static ff14bot.RemoteWindows.Talk;
 
 namespace LlamaLibrary.RemoteWindows
@@ -34,6 +35,16 @@ namespace LlamaLibrary.RemoteWindows
             return ___Elements()[(index * 9) + 5].TrimmedData;
         }
 
+        public bool RetainerHasJob(int index)
+        {
+            return ___Elements()[(index * 9) + 4].TrimmedData != 0;
+        }
+
+        public RetainerRole RetainerRole(int index)
+        {
+            return (RetainerRole) (___Elements()[(index * 9) + 4].TrimmedData);
+        }
+        
         public async Task<bool> SelectRetainer(int index)
         {
             if ( !IsOpen)

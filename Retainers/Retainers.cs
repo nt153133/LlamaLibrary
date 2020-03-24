@@ -14,9 +14,14 @@ using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
+using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
+using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
+using LlamaLibrary.Properties;
+using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
+using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
@@ -48,6 +53,12 @@ namespace LlamaLibrary.Retainers
         public Retainers()
         {
             OffsetManager.Init();
+            Task.Factory.StartNew(() =>
+            {
+                init();
+                _init = true;
+                Log("INIT DONE");
+            });
         }
 
         public override string Name
@@ -72,6 +83,20 @@ namespace LlamaLibrary.Retainers
 
         public override Composite Root => _root;
 
+        internal static List<RetainerTaskData> VentureData;
+        private volatile bool _init;
+        private int ventures;
+
+        internal void init()
+        {
+            Log("Load venture.json");
+            VentureData = loadResource<List<RetainerTaskData>>(Resources.Ventures);
+            Log("Loaded venture.json");
+        }
+        private static T loadResource<T>(string text)
+        {
+            return JsonConvert.DeserializeObject<T>(text);
+        }
         public override void Initialize()
         {
         }
@@ -137,15 +162,7 @@ namespace LlamaLibrary.Retainers
             debug = RetainerSettings.Instance.DebugLogging;
 
             await UseSummoningBell();
-            //await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-/*            while (RetainerList.Instance.IsOpen)
-            {
-                Log($"{Core.Memory.Read<uint>(RetainerList.Instance.WindowByName.Pointer + 0x180) & 0xF00000u}");
-                await Coroutine.Sleep(50);
-            }*/
             await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            //Log("Visible:" + RetainerList.Instance.IsOpen);
-            //await Coroutine.Sleep(1000);
 
             var numRetainers = RetainerList.Instance.NumberOfRetainers; //GetNumberOfRetainers();
 
@@ -172,9 +189,12 @@ namespace LlamaLibrary.Retainers
                 moveFrom[retainerIndex] = new List<uint>();
             }
 
+            ventures = RetainerList.Instance.NumberOfVentures;
+            
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
+                bool hasJob = RetainerList.Instance.RetainerHasJob(retainerIndex);
                 Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");
                 await RetainerRoutine.SelectRetainer(retainerIndex);
 
@@ -214,27 +234,17 @@ namespace LlamaLibrary.Retainers
 
                 if (RetainerSettings.Instance.DepositFromPlayer) await RetainerRoutine.DumpItems();
 
-
                 Log("Done checking against player inventory");
-
-/*                   AgentModule.ToggleAgentInterfaceById(274);
-                    await Coroutine.Sleep(200);
-                    var cho1 = InventoryManager.GetBagByInventoryBagId((InventoryBagId)4000);
-                    var cho2 = InventoryManager.GetBagByInventoryBagId((InventoryBagId)4001);
-                    if (cho1 != null && cho2 != null)
-                    {
-                        var chocobags = (cho1.FilledSlots).Concat(cho2.FilledSlots);
-                        foreach (var item in chocobags.Where(FilterStackable).Where(item => inventory.HasItem(item.TrueItemId)))
-                        {
-                            Log($"Chocobo AND RETAINER both have Name: {item.Item.CurrentLocaleName}\tId: {item.Item.Id}");
-                            Log("Moved: " + MoveItem(item, inventory.GetItem(item.TrueItemId)));
-                            await Coroutine.Sleep(100);
-                        }
-                    }*/
-
-                //RetainerTasks.CloseInventory();
-
-                //await Coroutine.Sleep(200);
+                
+                if (hasJob && ventures > 2)
+                {
+                    Log("Checking Ventures");
+                    await CheckVentures();
+                }
+                else
+                {
+                    Log($"Not Checking ventures: HasJob {hasJob} Ventures Tokens {ventures}");
+                }
 
                 await RetainerRoutine.DeSelectRetainer();
 
@@ -467,6 +477,75 @@ namespace LlamaLibrary.Retainers
                 await Coroutine.Yield();
             }
 
+            return true;
+        }
+        
+        public async Task<bool> CheckVentures()
+        {
+            if (!SelectString.IsOpen)
+            {
+                return false;
+            }
+
+            if (SelectString.LineCount > 9)
+            {
+                if (SelectString.Lines().Contains(Translator.VentureCompleteText))
+                {
+                    Log("Venture Done");
+                    SelectString.ClickLineEquals(Translator.VentureCompleteText);
+
+                    await Coroutine.Wait(5000, () => RetainerTaskResult.IsOpen);
+
+                    if (!RetainerTaskResult.IsOpen)
+                    {
+                        Log("RetainerTaskResult didn't open");
+                        return false;
+                    }
+
+                    var taskId = AgentRetainerVenture.Instance.RetainerTask;
+
+                    var task = VentureData.First(i => i.Id == taskId);
+                        
+                    Log($"Finished Venture {task.Name}");
+                    Log($"Reassigning Venture {task.Name}");
+                        
+                    RetainerTaskResult.Reassign();
+                        
+                    await Coroutine.Wait(5000, () => RetainerTaskAsk.IsOpen);
+                    if (!RetainerTaskAsk.IsOpen)
+                    {
+                        Log("RetainerTaskAsk didn't open");
+                        return false;
+                    }
+
+                    if (RetainerTaskAskExtensions.CanAssign())
+                    {
+                        RetainerTaskAsk.Confirm();
+                        ventures -= task.VentureCost;
+                        Log($"Should be down to {ventures} venture tokens");
+                    }
+                    else
+                    {
+                        Log($"RetainerTaskAsk Error: {RetainerTaskAskExtensions.GetErrorReason()}");
+                        RetainerTaskAsk.Close();
+                    }
+                        
+                    await Coroutine.Wait(1500, () => DialogOpen);
+                    await Coroutine.Sleep(200);
+                    if (DialogOpen) Next();
+                    await Coroutine.Sleep(200);
+                    await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                        
+                }
+                else
+                {
+                    Log("Venture Not Done");
+                }
+            }
+            else
+            {
+                Log("Venture Not Done");
+            }
             return true;
         }
     }
