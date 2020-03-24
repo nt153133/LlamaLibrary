@@ -164,6 +164,11 @@ namespace LlamaLibrary.Retainers
             await UseSummoningBell();
             await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
 
+            if (SelectString.IsOpen)
+            {
+                await RetainerRoutine.DeSelectRetainer();
+            }
+
             var numRetainers = RetainerList.Instance.NumberOfRetainers; //GetNumberOfRetainers();
 
             var retList = new List<RetainerInventory>();
