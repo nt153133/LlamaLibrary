@@ -79,7 +79,7 @@ namespace LlamaLibrary.Retainers
 
         [Description("Reassign Ventures")]
         [DefaultValue(true)] //shift +x
-        public bool GetVentures
+        public bool ReassignVentures
         {
             get => _ventures;
             set
