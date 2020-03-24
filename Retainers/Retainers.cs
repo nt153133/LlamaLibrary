@@ -324,7 +324,7 @@ namespace LlamaLibrary.Retainers
                 {
                     LogCritical("This item will have a stack size over 999: {0}", itemId.Key);
                 }
-                else
+                else if (numOfMoves < InventoryManager.FreeSlots - 1)
                 {
                     numOfMoves++;
                     foreach (var retainerIdTemp in retListInv)
