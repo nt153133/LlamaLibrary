@@ -524,7 +524,7 @@ namespace LlamaLibrary.Retainers
                         Log("RetainerTaskAsk didn't open");
                         return false;
                     }
-
+                    await Coroutine.Wait(2000,RetainerTaskAskExtensions.CanAssign);
                     if (RetainerTaskAskExtensions.CanAssign())
                     {
                         RetainerTaskAsk.Confirm();
