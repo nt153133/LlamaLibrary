@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
+using Buddy.Service.Core;
 using Clio.Utilities;
 using ff14bot;
 using ff14bot.AClasses;
@@ -20,8 +21,11 @@ using Generate;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
+using LlamaLibrary.Properties;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.Retainers;
+using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 
@@ -33,6 +37,12 @@ namespace LlamaLibrary
 
         public TesterBase()
         {
+            Task.Factory.StartNew(() =>
+            {
+                init();
+                _init = true;
+                Log("INIT DONE");
+            });
         }
 
         public override string Name => "Tester";
@@ -44,11 +54,25 @@ namespace LlamaLibrary
         public override Composite Root => _root;
 
         public override bool WantButton { get; } = false;
+        internal static List<RetainerTaskData> VentureData;
+        private volatile bool _init;
+        internal void init()
+        {
+            OffsetManager.Init();
+            
+            Log("Load venture.json");
+            VentureData = loadResource<List<RetainerTaskData>>(Resources.Ventures);
+            Log("Loaded venture.json");
+        }
+        private static T loadResource<T>(string text)
+        {
+            return JsonConvert.DeserializeObject<T>(text);
+        }
 
-        
         public override void Start()
         {
             _root = new ActionRunCoroutine(r => Run());
+            
         }
 
         public override void Stop()
@@ -60,7 +84,7 @@ namespace LlamaLibrary
         {
             //await LeveWindow(1018997);
             //await HousingWards();
-            await testKupoTickets();
+            await testVentures();
             //Navigator.PlayerMover = new SlideMover();
             //Navigator.NavigationProvider = new ServiceNavigationProvider();
 
@@ -68,6 +92,29 @@ namespace LlamaLibrary
            
             TreeRoot.Stop("Stop Requested");
             return true;
+        }
+        
+        public async Task testVentures()
+        {
+            //var ishgard = new IshgardHandin();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            Navigator.PlayerMover = new SlideMover();
+
+            Log($"Number of Retainers: {await HelperFunctions.GetNumberOfRetainers()}");
+
+            var ventures = await HelperFunctions.GetVentureFinishTimes();
+
+            foreach (var venture in ventures)
+            {
+                var timeleft = (venture.Value - HelperFunctions.UnixTimestamp) / 60;
+                string result = "Complete";
+                if (timeleft > 0)
+                    result = $"{timeleft}";
+                Log($"{HelperFunctions.GetRetainerName(venture.Key)} : {result}");
+            }
+            //await RetainerRoutine.ReadRetainers(CheckVentures);
+
+
         }
 
         public async Task testKupoTickets()
@@ -77,6 +124,73 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
 
             await ishgard.HandInKupoTicket(1);
+        }
+        
+        public async Task<bool> CheckVentures()
+        {
+            if (!SelectString.IsOpen)
+            {
+                return false;
+            }
+
+            if (SelectString.LineCount > 9)
+            {
+                if (SelectString.Lines().Contains(Translator.VentureCompleteText))
+                {
+                    Log("Venture Done");
+                    SelectString.ClickLineEquals(Translator.VentureCompleteText);
+
+                    await Coroutine.Wait(5000, () => RetainerTaskResult.IsOpen);
+
+                    if (!RetainerTaskResult.IsOpen)
+                    {
+                        Log("RetainerTaskResult didn't open");
+                        return false;
+                    }
+
+                    var taskId = AgentRetainerVenture.Instance.RetainerTask;
+
+                    var task = VentureData.First(i => i.Id == taskId);
+                        
+                    Log($"Finished Venture {task.Name}");
+                    Log($"Reassigning Venture {task.Name}");
+                        
+                    RetainerTaskResult.Reassign();
+                        
+                    await Coroutine.Wait(5000, () => RetainerTaskAsk.IsOpen);
+                    if (!RetainerTaskAsk.IsOpen)
+                    {
+                        Log("RetainerTaskAsk didn't open");
+                        return false;
+                    }
+
+                    if (RetainerTaskAskExtensions.CanAssign())
+                    {
+                        RetainerTaskAsk.Confirm();
+                    }
+                    else
+                    {
+                        Log($"RetainerTaskAsk Error: {RetainerTaskAskExtensions.GetErrorReason()}");
+                        RetainerTaskAsk.Close();
+                    }
+                        
+                    await Coroutine.Wait(1500, () => DialogOpen);
+                    await Coroutine.Sleep(200);
+                    if (DialogOpen) Next();
+                    await Coroutine.Sleep(200);
+                    await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                        
+                }
+                else
+                {
+                    Log("Venture Not Done");
+                }
+            }
+            else
+            {
+                Log("Venture Not Done");
+            }
+            return true;
         }
         
         public async Task<bool> testFacetCheck()

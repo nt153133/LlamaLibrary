@@ -14,7 +14,7 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
  namespace LlamaLibrary.Memory
 {
 #pragma warning disable CS0649
-    internal static class Offsets
+    internal static partial class Offsets
     {
         //[Offset("Search 48 85 D2 0F 84 ? ? ? ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 80 7A ? ? 41 8B E8 48 8B FA 48 8B F1 74 ? 48 8B CA E8 ? ? ? ? 48 8B C8 E8 ? ? ? ? EB ? 0F B6 42 ? A8 ? 74 ? 8B 42 ? 05 ? ? ? ? EB ? A8 ? 8B 42 ? 74 ? 05 ? ? ? ? 85 C0 0F 84 ? ? ? ? 48 89 9C 24 ? ? ? ? 48 8B CE 4C 89 B4 24 ? ? ? ? E8 ? ? ? ? 8B 9E ? ? ? ?")] //0x1BEA
         [Offset("Search 48 85 D2 0F 84 ? ? ? ? 55 56 57 41 56")]
@@ -125,7 +125,27 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         
         [Offset("Search 48 8D 05 ? ? ? ? C6 43 ? ? 48 89 03 48 8B C3 C7 43 ? ? ? ? ? Add 3 TraceRelative")]
         internal static IntPtr AgentRecommendEquip;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? BF ? ? ? ? 48 89 03 48 8D 73 ? Add 3 TraceRelative")]
+        internal static IntPtr AgentContentsInfo;
+    }
 
+    internal static partial class Offsets
+    {
+        [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B F0 48 85 C0 74 ? 48 83 38 ? Add 3 TraceRelative")]
+        internal static IntPtr RetainerData;
+        [Offset("Search 83 FA ? 73 ? 8B C2 0F B6 94 08 ? ? ? ? 80 FA ?")]
+        internal static IntPtr GetRetainerPointer; 
+        [Offset("Search 48 83 39 ? 4C 8B C9")]
+        internal static IntPtr GetNumberOfRetainers; 
+        [Offset("Search 48 8D 56 ? EB ? ? ? ? ? ? ? ? ? ? ? 40 53 Add 3 Read8")]
+        internal static int RetainerName;
+        [Offset("Search 83 FB ? 72 ? 33 D2 48 8D 4C 24 ? E8 ? ? ? ? 48 8D 15 ? ? ? ? Add 2 Read8")]
+        internal static int MaxRetainers;
+        [Offset("Search 66 83 78 ? ? 74 ? 8B 78 ? E8 ? ? ? ? Add 3 Read8")]
+        internal static int VentureTask;
+        [Offset("Search 8B 78 ? E8 ? ? ? ? 3B F8 Add 2 Read8")]
+        internal static int VentureFinishTime;
     }
 #pragma warning restore CS0649
 }
