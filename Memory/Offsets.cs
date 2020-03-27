@@ -138,6 +138,8 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         internal static IntPtr GetRetainerPointer; 
         [Offset("Search 48 83 39 ? 4C 8B C9")]
         internal static IntPtr GetNumberOfRetainers; 
+        [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 8B E9 41 8B D9 48 8B 0D ? ? ? ? 41 8B F8 8B F2")]
+        internal static IntPtr RequestRetainerData; 
         [Offset("Search 48 8D 56 ? EB ? ? ? ? ? ? ? ? ? ? ? 40 53 Add 3 Read8")]
         internal static int RetainerName;
         [Offset("Search 83 FB ? 72 ? 33 D2 48 8D 4C 24 ? E8 ? ? ? ? 48 8D 15 ? ? ? ? Add 2 Read8")]
@@ -146,6 +148,9 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         internal static int VentureTask;
         [Offset("Search 8B 78 ? E8 ? ? ? ? 3B F8 Add 2 Read8")]
         internal static int VentureFinishTime;
+        [Offset("Search B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 5C 24 ?? C6 85 ?? ?? ?? ?? ?? Add 1 Read32")]
+        internal static int RetainerNetworkPacket;
+        
     }
 #pragma warning restore CS0649
 }

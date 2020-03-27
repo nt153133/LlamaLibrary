@@ -233,7 +233,7 @@ namespace LlamaLibrary.Retainers
             Logging.Write(Colors.Pink, msg);
         }
 
-        internal static async Task<bool> VerifiedRetainerData()
+        internal static async Task<bool> VerifiedRetainerData2()
         {
             if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
             {
@@ -245,6 +245,17 @@ namespace LlamaLibrary.Retainers
             await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
             //AgentContentsInfo.Instance.Toggle();
             RaptureAtkUnitManager.GetWindowByName("ContentsInfo").SendAction(1, 3uL, 4294967295uL);
+            return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
+        }
+        
+        internal static async Task<bool> VerifiedRetainerData()
+        {
+            if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
+            {
+                return true;
+            }
+            RequestRetainerData();
+            await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
             return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
         }
 
@@ -314,6 +325,17 @@ namespace LlamaLibrary.Retainers
             }
 
             return results;
+        }
+
+        public static void RequestRetainerData()
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+                Core.Memory.CallInjected64<IntPtr>(Offsets.RequestRetainerData,
+                                                   Offsets.RetainerNetworkPacket,
+                                                   0,
+                                                   0,
+                                                   0,
+                                                   0);
         }
     }
 }
