@@ -25,6 +25,7 @@ using LlamaLibrary.Properties;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Retainers;
+using LlamaLibrary.Structs;
 using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
@@ -100,7 +101,7 @@ namespace LlamaLibrary
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             Navigator.PlayerMover = new SlideMover();
 
-            Log($"Number of Retainers: {await HelperFunctions.GetNumberOfRetainers()}");
+            /*Log($"Number of Retainers: {await HelperFunctions.GetNumberOfRetainers()}");
 
             var ventures = await HelperFunctions.GetVentureFinishTimes();
 
@@ -111,6 +112,14 @@ namespace LlamaLibrary
                 if (timeleft > 0)
                     result = $"{timeleft}";
                 Log($"{HelperFunctions.GetRetainerName(venture.Key)} : {result}");
+            }*/
+
+            var count = await HelperFunctions.GetNumberOfRetainers();
+            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+
+            foreach (var ret in rets)
+            {
+                Log(ret.ToString());
             }
             //await RetainerRoutine.ReadRetainers(CheckVentures);
 

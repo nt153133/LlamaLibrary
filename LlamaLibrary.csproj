@@ -166,6 +166,7 @@
     <Compile Include="Structs\HousingPlot.cs" />
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />
+    <Compile Include="Structs\RetainerInfo.cs" />
     <Compile Include="TesterBase.cs" />
   </ItemGroup>
   <ItemGroup>
