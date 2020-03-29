@@ -20,7 +20,7 @@ namespace LlamaLibrary.Structs
 
         public byte Level;
 
-        public byte FreeInventorySlots;
+        public byte FilledInventorySlots;
 
         public int Gil;
 
