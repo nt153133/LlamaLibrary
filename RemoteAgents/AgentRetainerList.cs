@@ -19,6 +19,10 @@ namespace LlamaLibrary.RemoteAgents
         public RetainerInfo[] OrderedRetainerList (RetainerInfo[] retainers)
         {
             int count = RetainerList.Count(i => i != IntPtr.Zero);
+
+            if (count == 0)
+                return retainers;
+            
             var result = new RetainerInfo[count]; // new List<KeyValuePair<int, RetainerInfo>>();
 
             //IntPtr[] RetainerList = Core.Memory.ReadArray<IntPtr>(new IntPtr(0x18FD0C64510) + 0x4a8, 0xA);
