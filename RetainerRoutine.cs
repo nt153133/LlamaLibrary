@@ -173,7 +173,7 @@ namespace LlamaLibrary
             
             var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
             var numRetainers = ordered.Length;
-            LogCritical($"Ordered length {numRetainers}");
+            //LogCritical($"Ordered length {numRetainers}");
 
             if (numRetainers <= 0)
             {

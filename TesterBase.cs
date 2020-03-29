@@ -42,7 +42,7 @@ namespace LlamaLibrary
         {
             Task.Factory.StartNew(() =>
             {
-                init();
+               // init();
                 _init = true;
                 Log("INIT DONE");
             });
@@ -88,12 +88,12 @@ namespace LlamaLibrary
         {
             //await LeveWindow(1018997);
             //await HousingWards();
-            await testVentures();
+           // await testVentures();
             //Navigator.PlayerMover = new SlideMover();
             //Navigator.NavigationProvider = new ServiceNavigationProvider();
 
 
-            //TreeRoot.Stop("Stop Requested");
+           TreeRoot.Stop("Stop Requested");
             return true;
         }
 
