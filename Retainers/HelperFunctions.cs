@@ -46,7 +46,7 @@ namespace LlamaLibrary.Retainers
 
         private static readonly uint GilItemId = DataManager.GetItem("Gil").Id;// 1;
         
-        public static int UnixTimestamp => (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        public static int UnixTimestamp => (Int32)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
 
         public static bool FilterStackable(BagSlot item)

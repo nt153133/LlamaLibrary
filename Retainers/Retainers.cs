@@ -162,7 +162,7 @@ namespace LlamaLibrary.Retainers
             var count = await HelperFunctions.GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
             
-            var ordered = AgentRetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
             //var retainerIndex = 0;
 
             //Settings variables
@@ -202,7 +202,7 @@ namespace LlamaLibrary.Retainers
             }
 
             ventures = RetainerList.Instance.NumberOfVentures;
-
+            
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
