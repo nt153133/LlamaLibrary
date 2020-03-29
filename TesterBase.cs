@@ -116,8 +116,10 @@ namespace LlamaLibrary
 
             var count = await HelperFunctions.GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+            
+            var ordered = AgentRetainerList.Instance.OrderedRetainerList(rets);
 
-            foreach (var ret in rets)
+            foreach (var ret in ordered)
             {
                 Log(ret.ToString());
             }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using ff14bot.Enums;
-using LlamaLibrary.Enums;
 
 namespace LlamaLibrary.Structs
 {
@@ -43,6 +42,8 @@ namespace LlamaLibrary.Structs
         
         private int Unknown4;
 
+        public bool Active => enabled == 1;
+
         public override string ToString()
         {
             return $"{Name} ({(enabled == 1 ? "enabled" : "disabled")}) - {Job} ({Level}) Gil: {Gil} Selling: {NumberOfMbItems} Venture: {VentureTask} VentureEnd: {UnixTimeStampToDateTime(VentureEndTimestamp)}";
@@ -51,7 +52,7 @@ namespace LlamaLibrary.Structs
         public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
         {
             // Unix timestamp is seconds past epoch
-            System.DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,System.DateTimeKind.Utc);
+            DateTime dtDateTime = new DateTime(1970,1,1,0,0,0,0,DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds( unixTimeStamp ).ToLocalTime();
             return dtDateTime;
         }

@@ -21,6 +21,7 @@ using LlamaLibrary.Memory;
 using LlamaLibrary.Properties;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.Structs;
 using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
@@ -157,7 +158,11 @@ namespace LlamaLibrary.Retainers
             Log("====================Retainers=====================");
             Log("==================================================");
             Log(" ");
-
+            
+            var count = await HelperFunctions.GetNumberOfRetainers();
+            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+            
+            var ordered = AgentRetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
             //var retainerIndex = 0;
 
             //Settings variables
@@ -171,7 +176,7 @@ namespace LlamaLibrary.Retainers
                 await RetainerRoutine.DeSelectRetainer();
             }
 
-            var numRetainers = RetainerList.Instance.NumberOfRetainers; //GetNumberOfRetainers();
+            var numRetainers = ordered.Count(); //GetNumberOfRetainers();
 
             var retList = new List<RetainerInventory>();
             var moveToOrder = new List<KeyValuePair<uint, int>>();
@@ -243,14 +248,18 @@ namespace LlamaLibrary.Retainers
 
                 Log("Done checking against player inventory");
 
-                if (RetainerSettings.Instance.ReassignVentures && hasJob && ventures > 2)
+                if (RetainerSettings.Instance.ReassignVentures && (ordered[retainerIndex].Job != ClassJobType.Adventurer) && ventures > 2 && (ordered[retainerIndex].VentureEndTimestamp - UnixTimestamp) <=0)
                 {
                     Log("Checking Ventures");
                     await CheckVentures();
                 }
+                else if ((ordered[retainerIndex].VentureEndTimestamp - UnixTimestamp) > 0)
+                {
+                    Log($"Venture will be done in {(ordered[retainerIndex].VentureEndTimestamp - UnixTimestamp)/60} minutes");
+                }
                 else
                 {
-                    Log($"Not Checking ventures: HasJob {hasJob} Ventures Tokens {ventures}");
+                    Log("Retainer has no job");
                 }
 
                 await RetainerRoutine.DeSelectRetainer();

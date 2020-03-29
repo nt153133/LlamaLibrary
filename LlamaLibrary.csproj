@@ -122,6 +122,7 @@
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
+    <Compile Include="RemoteAgents\AgentRetainerList.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
     <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
