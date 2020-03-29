@@ -25,6 +25,7 @@ namespace LlamaLibrary.Retainers
         private MyItemRole _itemRole;
         private ItemUiCategory _itemCategory;
         private bool _ventures;
+        private bool _loop;
 
         public RetainerSettings() : base(Path.Combine(CharacterSettingsDirectory, "RetainerSettings.json"))
         {
@@ -160,6 +161,21 @@ namespace LlamaLibrary.Retainers
                 if (_merge != value)
                 {
                     _merge = value;
+                    Save();
+                }
+            }
+        }
+
+        [Description("Loop to continue ventures")]
+        [DefaultValue(true)] //shift +x
+        public bool Loop
+        {
+            get => _loop;
+            set
+            {
+                if (_loop != value)
+                {
+                    _loop = value;
                     Save();
                 }
             }

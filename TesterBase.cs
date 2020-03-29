@@ -93,7 +93,7 @@ namespace LlamaLibrary
             //Navigator.NavigationProvider = new ServiceNavigationProvider();
 
 
-            TreeRoot.Stop("Stop Requested");
+            //TreeRoot.Stop("Stop Requested");
             return true;
         }
 
@@ -112,6 +112,34 @@ namespace LlamaLibrary
             }
 
             await RetainerRoutine.ReadRetainers(RetainerCheck);
+            await Coroutine.Sleep(1000);
+            if (!RetainerSettings.Instance.Loop)
+            {
+                Log($"Loop Setting {RetainerSettings.Instance.Loop}");
+                TreeRoot.Stop("Done playing with retainers");
+            }
+            var count = await HelperFunctions.GetNumberOfRetainers();
+            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+            var nextVenture = rets.Where(i=> i.VentureTask != 0).OrderBy(i => i.VentureEndTimestamp).First();
+            if (nextVenture.VentureEndTimestamp == 0)
+            {
+                Log($"No ventures running");
+                TreeRoot.Stop("Done playing with retainers");
+            }
+            
+            if (SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) <= 2)
+            {
+                Log($"Get more venture tokens...bum");
+                TreeRoot.Stop("Done playing with retainers");
+            }
+            
+            var now = (Int32) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            var timeLeft = nextVenture.VentureEndTimestamp - now;
+
+            Log($"Waiting till {RetainerInfo.UnixTimeStampToDateTime(nextVenture.VentureEndTimestamp)}");
+            await Coroutine.Sleep(timeLeft * 1000);
+            await Coroutine.Sleep(30000);
+            Log($"{nextVenture.Name} Venture should be done");
         }
 
         public async Task<bool> RetainerCheck(RetainerInfo retainer)
