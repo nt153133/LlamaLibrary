@@ -151,7 +151,7 @@ namespace LlamaLibrary.Retainers
 
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-            var nextVenture = rets.Where(i => i.VentureTask != 0).OrderBy(i => i.VentureEndTimestamp).First();
+            var nextVenture = rets.Where(i => i.VentureTask != 0 && i.Active).OrderBy(i => i.VentureEndTimestamp).First();
             if (nextVenture.VentureEndTimestamp == 0)
             {
                 LogCritical($"No ventures running");
