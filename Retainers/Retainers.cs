@@ -162,7 +162,7 @@ namespace LlamaLibrary.Retainers
             var count = await HelperFunctions.GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
             
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
+           
             //var retainerIndex = 0;
 
             //Settings variables
@@ -175,7 +175,7 @@ namespace LlamaLibrary.Retainers
             {
                 await RetainerRoutine.DeSelectRetainer();
             }
-
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
             var numRetainers = ordered.Count(); //GetNumberOfRetainers();
 
             var retList = new List<RetainerInventory>();
