@@ -51,12 +51,12 @@ namespace LlamaLibrary.RemoteWindows
         {
             int count = retainers.Length;
             var result = new RetainerInfo[count];
-            Logging.Write($"Retainer length {retainers.Length}");
+            //Logging.Write($"Retainer length {retainers.Length}");
             int index = 0;
 
             for (int i = 0; i < count; i++)
             {
-                Logging.Write($"Retainer name:{RetainerName(i)}");
+                //Logging.Write($"Retainer name:{RetainerName(i)}");
                 result[index] = retainers.First(j => j.Name.Trim().Contains(RetainerName(i).Trim()));
                 Logging.Write($"{i} {result[index].Name}");
                 index++;

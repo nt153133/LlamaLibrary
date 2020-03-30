@@ -151,6 +151,13 @@ namespace LlamaLibrary.Retainers
 
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+
+            if (!rets.Any(i => i.VentureTask != 0 && i.Active))
+            {
+                LogCritical($"No ventures assigned or completed");
+                TreeRoot.Stop("Done playing with retainers");
+            }
+            
             var nextVenture = rets.Where(i => i.VentureTask != 0 && i.Active).OrderBy(i => i.VentureEndTimestamp).First();
             if (nextVenture.VentureEndTimestamp == 0)
             {
