@@ -131,6 +131,15 @@ namespace LlamaLibrary
             {
                 Log($"{i} {RetainerList.Instance.RetainerName(i)}");
             }
+            
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
+            
+            
+            foreach (var ret in ordered)
+            {
+                Log($"{index} {ret.Name}");
+                index++;
+            }
 
             RetainerList.Instance.Close();
         }

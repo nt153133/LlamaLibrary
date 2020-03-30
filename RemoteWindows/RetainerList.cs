@@ -56,7 +56,8 @@ namespace LlamaLibrary.RemoteWindows
 
             for (int i = 0; i < count; i++)
             {
-                result[index] = retainers.First(j => j.Name.Contains(RetainerName(i)));
+                Logging.Write($"Retainer name:{RetainerName(i)}");
+                result[index] = retainers.First(j => j.Name.Trim().Contains(RetainerName(i).Trim()));
                 Logging.Write($"{i} {result[index].Name}");
                 index++;
             }
