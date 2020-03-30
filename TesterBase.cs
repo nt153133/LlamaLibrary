@@ -88,7 +88,7 @@ namespace LlamaLibrary
         {
             //await LeveWindow(1018997);
             //await HousingWards();
-           // await testVentures();
+            await testVentures();
             //Navigator.PlayerMover = new SlideMover();
             //Navigator.NavigationProvider = new ServiceNavigationProvider();
 
@@ -103,43 +103,36 @@ namespace LlamaLibrary
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             Navigator.PlayerMover = new SlideMover();
 
-            var bell = HelperFunctions.NearestSummoningBell();
-
-            if (bell == null)
+            if (!RetainerList.Instance.IsOpen)
             {
-                Log("No summoning bell near by");
+                await HelperFunctions.UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                Log("Can't find open bell either you have none or not near a bell");
                 return;
             }
 
-            await RetainerRoutine.ReadRetainers(RetainerCheck);
-            await Coroutine.Sleep(1000);
-            if (!RetainerSettings.Instance.Loop)
-            {
-                Log($"Loop Setting {RetainerSettings.Instance.Loop}");
-                TreeRoot.Stop("Done playing with retainers");
-            }
             var count = await HelperFunctions.GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-            var nextVenture = rets.Where(i=> i.VentureTask != 0).OrderBy(i => i.VentureEndTimestamp).First();
-            if (nextVenture.VentureEndTimestamp == 0)
-            {
-                Log($"No ventures running");
-                TreeRoot.Stop("Done playing with retainers");
-            }
-            
-            if (SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) <= 2)
-            {
-                Log($"Get more venture tokens...bum");
-                TreeRoot.Stop("Done playing with retainers");
-            }
-            
-            var now = (Int32) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            var timeLeft = nextVenture.VentureEndTimestamp - now;
 
-            Log($"Waiting till {RetainerInfo.UnixTimeStampToDateTime(nextVenture.VentureEndTimestamp)}");
-            await Coroutine.Sleep(timeLeft * 1000);
-            await Coroutine.Sleep(30000);
-            Log($"{nextVenture.Name} Venture should be done");
+            int index = 0;
+            foreach (var ret in rets)
+            {
+                Log($"{index} {ret.Name}");
+                index++;
+            }
+
+            index = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                Log($"{i} {RetainerList.Instance.RetainerName(i)}");
+            }
+
+            RetainerList.Instance.Close();
         }
 
         public async Task<bool> RetainerCheck(RetainerInfo retainer)
