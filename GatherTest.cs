@@ -69,11 +69,21 @@ namespace LlamaLibrary
             new Vector3(379.7924f, 292.971f, 569.1271f)
         };
         
-        private static readonly Vector3[] afkSpots =
+        private static readonly Vector3[] afkSpots2 =
         {
             new Vector3(60.57302f, 246.5133f, -290.3074f),
             new Vector3(168.4951f, 170.8651f, 72.97058f),
             new Vector3(-9.105042f, 158.3274f, 129.1192f)
+        };
+        
+        private static readonly Vector3[] afkSpots =
+        {
+
+            new Vector3(-169.0124f, -1.308149f, -310.2521f),
+            
+            new Vector3(214.7894f, -144.3608f, -267.1053f),
+            
+            new Vector3(318.1068f, -4.934579f, 408.4625f)
         };
         
         //Above orange
@@ -164,7 +174,8 @@ namespace LlamaLibrary
                 {
                     case 133:
                         if (lastWeather == 133) break;
-                        await FlyTo(new Vector3(-295.9257f, 268.4518f, -370.327f)); await MineWeather(ClassJobType.Miner, umbralFlareAbove, umbralFlare);
+                        //await FlyTo(new Vector3(-295.9257f, 268.4518f, -370.327f)); 
+                        await MineWeather(ClassJobType.Miner, umbralFlareAbove, umbralFlare);
                         standBy = afkSpots[time.Next(0, afkSpots.Length)];
                         await StandBy();
                         break;
@@ -235,29 +246,30 @@ namespace LlamaLibrary
             lastChange.Reset();
             await SwitchToJob(jobType);
             
-            await FlyTo(above);
-            
-            Log("Above Node Location");
+            //await FlyTo(above);
+            var safeSpot = safeSpots.ToList().OrderBy(i => i.DistanceSqr(Core.Me.Location)).First();
+            await FlyTo(safeSpot);
+            Log("Near Node Location");
             Log($"Current Weather: {WorldManager.CurrentWeather}  {WorldManager.CurrentWeatherId}");
             GetNodes();
             var node = WeatherNodeList.FirstOrDefault();
 
             if (node != null)
             {
-                var safeSpot = safeSpots.ToList().OrderBy(i => i.DistanceSqr(node.Location)).First();
-                Log("Node Found");
-                await FlyTo(safeSpot);
+                //safeSpot = safeSpots.ToList().OrderBy(i => i.DistanceSqr(node.Location)).First();
+                //Log("Node Found");
+                await FlyTo(node.Location);
 
-                if (MovementManager.IsFlying)
+                /*if (MovementManager.IsFlying)
                 {
                     MovementManager.StartDescending();
                     await Coroutine.Wait(2000, () => !MovementManager.IsFlying);
                     MovementManager.StopDescending();
-                }
+                }*/
                 
                 var _target = node.Location;
                 Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 2)
+                while (_target.Distance2DSqr(Core.Me.Location) >= 3)
                 {
                     Navigator.PlayerMover.MoveTowards(_target);
                     await Coroutine.Sleep(100);
@@ -355,7 +367,7 @@ namespace LlamaLibrary
 
                 Log($"Gathering: {items}");
 
-                while (GatheringManager.SwingsRemaining > 0)
+                while (GatheringManager.SwingsRemaining > 0 && GatheringManager.WindowOpen)
                 {
                     if (Core.Me.CurrentGP >= 100)
                     {
@@ -462,7 +474,7 @@ namespace LlamaLibrary
         }
         
         
-        internal static async Task<bool> FlyTo(Vector3 loc)
+        internal static async Task<bool> FlyTo2(Vector3 loc)
         {
             var moving = MoveResult.GeneratingPath;
             while (!(moving == MoveResult.Done ||
@@ -479,6 +491,11 @@ namespace LlamaLibrary
             MovementManager.MoveStop();
 
             return true;
+        }
+        
+        internal static async Task<bool> FlyTo(Vector3 loc)
+        {
+            return await Lisbeth.TravelTo("The Diadem", loc);
         }
     }
 }
