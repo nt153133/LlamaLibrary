@@ -4,9 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
+using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
+using LlamaLibrary.Helpers;
 using LlamaLibrary.Structs;
 using static ff14bot.RemoteWindows.Talk;
 
@@ -49,6 +51,9 @@ namespace LlamaLibrary.RemoteWindows
 
         public RetainerInfo[] OrderedRetainerList(RetainerInfo[] retainers)
         {
+            if (Translator.Language == Language.Chn)
+                return retainers;
+            
             int count = retainers.Length;
             var result = new RetainerInfo[count];
             //Logging.Write($"Retainer length {retainers.Length}");
