@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -12,6 +13,9 @@ using ff14bot.Managers;
 using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Helpers;
+using LlamaLibrary.Memory;
+using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.Retainers
@@ -41,6 +45,8 @@ namespace LlamaLibrary.Retainers
         public const InventoryBagId PlayerGilId = InventoryBagId.Currency;
 
         private static readonly uint GilItemId = DataManager.GetItem("Gil").Id;// 1;
+        
+        public static int UnixTimestamp => (Int32)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
 
         public static bool FilterStackable(BagSlot item)
@@ -70,7 +76,7 @@ namespace LlamaLibrary.Retainers
             return fromBagSlot.Count + toBagSlot.Count <= toBagSlot.Item.StackSize && fromBagSlot.Move(toBagSlot);
         }
 
-        public static int GetNumberOfRetainers()
+        public static int GetNumberOfRetainersLua()
         {
             var bell = GetBellLuaString();
             var numOfRetainers = 0;
@@ -107,7 +113,7 @@ namespace LlamaLibrary.Retainers
         public static GameObject NearestSummoningBell()
         {
             var list = GameObjectManager.GameObjects
-                .Where(r => r.EnglishName == "Summoning Bell" || r.EnglishName == "传唤铃")
+                .Where(r => r.Name == Translator.SummoningBell)
                 .OrderBy(j => j.Distance())
                 .ToList();
 
@@ -223,7 +229,113 @@ namespace LlamaLibrary.Retainers
 
         private static void Log(string test)
         {
-            throw new NotImplementedException();
+            var msg = string.Format("[Helper] " + test);
+            Logging.Write(Colors.Pink, msg);
+        }
+
+        internal static async Task<bool> VerifiedRetainerData2()
+        {
+            if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
+            {
+                return true;
+            }
+            AgentContentsInfo.Instance.Toggle();
+            await Coroutine.Wait(5000, () => RaptureAtkUnitManager.GetWindowByName("ContentsInfo") != null);
+            await Coroutine.Sleep(500);
+            await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
+            //AgentContentsInfo.Instance.Toggle();
+            RaptureAtkUnitManager.GetWindowByName("ContentsInfo").SendAction(1, 3uL, 4294967295uL);
+            return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
+        }
+        
+        internal static async Task<bool> VerifiedRetainerData()
+        {
+            if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
+            {
+                return true;
+            }
+            RequestRetainerData();
+            await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
+            return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
+        }
+
+        public static async Task<int> GetNumberOfRetainers()
+        {
+            var verified = await VerifiedRetainerData();
+            if (!verified)
+                return 0;
+
+            lock (Core.Memory.Executor.AssemblyLock)
+                return Core.Memory.CallInjected64<int>(Offsets.GetNumberOfRetainers,
+                                                       Offsets.RetainerData);
+        }
+
+        public static string GetRetainerName(int index)
+        {
+            IntPtr retainerPtr;
+            lock (Core.Memory.Executor.AssemblyLock)
+                retainerPtr = Core.Memory.CallInjected64<IntPtr>(Offsets.GetRetainerPointer,
+                                                                 Offsets.RetainerData,
+                                                                 index);
+            if (Core.Memory.Read<uint>(retainerPtr) == 0)
+                return "";
+    
+            return Core.Memory.ReadString(retainerPtr + Offsets.RetainerName, Encoding.UTF8);
+        }
+
+        public static async Task<List<KeyValuePair<int, uint>>> GetVentureFinishTimes()
+        {
+            
+            IntPtr retainerPtr;
+            List<KeyValuePair<int, uint>> results = new List<KeyValuePair<int, uint>>();
+            var verified = await VerifiedRetainerData();
+            if (! verified)
+                return results;
+            
+            var numRetainers = await GetNumberOfRetainers();
+            for (int i = 0; i < numRetainers; i++)
+            {
+                lock (Core.Memory.Executor.AssemblyLock)
+                    retainerPtr = Core.Memory.CallInjected64<IntPtr>(Offsets.GetRetainerPointer,
+                                                                     Offsets.RetainerData,
+                                                                     i);
+                if (Core.Memory.Read<uint>(retainerPtr) == 0)
+                    break;
+                
+                var task = Core.Memory.Read<uint>(retainerPtr + Offsets.VentureTask);
+
+                if (task == 0)
+                {
+                    continue;
+                }
+
+                var finish = Core.Memory.Read<uint>(retainerPtr + Offsets.VentureFinishTime);
+                results.Add(new KeyValuePair<int, uint>(i, finish));
+                
+                /*var timeLeft = finish - unixTimestamp;
+    
+                if (timeLeft < 0)
+                {
+                    Log("\tVenture Complete");
+                }
+                else
+                {
+                    Log("\t" + timeLeft/60 + " Minutes Left");
+                }*/
+            }
+
+            return results;
+        }
+
+        public static void RequestRetainerData()
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+                Core.Memory.CallInjected64<IntPtr>(Offsets.RequestRetainerData,
+                                                   Offsets.RetainerNetworkPacket,
+                                                   0,
+                                                   0,
+                                                   0,
+                                                   0);
         }
     }
 }

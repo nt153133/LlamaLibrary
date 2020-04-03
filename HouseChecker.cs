@@ -12,6 +12,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
+using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Helpers;
@@ -186,7 +187,7 @@ namespace LlamaLibrary
             {
                 await Coroutine.Sleep(2000);
             } while (Core.Me.IsCasting);
-
+            await Coroutine.Sleep(2000);
             if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
 
             await Coroutine.Wait(10000, () => GameObjectManager.GetObjectByNPCId(aetheryteId) != null);
@@ -196,15 +197,28 @@ namespace LlamaLibrary
 
             if (!unit.IsWithinInteractRange)
             {
-                var target = unit.Location;
-                Navigator.PlayerMover.MoveTowards(target);
+                Log($"Not in range {unit.Distance2D()}");
+                var target = unit.Location; 
+                if (WorldManager.RawZoneId == 129)
+                    target = new Vector3(-89.30112f, 18.80033f, -2.019181f);
+                else if (WorldManager.RawZoneId == 628)
+                {
+                    target = new Vector3(48.03579f, 4.549999f, -31.83851f);
+                }
+                //await CommonTasks.MoveAndStop(new MoveToParameters(target.FanOutRandom(2f), unit.Name), 2f, true);
+                await Navigation.GetTo(WorldManager.ZoneId, target);
+/*                Navigator.PlayerMover.MoveTowards(target);
                 while (!unit.IsWithinInteractRange)
                 {
                     Navigator.PlayerMover.MoveTowards(target);
                     await Coroutine.Sleep(100);
                 }
 
-                Navigator.PlayerMover.MoveStop();
+                Navigator.PlayerMover.MoveStop();*/
+            }
+            else
+            {
+                Log($"In range {unit.Distance2D()}");
             }
 
             unit.Target();
@@ -416,9 +430,9 @@ namespace LlamaLibrary
             return output;
         }
 
-        private void Log(string text, params object[] args)
+        private static void Log(string text, params object[] args)
         {
-            var msg = string.Format("[" + Name + "] " + text, args);
+            var msg = string.Format("[Housing Checker] " + text, args);
             Logging.Write(Colors.Pink, msg);
         }
         

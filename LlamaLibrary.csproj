@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -62,15 +62,19 @@
     <Compile Include="Enums\MiniGameResult.cs" />
     <Compile Include="Enums\MyItemRole.cs" />
     <Compile Include="Enums\RetainerRole.cs" />
+    <Compile Include="Enums\VentureStatus.cs" />
     <Compile Include="Extensions\BagExtensions.cs" />
     <Compile Include="Extensions\BagSlotExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\GatheringPointObjectExtensions.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
+    <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
+    <Compile Include="Helpers\Translator.cs" />
     <Compile Include="HouseChecker.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="Reduce\ReduceSettingsForm.designer.cs">
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RemoteAgents\AgentContentsInfo.cs" />
     <Compile Include="RemoteAgents\AgentDawn.cs" />
     <Compile Include="RemoteAgents\AgentHandIn.cs" />
     <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
@@ -117,6 +122,7 @@
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
+    <Compile Include="RemoteAgents\AgentRetainerList.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
     <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
@@ -129,6 +135,8 @@
     <Compile Include="RemoteWindows\GuildLeve.cs" />
     <Compile Include="RemoteWindows\HousingSelectBlock.cs" />
     <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
+    <Compile Include="RemoteWindows\HWDGathereInspect.cs" />
+    <Compile Include="RemoteWindows\HWDLottery.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />
@@ -146,6 +154,7 @@
     <Compile Include="Retainers\Retainers.cs" />
     <Compile Include="Retainers\RetainerSettings.cs" />
     <Compile Include="Retainers\RetainersPull.cs" />
+    <Compile Include="Retainers\RetainerTaskData.cs" />
     <Compile Include="Retainers\RetainerTasks.cs" />
     <Compile Include="Retainers\RetainersSettingsForm.cs">
       <SubType>Form</SubType>
@@ -158,6 +167,7 @@
     <Compile Include="Structs\HousingPlot.cs" />
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />
+    <Compile Include="Structs\RetainerInfo.cs" />
     <Compile Include="TesterBase.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Materia.json" />
+    <Content Include="Resources\Ventures.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

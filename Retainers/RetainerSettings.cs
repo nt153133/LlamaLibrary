@@ -24,6 +24,8 @@ namespace LlamaLibrary.Retainers
         private int _numOfRetainers;
         private MyItemRole _itemRole;
         private ItemUiCategory _itemCategory;
+        private bool _ventures;
+        private bool _loop;
 
         public RetainerSettings() : base(Path.Combine(CharacterSettingsDirectory, "RetainerSettings.json"))
         {
@@ -76,65 +78,20 @@ namespace LlamaLibrary.Retainers
             }
         }
 
-
-
-        
-        [Description("Pull by role")]
+        [Description("Reassign Ventures")]
         [DefaultValue(true)] //shift +x
-        public bool RoleCheck
+        public bool ReassignVentures
         {
-            get => _role;
+            get => _ventures;
             set
             {
-                if (_role != value)
+                if (_ventures != value)
                 {
-                    _role = value;
+                    _ventures = value;
                     Save();
                 }
             }
         }
-        
-        [Description("Role to pull from retainers")]
-        [DefaultValue(MyItemRole.Housing)] //shift +x
-        public MyItemRole ItemRoleToPull
-        {
-            get => _itemRole;
-            set
-            {
-                if (_itemRole == value) return;
-                _itemRole = value;
-                Save();
-            }
-        }
-        
-        [Description("Pull by Category")]
-        [DefaultValue(true)] //shift +x
-        public bool CategoryCheck
-        {
-            get => _category;
-            set
-            {
-                if (_category != value)
-                {
-                    _category = value;
-                    Save();
-                }
-            }
-        }
-        
-        [Description("Category to pull from retainers")]
-        [DefaultValue(ItemUiCategory.Window)] //shift +x
-        public ItemUiCategory ItemCategoryToPull
-        {
-            get => _itemCategory;
-            set
-            {
-                if (_itemCategory == value) return;
-                _itemCategory = value;
-                Save();
-            }
-        }
-
 
         [Description("Don't try and merge duplicate item stacks between retainers")]
         [DefaultValue(false)] //shift +x
@@ -146,6 +103,21 @@ namespace LlamaLibrary.Retainers
                 if (_merge != value)
                 {
                     _merge = value;
+                    Save();
+                }
+            }
+        }
+
+        [Description("Loop to continue ventures")]
+        [DefaultValue(true)] //shift +x
+        public bool Loop
+        {
+            get => _loop;
+            set
+            {
+                if (_loop != value)
+                {
+                    _loop = value;
                     Save();
                 }
             }

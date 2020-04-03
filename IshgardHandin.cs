@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System.CodeDom;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Buddy.Coroutines;
 using Clio.Utilities;
 using ff14bot;
 using ff14bot.Behavior;
+using ff14bot.Enums;
+using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
@@ -27,46 +31,130 @@ namespace LlamaLibrary
 
         private GameObject Npc => GameObjectManager.GameObjects.FirstOrDefault(i => ids.Contains(i.NpcId) && i.IsVisible);
         private GameObject VendorNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031680 && i.IsVisible);
+        
+        private GameObject GatherNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031693 && i.IsVisible);
+        
+        private GameObject KupoNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031692 && i.IsVisible);
 
-
-        public async Task<bool> HandInItem(uint itemId, int index, int job)
+        public async Task<bool> HandInGatheringItem(int job)
         {
-            //GameObjectType.EventNpc;
-
-            if (!HWDSupply.Instance.IsOpen && Npc == null) await GetToNpc();
-
-            if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 5f)
+            if ((!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) || GatherNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(-20.04274f, -16f, 141.3337f));
+            
+            if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 4f)
             {
-                // NpcId = Npc.NpcId;
-                // await CommonTasks.MoveAndStop(
-                //     new MoveToParameters(Npc.Location, "Moving To HandinVendor"), 2f);
-                //await CommonTasks.MoveAndStop(Npc.Location, "Moving To HandinVendor");
-
-                var _target = new Vector3(10.58188f, -15.96282f, 163.8702f);
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-
-                _target = Npc.Location;
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 4)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-
-
-                Navigator.PlayerMover.MoveStop();
+                await Navigation.OffMeshMove(GatherNpc.Location);
                 await Coroutine.Sleep(500);
             }
 
+            if (!HWDGathereInspect.Instance.IsOpen)
+            {
+                GatherNpc.Interact();
+                await Coroutine.Wait(5000, () => HWDGathereInspect.Instance.IsOpen || Talk.DialogOpen);
+                await Coroutine.Sleep(100);
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(5000, () => !Talk.DialogOpen);
+                }
+
+                await Coroutine.Wait(5000, () => HWDGathereInspect.Instance.IsOpen);
+            }
+
+            if (HWDGathereInspect.Instance.IsOpen)
+            {
+                HWDGathereInspect.Instance.ClickClass(job);
+                await Coroutine.Sleep(500);
+                
+                if(HWDGathereInspect.Instance.CanAutoSubmit());
+                {
+                   HWDGathereInspect.Instance.ClickAutoSubmit();
+                   await Coroutine.Wait(6000, () => HWDGathereInspect.Instance.CanRequestInspection());
+                   if (HWDGathereInspect.Instance.CanRequestInspection())
+                       HWDGathereInspect.Instance.ClickRequestInspection();
+                }
+            }
+
+            return false;
+        }
+        
+        public async Task<bool> HandInKupoTicket(int slot)
+        {
+            if ((!HWDLottery.Instance.IsOpen && KupoNpc == null) || KupoNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(43.59162f, -16f, 170.3864f));
+
+            if (!HWDLottery.Instance.IsOpen && KupoNpc.Location.Distance(Core.Me.Location) > 4f)
+            {
+                await Navigation.OffMeshMove(KupoNpc.Location);
+                await Coroutine.Sleep(500);
+            }
+            
+            if (!HWDLottery.Instance.IsOpen && KupoNpc != null)
+            {
+                KupoNpc.Interact();
+                Log("Interact with npc");
+                await Coroutine.Wait(5000, () => HWDLottery.Instance.IsOpen || Talk.DialogOpen);
+                await Coroutine.Sleep(100);
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(5000, () => !Talk.DialogOpen);
+                }
+                Log("Talking done");
+                await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+
+                if (SelectYesno.IsOpen)
+                {
+                    SelectYesno.Yes();
+                    Log("Select Yes/No open");
+                    await Coroutine.Wait(5000, () => HWDLottery.Instance.IsOpen);
+                    await Coroutine.Sleep(4000);
+                    Log("Ticket Should be loaded");
+                }
+            }
+
+            if (HWDLottery.Instance.IsOpen)
+            {
+                Log("Clicking");
+                await HWDLottery.Instance.ClickSpot(slot);
+                await Coroutine.Sleep(1000);
+                HWDLottery.Instance.Close();
+                Log("Close");
+                
+                await Coroutine.Wait(5000, () => SelectYesno.IsOpen || Talk.DialogOpen);
+                Log($"Select Yes/No {SelectYesno.IsOpen} Talk {Talk.DialogOpen}");
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(2000, () => !Talk.DialogOpen);
+                    await Coroutine.Wait(2000, () => Talk.DialogOpen || SelectYesno.IsOpen);
+                }
+
+                await Coroutine.Sleep(1000);
+
+                await HandInKupoTicket(slot);
+
+            }
+            else
+            {
+                Log("Out of Tickets");
+            }
+            Log("Done with Kupo Tickets");
+            return false;
+        }
+        public async Task<bool> HandInItem(uint itemId, int index, int job)
+        {
+            if ((!HWDSupply.Instance.IsOpen && Npc == null) || Npc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(43.59162f, -16f, 170.3864f));
+
+            if (!HWDSupply.Instance.IsOpen && Npc.Location.Distance(Core.Me.Location) > 4f)
+            {
+                await Navigation.OffMeshMove(Npc.Location);
+                await Coroutine.Sleep(500);
+            }
+            
             if (!HWDSupply.Instance.IsOpen)
             {
                 //NpcId = GameObjectManager.GameObjects.First(i => i.EnglishName == EnglishName).NpcId;
@@ -97,35 +185,70 @@ namespace LlamaLibrary
                     HWDSupply.Instance.ClickItem(index);
 
                     await Coroutine.Wait(5000, () => Request.IsOpen);
-                    await Coroutine.Sleep(1000);
+                    await Coroutine.Sleep(700);
                     item.Handover();
-                    await Coroutine.Sleep(200);
+                    await Coroutine.Sleep(100);
                     await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
                     Request.HandOver();
+                    
+                    if (ScriptConditions.Helpers.GetSkybuilderScrips() > 9000 )
+                        await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+                    else
+                    {
+                        await Coroutine.Sleep(100);
+                    }
 
+                    if (Translator.Language != Language.Chn)
+                    {
+                        Log($"Kupo Tickets: {HWDSupply.Instance.NumberOfKupoTickets()}");
+
+                        if (HWDSupply.Instance.NumberOfKupoTickets() >= 9)
+                        {
+                            Log($"Going to turn in Kupo Tickets: {HWDSupply.Instance.NumberOfKupoTickets()}");
+                            if (SelectYesno.IsOpen)
+                            {
+                                SelectYesno.Yes();
+                                await Coroutine.Sleep(1000);
+                            }
+
+                            HWDSupply.Instance.Close();
+                            await Coroutine.Sleep(2000);
+                            await HandInKupoTicket(1);
+                            break;
+
+                        }
+                    }
+
+                    if (!SelectYesno.IsOpen)
+                    {
+                        continue;
+                    }
+
+                    SelectYesno.Yes();
                     await Coroutine.Sleep(2000);
                 }
             }
 
+            if (Request.IsOpen)
+            {
+                Request.Cancel();
+                await Coroutine.Sleep(2000);
+            }
+            
+            if (InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
+                await HandInItem(itemId, index, job);
             return false;
         }
 
         public async Task<bool> BuyItem(uint itemId)
         {
-            if (!ShopExchangeCurrency.Open && VendorNpc == null) await GetToVendorNpc();
+            if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(36.33978f, -16f, 145.3877f));
 
-            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 6f)
+            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 4f)
             {
-                var _target = VendorNpc.Location;
-                Navigator.PlayerMover.MoveTowards(_target);
-                while (_target.Distance2D(Core.Me.Location) >= 6)
-                {
-                    Navigator.PlayerMover.MoveTowards(_target);
-                    await Coroutine.Sleep(100);
-                }
-
-                Navigator.PlayerMover.MoveStop();
-                await Coroutine.Sleep(1000);
+                await Navigation.OffMeshMove(VendorNpc.Location);
+                await Coroutine.Sleep(500);
             }
 
             if (!ShopExchangeCurrency.Open)
@@ -278,6 +401,7 @@ namespace LlamaLibrary
 
             Navigator.PlayerMover.MoveStop();
 
+            
             target = VendorNpc.Location;
             Navigator.PlayerMover.MoveTowards(target);
             while (target.Distance2D(Core.Me.Location) >= 4)
@@ -385,6 +509,103 @@ namespace LlamaLibrary
             }
 
             return Npc.Location.Distance(Core.Me.Location) <= 5f;
+        }
+        
+        public async Task<bool> GetToGatherNpc()
+        {
+            if (WorldManager.ZoneId != ZoneId && WorldManager.ZoneId != 886)
+            {
+                while (Core.Me.IsCasting)
+                {
+                    await Coroutine.Sleep(1000);
+                }
+
+                if (!ConditionParser.HasAetheryte(AetheryteId))
+                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. You don't have that Aetheryte so do something about it...");
+                    //TreeRoot.Stop();
+                    return false;
+
+                if (!WorldManager.TeleportById(AetheryteId))
+                    //Logger.Error($"We can't get to {Constants.EntranceZone.CurrentLocaleAethernetName}. something is very wrong...");
+                    //TreeRoot.Stop();
+                    return false;
+
+                while (Core.Me.IsCasting)
+                {
+                    await Coroutine.Sleep(1000);
+                }
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+
+                await Coroutine.Wait(10000, () => WorldManager.ZoneId == FoundationZoneId);
+                await Coroutine.Sleep(3000);
+
+                await Coroutine.Wait(10000, () => GameObjectManager.GetObjectByNPCId(70) != null);
+                await Coroutine.Sleep(3000);
+
+                var unit = GameObjectManager.GetObjectByNPCId(70);
+
+                if (!unit.IsWithinInteractRange)
+                {
+                    var _target = unit.Location;
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    while (!unit.IsWithinInteractRange)
+                    {
+                        Navigator.PlayerMover.MoveTowards(_target);
+                        await Coroutine.Sleep(100);
+                    }
+
+                    Navigator.PlayerMover.MoveStop();
+                }
+
+                unit.Target();
+                unit.Interact();
+                await Coroutine.Sleep(1000);
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                await Coroutine.Sleep(500);
+                if (SelectString.IsOpen)
+                    SelectString.ClickSlot(1);
+
+                await Coroutine.Sleep(5000);
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+
+                await Coroutine.Sleep(3000);
+            }
+
+            //await CommonTasks.MoveTo(Npc.Location, "Moving To HandinVendor");
+
+
+            if (GatherNpc.Location.Distance(Core.Me.Location) > 5f)
+            {
+                var _target = new Vector3(-21.62485f, -16f, 141.3661f);
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+
+                _target = GatherNpc.Location;
+                Navigator.PlayerMover.MoveTowards(_target);
+                while (_target.Distance2D(Core.Me.Location) >= 4)
+                {
+                    Navigator.PlayerMover.MoveTowards(_target);
+                    await Coroutine.Sleep(100);
+                }
+
+                Navigator.PlayerMover.MoveStop();
+            }
+
+            return Npc.Location.Distance(Core.Me.Location) <= 5f;
+        }
+        
+        private static void Log(string text, params object[] args)
+        {
+            var msg = string.Format("[Ishgard Handin] " + text, args);
+            Logging.Write(Colors.Aquamarine, msg);
         }
     }
 }

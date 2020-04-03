@@ -94,8 +94,8 @@ namespace MasterPieceSupplyTest
             {
                 Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
                 var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, "Gather");
-                if (!item.Value.Value.Equals("Fisher"))
-                    outList.Add(order);
+                //if (!item.Value.Value.Equals("Fisher"))
+                outList.Add(order);
                 id++;
             }
             

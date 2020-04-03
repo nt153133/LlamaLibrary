@@ -160,8 +160,8 @@ namespace LlamaLibrary.Materia
                                 return false;
                             }
 
-                            MateriaAttach.Instance.ClickItem(0);
-                            await Coroutine.Sleep(1000);
+                           // MateriaAttach.Instance.ClickItem(0);
+                           // await Coroutine.Sleep(1000);
                             MateriaAttach.Instance.ClickMateria(0);
                             await Coroutine.Sleep(1000);
                             await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen);
@@ -169,8 +169,8 @@ namespace LlamaLibrary.Materia
 
                         if (!MateriaAttachDialog.Instance.IsOpen)
                         {
-                            MateriaAttach.Instance.ClickItem(0);
-                            await Coroutine.Sleep(1000);
+                           // MateriaAttach.Instance.ClickItem(0);
+                           // await Coroutine.Sleep(1000);
                             MateriaAttach.Instance.ClickMateria(0);
                             await Coroutine.Sleep(1000);
                             await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen);
@@ -187,7 +187,15 @@ namespace LlamaLibrary.Materia
                         await Coroutine.Sleep(7000);
 
                         await Coroutine.Wait(7000, () => MateriaAttach.Instance.IsOpen || MateriaAttachDialog.Instance.IsOpen);
+                        await Coroutine.Sleep(1000);
+                        if (MateriaAttach.Instance.IsOpen)
+                        {
+                            MateriaAttach.Instance.Close();
+                            await Coroutine.Sleep(1000);
+                        }
                     }
+                    
+                    
 
                     if (!materiaList[i].IsFilled)
                         return false;

@@ -10,11 +10,11 @@ namespace LlamaLibrary.RemoteAgents
         {
         }
 
-        public int ExperiencedGain => Core.Memory.Read<byte>(Pointer + 0x3c);
-        public int RewardItem1 => Core.Memory.Read<byte>(Pointer + 0x48);
-        public int RewardItem2 => Core.Memory.Read<byte>(Pointer + 0x4C);
-        public int RewardCount1 => Core.Memory.Read<byte>(Pointer + 0x50);
-        public int RewardCount2 => Core.Memory.Read<byte>(Pointer + 0x54);
-        public int RetainerTask => Core.Memory.Read<byte>(Pointer + 0x6c);
+        public int ExperiencedGain => Core.Memory.Read<int>(Pointer + 0x3c);
+        public int RewardItem1 => Core.Memory.Read<int>(Pointer + 0x48);
+        public int RewardItem2 => Core.Memory.Read<int>(Pointer + 0x4C);
+        public int RewardCount1 => Core.Memory.Read<int>(Pointer + 0x50);
+        public int RewardCount2 => Core.Memory.Read<int>(Pointer + 0x54);
+        public int RetainerTask => Core.Memory.Read<int>(Pointer + 0x6c);
     }
 }

@@ -77,6 +77,8 @@ using LlamaLibrary.RemoteAgents;
             bool OutOnLimb = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable), typeof(AgentOutOnLimb)); //159
             bool HandIn = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentOutHandIn), typeof(AgentHandIn)); //312
             bool AgentHousingSelectBlock = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentHousingSelectBlock), typeof(AgentHousingSelectBlock)); //112
+            bool AgentContentsInfo = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentContentsInfo), typeof(AgentContentsInfo)); //95
+            bool AgentRetainerList = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerList), typeof(AgentRetainerList));
             
 
             Log($"Added Venture Agent: {retaineragent}");
@@ -87,6 +89,8 @@ using LlamaLibrary.RemoteAgents;
             Log($"Added OutOnLimb Agent: {OutOnLimb} {AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable)}");
             Log($"Added HandIn Agent: {HandIn}");
             Log($"Added HandIn Agent: {AgentHousingSelectBlock}");
+            Log($"Added AgentContentsInfo Agent: {AgentContentsInfo}");
+            Log($"Added AgentRetainerList Agent: {AgentRetainerList}");
             AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers"});//
             ScriptManager.Init(typeof(ScriptConditions.Helpers));
             initDone = true;
