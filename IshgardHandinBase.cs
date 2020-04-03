@@ -262,6 +262,12 @@ namespace LlamaLibrary
                 await ishgardHandin.HandInGatheringItem(0);
                 await Coroutine.Sleep(200);
             }
+			
+			while (ScriptConditions.Helpers.HasIshgardGatheringFisher())
+            {
+                await ishgardHandin.HandInGatheringItem(2);
+                await Coroutine.Sleep(200);
+            }
 
             if (HWDGathereInspect.Instance.IsOpen)
                 HWDGathereInspect.Instance.Close();
