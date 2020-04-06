@@ -22,6 +22,7 @@ namespace LlamaLibrary.ScriptConditions
         
         private static readonly uint[] idList0 = { 29896,29897,29901,29902,29903,29909,29910,29911,29912,29913,29919,29920,29921,29922,29923,29929,29930,29931,29932,29933,29939,29940,29941,29942,29943,29946,29947 };
         private static readonly uint[] idList1 = { 29894,29895,29898,29899,29900,29904,29905,29906,29907,29908,29914,29915,29916,29917,29918,29924,29925,29926,29927,29928,29934,29935,29936,29937,29938,29944,29945 };
+		private static readonly uint[] idList2 = { 29994,29995,29996,29997,29998,29999,30000,30001,30002,30003,30004,30005,30006,30007,30008,30009,30010,30011,30012,30013 };
 
 
         public static int HasIshgardItem()
@@ -42,6 +43,11 @@ namespace LlamaLibrary.ScriptConditions
         public static bool HasIshgardGatheringBotanist()
         {
             return InventoryManager.FilledSlots.Any(i => idList1.Contains(i.RawItemId) && i.Count > 10);
+        }
+		
+		public static bool HasIshgardGatheringFisher()
+        {
+            return InventoryManager.FilledSlots.Any(i => idList2.Contains(i.RawItemId) && i.Count > 10);
         }
 
         public static bool LLHasItemNQ(int itemID)
