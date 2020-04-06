@@ -1,5 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Buddy.Coroutines;
+using ff14bot.Enums;
 using ff14bot.Managers;
+using ff14bot.Objects;
+using ff14bot.RemoteWindows;
+using LlamaLibrary.Helpers;
+using LlamaLibrary.RemoteAgents;
+using Character = LlamaLibrary.RemoteWindows.Character;
 
 namespace LlamaLibrary.ScriptConditions
 {
@@ -18,6 +27,11 @@ namespace LlamaLibrary.ScriptConditions
         public static int HasIshgardItem()
         {
             return InventoryManager.FilledSlots.Count(i => idList.Contains(i.RawItemId) && i.IsCollectable && i.Collectability > 50);
+        }
+        
+        public static bool IsCNClient()
+        {
+            return Translator.Language == Language.Chn;
         }
         
         public static bool HasIshgardGatheringMining()
@@ -48,6 +62,87 @@ namespace LlamaLibrary.ScriptConditions
         public static int AverageItemLevel()
         {
             return InventoryManager.EquippedItems.Where(k => k.IsFilled).Sum(i => i.Item.ItemLevel) / InventoryManager.EquippedItems.Count(k => k.IsFilled);
+        }
+
+        public static async Task<bool> UpdateGearSet()
+        {
+            
+            if (!Character.Instance.IsOpen)
+            {
+                //Logger.Info("Character window not open");
+                AgentCharacter.Instance.Toggle();
+                //Logger.Info("Toggled");
+                try
+                {
+                    await WaitUntil(() => Character.Instance.IsOpen, timeout:10000);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+
+            if (!Character.Instance.IsOpen)
+            {
+                return false;
+            }
+            //Logger.Info($"Can click {Character.Instance.CanUpdateGearSet()}");
+            if (!Character.Instance.CanUpdateGearSet())
+            {
+                Character.Instance.Close();
+                return false;
+            }
+            
+            Character.Instance.UpdateGearSet();
+
+            try
+            {
+                await WaitUntil(() => SelectYesno.IsOpen, timeout:1500);
+            }
+            catch (Exception e)
+            {
+                if (Character.Instance.IsOpen)
+                {
+                    Character.Instance.Close();
+                }
+                return true;
+            }
+
+            if (SelectYesno.IsOpen)
+                SelectYesno.Yes();
+
+            try
+            {
+                await WaitUntil(() => !SelectYesno.IsOpen, timeout:10000);
+            }
+            catch (Exception e)
+            {
+                return true;
+            }
+			
+            //await Coroutine.Sleep(200);
+
+            if (Character.Instance.IsOpen)
+            {
+                Character.Instance.Close();
+            }
+
+            return true;
+        }
+        
+        public static async Task WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1)
+        {
+            var waitTask = Task.Run(async () =>
+            {
+                while (!condition())
+                {
+                    await Task.Delay(frequency);
+                }
+            });
+
+            if (waitTask != await Task.WhenAny(waitTask,
+                                               Task.Delay(timeout)))
+                throw new TimeoutException();
         }
     }
 }

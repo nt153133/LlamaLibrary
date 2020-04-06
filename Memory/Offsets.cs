@@ -126,6 +126,9 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 8D 05 ? ? ? ? C6 43 ? ? 48 89 03 48 8B C3 C7 43 ? ? ? ? ? Add 3 TraceRelative")]
         internal static IntPtr AgentRecommendEquip;
         
+        [Offset("Search 48 8D 05 ? ? ? ? 89 77 ? Add 3 TraceRelative")]
+        internal static IntPtr AgentCharacter;
+        
         [Offset("Search 48 8D 05 ? ? ? ? BF ? ? ? ? 48 89 03 48 8D 73 ? Add 3 TraceRelative")]
         internal static IntPtr AgentContentsInfo;
     }

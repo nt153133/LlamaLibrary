@@ -191,7 +191,7 @@ namespace LlamaLibrary.Retainers
 
                     if (timeLeft <= 0 && SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) > 2)
                     {
-                        await CheckVentures();
+                        await RetainerHandleVentures();
                     }
                     else
                     {
@@ -208,7 +208,7 @@ namespace LlamaLibrary.Retainers
             return true;
         }
 
-        public async Task<bool> CheckVentures()
+        public async Task<bool> RetainerHandleVentures()
         {
             if (!SelectString.IsOpen)
             {
