@@ -92,6 +92,7 @@
     <Compile Include="Memory\OffsetManager.cs" />
     <Compile Include="Memory\Offsets.cs" />
     <Compile Include="OrderbotTags\AutoEquip.cs" />
+    <Compile Include="OrderbotTags\BuyScripItem.cs" />
     <Compile Include="OrderbotTags\BuyWhiteScriptItem.cs" />
     <Compile Include="OrderbotTags\ChangeClass.cs" />
     <Compile Include="OrderbotTags\GetTo.cs" />
