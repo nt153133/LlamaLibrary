@@ -37,37 +37,36 @@ using LlamaLibrary.RemoteAgents;
                 return;
             
             var types = typeof(Offsets).GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            using (var pf = new PatternFinder(Core.Memory))
+                Parallel.ForEach(types, type =>
+                                 {
+                                     if (type.FieldType.IsClass)
+                                     {
+                                         var instance = Activator.CreateInstance(type.FieldType);
 
-            Parallel.ForEach(types, type =>
-                {
-                    var pf = new PatternFinder(Core.Memory);
-                    if (type.FieldType.IsClass)
-                    {
-                        var instance = Activator.CreateInstance(type.FieldType);
 
+                                         foreach (var field in type.FieldType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+                                         {
+                                             var res = ParseField(field, pf);
+                                             if (field.FieldType == typeof(IntPtr))
+                                                 field.SetValue(instance, res);
+                                             else
+                                                 field.SetValue(instance, (int) res);
+                                         }
 
-                        foreach (var field in type.FieldType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
-                        {
-                            var res = ParseField(field, pf);
-                            if (field.FieldType == typeof(IntPtr))
-                                field.SetValue(instance, res);
-                            else
-                                field.SetValue(instance, (int) res);
-                        }
-
-                        //set the value
-                        type.SetValue(null, instance);
-                    }
-                    else
-                    {
-                        var res = ParseField(type, pf);
-                        if (type.FieldType == typeof(IntPtr))
-                            type.SetValue(null, res);
-                        else
-                            type.SetValue(null, (int) res);
-                    }
-                }
-            );
+                                         //set the value
+                                         type.SetValue(null, instance);
+                                     }
+                                     else
+                                     {
+                                         var res = ParseField(type, pf);
+                                         if (type.FieldType == typeof(IntPtr))
+                                             type.SetValue(null, res);
+                                         else
+                                             type.SetValue(null, (int) res);
+                                     }
+                                 }
+                                );
 
             bool retaineragent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerAskVtable), typeof(AgentRetainerVenture));
             bool retainerchar = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerCharacterVtable), typeof(AgentRetainerCharacter));

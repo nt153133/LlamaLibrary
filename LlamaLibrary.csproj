@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="RebornBuddy, Version=1.0.335.0, Culture=neutral, PublicKeyToken=48d7174f8a943034">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Ext\RebornBuddy.exe</HintPath>
     </Reference>
     <Reference Include="System" />
