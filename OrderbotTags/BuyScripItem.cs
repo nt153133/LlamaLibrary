@@ -20,6 +20,8 @@ namespace LlamaLibrary.OrderbotTags
         private bool _isOpening;
 
         public override bool IsDone => _isDone;
+        
+        static uint[] npcIds = {1001617, 1003077, 1003633, 1012301, 1013397, 1019458, 1027541, 1031501};
 
         [XmlAttribute("ItemId")] public int ItemId { get; set; }
         
@@ -50,7 +52,7 @@ namespace LlamaLibrary.OrderbotTags
         {
             await Coroutine.Sleep(500);
 
-            uint[] npcIds = {1001617, 1003077, 1003633, 1012301, 1013397, 1019458, 1027541, 1031501};
+            
 
             var unit = GameObjectManager.GetObjectsByNPCIds<Character>(npcIds).OrderBy(r => r.Distance()).FirstOrDefault();
 
