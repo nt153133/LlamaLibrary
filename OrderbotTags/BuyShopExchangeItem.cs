@@ -88,6 +88,7 @@ namespace LlamaLibrary.OrderbotTags
                     await ShopExchangeItem.Instance.Purchase((uint) itemId, (uint) count);
                 }
 
+                await Coroutine.Wait(2000, () => ShopExchangeItem.Instance.IsOpen);
                 if (ShopExchangeItem.Instance.IsOpen)
                 {
                     ShopExchangeItem.Instance.Close();
