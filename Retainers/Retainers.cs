@@ -54,12 +54,12 @@ namespace LlamaLibrary.Retainers
         public Retainers()
         {
             OffsetManager.Init();
-            Task.Factory.StartNew(() =>
-            {
+            //Task.Factory.StartNew(() =>
+           // {
                 init();
                 _init = true;
                 Log("INIT DONE");
-            });
+          //  });
         }
 
         public override string Name
@@ -84,14 +84,14 @@ namespace LlamaLibrary.Retainers
 
         public override Composite Root => _root;
 
-        internal static List<RetainerTaskData> VentureData;
+        internal static Lazy<List<RetainerTaskData>> VentureData;
         private volatile bool _init;
         private int ventures;
 
         internal void init()
         {
             Log("Load venture.json");
-            VentureData = loadResource<List<RetainerTaskData>>(Resources.Ventures);
+            VentureData = new Lazy<List<RetainerTaskData>>(() =>loadResource<List<RetainerTaskData>>(Resources.Ventures));
             Log("Loaded venture.json");
         }
 
@@ -520,7 +520,7 @@ namespace LlamaLibrary.Retainers
 
                     var taskId = AgentRetainerVenture.Instance.RetainerTask;
 
-                    var task = VentureData.First(i => i.Id == taskId);
+                    var task = VentureData.Value.First(i => i.Id == taskId);
 
                     Log($"Finished Venture {task.Name}");
                     Log($"Reassigning Venture {task.Name}");

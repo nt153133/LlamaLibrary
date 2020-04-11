@@ -38,12 +38,12 @@ namespace LlamaLibrary.Retainers
 
         public RetainersPull()
         {
-            Task.Factory.StartNew(() =>
-            {
+           // Task.Factory.StartNew(() =>
+          //  {
                 Init();
                 _init = true;
-                Log("INIT DONE");
-            });
+           //     Log("INIT DONE");
+         //   });
         }
 
         public override string Name
@@ -68,7 +68,7 @@ namespace LlamaLibrary.Retainers
 
         public override Composite Root => _root;
 
-        private List<RetainerTaskData> VentureData { get; set; }
+        private Lazy<List<RetainerTaskData>> VentureData;
 
         public override void Initialize()
         {
@@ -93,7 +93,7 @@ namespace LlamaLibrary.Retainers
             OffsetManager.Init();
 
             Log("Load venture.json");
-            VentureData = loadResource<List<RetainerTaskData>>(Resources.Ventures);
+            VentureData = new Lazy<List<RetainerTaskData>>(() =>loadResource<List<RetainerTaskData>>(Resources.Ventures));
             Log("Loaded venture.json");
         }
 
@@ -191,7 +191,7 @@ namespace LlamaLibrary.Retainers
 
                     if (timeLeft <= 0 && SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) > 2)
                     {
-                        await CheckVentures();
+                        await RetainerHandleVentures();
                     }
                     else
                     {
@@ -208,7 +208,7 @@ namespace LlamaLibrary.Retainers
             return true;
         }
 
-        public async Task<bool> CheckVentures()
+        public async Task<bool> RetainerHandleVentures()
         {
             if (!SelectString.IsOpen)
             {
@@ -230,7 +230,7 @@ namespace LlamaLibrary.Retainers
 
                 var taskId = AgentRetainerVenture.Instance.RetainerTask;
 
-                var task = VentureData.First(i => i.Id == taskId);
+                var task = VentureData.Value.First(i => i.Id == taskId);
 
                 Log($"Finished Venture {task.Name}");
                 Log($"Reassigning Venture {task.Name}");

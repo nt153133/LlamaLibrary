@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="RebornBuddy, Version=1.0.335.0, Culture=neutral, PublicKeyToken=48d7174f8a943034">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Ext\RebornBuddy.exe</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -91,6 +92,9 @@
     <Compile Include="Memory\Attributes\OffsetValue.cs" />
     <Compile Include="Memory\OffsetManager.cs" />
     <Compile Include="Memory\Offsets.cs" />
+    <Compile Include="OrderbotTags\AutoEquip.cs" />
+    <Compile Include="OrderbotTags\BuyScripItem.cs" />
+    <Compile Include="OrderbotTags\BuyShopExchangeItem.cs" />
     <Compile Include="OrderbotTags\BuyWhiteScriptItem.cs" />
     <Compile Include="OrderbotTags\ChangeClass.cs" />
     <Compile Include="OrderbotTags\GetTo.cs" />
@@ -114,16 +118,19 @@
     <Compile Include="Reduce\ReduceSettingsForm.designer.cs">
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RemoteAgents\AgentCharacter.cs" />
     <Compile Include="RemoteAgents\AgentContentsInfo.cs" />
     <Compile Include="RemoteAgents\AgentDawn.cs" />
     <Compile Include="RemoteAgents\AgentHandIn.cs" />
     <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
+    <Compile Include="RemoteAgents\AgentRecommendEquip.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
     <Compile Include="RemoteAgents\AgentRetainerList.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
+    <Compile Include="RemoteWindows\Character.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
     <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
@@ -143,9 +150,11 @@
     <Compile Include="RemoteWindows\MateriaAttachDialog.cs" />
     <Compile Include="RemoteWindows\MiniGameAimg.cs" />
     <Compile Include="RemoteWindows\MiniGameBotanist.cs" />
+    <Compile Include="RemoteWindows\RecommendEquip.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
     <Compile Include="RemoteWindows\RetainerTaskList.cs" />
+    <Compile Include="RemoteWindows\ShopExchangeItem.cs" />
     <Compile Include="RemoteWindows\SubmarinePartsMenu.cs" />
     <Compile Include="Repair.cs" />
     <Compile Include="RetainerRoutine.cs" />

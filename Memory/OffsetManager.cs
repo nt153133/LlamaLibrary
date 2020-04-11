@@ -37,37 +37,36 @@ using LlamaLibrary.RemoteAgents;
                 return;
             
             var types = typeof(Offsets).GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            using (var pf = new PatternFinder(Core.Memory))
+                Parallel.ForEach(types, type =>
+                                 {
+                                     if (type.FieldType.IsClass)
+                                     {
+                                         var instance = Activator.CreateInstance(type.FieldType);
 
-            Parallel.ForEach(types, type =>
-                {
-                    var pf = new PatternFinder(Core.Memory);
-                    if (type.FieldType.IsClass)
-                    {
-                        var instance = Activator.CreateInstance(type.FieldType);
 
+                                         foreach (var field in type.FieldType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+                                         {
+                                             var res = ParseField(field, pf);
+                                             if (field.FieldType == typeof(IntPtr))
+                                                 field.SetValue(instance, res);
+                                             else
+                                                 field.SetValue(instance, (int) res);
+                                         }
 
-                        foreach (var field in type.FieldType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
-                        {
-                            var res = ParseField(field, pf);
-                            if (field.FieldType == typeof(IntPtr))
-                                field.SetValue(instance, res);
-                            else
-                                field.SetValue(instance, (int) res);
-                        }
-
-                        //set the value
-                        type.SetValue(null, instance);
-                    }
-                    else
-                    {
-                        var res = ParseField(type, pf);
-                        if (type.FieldType == typeof(IntPtr))
-                            type.SetValue(null, res);
-                        else
-                            type.SetValue(null, (int) res);
-                    }
-                }
-            );
+                                         //set the value
+                                         type.SetValue(null, instance);
+                                     }
+                                     else
+                                     {
+                                         var res = ParseField(type, pf);
+                                         if (type.FieldType == typeof(IntPtr))
+                                             type.SetValue(null, res);
+                                         else
+                                             type.SetValue(null, (int) res);
+                                     }
+                                 }
+                                );
 
             bool retaineragent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerAskVtable), typeof(AgentRetainerVenture));
             bool retainerchar = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerCharacterVtable), typeof(AgentRetainerCharacter));
@@ -79,6 +78,8 @@ using LlamaLibrary.RemoteAgents;
             bool AgentHousingSelectBlock = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentHousingSelectBlock), typeof(AgentHousingSelectBlock)); //112
             bool AgentContentsInfo = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentContentsInfo), typeof(AgentContentsInfo)); //95
             bool AgentRetainerList = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerList), typeof(AgentRetainerList));
+            bool AgentRecommendEquip = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRecommendEquip), typeof(AgentRecommendEquip));
+            bool AgentCharacter = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentCharacter), typeof(AgentCharacter));
             
 
             Log($"Added Venture Agent: {retaineragent}");
@@ -91,6 +92,8 @@ using LlamaLibrary.RemoteAgents;
             Log($"Added HandIn Agent: {AgentHousingSelectBlock}");
             Log($"Added AgentContentsInfo Agent: {AgentContentsInfo}");
             Log($"Added AgentRetainerList Agent: {AgentRetainerList}");
+            Log($"Added AgentRecommendEquip Agent: {AgentRecommendEquip}");
+            Log($"Added AgentCharacter Agent: {AgentCharacter}");
             AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers"});//
             ScriptManager.Init(typeof(ScriptConditions.Helpers));
             initDone = true;
