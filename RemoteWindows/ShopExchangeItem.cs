@@ -5,6 +5,7 @@ using Buddy.Coroutines;
 using ff14bot.Behavior;
 using ff14bot.Helpers;
 using ff14bot.Managers;
+using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Structs;
 
@@ -86,12 +87,24 @@ namespace LlamaLibrary.RemoteWindows
                     if (Request.HandOverButtonClickable)
                         Request.HandOver();
 
-                    await Coroutine.Sleep(500);
+                    await Coroutine.Sleep(1000);
                 }
                 else
                 {
                     //Logging.Write(Colors.Fuchsia, $"[Purchase] Request Not open");
                 }
+
+                if (QuestLogManager.InCutscene && AgentInterface<AgentCutScene>.Instance.CanSkip && !SelectString.IsOpen)
+                {
+                    AgentInterface<AgentCutScene>.Instance.PromptSkip();
+                    await Coroutine.Wait(6000, () => SelectString.IsOpen);
+                    SelectString.ClickSlot(0);
+                    await CommonTasks.HandleLoading();
+                    await Coroutine.Wait(6000, () => !QuestLogManager.InCutscene);
+                    await CommonTasks.HandleLoading();
+                    await Coroutine.Sleep(500);
+                }
+
             }
 
 
