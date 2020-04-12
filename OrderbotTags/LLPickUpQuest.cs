@@ -7,7 +7,6 @@ using Action = TreeSharp.Action;
 namespace ff14bot.NeoProfiles.Tags
 {
     [XmlElement("LLPickupQuest")]
-	[XmlElement("SoPickupQuest")]
     public class LLPickupQuest : PickupQuestTag
     {
         [DefaultValue(0)]
