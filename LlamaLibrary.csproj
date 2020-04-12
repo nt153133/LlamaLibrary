@@ -102,6 +102,13 @@
     <Compile Include="OrderbotTags\LLDesynth.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
+	<Compile Include="OrderbotTags\LLPickupQuest.cs" />
+	<Compile Include="OrderbotTags\LLoadProfile.cs" />
+	<Compile Include="OrderbotTags\LLStopBot.cs" />
+	<Compile Include="OrderbotTags\LLTalkTo.cs" />
+	<Compile Include="OrderbotTags\LLEmoteNpc.cs" />
+	<Compile Include="OrderbotTags\LLUseSpell.cs" />
+	<Compile Include="OrderbotTags\LLSendChat.cs" />
     <Compile Include="OrderbotTags\LowerCollectable.cs" />
     <Compile Include="OutOnALimbBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
