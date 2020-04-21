@@ -139,7 +139,6 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         internal static IntPtr AgentRetainerList;
         [Offset("Search 48 8D 8E ? ? ? ? 33 D2 41 B8 ? ? ? ? E8 ? ? ? ? 48 8B 5C 24 ? 48 8B C6 48 8B 74 24 ? 48 83 C4 ? 5F C3 ? ? ? ? ? ? 48 89 5C 24 ? Add 3 Read32")]
         internal static int AgentRetainerOffset;
-        
         [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B F0 48 85 C0 74 ? 48 83 38 ? Add 3 TraceRelative")]
         internal static IntPtr RetainerData;
         [Offset("Search 83 FA ? 73 ? 8B C2 0F B6 94 08 ? ? ? ? 80 FA ?")]
@@ -159,6 +158,21 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 5C 24 ?? C6 85 ?? ?? ?? ?? ?? Add 1 Read32")]
         internal static int RetainerNetworkPacket;
         
+    }
+
+    internal static partial class Offsets
+    {
+     //   [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 5E ? Add 3 TraceRelative")]
+      //  internal static IntPtr AgentRetainerList;
+
+        [Offset("Search 44 88 84 0A ? ? ? ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 88 91 ? ? ? ? Add 4 Read32")]
+        internal static int GatheringStateOffset;
+        
+        [Offset("Search BF ? ? ? ? 66 90 48 8D 14 1E 48 8B CB E8 ? ? ? ? 48 81 C3 ? ? ? ? Add 1 Read32")]
+        internal static int GCTurninCount;
+        
+        [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? 48 83 C4 ? E9 ? ? ? ? 48 8D 0D ? ? ? ? E9 ? ? ? ? ? ? ? ? 48 8D 0D ? ? ? ? Add 3 TraceRelative")]
+        internal static IntPtr GCTurnin;
     }
 #pragma warning restore CS0649
 }

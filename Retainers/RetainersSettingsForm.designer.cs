@@ -49,11 +49,10 @@
             this.Text = "SettingsForm";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.ResumeLayout(false);
-
         }
 
-        #endregion
-
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+
+        #endregion
     }
 }

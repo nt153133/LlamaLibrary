@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,11 +39,54 @@ namespace LlamaLibrary
     {
         private Composite _root;
 
+        private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
+        {
+            {0, "Unknown"},
+            {1, "In Craft"},
+            {2, "Not Fishing"},
+            {26, "In Craft - Using synthesis (element) action"},
+            {30, "In Craft - Using touch action"},
+            {29, "In Craft - Using synthesis action"},
+            {35, "Fishing Stance"},
+            {37, "Packing Up"},
+            {38, "Casting"},
+            {39, "Mooch Casting"},
+            {40, "Casting"},
+            {41, "Fishing"},
+            {42, "Fishing"},
+            {43, "Fishing"},
+            {44, "Fishing"},
+            {45, "Fishing"},
+            {46, "Fishing"},
+            {47, "Unsuccessful"},
+            {48, "Successful"},
+            {49, "Light Reeling"},
+            {50, "Light HQ Reeling"},
+            {51, "Medium Reeling"},
+            {52, "Medium HQ Reeling"},
+            {53, "Big Reeling"},
+            {54, "Big HQ Reeling"},
+            {56, "Light Bite"},
+            {57, "Medium Bite"},
+            {58, "Heavy Bite"}
+        };
+
+        private static Dictionary<byte, string> CraftingState = new Dictionary<byte, string>
+        {
+            {0, "Unknown"},
+            {1, "In Craft"},
+            {2, "Not Crafting"},
+            {5, "Synthesizing"},
+            {26, "In Craft - Using synthesis (element) action"},
+            {30, "In Craft - Using touch action"},
+            {29, "In Craft - Using synthesis action"}
+        };
+
         public TesterBase()
         {
             Task.Factory.StartNew(() =>
             {
-               // init();
+                // init();
                 _init = true;
                 Log("INIT DONE");
             });
@@ -88,12 +132,40 @@ namespace LlamaLibrary
         {
             //await LeveWindow(1018997);
             //await HousingWards();
-            await testVentures();
+            //await testVentures();
             //Navigator.PlayerMover = new SlideMover();
             //Navigator.NavigationProvider = new ServiceNavigationProvider();
 
+            //var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
+            //    foreach (var nodeData in newList)
+            //    {
+            //        Log($"\n{nodeData}");
+            //     }
+            /*
+                        byte lastChecked = Core.Me.GatheringStatus();
+                        while (_root != null)
+                        {
+                            if (lastChecked != Core.Me.GatheringStatus())
+                            {
+                                Log(FishingState.ContainsKey(Core.Me.GatheringStatus()) ? $"{FishingState[Core.Me.GatheringStatus()]}" : $"{Core.Me.GatheringStatus()} - {Core.Me.CastingSpellId} {ActionManager.LastSpell}");
+                                lastChecked = Core.Me.GatheringStatus();
+                            }
+            
+                            await Coroutine.Sleep(200);
+                        }
+            */
 
-           TreeRoot.Stop("Stop Requested");
+            if (GrandCompanySupplyList.Instance.IsOpen)
+            {
+                var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+                //Log($"{Offsets.GCTurnin}");
+                foreach (var item in items.Where(i=> i.ItemID != 0 && i.CanHandin))
+                {
+                    Log($"{item.ItemID} - {DataManager.GetItem(item.ItemID).CurrentLocaleName} Seals: {item.Seals} XP: {item.XP} Required: {item.ReqCount} Starred: {item.Starred}");
+                }
+            }
+
+            TreeRoot.Stop("Stop Requested");
             return true;
         }
 
@@ -131,10 +203,10 @@ namespace LlamaLibrary
             {
                 Log($"{i} {RetainerList.Instance.RetainerName(i)}");
             }
-            
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
-            
-            
+
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
+
+
             foreach (var ret in ordered)
             {
                 Log($"{index} {ret.Name}");
@@ -163,12 +235,12 @@ namespace LlamaLibrary
                     }
                 }
             }
-            
+
             if (RetainerSettings.Instance.DepositFromPlayer) await RetainerRoutine.DumpItems();
 
             Log("Done checking against player inventory");
-            
-            
+
+
             //Log($"{RetainerInfo.UnixTimeStampToDateTime(retainer.VentureEndTimestamp)}");
 
             return true;
