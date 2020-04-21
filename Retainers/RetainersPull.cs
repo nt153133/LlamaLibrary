@@ -148,6 +148,12 @@ namespace LlamaLibrary.Retainers
                 LogCritical($"Loop Setting {RetainerSettings.Instance.Loop} ReassignVentures {RetainerSettings.Instance.ReassignVentures}");
                 TreeRoot.Stop("Done playing with retainers");
             }
+            
+            if (RetainerSettings.Instance.Loop && InventoryManager.FreeSlots < 2)
+            {
+                LogCritical($"I am overburdened....free up some space you hoarder");
+                TreeRoot.Stop("Done playing with retainers");
+            }
 
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
