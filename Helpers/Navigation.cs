@@ -6,6 +6,7 @@ using Clio.Utilities;
 using ff14bot;
 using ff14bot.Helpers;
 using ff14bot.Navigation;
+using ff14bot.Objects;
 using TreeSharp;
 
 namespace LlamaLibrary.Helpers
@@ -62,6 +63,18 @@ namespace LlamaLibrary.Helpers
             while (_target.Distance2D(Core.Me.Location) >= 4)
             {
                 Navigator.PlayerMover.MoveTowards(_target);
+                await Coroutine.Sleep(100);
+            }
+
+            Navigator.PlayerMover.MoveStop();
+        }
+        
+        public static async Task OffMeshMoveInteract(GameObject _target)
+        {
+            Navigator.PlayerMover.MoveTowards(_target.Location);
+            while (!_target.IsWithinInteractRange)
+            {
+                Navigator.PlayerMover.MoveTowards(_target.Location);
                 await Coroutine.Sleep(100);
             }
 

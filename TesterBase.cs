@@ -18,9 +18,12 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
+using ff14bot.Objects;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using Generate;
+using LlamaLibrary;
+using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
@@ -133,8 +136,8 @@ namespace LlamaLibrary
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
-            //Navigator.PlayerMover = new SlideMover();
-            //Navigator.NavigationProvider = new ServiceNavigationProvider();
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
 
             //var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
             //    foreach (var nodeData in newList)
@@ -154,14 +157,39 @@ namespace LlamaLibrary
                             await Coroutine.Sleep(200);
                         }
             */
+            if (!GrandCompanySupplyList.Instance.IsOpen)
+            {
+                await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                if (!SelectString.IsOpen)
+                {
+                    Log("Window is not open...maybe it didn't get to npc?");
+                    TreeRoot.Stop("Stop Requested");
+                }
+                SelectString.ClickSlot(0);
+                await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
+                if (!GrandCompanySupplyList.Instance.IsOpen)
+                {
+                    Log("Window is not open...maybe it didn't get to npc?");
+                    TreeRoot.Stop("Stop Requested");
+                }
+            }
 
             if (GrandCompanySupplyList.Instance.IsOpen)
             {
                 var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
                 //Log($"{Offsets.GCTurnin}");
+                
                 foreach (var item in items.Where(i=> i.ItemID != 0 && i.CanHandin))
                 {
                     Log($"{item.ItemID} - {DataManager.GetItem(item.ItemID).CurrentLocaleName} Seals: {item.Seals} XP: {item.XP} Required: {item.ReqCount} Starred: {item.Starred}");
+                }
+                
+                GrandCompanySupplyList.Instance.Close();
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                if (SelectString.IsOpen)
+                {
+                    SelectString.ClickSlot((uint) (SelectString.LineCount-1));
                 }
             }
 

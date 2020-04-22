@@ -60,6 +60,7 @@
     <Compile Include="AutoTradeAccept.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Enums\ClassJobCategory.cs" />
+    <Compile Include="Enums\GCNpc.cs" />
     <Compile Include="Enums\MiniGameResult.cs" />
     <Compile Include="Enums\MyItemRole.cs" />
     <Compile Include="Enums\RetainerRole.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="GatherTest.cs" />
+    <Compile Include="Helpers\GrandCompanyHelper.cs" />
     <Compile Include="Helpers\ItemConditionals.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
