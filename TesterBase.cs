@@ -15,6 +15,7 @@ using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
 using ff14bot.Enums;
+using ff14bot.Forms.ugh;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
@@ -132,6 +133,8 @@ namespace LlamaLibrary
             _root = null;
         }
 
+
+        
         private async Task<bool> Run()
         {
             //await LeveWindow(1018997);
@@ -159,9 +162,30 @@ namespace LlamaLibrary
                         }
             */
 
-            var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
-            
+            await DoGCDailyTurnins();
 
+            
+            TreeRoot.Stop("Stop Requested");
+            return true;
+        }
+        public async Task DoGCDailyTurnins()
+        {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+
+            var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+
+            if (!items.Any(i => i.CanHandin))
+            {
+                Log("All done.");
+                return;
+            }
+
+            string lisbethOrder = await GetGCSupplyList();
+            Log("Calling lisbeth");
+            await Lisbeth.ExecuteOrders(lisbethOrder);
+            Log("Lisbeth order should be done");
+            
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
                 await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
@@ -169,7 +193,7 @@ namespace LlamaLibrary
                 if (!SelectString.IsOpen)
                 {
                     Log("Window is not open...maybe it didn't get to npc?");
-                    TreeRoot.Stop("Stop Requested");
+                    return;
                 }
 
                 SelectString.ClickSlot(0);
@@ -177,13 +201,12 @@ namespace LlamaLibrary
                 if (!GrandCompanySupplyList.Instance.IsOpen)
                 {
                     Log("Window is not open...maybe it didn't get to npc?");
-                    TreeRoot.Stop("Stop Requested");
+                    return;
                 }
             }
 
             if (GrandCompanySupplyList.Instance.IsOpen)
             {
-                Log($"Supply Items");
                 await GrandCompanySupplyList.Instance.SwitchToSupply();
 
                 await HandleCurrentGCWindow();
@@ -199,12 +222,7 @@ namespace LlamaLibrary
                     SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
                 }
             }
-
-
-            TreeRoot.Stop("Stop Requested");
-            return true;
         }
-
         private async Task HandleCurrentGCWindow()
         {
             var bools = GrandCompanySupplyList.Instance.GetTurninBools();
@@ -277,6 +295,68 @@ namespace LlamaLibrary
                     }
                 }
             }
+        }
+        
+         public async Task<string> GetGCSupplyList()
+        {
+            
+            if (!ContentsInfoDetail.Instance.IsOpen)
+            {
+                Logging.Write($"Trying to open window");
+                
+                if (!ContentsInfo.Instance.IsOpen)
+                {
+                    if (await ContentsInfo.Instance.Open())
+                        ContentsInfo.Instance.OpenGCSupplyWindow();
+                }
+                
+                await Coroutine.Wait(5000, () => ContentsInfoDetail.Instance.IsOpen);
+
+                if (!ContentsInfoDetail.Instance.IsOpen)
+                {
+                    Logging.Write($"Nope failed opening GC Supply window");
+                    return "";
+                }
+
+            }
+
+            if (!ContentsInfoDetail.Instance.IsOpen)
+            {
+                Logging.Write($"Nope failed");
+                return "";
+            }
+            List<LisbethOrder> outList = new List<LisbethOrder>();
+            int id = 0;
+            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i=> i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
+            {
+                Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
+                var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, item.Value.Value);
+                outList.Add(order);
+                
+                id++;
+            }
+
+            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i=> i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
+            {
+                Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
+                string type = "Gather";
+                if (item.Value.Value.Equals("Fisher"))
+                    continue;//type = "Fisher";
+                var order = new LisbethOrder(id, 2, (int) item.Key.Id, item.Value.Key, type, true);
+                
+                outList.Add(order);
+                id++;
+            }
+            
+            ContentsInfoDetail.Instance.Close();
+            ContentsInfo.Instance.Close();
+
+            /*foreach (var order in outList)
+            {
+                Logging.Write($"{order}");
+            }*/
+            
+            return JsonConvert.SerializeObject(outList, Formatting.None);
         }
 
 

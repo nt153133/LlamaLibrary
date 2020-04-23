@@ -93,8 +93,11 @@ namespace MasterPieceSupplyTest
             foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems())
             {
                 Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
-                var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, "Gather");
-                //if (!item.Value.Value.Equals("Fisher"))
+                var type = "Gather";
+                if (item.Value.Value.Equals("Fisher"))
+                    type = "Fisher";
+                var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, type);
+                
                 outList.Add(order);
                 id++;
             }
@@ -111,7 +114,7 @@ namespace MasterPieceSupplyTest
 
             using (StreamWriter outputFile = new StreamWriter("GCSupply.json", false))
             {
-                outputFile.Write(JsonConvert.SerializeObject(outList, Formatting.None));
+                await outputFile.WriteAsync(JsonConvert.SerializeObject(outList, Formatting.None));
             }
             
             return true;
