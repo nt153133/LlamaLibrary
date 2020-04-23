@@ -12,7 +12,7 @@ namespace LlamaLibrary.Structs
         public uint XP;
 
         [FieldOffset(8)]
-        public uint Seals;
+        public uint _Seals;
 
         [FieldOffset(0x1a)]
         public byte ReqCount;
@@ -25,6 +25,15 @@ namespace LlamaLibrary.Structs
 
         public bool Starred => starred == 1;
         
+        public uint Seals
+        {
+            get
+            {
+                if (Starred) return (_Seals * 2);
+                return _Seals;
+            }
+        }
+
         public bool CanHandin => leftToHandIn > 0;
     }
 }

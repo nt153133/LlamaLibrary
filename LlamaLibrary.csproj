@@ -129,6 +129,7 @@
     <Compile Include="Reduce\ReduceSettingsForm.designer.cs">
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RefreshPfBase.cs" />
     <Compile Include="RemoteAgents\AgentCharacter.cs" />
     <Compile Include="RemoteAgents\AgentContentsInfo.cs" />
     <Compile Include="RemoteAgents\AgentDawn.cs" />

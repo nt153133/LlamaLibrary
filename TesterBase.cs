@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using Buddy.Service.Core;
@@ -157,6 +158,10 @@ namespace LlamaLibrary
                             await Coroutine.Sleep(200);
                         }
             */
+
+            var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+            
+
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
                 await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
@@ -166,6 +171,7 @@ namespace LlamaLibrary
                     Log("Window is not open...maybe it didn't get to npc?");
                     TreeRoot.Stop("Stop Requested");
                 }
+
                 SelectString.ClickSlot(0);
                 await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
                 if (!GrandCompanySupplyList.Instance.IsOpen)
@@ -177,25 +183,102 @@ namespace LlamaLibrary
 
             if (GrandCompanySupplyList.Instance.IsOpen)
             {
-                var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
-                //Log($"{Offsets.GCTurnin}");
-                
-                foreach (var item in items.Where(i=> i.ItemID != 0 && i.CanHandin))
-                {
-                    Log($"{item.ItemID} - {DataManager.GetItem(item.ItemID).CurrentLocaleName} Seals: {item.Seals} XP: {item.XP} Required: {item.ReqCount} Starred: {item.Starred}");
-                }
-                
+                Log($"Supply Items");
+                await GrandCompanySupplyList.Instance.SwitchToSupply();
+
+                await HandleCurrentGCWindow();
+
+                await GrandCompanySupplyList.Instance.SwitchToProvisioning();
+
+                await HandleCurrentGCWindow();
+
                 GrandCompanySupplyList.Instance.Close();
                 await Coroutine.Wait(5000, () => SelectString.IsOpen);
                 if (SelectString.IsOpen)
                 {
-                    SelectString.ClickSlot((uint) (SelectString.LineCount-1));
+                    SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
                 }
             }
+
 
             TreeRoot.Stop("Stop Requested");
             return true;
         }
+
+        private async Task HandleCurrentGCWindow()
+        {
+            var bools = GrandCompanySupplyList.Instance.GetTurninBools();
+            var windowItemIds = GrandCompanySupplyList.Instance.GetTurninItemsIds();
+            var required = GrandCompanySupplyList.Instance.GetTurninRequired();
+            var maxSeals = Core.Me.MaxGCSeals();
+            var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+            for (var index = 0; index < bools.Length; index++)
+            {
+                if (!bools[index])
+                {
+                    continue;
+                }
+
+                var item = items.FirstOrDefault(j => j.ItemID == windowItemIds[index]);
+                var index1 = index;
+                var handover = InventoryManager.FilledSlots.Where(k => k.RawItemId == item.ItemID && k.Count >= required[index1]).OrderByDescending(k => k.HqFlag).FirstOrDefault();
+                if (handover == default(BagSlot)) continue;
+                Log($"{handover.Name} {handover.IsHighQuality}");
+                if (handover.IsHighQuality)
+                {
+                    if (Core.Me.GCSeals() + (item.Seals * 2) < maxSeals)
+                    {
+                        GrandCompanySupplyList.Instance.ClickItem(index);
+                        await Coroutine.Wait(5000, () => Request.IsOpen);
+                        if (Request.IsOpen)
+                        {
+                            handover.Handover();
+                            await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
+                            Request.HandOver();
+                            await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                            if (SelectYesno.IsOpen)
+                            {
+                                SelectYesno.Yes();
+                            }
+
+                            await Coroutine.Wait(5000, () => GrandCompanySupplyReward.Instance.IsOpen);
+                            GrandCompanySupplyReward.Instance.Confirm();
+                            await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
+                            await HandleCurrentGCWindow();
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        Log($"Would get {item.Seals * 2} and we have {Core.Me.GCSeals()} out of {maxSeals}...too many");
+                    }
+                }
+                else
+                {
+                    if (Core.Me.GCSeals() + (item.Seals) < maxSeals)
+                    {
+                        GrandCompanySupplyList.Instance.ClickItem(index);
+                        await Coroutine.Wait(5000, () => Request.IsOpen);
+                        if (Request.IsOpen)
+                        {
+                            handover.Handover();
+                            await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
+                            Request.HandOver();
+                            await Coroutine.Wait(5000, () => GrandCompanySupplyReward.Instance.IsOpen);
+                            GrandCompanySupplyReward.Instance.Confirm();
+                            await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
+                            await HandleCurrentGCWindow();
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        Log($"Would get {item.Seals * 2} and we have {Core.Me.GCSeals()} out of {maxSeals}...too many");
+                    }
+                }
+            }
+        }
+
 
         public async Task testVentures()
         {
