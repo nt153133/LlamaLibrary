@@ -8,6 +8,7 @@ using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.NeoProfiles;
+using ff14bot.RemoteWindows;
 using TreeSharp;
 
 namespace ff14bot
@@ -37,18 +38,32 @@ namespace ff14bot
             _isDone = false;
         }
 
-        private async Task<bool> ChangeJob()
+        private async Task ChangeJob()
         {
             var gearSets = GearsetManager.GearSets.Where(i => i.InUse);
-            Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Started");
             ClassJobType newjob;
             var foundJob = Enum.TryParse(job.Trim(), true, out newjob);
+
+            if (Core.Me.CurrentJob == newjob)
+            {
+                _isDone = true;
+                return;
+            }
+            Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Started");
             Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Found job: {foundJob} Job:{newjob}");
             if (foundJob && gearSets.Any(gs => gs.Class == newjob))
             {
                 Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Found GearSet");
                 gearSets.First(gs => gs.Class == newjob).Activate();
-                await Coroutine.Sleep(1000);
+                
+                await Coroutine.Wait(3000, () => SelectYesno.IsOpen);
+                if (SelectYesno.IsOpen)
+                {
+                    SelectYesno.Yes();
+                    await Coroutine.Sleep(3000);
+                }
+                
+                // await Coroutine.Sleep(1000);
             }
             
             else if (foundJob)
@@ -83,7 +98,6 @@ namespace ff14bot
             }
 
             _isDone = true;
-            return true;
         }
 
         protected override Composite CreateBehavior()
