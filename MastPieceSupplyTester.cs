@@ -81,7 +81,7 @@ namespace MasterPieceSupplyTest
                 Log("All done.");
                 return;
             }
-            Log(lisbethOrder);
+            //Log(lisbethOrder);
             Log("Calling lisbeth");
             await Lisbeth.ExecuteOrders(lisbethOrder);
             Log("Lisbeth order should be done");
