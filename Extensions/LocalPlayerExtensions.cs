@@ -18,7 +18,7 @@ namespace LlamaLibrary.Extensions
         internal static uint GCSeals(this LocalPlayer player)
         {
             uint[] sealTypes = {20, 21, 22};
-            var bagslot = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).FirstOrDefault(i => sealTypes.Contains(i.RawItemId));
+            var bagslot = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).FirstOrDefault(i => i.RawItemId == sealTypes[(int)Core.Me.GrandCompany -1]);
             return bagslot?.Count ?? (uint) 0;
         }
 
