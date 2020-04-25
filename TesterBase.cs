@@ -134,7 +134,6 @@ namespace LlamaLibrary
         }
 
 
-        
         private async Task<bool> Run()
         {
             //await LeveWindow(1018997);
@@ -142,8 +141,7 @@ namespace LlamaLibrary
             //await testVentures();
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-
-            //var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
+            //      var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
             //    foreach (var nodeData in newList)
             //    {
             //        Log($"\n{nodeData}");
@@ -157,17 +155,81 @@ namespace LlamaLibrary
                                 Log(FishingState.ContainsKey(Core.Me.GatheringStatus()) ? $"{FishingState[Core.Me.GatheringStatus()]}" : $"{Core.Me.GatheringStatus()} - {Core.Me.CastingSpellId} {ActionManager.LastSpell}");
                                 lastChecked = Core.Me.GatheringStatus();
                             }
-            
+            196630
                             await Coroutine.Sleep(200);
                         }
             */
+            //Map, Location
+            List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
+            {
+                (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (129, new Vector3(-149.279053f, 18.203979f, 20.553894f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (129, new Vector3(-123.888062f, 17.990356f, 21.469421f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (131, new Vector3(148.91272f, 3.982544f, -44.205383f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (131, new Vector3(111.161987f, 4.104675f, -72.343079f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (131, new Vector3(153.185303f, 3.982544f, 13.229492f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (131, new Vector3(118.547363f, 4.013123f, -93.003784f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (133, new Vector3(160.234863f, 15.671021f, -55.649719f)), //Old Gridania(Gridania) 
+                (133, new Vector3(169.726074f, 15.487854f, -81.895203f)), //Old Gridania(Gridania) 
+                (133, new Vector3(171.007812f, 15.487854f, -101.487854f)), //Old Gridania(Gridania) 
+                (133, new Vector3(160.234863f, 15.671021f, -136.369934f)), //Old Gridania(Gridania) 
+                (156, new Vector3(34.50061f, 28.976807f, -762.233948f)), //Mor Dhona(Mor Dhona) 
+                (156, new Vector3(11.001709f, 28.976807f, -734.554077f)), //Mor Dhona(Mor Dhona) 
+                (419, new Vector3(-151.171204f, -12.64978f, -11.764771f)), //The Pillars(Ishgard) 
+                (478, new Vector3(34.775269f, 208.148193f, -50.858398f)), //Idyllshire(Dravania) 
+                (478, new Vector3(0.38147f, 206.469727f, 51.407593f)), //Idyllshire(Dravania) 
+                (628, new Vector3(19.394226f, 4.043579f, 53.025024f)), //Kugane(Kugane) 
+                (635, new Vector3(-57.633362f, -0.01532f, 49.30188f)), //Rhalgr's Reach(Gyr Abania) 
+                (819, new Vector3(-69.840576f, -7.705872f, 123.491211f)), //The Crystarium(The Crystarium) 
+                (819, new Vector3(-64.255798f, 19.97406f, -144.274109f)), //The Crystarium(The Crystarium) 
+                (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
+            };
 
-            await DoGCDailyTurnins();
 
-            
+            foreach (var bellLocation in SummoningBells)
+            {
+                if (await Navigation.GetTo(bellLocation.Item1, bellLocation.Item2))
+                {
+                    var bell = FindSummoningBell();
+                    Log(bell != null ? $"{bell.Name} {bell.Location} {WorldManager.CurrentZoneName} {bell.IsWithinInteractRange}" : $"Couldn't find bell at {bellLocation.Item2} {bellLocation.Item1}");
+                }
+                else
+                {
+                    Log($"No Path to {bellLocation.Item2} {bellLocation.Item1}");
+                }
+            }
+
+
+            //await DoGCDailyTurnins();
+
+
             TreeRoot.Stop("Stop Requested");
             return true;
         }
+//Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
+        public GameObject FindSummoningBell()
+        {
+            uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284};
+            var units = GameObjectManager.GameObjects;
+
+            foreach (var unit in units.Where(i => i.IsVisible).OrderBy(r => r.DistanceSqr()))
+            {
+                if (unit.VTable == Offsets.HousingObjectVTable && Core.Memory.Read<uint>(unit.Pointer + 0x80) == 196630)
+                {
+                    return unit;
+                }
+
+                if (!bellIds.Contains(unit.NpcId))
+                {
+                    continue;
+                }
+                return unit;
+            }
+
+            return null;
+        }
+
         public async Task DoGCDailyTurnins()
         {
             Navigator.PlayerMover = new SlideMover();
@@ -185,7 +247,7 @@ namespace LlamaLibrary
             Log("Calling lisbeth");
             await Lisbeth.ExecuteOrders(lisbethOrder);
             Log("Lisbeth order should be done");
-            
+
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
                 await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
@@ -223,6 +285,7 @@ namespace LlamaLibrary
                 }
             }
         }
+
         private async Task HandleCurrentGCWindow()
         {
             var bools = GrandCompanySupplyList.Instance.GetTurninBools();
@@ -296,20 +359,19 @@ namespace LlamaLibrary
                 }
             }
         }
-        
-         public async Task<string> GetGCSupplyList()
+
+        public async Task<string> GetGCSupplyList()
         {
-            
             if (!ContentsInfoDetail.Instance.IsOpen)
             {
                 Logging.Write($"Trying to open window");
-                
+
                 if (!ContentsInfo.Instance.IsOpen)
                 {
                     if (await ContentsInfo.Instance.Open())
                         ContentsInfo.Instance.OpenGCSupplyWindow();
                 }
-                
+
                 await Coroutine.Wait(5000, () => ContentsInfoDetail.Instance.IsOpen);
 
                 if (!ContentsInfoDetail.Instance.IsOpen)
@@ -317,7 +379,6 @@ namespace LlamaLibrary
                     Logging.Write($"Nope failed opening GC Supply window");
                     return "";
                 }
-
             }
 
             if (!ContentsInfoDetail.Instance.IsOpen)
@@ -325,29 +386,30 @@ namespace LlamaLibrary
                 Logging.Write($"Nope failed");
                 return "";
             }
+
             List<LisbethOrder> outList = new List<LisbethOrder>();
             int id = 0;
-            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i=> i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
+            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
             {
                 Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
                 var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, item.Value.Value);
                 outList.Add(order);
-                
+
                 id++;
             }
 
-            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i=> i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
+            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
             {
                 Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
                 string type = "Gather";
                 if (item.Value.Value.Equals("Fisher"))
-                    continue;//type = "Fisher";
+                    continue; //type = "Fisher";
                 var order = new LisbethOrder(id, 2, (int) item.Key.Id, item.Value.Key, type, true);
-                
+
                 outList.Add(order);
                 id++;
             }
-            
+
             ContentsInfoDetail.Instance.Close();
             ContentsInfo.Instance.Close();
 
@@ -355,7 +417,7 @@ namespace LlamaLibrary
             {
                 Logging.Write($"{order}");
             }*/
-            
+
             return JsonConvert.SerializeObject(outList, Formatting.None);
         }
 
