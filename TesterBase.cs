@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -108,7 +109,31 @@ namespace LlamaLibrary
         public override bool WantButton { get; } = false;
         internal static List<RetainerTaskData> VentureData;
         private volatile bool _init;
-
+        static List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
+            {
+                (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (129, new Vector3(-149.279053f, 18.203979f, 20.553894f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (129, new Vector3(-123.888062f, 17.990356f, 21.469421f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+                (131, new Vector3(148.91272f, 3.982544f, -44.205383f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (131, new Vector3(111.161987f, 4.104675f, -72.343079f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (131, new Vector3(153.185303f, 3.982544f, 13.229492f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (131, new Vector3(118.547363f, 4.013123f, -93.003784f)), //Ul'dah - Steps of Thal(Ul'dah) 
+                (133, new Vector3(160.234863f, 15.671021f, -55.649719f)), //Old Gridania(Gridania) 
+                (133, new Vector3(169.726074f, 15.487854f, -81.895203f)), //Old Gridania(Gridania) 
+                (133, new Vector3(171.007812f, 15.487854f, -101.487854f)), //Old Gridania(Gridania) 
+                (133, new Vector3(160.234863f, 15.671021f, -136.369934f)), //Old Gridania(Gridania) 
+                (156, new Vector3(34.50061f, 28.976807f, -762.233948f)), //Mor Dhona(Mor Dhona) 
+                (156, new Vector3(11.001709f, 28.976807f, -734.554077f)), //Mor Dhona(Mor Dhona) 
+                (419, new Vector3(-151.171204f, -12.64978f, -11.764771f)), //The Pillars(Ishgard) 
+                (478, new Vector3(34.775269f, 208.148193f, -50.858398f)), //Idyllshire(Dravania) 
+                (478, new Vector3(0.38147f, 206.469727f, 51.407593f)), //Idyllshire(Dravania) 
+                (628, new Vector3(19.394226f, 4.043579f, 53.025024f)), //Kugane(Kugane) 
+                (635, new Vector3(-57.633362f, -0.01532f, 49.30188f)), //Rhalgr's Reach(Gyr Abania) 
+                (819, new Vector3(-69.840576f, -7.705872f, 123.491211f)), //The Crystarium(The Crystarium) 
+                (819, new Vector3(-64.255798f, 19.97406f, -144.274109f)), //The Crystarium(The Crystarium) 
+                (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
+            };
         internal void init()
         {
             OffsetManager.Init();
@@ -139,8 +164,21 @@ namespace LlamaLibrary
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
+
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
+            /*
+            Log($"{await GrandCompanyShop.BuyKnownItem(6141, 5)}"); //Cordial
+            await Coroutine.Sleep(1000);
+            Log($"{await GrandCompanyShop.BuyKnownItem(21072, 2)}"); //ventures
+            await Coroutine.Sleep(1000);
+            Log($"{await GrandCompanyShop.BuyKnownItem(21072, 3)}"); //ventures
+            await Coroutine.Sleep(1000);
+            
+            TreeRoot.Stop("Stop Requested");
+            return true;
+            */
+
             //      var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
             //    foreach (var nodeData in newList)
             //    {
@@ -159,47 +197,20 @@ namespace LlamaLibrary
                             await Coroutine.Sleep(200);
                         }
             */
+
             //Map, Location
-            List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
-            {
-                (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (129, new Vector3(-149.279053f, 18.203979f, 20.553894f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (129, new Vector3(-123.888062f, 17.990356f, 21.469421f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (131, new Vector3(148.91272f, 3.982544f, -44.205383f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (131, new Vector3(111.161987f, 4.104675f, -72.343079f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (131, new Vector3(153.185303f, 3.982544f, 13.229492f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (131, new Vector3(118.547363f, 4.013123f, -93.003784f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (133, new Vector3(160.234863f, 15.671021f, -55.649719f)), //Old Gridania(Gridania) 
-                (133, new Vector3(169.726074f, 15.487854f, -81.895203f)), //Old Gridania(Gridania) 
-                (133, new Vector3(171.007812f, 15.487854f, -101.487854f)), //Old Gridania(Gridania) 
-                (133, new Vector3(160.234863f, 15.671021f, -136.369934f)), //Old Gridania(Gridania) 
-                (156, new Vector3(34.50061f, 28.976807f, -762.233948f)), //Mor Dhona(Mor Dhona) 
-                (156, new Vector3(11.001709f, 28.976807f, -734.554077f)), //Mor Dhona(Mor Dhona) 
-                (419, new Vector3(-151.171204f, -12.64978f, -11.764771f)), //The Pillars(Ishgard) 
-                (478, new Vector3(34.775269f, 208.148193f, -50.858398f)), //Idyllshire(Dravania) 
-                (478, new Vector3(0.38147f, 206.469727f, 51.407593f)), //Idyllshire(Dravania) 
-                (628, new Vector3(19.394226f, 4.043579f, 53.025024f)), //Kugane(Kugane) 
-                (635, new Vector3(-57.633362f, -0.01532f, 49.30188f)), //Rhalgr's Reach(Gyr Abania) 
-                (819, new Vector3(-69.840576f, -7.705872f, 123.491211f)), //The Crystarium(The Crystarium) 
-                (819, new Vector3(-64.255798f, 19.97406f, -144.274109f)), //The Crystarium(The Crystarium) 
-                (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
-            };
 
 
-            foreach (var bellLocation in SummoningBells)
-            {
-                if (await Navigation.GetTo(bellLocation.Item1, bellLocation.Item2))
-                {
-                    var bell = FindSummoningBell();
-                    Log(bell != null ? $"{bell.Name} {bell.Location} {WorldManager.CurrentZoneName} {bell.IsWithinInteractRange}" : $"Couldn't find bell at {bellLocation.Item2} {bellLocation.Item1}");
-                }
-                else
-                {
-                    Log($"No Path to {bellLocation.Item2} {bellLocation.Item1}");
-                }
-            }
+            ;
 
+           // var resultBool = WorldManager.Raycast(Core.Me.Location, GameObjectManager.Target.Location, out var result);
+
+           if (await GoToSummoningBell()) 
+               LogSucess("\n****************\n MADE IT BELL\n****************");
+           else
+           {
+               LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
+           }
 
             //await DoGCDailyTurnins();
 
@@ -207,7 +218,113 @@ namespace LlamaLibrary
             TreeRoot.Stop("Stop Requested");
             return true;
         }
-//Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
+        
+        public static void LogCritical(string text)
+        {
+            Logging.Write(Colors.OrangeRed, text);
+        }
+        
+        public static void LogSucess(string text)
+        {
+            Logging.Write(Colors.Green, text);
+        }
+
+        public async Task<bool> GoToSummoningBell()
+        {
+            var searchBell = FindSummoningBell();
+            if (searchBell != null)
+            {
+                if (searchBell.IsWithinInteractRange)
+                {
+                    Log($"Found bell in Interact Range");
+                    return true;
+                }
+                if (await Navigation.GetTo(WorldManager.ZoneId, searchBell.Location))
+                {
+                    Log($"Used Navgraph to get there");
+                    if (searchBell.IsWithinInteractRange)
+                        return true;
+                }
+                else if (searchBell.Distance() < 8 && Math.Abs(Core.Me.Location.Y - searchBell.Location.Y) < 0.5f)
+                {
+                    Log($"Should be able to offmesh move to bell");
+                    if (await Navigation.OffMeshMoveInteract(searchBell))
+                    {
+                        if (searchBell.IsWithinInteractRange)
+                            return true;
+                        else
+                        {
+                            Log($"OffMesh nav failed going to new bell");
+                        }
+                    }
+                }
+            }
+            
+            (uint, Vector3) bellLocation;
+            int tries = 0;
+            if (SummoningBells.Any(i => i.Item1 == WorldManager.ZoneId))
+            {
+                Log($"Found a bell in our zone");
+                bellLocation = SummoningBells.Where(i => i.Item1 == WorldManager.ZoneId).OrderBy(r => Core.Me.Location.DistanceSqr(r.Item2)).First();
+            }
+            else
+            {
+                bool foundBell = false;
+                Random rand = new Random();
+                do
+                {
+                    tries++;
+                    var index = rand.Next(0, SummoningBells.Count);
+                    bellLocation = SummoningBells[index];
+                    var ae = DataManager.AetheryteCache.Values.FirstOrDefault(i => i.ZoneId == bellLocation.Item1 && i.IsAetheryte);
+
+                    if (ae == default(AetheryteResult))
+                    {
+                        switch (bellLocation.Item1)
+                        {
+                            case 131:
+                                ae = DataManager.AetheryteCache.Values.FirstOrDefault(i => i.Id == 9);
+                                break;
+                            case 133:
+                                ae = DataManager.AetheryteCache.Values.FirstOrDefault(i => i.Id == 2);
+                                break;
+                            case 419:
+                                ae = DataManager.AetheryteCache.Values.FirstOrDefault(i => i.Id == 70);
+                                break;
+                        }
+                    }
+
+                    if (ae != default(AetheryteResult))
+                    {
+                        if (ConditionParser.HasAetheryte(ae.Id))
+                        {
+                            Log($"{bellLocation.Item1} can get to ConditionParser.HasAetheryte({ae.Id}) = {ConditionParser.HasAetheryte(ae.Id)} {ae.EnglishName}");
+                            foundBell = true;
+                        }
+                    }
+                    else
+                    {
+                        Log($"{bellLocation.Item1} can't find AE");
+                    }
+                }
+                while (!foundBell && tries < 5);
+            }
+                            
+            Log($"Going to bell {bellLocation.Item1} {bellLocation.Item2}");
+            if (await Navigation.GetTo(bellLocation.Item1, bellLocation.Item2))
+            {
+                var bell = FindSummoningBell();
+                Log(bell != null ? $"{bell.Name} {bell.Location} {WorldManager.CurrentZoneName} {bell.IsWithinInteractRange}" : $"Couldn't find bell at {bellLocation.Item2} {bellLocation.Item1}");
+                return bell != null;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+
+    //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
         public GameObject FindSummoningBell()
         {
             uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284};
@@ -224,6 +341,7 @@ namespace LlamaLibrary
                 {
                     continue;
                 }
+
                 return unit;
             }
 
@@ -612,6 +730,12 @@ namespace LlamaLibrary
         private void Log(string text, params object[] args)
         {
             var msg = string.Format("[" + Name + "] " + text, args);
+            Logging.Write(Colors.Pink, msg);
+        }
+
+        private void Log(string text)
+        {
+            var msg = "[" + Name + "] " + text;
             Logging.Write(Colors.Pink, msg);
         }
 
