@@ -43,7 +43,8 @@ namespace LlamaLibrary.RemoteWindows
 
         public virtual void Close()
         {
-            SendAction(1, 3uL, 4294967295uL);
+            if (IsOpen)
+                SendAction(1, 3uL, 4294967295uL);
         }
 
         public int GetAgentInterfaceId()

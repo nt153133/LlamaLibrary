@@ -192,7 +192,7 @@ namespace MasterPieceSupplyTest
                     }
                     else
                     {
-                        Log($"Would get {item.Seals * 2} and we have {Core.Me.GCSeals()} out of {maxSeals}...too many");
+                        Log($"Would get {item.Seals} and we have {Core.Me.GCSeals()} out of {maxSeals}...too many");
                     }
                 }
             }

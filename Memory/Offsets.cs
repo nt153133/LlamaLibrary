@@ -182,6 +182,15 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         
         [Offset("Search 48 8D 05 ? ? ? ? 40 88 BB ? ? ? ? 48 89 03 Add 3 TraceRelative")]
         internal static IntPtr HousingObjectVTable;    
+        
+        [Offset("Search 48 8D 9E ? ? ? ? 4C 89 B4 24 ? ? ? ? Add 3 Read32")]
+        internal static int GCArrayStart;
+        
+        [Offset("Search 41 83 FD ? 0F 82 ? ? ? ? 41 0F B6 97 ? ? ? ? Add 3 Read8")]
+        internal static int GCShopCount;
+        
+        [Offset("Search 48 8B 05 ? ? ? ? 33 C9 40 84 FF Add 3 TraceRelative")]
+        internal static IntPtr GCShopPtr;
             
             
     }

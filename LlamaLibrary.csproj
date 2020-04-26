@@ -75,6 +75,7 @@
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
+    <Compile Include="Helpers\GrandCompanyShop.cs" />
     <Compile Include="Helpers\ItemConditionals.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
+    <Compile Include="RemoteWindows\GrandCompanyExchange.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyList.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyReward.cs" />
     <Compile Include="RemoteWindows\GuildLeve.cs" />
@@ -186,6 +188,7 @@
     <Compile Include="ScriptConditions\Helpers.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
     <Compile Include="Structs\GatheringNodeData.cs" />
+    <Compile Include="Structs\GCShopItem.cs" />
     <Compile Include="Structs\GCTurninItem.cs" />
     <Compile Include="Structs\HousingPlot.cs" />
     <Compile Include="Structs\ItemStored.cs" />
