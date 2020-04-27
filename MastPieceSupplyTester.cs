@@ -75,16 +75,34 @@ namespace MasterPieceSupplyTest
             }
 
             string lisbethOrder = await GetGCSupplyList();
-            
+
             if (lisbethOrder == "")
             {
-                Log("All done.");
+                Log("Not Calling lisbeth.");
+            }
+            else
+            {
+                //Log(lisbethOrder);
+                Log("Calling lisbeth");
+                if (!await Lisbeth.ExecuteOrders(lisbethOrder))
+                {
+                    Log("Lisbeth order failed, Dumping order to GCSupply.json");
+                    using (StreamWriter outputFile = new StreamWriter("GCSupply.json", false))
+                    {
+                        await outputFile.WriteAsync(lisbethOrder);
+                    }
+                }
+                else
+                    Log("Lisbeth order should be done");
+            }
+
+            items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+
+            if (!items.Any(i => i.CanHandin && InventoryManager.FilledSlots.Any(j => j.RawItemId == i.ItemID && j.Count >= i.ReqCount)))
+            {
+                Log("No items available to hand in");
                 return;
             }
-            //Log(lisbethOrder);
-            Log("Calling lisbeth");
-            await Lisbeth.ExecuteOrders(lisbethOrder);
-            Log("Lisbeth order should be done");
 
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
