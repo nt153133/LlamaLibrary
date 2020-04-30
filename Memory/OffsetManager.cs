@@ -27,16 +27,20 @@ using LlamaLibrary.RemoteAgents;
 {
     internal class OffsetManager
     {
-        private static string Name => "OffsetManager";
+        private static string Name => "LLOffsetManager";
         private static bool initDone = false;
 
-
+        private static bool _debug = false;
         internal static void Init()
         {
             if (initDone)
                 return;
             
-            var types = typeof(Offsets).GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            var q1 = from t in Assembly.GetExecutingAssembly().GetTypes()
+                     where t.Namespace != null && (t.IsClass && t.Namespace.Contains("LlamaLibrary") && t.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Static).Any(i => i.Name == "Offsets"))
+                     select t.GetNestedType("Offsets", BindingFlags.NonPublic | BindingFlags.Static);
+            
+            var types = typeof(Offsets).GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance).Concat(q1.SelectMany(j => j.GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)));
             using (var pf = new PatternFinder(Core.Memory))
                 Parallel.ForEach(types, type =>
                                  {
@@ -68,37 +72,38 @@ using LlamaLibrary.RemoteAgents;
                                  }
                                 );
 
-            bool retaineragent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerAskVtable), typeof(AgentRetainerVenture));
-            bool retainerchar = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerCharacterVtable), typeof(AgentRetainerCharacter));
-            bool dawnAgent = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.DawnVtable), typeof(AgentDawn));
-            bool retainerInventory = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerInventoryVtable), typeof(AgentRetainerInventory)); //60
-            bool MateriaMelding = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentMeldVtable), typeof(AgentMeld)); //63
-            bool OutOnLimb = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable), typeof(AgentOutOnLimb)); //159
-            bool HandIn = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentOutHandIn), typeof(AgentHandIn)); //312
-            bool AgentHousingSelectBlock = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentHousingSelectBlock), typeof(AgentHousingSelectBlock)); //112
-            bool AgentContentsInfo = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentContentsInfo), typeof(AgentContentsInfo)); //95
-            bool AgentRetainerList = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRetainerList), typeof(AgentRetainerList));
-            bool AgentRecommendEquip = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentRecommendEquip), typeof(AgentRecommendEquip));
-            bool AgentCharacter = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentCharacter), typeof(AgentCharacter));
-            
+            Dictionary<IntPtr, int> vtables = new Dictionary<IntPtr, int>();
+            for (var index = 0; index < AgentModule.AgentVtables.Count; index++)
+            {
+                vtables.Add(AgentModule.AgentVtables[index], index);
+            }
 
-            Log($"Added Venture Agent: {retaineragent}");
-            Log($"Added RetainerChar Agent: {retainerchar}");
-            Log($"Added Dawn(Trust) Agent: {dawnAgent}");
-            Log($"Added RetainerInventory Agent: {retainerInventory}");
-            Log($"Added MateriaMelding Agent: {MateriaMelding}");
-            Log($"Added OutOnLimb Agent: {OutOnLimb} {AgentModule.FindAgentIdByVtable(Offsets.AgentOutOnLimbVtable)}");
-            Log($"Added HandIn Agent: {HandIn}");
-            Log($"Added HandIn Agent: {AgentHousingSelectBlock}");
-            Log($"Added AgentContentsInfo Agent: {AgentContentsInfo}");
-            Log($"Added AgentRetainerList Agent: {AgentRetainerList}");
-            Log($"Added AgentRecommendEquip Agent: {AgentRecommendEquip}");
-            Log($"Added AgentCharacter Agent: {AgentCharacter}");
+            var q = from t in Assembly.GetExecutingAssembly().GetTypes()
+                    where t.IsClass && t.Namespace == "LlamaLibrary.RemoteAgents"
+                    select t;
+
+            foreach (var MyType in q.Where(i => typeof(IAgent).IsAssignableFrom(i)))
+            {
+                //Log(MyType.Name);
+
+                var test = (((IAgent) Activator.CreateInstance(MyType,
+                                                               BindingFlags.Instance | BindingFlags.NonPublic,
+                                                               null,
+                                                               new object[]
+                                                               {
+                                                                   IntPtr.Zero
+                                                               },
+                                                               null))).RegisteredVtable;
+                if (vtables.ContainsKey(test))
+                {
+                    Log($"\tTrying to add {MyType.Name} {AgentModule.TryAddAgent(vtables[test], MyType)}");
+                }
+                else
+                    Log($"\tFound one {test.ToString("X")} but no agent");
+            }
             AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers"});//
             ScriptManager.Init(typeof(ScriptConditions.Helpers));
             initDone = true;
-            
-            
         }
         
         internal static void AddNamespacesToScriptManager(params string[] param)
@@ -172,7 +177,27 @@ using LlamaLibrary.RemoteAgents;
                     result = results[0];
             }
 
-            Log($"[{field.Name:,27}] {result.ToInt64():X}");
+            if (result == IntPtr.Zero)
+            {
+                if(field.DeclaringType != null && field.DeclaringType.IsNested)
+                    Log($"[{field.DeclaringType.DeclaringType.Name}:{field.Name:,27}] Not Found");
+                else
+                {
+                    Log($"[{field.DeclaringType.Name}:{field.Name:,27}] Not Found");
+                }
+            }
+            if (!_debug)
+            {
+                return result;
+            }
+
+            if(field.DeclaringType != null && field.DeclaringType.IsNested)
+                Log($"[{field.DeclaringType.DeclaringType.Name}:{field.Name:,27}] {result.ToInt64():X}");
+            else
+            {
+                Log($"[{field.DeclaringType.Name}:{field.Name:,27}] {result.ToInt64():X}");
+            }
+
 
             return result;
         }

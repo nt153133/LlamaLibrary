@@ -3,12 +3,23 @@ using ff14bot;
 using ff14bot.Managers;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
+using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.RemoteAgents
 {
-    public class AgentOutOnLimb: AgentInterface<AgentOutOnLimb>
+    public class AgentOutOnLimb: AgentInterface<AgentOutOnLimb>, IAgent
     {
+        public IntPtr RegisteredVtable => Offsets.VTable;
+        private static class Offsets
+        {
+            [Offset("Search 48 8D 05 ? ? ? ? 48 8D 4F ? 48 89 07 E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
+            internal static IntPtr VTable;
+            [Offset("Search 41 80 BE ? ? ? ? ? 0F 84 ? ? ? ? BA ? ? ? ? Add 3 Read32")]
+            internal static int IsReady;
+            [Offset("Search 41 C6 86 ? ? ? ? ? EB ? 41 C6 86 ? ? ? ? ? Add 3 Read32")]
+            internal static int CursorLocked;
+        }
         private IntPtr addressLocation = IntPtr.Zero;
         Random rnd = new Random();
         
@@ -18,8 +29,8 @@ namespace LlamaLibrary.RemoteAgents
         
         public bool CursorLocked
         {
-            get => Core.Memory.Read<byte>(Pointer + 0xE1) != 1;
-            set => Core.Memory.Write(Pointer + 0xE1, (byte) (value ? 0:1));
+            get => Core.Memory.Read<byte>(Pointer + Offsets.CursorLocked) != 1;
+            set => Core.Memory.Write(Pointer + Offsets.CursorLocked, (byte) (value ? 0:1));
         }
         
         public int CursorLocation
@@ -28,13 +39,13 @@ namespace LlamaLibrary.RemoteAgents
             set => Core.Memory.Write(addressLocation, locationValue(value));
         }
         
-        public bool IsReadyBotanist => Core.Memory.Read<byte>(Pointer + 0xE0) == 3;
+        public bool IsReadyBotanist => Core.Memory.Read<byte>(Pointer + Offsets.IsReady) == 3;
         
-        public bool IsReadyAimg => Core.Memory.Read<byte>(Pointer + 0xE0) == 2;
+        public bool IsReadyAimg => Core.Memory.Read<byte>(Pointer + + Offsets.IsReady) == 2;
 
         public void Refresh()
         {
-            IntPtr intptr_0 = Core.Memory.Read<IntPtr>(Offsets.SearchResultPtr);
+            IntPtr intptr_0 = Core.Memory.Read<IntPtr>(Memory.Offsets.SearchResultPtr);
             IntPtr intptr_1 = Core.Memory.Read<IntPtr>(intptr_0 + 0x38);
             IntPtr intptr_2 = Core.Memory.Read<IntPtr>(intptr_1 + 0x18);
             IntPtr intptr_3 = Core.Memory.Read<IntPtr>(intptr_2 + 0x310);

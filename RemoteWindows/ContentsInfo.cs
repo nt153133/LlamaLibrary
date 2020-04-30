@@ -36,5 +36,10 @@ namespace LlamaLibrary.RemoteWindows
         {
             SendAction(2, 3, 0xC, 3, 1);
         }
+        
+        public void OpenMasterPieceSupplyWindow()
+        {
+            SendAction(2, 3, 0xC, 3, 6);
+        }
     }
 }

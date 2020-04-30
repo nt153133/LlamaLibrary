@@ -80,6 +80,7 @@
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
+    <Compile Include="Helpers\RowenaHelper.cs" />
     <Compile Include="Helpers\Translator.cs" />
     <Compile Include="HouseChecker.cs" />
     <Compile Include="IshgardHandin.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="RemoteAgents\AgentDawn.cs" />
     <Compile Include="RemoteAgents\AgentHandIn.cs" />
     <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
+    <Compile Include="RemoteAgents\AgentMasterPieceSupply.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
     <Compile Include="RemoteAgents\AgentRecommendEquip.cs" />
@@ -143,6 +145,7 @@
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
     <Compile Include="RemoteAgents\AgentRetainerList.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
+    <Compile Include="RemoteAgents\IAgent.cs" />
     <Compile Include="RemoteWindows\Character.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
     <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
@@ -194,6 +197,7 @@
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />
     <Compile Include="Structs\RetainerInfo.cs" />
+    <Compile Include="Structs\RowenaItem.cs" />
     <Compile Include="TesterBase.cs" />
   </ItemGroup>
   <ItemGroup>

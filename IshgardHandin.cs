@@ -242,6 +242,7 @@ namespace LlamaLibrary
 
         public async Task<bool> BuyItem(uint itemId)
         {
+            
             if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
                 await Navigation.GetTo(886,new Vector3(36.33978f, -16f, 145.3877f));
 

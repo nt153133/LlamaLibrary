@@ -21,14 +21,14 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [OffsetCN("Search 48 85 D2 0F 84 ? ? ? ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 80 7A ? ? 41 8B E8 48 8B FA 48 8B F1 74 ? 48 8B CA E8 ? ? ? ? 48 8B C8 E8 ? ? ? ? EB ? 0F B6 42 ? A8 ? 74 ? 8B 42 ? 05 ? ? ? ? EB ? A8 ? 8B 42 ? 74 ? 05 ? ? ? ? 85 C0 0F 84 ? ? ? ? 48 89 9C 24 ? ? ? ? 48 8B CE 4C 89 B4 24 ? ? ? ? E8 ? ? ? ? 8B 9E ? ? ? ?")] //0x1BEA
         internal static IntPtr SalvageAgent;
 
-        [Offset("Search 41 88 46 ? 0F B6 42 ? Add 3 Read8")]
-        internal static int DawnTrustId;
+ //       [Offset("Search 41 88 46 ? 0F B6 42 ? Add 3 Read8")]
+ //       internal static int DawnTrustId;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 48 C7 43 ? ? ? ? ? 48 8D 4B ? 48 89 03 66 C7 43 ? ? ? Add 3 TraceRelative")]
-        internal static IntPtr DawnVtable;
+  //      [Offset("Search 48 8D 05 ? ? ? ? 48 C7 43 ? ? ? ? ? 48 8D 4B ? 48 89 03 66 C7 43 ? ? ? Add 3 TraceRelative")]
+ //       internal static IntPtr DawnVtable;
         
-        [Offset("Search 41 88 46 ? E8 ? ? ? ? C6 43 ? ? Add 3 Read8")]
-        internal static int DawnIsScenario;
+  //      [Offset("Search 41 88 46 ? E8 ? ? ? ? C6 43 ? ? Add 3 Read8")]
+  //      internal static int DawnIsScenario;
 
         [Offset("Search 4C 8D 0D ? ? ? ? 45 33 C0 33 D2 48 8B C8 E8 ? ? ? ? Add 3 TraceRelative")]
         internal static IntPtr RepairVendor;
@@ -39,11 +39,11 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 8B 0D ? ? ? ? 4C 8B C0 33 D2 Add 3 TraceRelative")] 
         internal static IntPtr SearchResultPtr;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 4E ? 48 8D 05 ? ? ? ? 48 89 46 ? E8 ? ? ? ? 33 ED Add 3 TraceRelative")]
-        internal static IntPtr AgentRetainerCharacterVtable;
+    //    [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 4E ? 48 8D 05 ? ? ? ? 48 89 46 ? E8 ? ? ? ? 33 ED Add 3 TraceRelative")]
+    //    internal static IntPtr AgentRetainerCharacterVtable;
             
-        [Offset("Search 48 8D 05 ? ? ? ? 48 89 03 B9 ? ? ? ? 89 53 ? Add 3 TraceRelative")]
-        internal static IntPtr AgentRetainerAskVtable;
+ //       [Offset("Search 48 8D 05 ? ? ? ? 48 89 03 B9 ? ? ? ? 89 53 ? Add 3 TraceRelative")]
+//        internal static IntPtr AgentRetainerAskVtable;
             
         [Offset("Search 4C 8D 2D ? ? ? ? 66 0F 7F 44 24 ? 41 8B DF Add 3 TraceRelative")]
         internal static IntPtr RetainerStats;
@@ -80,8 +80,8 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 0F B6 DA 48 8B F9")]
         internal static IntPtr EntrustRetainerFunc;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 48 89 6F ? 48 89 07 48 8D 9F ? ? ? ? Add 3 TraceRelative")]
-        internal static IntPtr AgentRetainerInventoryVtable;
+  //      [Offset("Search 48 8D 05 ? ? ? ? 48 89 6F ? 48 89 07 48 8D 9F ? ? ? ? Add 3 TraceRelative")]
+   //     internal static IntPtr AgentRetainerInventoryVtable;
         
         [Offset("Search 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 80 B9 ? ? ? ? ? 41 8B F0")]
         internal static IntPtr SellFunc;
@@ -92,9 +92,9 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? EB ? 44 0F B7 41 ? Add 3 TraceRelative")]
         internal static IntPtr MateriaParam;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 33 FF 48 89 03 48 8D 4B ? Add 3 TraceRelative")]
-        [OffsetCN("Search 48 8D 05 ? ? ? ? 48 8D 4B ? 48 89 03 E8 ? ? ? ? 48 8D 4B ? E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
-        internal static IntPtr AgentMeldVtable;
+   //     [Offset("Search 48 8D 05 ? ? ? ? 33 FF 48 89 03 48 8D 4B ? Add 3 TraceRelative")]
+   //     [OffsetCN("Search 48 8D 05 ? ? ? ? 48 8D 4B ? 48 89 03 E8 ? ? ? ? 48 8D 4B ? E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
+   //     internal static IntPtr AgentMeldVtable;
         
         [Offset("Search 48 89 91 ? ? ? ? 33 D2 C7 81 ? ? ? ? ? ? ? ?")]
         internal static IntPtr MeldWindowFunc;
@@ -111,34 +111,34 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 39 73 ? Add 3 TraceRelative")]
         internal static IntPtr ExtractMateriaParam;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 48 8D 4F ? 48 89 07 E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
-        internal static IntPtr AgentOutOnLimbVtable;
+   //     [Offset("Search 48 8D 05 ? ? ? ? 48 8D 4F ? 48 89 07 E8 ? ? ? ? 33 C9 Add 3 TraceRelative")]
+    //    internal static IntPtr AgentOutOnLimbVtable;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 48 89 01 48 8D 05 ? ? ? ? 48 89 41 ? 48 8B D9 Add 3 TraceRelative")]
-        internal static IntPtr AgentOutHandIn;
+   //     [Offset("Search 48 8D 05 ? ? ? ? 48 89 01 48 8D 05 ? ? ? ? 48 89 41 ? 48 8B D9 Add 3 TraceRelative")]
+   //     internal static IntPtr AgentOutHandIn;
         
         [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B 41 ? 48 8B E9 48 83 C1 ?")]
         internal static IntPtr HandInFunc;
         
-        [Offset("Search 4C 8D 2D ? ? ? ? 48 89 74 24 ? Add 3 TraceRelative")]
-        internal static IntPtr AgentHousingSelectBlock;
+   //     [Offset("Search 4C 8D 2D ? ? ? ? 48 89 74 24 ? Add 3 TraceRelative")]
+   //     internal static IntPtr AgentHousingSelectBlock;
         
-        [Offset("Search 48 8D 05 ? ? ? ? C6 43 ? ? 48 89 03 48 8B C3 C7 43 ? ? ? ? ? Add 3 TraceRelative")]
-        internal static IntPtr AgentRecommendEquip;
+    //    [Offset("Search 48 8D 05 ? ? ? ? C6 43 ? ? 48 89 03 48 8B C3 C7 43 ? ? ? ? ? Add 3 TraceRelative")]
+    //    internal static IntPtr AgentRecommendEquip;
         
-        [Offset("Search 48 8D 05 ? ? ? ? 89 77 ? Add 3 TraceRelative")]
-        internal static IntPtr AgentCharacter;
+//        [Offset("Search 48 8D 05 ? ? ? ? 89 77 ? Add 3 TraceRelative")]
+ //       internal static IntPtr AgentCharacter;
         
-        [Offset("Search 48 8D 05 ? ? ? ? BF ? ? ? ? 48 89 03 48 8D 73 ? Add 3 TraceRelative")]
-        internal static IntPtr AgentContentsInfo;
+  //      [Offset("Search 48 8D 05 ? ? ? ? BF ? ? ? ? 48 89 03 48 8D 73 ? Add 3 TraceRelative")]
+ //       internal static IntPtr AgentContentsInfo;
     }
 
     internal static partial class Offsets
     {
-        [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 5E ? Add 3 TraceRelative")]
-        internal static IntPtr AgentRetainerList;
-        [Offset("Search 48 8D 8E ? ? ? ? 33 D2 41 B8 ? ? ? ? E8 ? ? ? ? 48 8B 5C 24 ? 48 8B C6 48 8B 74 24 ? 48 83 C4 ? 5F C3 ? ? ? ? ? ? 48 89 5C 24 ? Add 3 Read32")]
-        internal static int AgentRetainerOffset;
+     //   [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 5E ? Add 3 TraceRelative")]
+    //    internal static IntPtr AgentRetainerList;
+   //     [Offset("Search 48 8D 8E ? ? ? ? 33 D2 41 B8 ? ? ? ? E8 ? ? ? ? 48 8B 5C 24 ? 48 8B C6 48 8B 74 24 ? 48 83 C4 ? 5F C3 ? ? ? ? ? ? 48 89 5C 24 ? Add 3 Read32")]
+  //      internal static int AgentRetainerOffset;
         [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B F0 48 85 C0 74 ? 48 83 38 ? Add 3 TraceRelative")]
         internal static IntPtr RetainerData;
         [Offset("Search 83 FA ? 73 ? 8B C2 0F B6 94 08 ? ? ? ? 80 FA ?")]
@@ -149,8 +149,8 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         internal static IntPtr RequestRetainerData; 
         [Offset("Search 48 8D 56 ? EB ? ? ? ? ? ? ? ? ? ? ? 40 53 Add 3 Read8")]
         internal static int RetainerName;
-        [Offset("Search 83 FB ? 72 ? 33 D2 48 8D 4C 24 ? E8 ? ? ? ? 48 8D 15 ? ? ? ? Add 2 Read8")]
-        internal static int MaxRetainers;
+       // [Offset("Search 83 FB ? 72 ? 33 D2 48 8D 4C 24 ? E8 ? ? ? ? 48 8D 15 ? ? ? ? Add 2 Read8")]
+     //   internal static int MaxRetainers;
         [Offset("Search 66 83 78 ? ? 74 ? 8B 78 ? E8 ? ? ? ? Add 3 Read8")]
         internal static int VentureTask;
         [Offset("Search 8B 78 ? E8 ? ? ? ? 3B F8 Add 2 Read8")]
@@ -162,9 +162,6 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
 
     internal static partial class Offsets
     {
-     //   [Offset("Search 48 8D 05 ? ? ? ? 48 89 06 48 8D 5E ? Add 3 TraceRelative")]
-      //  internal static IntPtr AgentRetainerList;
-
         [Offset("Search 44 88 84 0A ? ? ? ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 88 91 ? ? ? ? Add 4 Read32")]
         internal static int GatheringStateOffset;
         
@@ -191,8 +188,13 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
         
         [Offset("Search 48 8B 05 ? ? ? ? 33 C9 40 84 FF Add 3 TraceRelative")]
         internal static IntPtr GCShopPtr;
-            
-            
+        
+        [Offset("Search 48 8D 0D ? ? ? ? 4D 0F 44 C5 Add 3 TraceRelative")]
+        internal static IntPtr RowenaItemList;
+        
+        [Offset("Search 81 FB ? ? ? ? 0F 83 ? ? ? ? 48 8D 0D ? ? ? ? Add 2 Read32")]
+        internal static int RowenaItemCount;
+        
     }
 #pragma warning restore CS0649
 }
