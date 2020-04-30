@@ -75,7 +75,13 @@ namespace LlamaLibrary.RemoteWindows
                     // Logging.Write(Colors.Fuchsia, $"[Purchase] Request");
                     for (int i = 0; i < 3; i++)
                     {
-                        var item = InventoryManager.FilledInventoryAndArmory.FirstOrDefault(j => j.RawItemId == specialShopItem.Value.CurrencyTypes[i] && j.Count >= specialShopItem.Value.CurrencyCosts[i]);
+                        BagSlot item;
+                        if (specialShopItem.Value.HqCurrencies[i])
+                            item = InventoryManager.FilledInventoryAndArmory.FirstOrDefault(j => j.RawItemId == specialShopItem.Value.CurrencyTypes[i] && j.Count >= specialShopItem.Value.CurrencyCosts[i] && j.IsHighQuality == specialShopItem.Value.HqCurrencies[i]);
+                        else
+                        {
+                            item = InventoryManager.FilledInventoryAndArmory.FirstOrDefault(j => j.RawItemId == specialShopItem.Value.CurrencyTypes[i] && j.Count >= specialShopItem.Value.CurrencyCosts[i]);
+                        }
                         // Logging.Write(Colors.Fuchsia, $"[Purchase] Request item {item}");
                         if (item != null)
                         {

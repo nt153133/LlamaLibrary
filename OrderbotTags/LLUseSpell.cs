@@ -17,7 +17,7 @@ namespace ff14bot.NeoProfiles
 	[XmlElement("SoUseSpell")]
     public class LLUseSpellTag : ProfileBehavior
     {
-        protected SoUseSpellTag() { Hotspots = new IndexedList<HotSpot>(); }
+        protected LLUseSpellTag() { Hotspots = new IndexedList<HotSpot>(); }
 
         public override bool HighPriority { get { return true; } }
 

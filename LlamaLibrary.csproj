@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -60,6 +60,7 @@
     <Compile Include="AutoTradeAccept.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Enums\ClassJobCategory.cs" />
+    <Compile Include="Enums\GCNpc.cs" />
     <Compile Include="Enums\MiniGameResult.cs" />
     <Compile Include="Enums\MyItemRole.cs" />
     <Compile Include="Enums\RetainerRole.cs" />
@@ -69,9 +70,13 @@
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\GatheringPointObjectExtensions.cs" />
     <Compile Include="Extensions\ItemExtensions.cs" />
+    <Compile Include="Extensions\LocalPlayerExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="GatherTest.cs" />
+    <Compile Include="Helpers\GrandCompanyHelper.cs" />
+    <Compile Include="Helpers\GrandCompanyShop.cs" />
+    <Compile Include="Helpers\ItemConditionals.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
@@ -125,6 +130,7 @@
     <Compile Include="Reduce\ReduceSettingsForm.designer.cs">
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RefreshPfBase.cs" />
     <Compile Include="RemoteAgents\AgentCharacter.cs" />
     <Compile Include="RemoteAgents\AgentContentsInfo.cs" />
     <Compile Include="RemoteAgents\AgentDawn.cs" />
@@ -144,6 +150,7 @@
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
+    <Compile Include="RemoteWindows\GrandCompanyExchange.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyList.cs" />
     <Compile Include="RemoteWindows\GrandCompanySupplyReward.cs" />
     <Compile Include="RemoteWindows\GuildLeve.cs" />
@@ -180,6 +187,9 @@
     </Compile>
     <Compile Include="ScriptConditions\Helpers.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
+    <Compile Include="Structs\GatheringNodeData.cs" />
+    <Compile Include="Structs\GCShopItem.cs" />
+    <Compile Include="Structs\GCTurninItem.cs" />
     <Compile Include="Structs\HousingPlot.cs" />
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />

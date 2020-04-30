@@ -64,9 +64,9 @@ namespace LlamaLibrary.RemoteWindows
         {
             var result = new Dictionary<Item, KeyValuePair<int,string>>();
             var currentElements = ___Elements();
-            var itemElements = new ArraySegment<TwoInt>(currentElements, 268, GetNumberOfCraftingTurnins()).ToArray();
-            var jobElements = new ArraySegment<TwoInt>(currentElements, 271, GetNumberOfCraftingTurnins()).ToArray();
-            var qtyElements = new ArraySegment<TwoInt>(currentElements, 274, GetNumberOfCraftingTurnins()).ToArray();
+            var itemElements = new ArraySegment<TwoInt>(currentElements, 268, GetNumberOfGatheringTurnins()).ToArray();
+            var jobElements = new ArraySegment<TwoInt>(currentElements, 271, GetNumberOfGatheringTurnins()).ToArray();
+            var qtyElements = new ArraySegment<TwoInt>(currentElements, 274, GetNumberOfGatheringTurnins()).ToArray();
             
             for (var i = 0; i < GetNumberOfGatheringTurnins(); i++)
             {

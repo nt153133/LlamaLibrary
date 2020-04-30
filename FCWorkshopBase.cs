@@ -143,9 +143,9 @@ namespace LlamaLibrary
         internal void init()
         {
             OffsetManager.Init();
-            var text = File.ReadAllText(@"G:\Order.json", Encoding.UTF8);
-            orderList = loadResource<List<LisbethOrder>>(text);
-            Logger.Info("Loaded Order.json");
+           // var text = File.ReadAllText(@"G:\Order.json", Encoding.UTF8);
+           // orderList = loadResource<List<LisbethOrder>>(text);
+           // Logger.Info("Loaded Order.json");
         }
 
         private static T loadResource<T>(string text)

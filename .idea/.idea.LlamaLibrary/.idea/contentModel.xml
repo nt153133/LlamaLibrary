@@ -1,21 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\Francis Magretto\.Rider2019.2\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\Francis Magretto\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_LlamaLibrary.-522870276.00" t="ExcludeRecursive" />
-    <e p="G:\Rider_Projects\LlamaLibrary" t="IncludeRecursive">
+    <e p="C:\Users\Francis Magretto\.Rider2019.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\Francis Magretto\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Francis Magretto\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_LlamaLibrary.-1058715589.00" t="ExcludeRecursive" />
+    <e p="G:\CleanRB\BotBases\LlamaLibrary" t="IncludeRecursive">
+      <e p="AutoFollow" t="Include">
+        <e p="AutoFollowBase.cs" t="Include" />
+        <e p="AutoFollowSettings.cs" t="Include" />
+        <e p="AutoFollowSettingsFrm.cs" t="Include" />
+        <e p="AutoFollowSettingsFrm.Designer.cs" t="Include" />
+        <e p="AutoFollowSettingsFrm.resx" t="Include" />
+      </e>
       <e p="AutoTradeAccept.cs" t="Include" />
       <e p="bin" t="ExcludeRecursive" />
       <e p="Class1.cs" t="Include" />
-      <e p="Forms" t="Include" />
-      <e p="Helpers" t="Include">
-        <e p="Logger.cs" t="Include" />
+      <e p="Enums" t="Include">
+        <e p="ClassJobCategory.cs" t="Include" />
+        <e p="MiniGameResult.cs" t="Include" />
+        <e p="MyItemRole.cs" t="Include" />
+        <e p="RetainerRole.cs" t="Include" />
+        <e p="VentureStatus.cs" t="Include" />
       </e>
+      <e p="Extensions" t="Include">
+        <e p="BagExtensions.cs" t="Include" />
+        <e p="BagSlotExtensions.cs" t="Include" />
+        <e p="EnumExtensions.cs" t="Include" />
+        <e p="GatheringPointObjectExtensions.cs" t="Include" />
+        <e p="ItemExtensions.cs" t="Include" />
+        <e p="RetainerTaskAskExtensions.cs" t="Include" />
+      </e>
+      <e p="FCWorkshopBase.cs" t="Include" />
+      <e p="Forms" t="Include" />
+      <e p="GatherTest.cs" t="Include" />
+      <e p="Helpers" t="Include">
+        <e p="Lisbeth.cs" t="Include" />
+        <e p="Logger.cs" t="Include" />
+        <e p="Navigation.cs" t="Include" />
+        <e p="Translator.cs" t="Include" />
+      </e>
+      <e p="HouseChecker.cs" t="Include" />
       <e p="IshgardHandin.cs" t="Include" />
       <e p="IshgardHandinBase.cs" t="Include" />
       <e p="LlamaLibrary.csproj" t="IncludeRecursive" />
       <e p="LlamaLibrary.sln" t="IncludeFlat" />
       <e p="MastPieceSupplyTester.cs" t="Include" />
+      <e p="Materia" t="Include">
+        <e p="Materia.cs" t="Include" />
+        <e p="MateriaItem.cs" t="Include" />
+        <e p="MateriaSettingsFrm.cs" t="Include" />
+        <e p="MateriaSettingsFrm.Designer.cs" t="Include" />
+        <e p="MateriaSettingsFrm.resx" t="Include" />
+      </e>
       <e p="Memory" t="Include">
         <e p="Attributes" t="Include">
           <e p="OffsetAttribute.cs" t="Include" />
@@ -26,11 +62,31 @@
       </e>
       <e p="obj" t="ExcludeRecursive" />
       <e p="OrderbotTags" t="Include">
+        <e p="AutoEquip.cs" t="Include" />
+        <e p="BuyScripItem.cs" t="Include" />
+        <e p="BuyShopExchangeItem.cs" t="Include" />
+        <e p="BuyWhiteScriptItem.cs" t="Include" />
         <e p="ChangeClass.cs" t="Include" />
+        <e p="GetTo.cs" t="Include" />
+        <e p="LisbethOrderBot.cs" t="Include" />
+        <e p="LLDesynth.cs" t="Include" />
+        <e p="LLEmoteNpc.cs" t="Include" />
+        <e p="LLHandOver.cs" t="Include" />
+        <e p="LLoadProfile.cs" t="Include" />
+        <e p="LLPickupQuest.cs" t="Include" />
+        <e p="LLSendChat.cs" t="Include" />
+        <e p="LLStopBot.cs" t="Include" />
+        <e p="LLTalkTo.cs" t="Include" />
+        <e p="LLTurnIn.cs" t="Include" />
+        <e p="LLUseSpell.cs" t="Include" />
+        <e p="LowerCollectable.cs" t="Include" />
       </e>
+      <e p="OutOnALimbBase.cs" t="Include" />
       <e p="packages" t="ExcludeRecursive" />
       <e p="Properties" t="Include">
         <e p="AssemblyInfo.cs" t="Include" />
+        <e p="Resources.Designer.cs" t="Include" />
+        <e p="Resources.resx" t="Include" />
       </e>
       <e p="Reduce" t="Include">
         <e p="Reduce.cs" t="Include" />
@@ -40,28 +96,76 @@
         <e p="ReduceSettingsForm.resx" t="Include" />
       </e>
       <e p="RemoteAgents" t="Include">
+        <e p="AgentCharacter.cs" t="Include" />
+        <e p="AgentContentsInfo.cs" t="Include" />
         <e p="AgentDawn.cs" t="Include" />
+        <e p="AgentHandIn.cs" t="Include" />
+        <e p="AgentHousingSelectBlock.cs" t="Include" />
+        <e p="AgentMeld.cs" t="Include" />
+        <e p="AgentOutOnLimb.cs" t="Include" />
+        <e p="AgentRecommendEquip.cs" t="Include" />
+        <e p="AgentRetainerCharacter.cs" t="Include" />
+        <e p="AgentRetainerInventory.cs" t="Include" />
+        <e p="AgentRetainerList.cs" t="Include" />
+        <e p="AgentRetainerVenture.cs" t="Include" />
       </e>
       <e p="RemoteWindows" t="Include">
+        <e p="Character.cs" t="Include" />
+        <e p="ContentsInfo.cs" t="Include" />
+        <e p="ContentsInfoDetail.cs" t="Include" />
         <e p="Dawn.cs" t="Include" />
         <e p="GcArmyCapture.cs" t="Include" />
         <e p="GcArmyExpeditionResult.cs" t="Include" />
+        <e p="GoldSaucerReward.cs" t="Include" />
+        <e p="GrandCompanySupplyList.cs" t="Include" />
+        <e p="GrandCompanySupplyReward.cs" t="Include" />
+        <e p="GuildLeve.cs" t="Include" />
+        <e p="HousingSelectBlock.cs" t="Include" />
+        <e p="HugeCraftworksSupply.cs" t="Include" />
+        <e p="HWDGathereInspect.cs" t="Include" />
+        <e p="HWDLottery.cs" t="Include" />
         <e p="HWDSupply.cs" t="Include" />
         <e p="MasterPieceSupply.cs" t="Include" />
+        <e p="MateriaAttach.cs" t="Include" />
+        <e p="MateriaAttachDialog.cs" t="Include" />
+        <e p="MiniGameAimg.cs" t="Include" />
+        <e p="MiniGameBotanist.cs" t="Include" />
+        <e p="RecommendEquip.cs" t="Include" />
         <e p="RemoteWindow.cs" t="Include" />
         <e p="RetainerList.cs" t="Include" />
+        <e p="RetainerTaskList.cs" t="Include" />
+        <e p="ShopExchangeItem.cs" t="Include" />
+        <e p="SubmarinePartsMenu.cs" t="Include" />
       </e>
       <e p="Repair.cs" t="Include" />
+      <e p="Resources" t="Include">
+        <e p="Materia.json" t="Include" />
+        <e p="Ventures.json" t="Include" />
+      </e>
+      <e p="RetainerRoutine.cs" t="Include" />
       <e p="Retainers" t="Include">
         <e p="HelperFunctions.cs" t="Include" />
         <e p="RetainerInventory.cs" t="Include" />
         <e p="Retainers.cs" t="Include" />
         <e p="RetainerSettings.cs" t="Include" />
+        <e p="RetainersPull.cs" t="Include" />
         <e p="RetainersSettingsForm.cs" t="Include" />
         <e p="RetainersSettingsForm.designer.cs" t="Include" />
         <e p="RetainersSettingsForm.resx" t="Include" />
+        <e p="RetainerTaskData.cs" t="Include" />
         <e p="RetainerTasks.cs" t="Include" />
       </e>
+      <e p="ScriptConditions" t="Include">
+        <e p="Helpers.cs" t="Include" />
+      </e>
+      <e p="Structs" t="Include">
+        <e p="FCWorkshopItem.cs" t="Include" />
+        <e p="HousingPlot.cs" t="Include" />
+        <e p="ItemStored.cs" t="Include" />
+        <e p="LisbethOrder.cs" t="Include" />
+        <e p="RetainerInfo.cs" t="Include" />
+      </e>
+      <e p="TesterBase.cs" t="Include" />
     </e>
   </component>
 </project>
