@@ -52,4 +52,4 @@ Offmesh follow the leader. You can use this to have an alt follow you through a 
 ### Out on a limb
 This is really a main botbase but down here because I'm not happy with it. It will win the game but after a random number of wins it starts winning 0 MGP. Seems like a server side restriction, so i have it stop once it starts winning 0. 
 
-https://discord.gg/DT9geAp
+https://discord.gg/bmgCq39
