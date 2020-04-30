@@ -6,9 +6,12 @@ using Buddy.Coroutines;
 using Clio.Utilities;
 using Clio.Utilities.Helpers;
 using ff14bot;
+using ff14bot.Enums;
 using ff14bot.Helpers;
+using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Objects;
+using ff14bot.Pathing;
 using TreeSharp;
 
 namespace LlamaLibrary.Helpers
@@ -25,8 +28,13 @@ namespace LlamaLibrary.Helpers
         {
             var path = await GenerateNodes(ZoneId, XYZ );
             
-            if (path == null)
+            if (path == null && WorldManager.ZoneId != ZoneId)
                 return false;
+            
+            if (path == null)
+            {
+                return await FlightorMove(XYZ);
+            }
             
             if (path.Count < 1)
             {
@@ -84,6 +92,23 @@ namespace LlamaLibrary.Helpers
 
             Navigator.PlayerMover.MoveStop();
             return _target.IsWithinInteractRange;
+        }
+        
+        internal static async Task<bool> FlightorMove(Vector3 loc)
+        {
+            var moving = MoveResult.GeneratingPath;
+            while (!(moving == MoveResult.Done ||
+                     moving == MoveResult.ReachedDestination ||
+                     moving == MoveResult.Failed ||
+                     moving == MoveResult.Failure ||
+                     moving == MoveResult.PathGenerationFailed))
+            {
+                moving = Flightor.MoveTo(new FlyToParameters(loc));
+
+                await Coroutine.Yield();
+            }
+
+            return moving == MoveResult.ReachedDestination;
         }
     }
 }

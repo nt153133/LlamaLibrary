@@ -11,6 +11,7 @@ using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
+using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Structs;
 
@@ -18,6 +19,23 @@ namespace LlamaLibrary.Helpers
 {
     public static class GrandCompanyShop
     {
+        internal static class Offsets
+        {
+            [Offset("Search 0F B6 05 ? ? ? ? 66 3B 43 ? Add 3 TraceRelative")]
+            internal static IntPtr CurrentGC;
+        
+            [Offset("Search 48 83 EC ? 48 8B 05 ? ? ? ? 44 8B C1 BA ? ? ? ? 48 8B 88 ? ? ? ? E8 ? ? ? ? 48 85 C0 75 ? 48 83 C4 ? C3 48 8B 00 48 83 C4 ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 48 83 EC ? 80 F9 ?")]
+            internal static IntPtr GCGetMaxSealsByRank;
+        
+            [Offset("Search 48 8D 9E ? ? ? ? 4C 89 B4 24 ? ? ? ? Add 3 Read32")]
+            internal static int GCArrayStart;
+        
+            [Offset("Search 41 83 FD ? 0F 82 ? ? ? ? 41 0F B6 97 ? ? ? ? Add 3 Read8")]
+            internal static int GCShopCount;
+        
+            [Offset("Search 48 8B 05 ? ? ? ? 33 C9 40 84 FF Add 3 TraceRelative")]
+            internal static IntPtr GCShopPtr;
+        }
         public static IntPtr ActiveShopPtr => Core.Memory.Read<IntPtr>(Offsets.GCShopPtr);
 
         public static List<GCShopItem> Items

@@ -5,6 +5,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +23,7 @@ using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
 using ff14bot.Objects;
+using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using Generate;
@@ -88,6 +90,8 @@ namespace LlamaLibrary
             {29, "In Craft - Using synthesis action"}
         };
 
+        SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
+
         public TesterBase()
         {
             Task.Factory.StartNew(() =>
@@ -104,36 +108,53 @@ namespace LlamaLibrary
         public override bool IsAutonomous => true;
         public override bool RequiresProfile => false;
 
+        public override void OnButtonPress()
+        {
+            StringBuilder sb1 = new StringBuilder();
+            foreach (var obj in luaFunctions.Keys.Where(obj => luaFunctions[obj].Count >= 1))
+            {
+                sb1.AppendLine(obj);
+                foreach (var funcName in luaFunctions[obj])
+                {
+                    sb1.AppendLine($"\t{funcName}");
+                }
+            }
+
+            Log($"\n {sb1}");
+        }
+
         public override Composite Root => _root;
 
-        public override bool WantButton { get; } = false;
+        public override bool WantButton { get; } = true;
         internal static List<RetainerTaskData> VentureData;
         private volatile bool _init;
+
         static List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
-            {
-                (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (129, new Vector3(-149.279053f, 18.203979f, 20.553894f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (129, new Vector3(-123.888062f, 17.990356f, 21.469421f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
-                (131, new Vector3(148.91272f, 3.982544f, -44.205383f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (131, new Vector3(111.161987f, 4.104675f, -72.343079f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (131, new Vector3(153.185303f, 3.982544f, 13.229492f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (131, new Vector3(118.547363f, 4.013123f, -93.003784f)), //Ul'dah - Steps of Thal(Ul'dah) 
-                (133, new Vector3(160.234863f, 15.671021f, -55.649719f)), //Old Gridania(Gridania) 
-                (133, new Vector3(169.726074f, 15.487854f, -81.895203f)), //Old Gridania(Gridania) 
-                (133, new Vector3(171.007812f, 15.487854f, -101.487854f)), //Old Gridania(Gridania) 
-                (133, new Vector3(160.234863f, 15.671021f, -136.369934f)), //Old Gridania(Gridania) 
-                (156, new Vector3(34.50061f, 28.976807f, -762.233948f)), //Mor Dhona(Mor Dhona) 
-                (156, new Vector3(11.001709f, 28.976807f, -734.554077f)), //Mor Dhona(Mor Dhona) 
-                (419, new Vector3(-151.171204f, -12.64978f, -11.764771f)), //The Pillars(Ishgard) 
-                (478, new Vector3(34.775269f, 208.148193f, -50.858398f)), //Idyllshire(Dravania) 
-                (478, new Vector3(0.38147f, 206.469727f, 51.407593f)), //Idyllshire(Dravania) 
-                (628, new Vector3(19.394226f, 4.043579f, 53.025024f)), //Kugane(Kugane) 
-                (635, new Vector3(-57.633362f, -0.01532f, 49.30188f)), //Rhalgr's Reach(Gyr Abania) 
-                (819, new Vector3(-69.840576f, -7.705872f, 123.491211f)), //The Crystarium(The Crystarium) 
-                (819, new Vector3(-64.255798f, 19.97406f, -144.274109f)), //The Crystarium(The Crystarium) 
-                (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
-            };
+        {
+            (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+            (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+            (129, new Vector3(-149.279053f, 18.203979f, 20.553894f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+            (129, new Vector3(-123.888062f, 17.990356f, 21.469421f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
+            (131, new Vector3(148.91272f, 3.982544f, -44.205383f)), //Ul'dah - Steps of Thal(Ul'dah) 
+            (131, new Vector3(111.161987f, 4.104675f, -72.343079f)), //Ul'dah - Steps of Thal(Ul'dah) 
+            (131, new Vector3(153.185303f, 3.982544f, 13.229492f)), //Ul'dah - Steps of Thal(Ul'dah) 
+            (131, new Vector3(118.547363f, 4.013123f, -93.003784f)), //Ul'dah - Steps of Thal(Ul'dah) 
+            (133, new Vector3(160.234863f, 15.671021f, -55.649719f)), //Old Gridania(Gridania) 
+            (133, new Vector3(169.726074f, 15.487854f, -81.895203f)), //Old Gridania(Gridania) 
+            (133, new Vector3(171.007812f, 15.487854f, -101.487854f)), //Old Gridania(Gridania) 
+            (133, new Vector3(160.234863f, 15.671021f, -136.369934f)), //Old Gridania(Gridania) 
+            (156, new Vector3(34.50061f, 28.976807f, -762.233948f)), //Mor Dhona(Mor Dhona) 
+            (156, new Vector3(11.001709f, 28.976807f, -734.554077f)), //Mor Dhona(Mor Dhona) 
+            (419, new Vector3(-151.171204f, -12.64978f, -11.764771f)), //The Pillars(Ishgard) 
+            (478, new Vector3(34.775269f, 208.148193f, -50.858398f)), //Idyllshire(Dravania) 
+            (478, new Vector3(0.38147f, 206.469727f, 51.407593f)), //Idyllshire(Dravania) 
+            (628, new Vector3(19.394226f, 4.043579f, 53.025024f)), //Kugane(Kugane) 
+            (635, new Vector3(-57.633362f, -0.01532f, 49.30188f)), //Rhalgr's Reach(Gyr Abania) 
+            (819, new Vector3(-69.840576f, -7.705872f, 123.491211f)), //The Crystarium(The Crystarium) 
+            (819, new Vector3(-64.255798f, 19.97406f, -144.274109f)), //The Crystarium(The Crystarium) 
+            (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
+        };
+
         internal void init()
         {
             OffsetManager.Init();
@@ -167,6 +188,8 @@ namespace LlamaLibrary
 
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
+
+
             /*
             Log($"{await GrandCompanyShop.BuyKnownItem(6141, 5)}"); //Cordial
             await Coroutine.Sleep(1000);
@@ -198,37 +221,114 @@ namespace LlamaLibrary
                         }
             */
 
-            //Map, Location
+            //await GoToSummoningBell();
+            //string fun3 = $"return _G['CmnDefRetainerBell']:GetVentureFinishedRetainerName();";
 
 
-            ;
+            //Log($"{await VerifiedRowenaData()}");
+            // var resultBool = WorldManager.Raycast(Core.Me.Location, GameObjectManager.Target.Location, out var result);
 
-           // var resultBool = WorldManager.Raycast(Core.Me.Location, GameObjectManager.Target.Location, out var result);
-
-           if (await GoToSummoningBell()) 
-               LogSucess("\n****************\n MADE IT BELL\n****************");
-           else
-           {
-               LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
-           }
+            if (await GoToSummoningBell()) 
+                LogSucess("\n****************\n MADE IT BELL\n****************");
+            else
+            {
+                LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
+            }
 
             //await DoGCDailyTurnins();
 
+            //    bool AgentCharacter = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentCharacter), typeof(AgentCharacter));
 
+
+            //   Log($"Added Venture Agent: {retaineragent}");
+
+            /* Rowena
+            var ItemList = Core.Memory.ReadArray<RowenaItem>(Offsets.RowenaItemList, Offsets.RowenaItemCount);
+            StringBuilder sb = new StringBuilder();
+            foreach (var itemGroup in ItemList.GroupBy(i=> i.ClassJob))
+            {
+                foreach (var item in itemGroup)
+                {
+                    sb.AppendLine(item.ToString().Trim().TrimEnd(','));
+                    Log(item.ToString());
+                }
+
+            }
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(@"h:\", $"rowena.csv"), false))
+            {
+                outputFile.Write(sb.ToString());
+            }
+            
+            */
+            //Log($"START:\n{sb.ToString()}");
             TreeRoot.Stop("Stop Requested");
             return true;
         }
+
+        private void DumpLuaFunctions()
+        {
+            string func =$"local values = {{}} for key,value in pairs(_G) do table.insert(values, key); end return unpack(values);";
+            
+            var retValues = Lua.GetReturnValues(func);
+            foreach (var ret in retValues.Where(ret => !ret.StartsWith("_") && !ret.StartsWith("Luc") && !ret.StartsWith("Stm") && !Char.IsDigit(ret[ret.Length -1]) && !char.IsLower(ret[0])) )
+            {
+                if (ret.Contains(":"))
+                {
+                    var name = ret.Split(':')[0];
+                    if (luaFunctions.ContainsKey(name))
+                        continue;
+                    luaFunctions.Add(name, GetSubFunctions(name));
+                }
+                else
+                {
+                    if (luaFunctions.ContainsKey(ret))
+                        continue;
+                    luaFunctions.Add(ret, GetSubFunctions(ret));
+                }
+            }
+        }
         
+        private static List<string> GetSubFunctions(string luaObject)
+        {
+            string func = $"local values = {{}} for key,value in pairs(_G['{luaObject}']) do table.insert(values, key); end return unpack(values);";
+            List<string> functions = new List<string>();
+            try
+            {
+                var retValues = Lua.GetReturnValues(func);
+                functions.AddRange(retValues.Where(ret => !ret.Contains("_") && !ret.Contains("OnSequence") && !ret.StartsWith("On") && !ret.Contains("className") && !ret.Contains("referenceCount") && !ret.Contains("ACTOR")));
+            }
+            catch
+            {
+            }
+
+            functions.Sort();
+            return functions;
+        }
+
+
         public static void LogCritical(string text)
         {
             Logging.Write(Colors.OrangeRed, text);
         }
-        
+
         public static void LogSucess(string text)
         {
             Logging.Write(Colors.Green, text);
         }
-
+        private async Task<bool> MoveSummoningBell(Vector3 loc)
+        {
+            var moving = MoveResult.GeneratingPath;
+            while (!(moving == MoveResult.Done ||
+                     moving == MoveResult.ReachedDestination ||
+                     moving == MoveResult.Failed ||
+                     moving == MoveResult.Failure ||
+                     moving == MoveResult.PathGenerationFailed))
+            {
+                moving = Flightor.MoveTo(new FlyToParameters(loc));
+                await Coroutine.Yield();
+            }
+            return moving == MoveResult.ReachedDestination;
+        }
         public async Task<bool> GoToSummoningBell()
         {
             var searchBell = FindSummoningBell();
@@ -239,27 +339,15 @@ namespace LlamaLibrary
                     Log($"Found bell in Interact Range");
                     return true;
                 }
+
                 if (await Navigation.GetTo(WorldManager.ZoneId, searchBell.Location))
                 {
-                    Log($"Used Navgraph to get there");
+                    Log($"Used Navgraph/Flightor to get there");
                     if (searchBell.IsWithinInteractRange)
                         return true;
                 }
-                else if (searchBell.Distance() < 8 && Math.Abs(Core.Me.Location.Y - searchBell.Location.Y) < 0.5f)
-                {
-                    Log($"Should be able to offmesh move to bell");
-                    if (await Navigation.OffMeshMoveInteract(searchBell))
-                    {
-                        if (searchBell.IsWithinInteractRange)
-                            return true;
-                        else
-                        {
-                            Log($"OffMesh nav failed going to new bell");
-                        }
-                    }
-                }
             }
-            
+
             (uint, Vector3) bellLocation;
             int tries = 0;
             if (SummoningBells.Any(i => i.Item1 == WorldManager.ZoneId))
@@ -309,7 +397,7 @@ namespace LlamaLibrary
                 }
                 while (!foundBell && tries < 5);
             }
-                            
+
             Log($"Going to bell {bellLocation.Item1} {bellLocation.Item2}");
             if (await Navigation.GetTo(bellLocation.Item1, bellLocation.Item2))
             {
@@ -321,10 +409,9 @@ namespace LlamaLibrary
             {
                 return false;
             }
-            
         }
 
-    //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
+        //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
         public GameObject FindSummoningBell()
         {
             uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284};
@@ -347,198 +434,6 @@ namespace LlamaLibrary
 
             return null;
         }
-
-        public async Task DoGCDailyTurnins()
-        {
-            Navigator.PlayerMover = new SlideMover();
-            Navigator.NavigationProvider = new ServiceNavigationProvider();
-
-            var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
-
-            if (!items.Any(i => i.CanHandin))
-            {
-                Log("All done.");
-                return;
-            }
-
-            string lisbethOrder = await GetGCSupplyList();
-            Log("Calling lisbeth");
-            await Lisbeth.ExecuteOrders(lisbethOrder);
-            Log("Lisbeth order should be done");
-
-            if (!GrandCompanySupplyList.Instance.IsOpen)
-            {
-                await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
-                await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                if (!SelectString.IsOpen)
-                {
-                    Log("Window is not open...maybe it didn't get to npc?");
-                    return;
-                }
-
-                SelectString.ClickSlot(0);
-                await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
-                if (!GrandCompanySupplyList.Instance.IsOpen)
-                {
-                    Log("Window is not open...maybe it didn't get to npc?");
-                    return;
-                }
-            }
-
-            if (GrandCompanySupplyList.Instance.IsOpen)
-            {
-                await GrandCompanySupplyList.Instance.SwitchToSupply();
-
-                await HandleCurrentGCWindow();
-
-                await GrandCompanySupplyList.Instance.SwitchToProvisioning();
-
-                await HandleCurrentGCWindow();
-
-                GrandCompanySupplyList.Instance.Close();
-                await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                if (SelectString.IsOpen)
-                {
-                    SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
-                }
-            }
-        }
-
-        private async Task HandleCurrentGCWindow()
-        {
-            var bools = GrandCompanySupplyList.Instance.GetTurninBools();
-            var windowItemIds = GrandCompanySupplyList.Instance.GetTurninItemsIds();
-            var required = GrandCompanySupplyList.Instance.GetTurninRequired();
-            var maxSeals = Core.Me.MaxGCSeals();
-            var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
-            for (var index = 0; index < bools.Length; index++)
-            {
-                if (!bools[index])
-                {
-                    continue;
-                }
-
-                var item = items.FirstOrDefault(j => j.ItemID == windowItemIds[index]);
-                var index1 = index;
-                var handover = InventoryManager.FilledSlots.Where(k => k.RawItemId == item.ItemID && k.Count >= required[index1]).OrderByDescending(k => k.HqFlag).FirstOrDefault();
-                if (handover == default(BagSlot)) continue;
-                Log($"{handover.Name} {handover.IsHighQuality}");
-                if (handover.IsHighQuality)
-                {
-                    if (Core.Me.GCSeals() + (item.Seals * 2) < maxSeals)
-                    {
-                        GrandCompanySupplyList.Instance.ClickItem(index);
-                        await Coroutine.Wait(5000, () => Request.IsOpen);
-                        if (Request.IsOpen)
-                        {
-                            handover.Handover();
-                            await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
-                            Request.HandOver();
-                            await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
-                            if (SelectYesno.IsOpen)
-                            {
-                                SelectYesno.Yes();
-                            }
-
-                            await Coroutine.Wait(5000, () => GrandCompanySupplyReward.Instance.IsOpen);
-                            GrandCompanySupplyReward.Instance.Confirm();
-                            await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
-                            await HandleCurrentGCWindow();
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        Log($"Would get {item.Seals * 2} and we have {Core.Me.GCSeals()} out of {maxSeals}...too many");
-                    }
-                }
-                else
-                {
-                    if (Core.Me.GCSeals() + (item.Seals) < maxSeals)
-                    {
-                        GrandCompanySupplyList.Instance.ClickItem(index);
-                        await Coroutine.Wait(5000, () => Request.IsOpen);
-                        if (Request.IsOpen)
-                        {
-                            handover.Handover();
-                            await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
-                            Request.HandOver();
-                            await Coroutine.Wait(5000, () => GrandCompanySupplyReward.Instance.IsOpen);
-                            GrandCompanySupplyReward.Instance.Confirm();
-                            await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
-                            await HandleCurrentGCWindow();
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        Log($"Would get {item.Seals * 2} and we have {Core.Me.GCSeals()} out of {maxSeals}...too many");
-                    }
-                }
-            }
-        }
-
-        public async Task<string> GetGCSupplyList()
-        {
-            if (!ContentsInfoDetail.Instance.IsOpen)
-            {
-                Logging.Write($"Trying to open window");
-
-                if (!ContentsInfo.Instance.IsOpen)
-                {
-                    if (await ContentsInfo.Instance.Open())
-                        ContentsInfo.Instance.OpenGCSupplyWindow();
-                }
-
-                await Coroutine.Wait(5000, () => ContentsInfoDetail.Instance.IsOpen);
-
-                if (!ContentsInfoDetail.Instance.IsOpen)
-                {
-                    Logging.Write($"Nope failed opening GC Supply window");
-                    return "";
-                }
-            }
-
-            if (!ContentsInfoDetail.Instance.IsOpen)
-            {
-                Logging.Write($"Nope failed");
-                return "";
-            }
-
-            List<LisbethOrder> outList = new List<LisbethOrder>();
-            int id = 0;
-            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
-            {
-                Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
-                var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, item.Value.Value);
-                outList.Add(order);
-
-                id++;
-            }
-
-            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
-            {
-                Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
-                string type = "Gather";
-                if (item.Value.Value.Equals("Fisher"))
-                    continue; //type = "Fisher";
-                var order = new LisbethOrder(id, 2, (int) item.Key.Id, item.Value.Key, type, true);
-
-                outList.Add(order);
-                id++;
-            }
-
-            ContentsInfoDetail.Instance.Close();
-            ContentsInfo.Instance.Close();
-
-            /*foreach (var order in outList)
-            {
-                Logging.Write($"{order}");
-            }*/
-
-            return JsonConvert.SerializeObject(outList, Formatting.None);
-        }
-
 
         public async Task testVentures()
         {

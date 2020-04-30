@@ -132,9 +132,9 @@ namespace LlamaLibrary.Retainers
 
         public async Task RetainerRun()
         {
-            var bell = NearestSummoningBell();
+            var bell = await GoToSummoningBell();
 
-            if (bell == null)
+            if (bell == false)
             {
                 LogCritical("No summoning bell near by");
                 TreeRoot.Stop("Done playing with retainers");

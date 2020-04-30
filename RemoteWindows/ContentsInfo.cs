@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Managers;
+using LlamaLibrary.RemoteAgents;
 
 namespace LlamaLibrary.RemoteWindows
 {
@@ -10,14 +11,9 @@ namespace LlamaLibrary.RemoteWindows
     {
         private const string WindowName = "ContentsInfo";
 
-        private int _agentId;
         public ContentsInfo() : base(WindowName)
         {
             _name = WindowName;
-            
-            var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
-            IntPtr agentVtable = patternFinder.Find("48 8D 05 ? ? ? ? BF ? ? ? ? 48 89 03 48 8D 73 ? Add 3 TraceRelative");
-            _agentId = AgentModule.FindAgentIdByVtable(agentVtable);
         }
 
 
@@ -26,7 +22,7 @@ namespace LlamaLibrary.RemoteWindows
             if (IsOpen)
                 return true;
             
-            AgentModule.ToggleAgentInterfaceById(_agentId);
+            AgentInterface<AgentContentsInfo>.Instance.Toggle();
             await Coroutine.Wait(5000, () => IsOpen);
 
             return IsOpen;

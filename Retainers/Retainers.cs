@@ -167,9 +167,23 @@ namespace LlamaLibrary.Retainers
 
             //Settings variables
             debug = RetainerSettings.Instance.DebugLogging;
+            var bell = await GoToSummoningBell();
 
+            if (bell == false)
+            {
+                LogCritical("No summoning bell near by");
+                TreeRoot.Stop("Done playing with retainers");
+                return false;
+            }
             await UseSummoningBell();
             await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't Open Bell");
+                TreeRoot.Stop("Done playing with retainers");
+                return false;
+            }
 
             if (SelectString.IsOpen)
             {
@@ -451,47 +465,6 @@ namespace LlamaLibrary.Retainers
             TreeRoot.Stop("Done playing with retainers");
 
             done = true;
-
-            return true;
-        }
-
-        private async Task<bool> UseSummoningBell()
-        {
-            var bell = NearestSummoningBell();
-
-            if (bell == null)
-            {
-                LogCritical("No summoning bell near by");
-                return false;
-            }
-
-            if (bell.Distance2D(Core.Me.Location) >= 3)
-            {
-                await MoveSummoningBell(bell.Location);
-                if (bell.Distance2D(Core.Me.Location) >= 3) return false;
-            }
-
-            bell.Interact();
-            // No need to wait on IsOpen when we already do it in the main task.
-            await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            LogVerbose("Summoning Bell Used");
-
-            return true;
-        }
-
-        private static async Task<bool> MoveSummoningBell(Vector3 loc)
-        {
-            var moving = MoveResult.GeneratingPath;
-            while (!(moving == MoveResult.Done ||
-                     moving == MoveResult.ReachedDestination ||
-                     moving == MoveResult.Failed ||
-                     moving == MoveResult.Failure ||
-                     moving == MoveResult.PathGenerationFailed))
-            {
-                moving = Flightor.MoveTo(new FlyToParameters(loc));
-
-                await Coroutine.Yield();
-            }
 
             return true;
         }
