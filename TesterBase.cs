@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Media;
 using Buddy.Coroutines;
-using Buddy.Service.Core;
 using Clio.Utilities;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
 using ff14bot.Enums;
-using ff14bot.Forms.ugh;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
@@ -26,9 +18,7 @@ using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
-using Generate;
-using LlamaLibrary;
-using LlamaLibrary.Enums;
+using GreyMagic;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
@@ -40,6 +30,7 @@ using LlamaLibrary.Structs;
 using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
+using Action = TreeSharp.Action;
 
 namespace LlamaLibrary
 {
@@ -189,6 +180,7 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
+            // RoutineManager.Current.PullBehavior.Start();
 
             /*
             Log($"{await GrandCompanyShop.BuyKnownItem(6141, 5)}"); //Cordial
@@ -227,14 +219,66 @@ namespace LlamaLibrary
 
             //Log($"{await VerifiedRowenaData()}");
             // var resultBool = WorldManager.Raycast(Core.Me.Location, GameObjectManager.Target.Location, out var result);
+            // HuntHelper.Test();
 
-            if (await GoToSummoningBell()) 
-                LogSucess("\n****************\n MADE IT BELL\n****************");
-            else
+            // await Navigation.GetTo(155, new Vector3(-279.682159f, 256.4128f, 339.207031f));
+
+            //var composite_0 = BrainBehavior.CreateBrain();
+
+
+            /*
+            if (mob.Distance() > (RoutineManager.Current.PullRange - 1))
             {
-                LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
+                Log($"Moving");
+                await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
             }
 
+            if (Core.Me.IsMounted)
+                await CommonTasks.StopAndDismount();
+           
+            mob.Target();
+            await Coroutine.Sleep(300);
+            await RoutineManager.Current.PreCombatBuffBehavior.ExecuteCoroutine();
+            if (Core.Me.HasTarget && Core.Me.CurrentTarget.Distance() > RoutineManager.Current.PullRange - 1)
+                await Navigation.OffMeshMove(Core.Me.CurrentTarget.Location);
+            await RoutineManager.Current.PullBehavior.ExecuteCoroutine();
+            await Coroutine.Sleep(300);
+            while (Core.Me.InCombat && Core.Me.HasTarget && mob.IsAlive)
+            {
+                if (Core.Me.CurrentTarget.Distance() > RoutineManager.Current.PullRange - 1)
+                    await Navigation.OffMeshMove(Core.Me.CurrentTarget.Location);
+                await RoutineManager.Current.CombatBehavior.ExecuteCoroutine();
+                Log($"is it alive ? {mob.IsAlive}");
+                await Coroutine.Yield();
+            }
+            */
+
+            //   await FindAndKillMob(8609);
+            Log("Current Daily Hunts");
+            HuntHelper.Test();
+
+
+            Log("\nAccepted Hunts");
+            HuntHelper.PrintAcceptedHunts();
+
+            Log("\nKill Counts");
+            //Log($"is it alive ? {mob.IsAlive}");
+            HuntHelper.PrintKillCounts();
+
+            // Poi.Current = test;
+
+
+            //await BrainBehavior.CombatLogic.ExecuteCoroutine();
+            //await composite_0.ExecuteCoroutine();
+            //ActionRunCoroutine test = new ActionRunCoroutine(() => composite_0);
+            /*
+                        if (await GoToSummoningBell()) 
+                            LogSucess("\n****************\n MADE IT BELL\n****************");
+                        else 
+                        {
+                            LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
+                        }
+            */
             //await DoGCDailyTurnins();
 
             //    bool AgentCharacter = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentCharacter), typeof(AgentCharacter));
@@ -262,15 +306,97 @@ namespace LlamaLibrary
             */
             //Log($"START:\n{sb.ToString()}");
             TreeRoot.Stop("Stop Requested");
-            return true;
+            // await Coroutine.Sleep(100);
+            return false;
         }
+
+        public static async Task FindAndKillMob(uint NpcId)
+        {
+            var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive).OrderBy(r => r.Distance()).FirstOrDefault();
+
+            if (mob == default(BattleCharacter))
+            {
+                LogCritical($"Couldn't find mob with NPCID {NpcId}");
+            }
+            else
+            {
+                LogSucess($"Found mob {mob}");
+                await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
+                await KillMob(mob);
+                LogSucess($"Did we kill it? {!(mob.IsValid && mob.IsAlive)}");
+            }
+        }
+
+        public static async Task KillMob(BattleCharacter mob)
+        {
+            var test = new Poi(mob, PoiType.Kill);
+            Poi.Current = test;
+
+
+            var combat = smethod_3();
+
+            while (mob.IsValid && mob.IsAlive)
+            {
+                await combat.ExecuteCoroutine();
+                await Coroutine.Yield();
+            }
+        }
+
+        internal static bool InFight => GameObjectManager.Attackers.Any();
+        public static float PostCombatDelay = 0f;
+
+        internal static bool bool_0;
+
+        private static Composite smethod_3()
+        {
+            return new PrioritySelector(new Decorator(object_0 => !InFight && !Core.Me.IsDead, new PrioritySelector(new HookExecutor("Rest", "", new ActionAlwaysFail()), new HookExecutor("PreCombatBuff", "", new ActionAlwaysFail()))),
+                                        new Decorator(object_0 => Core.Me.IsDead || Poi.Current == null || Poi.Current.BattleCharacter == null, new Action(delegate { Poi.Clear("Invalid Combat Poi"); })),
+                                        new Decorator(object_0 => !Poi.Current.Unit.IsValid || Poi.Current.BattleCharacter.IsDead || Poi.Current.Unit.IsFateGone,
+                                                      new Action(delegate
+                                                      {
+                                                          Poi.Clear("Targeted unit is dead, clearing Poi and carrying on!");
+                                                          return RunStatus.Failure;
+                                                      })),
+                                        new Decorator(object_0 => Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(r => Navigation.OffMeshMove(Poi.Current.Unit.Location).Wait())),
+                                        new HookExecutor("PreCombatLogic"),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
+                                                      new PrioritySelector(new Decorator(object_0 => Core.Player.IsMounted &&
+                                                                                                     Core.Target.Location.Distance2D(Core.Player.Location) <
+                                                                                                     Core.Player.CombatReach + RoutineManager.Current.PullRange + Core.Target.CombatReach,
+                                                                                         new Action(delegate
+                                                                                         {
+                                                                                             ActionManager.Dismount();
+                                                                                             Navigator.Stop();
+                                                                                         })),
+                                                                           new Decorator(object_0 => !Core.Me.InCombat, new HookExecutor("Pull", "Run when pulling a mob to kill.", RoutineManager.Current.PullBehavior)),
+                                                                           new Decorator(object_0 => Core.Me.InCombat,
+                                                                                         new PrioritySelector(new Decorator(object_0 => PostCombatDelay > 0f && !bool_0,
+                                                                                                                            new Action(delegate
+                                                                                                                            {
+                                                                                                                                bool_0 = true;
+                                                                                                                                return RunStatus.Failure;
+                                                                                                                            })),
+                                                                                                              new Decorator(object_0 => !Poi.Current.BattleCharacter.InCombat &&
+                                                                                                                                        Poi.Current.TimeSet + TimeSpan.FromSeconds(10.0) < DateTime.Now,
+                                                                                                                            new Action(delegate
+                                                                                                                            {
+                                                                                                                                Poi
+                                                                                                                                    .Clear("I'm in combat, but POI isn't and it has been atleast 10 seconds. Clearing POI and picking up a new target.");
+                                                                                                                            })),
+                                                                                                              new Decorator(object_0 => Poi.Current.BattleCharacter.IsDead,
+                                                                                                                            new Action(delegate { Poi.Clear("I'm in combat, but POI is dead. Clearing POI and picking up a new target."); })),
+                                                                                                              new HookExecutor("RoutineCombat", "Executes the current routine's Combat behavior", BrainBehavior.CombatLogic))))),
+                                        new Action(object_0 => RunStatus.Success));
+        }
+
 
         private void DumpLuaFunctions()
         {
-            string func =$"local values = {{}} for key,value in pairs(_G) do table.insert(values, key); end return unpack(values);";
-            
+            string func = "local values = {} for key,value in pairs(_G) do table.insert(values, key); end return unpack(values);";
+
             var retValues = Lua.GetReturnValues(func);
-            foreach (var ret in retValues.Where(ret => !ret.StartsWith("_") && !ret.StartsWith("Luc") && !ret.StartsWith("Stm") && !Char.IsDigit(ret[ret.Length -1]) && !char.IsLower(ret[0])) )
+            foreach (var ret in retValues.Where(ret => !ret.StartsWith("_") && !ret.StartsWith("Luc") && !ret.StartsWith("Stm") && !Char.IsDigit(ret[ret.Length - 1]) && !char.IsLower(ret[0])))
             {
                 if (ret.Contains(":"))
                 {
@@ -287,7 +413,7 @@ namespace LlamaLibrary
                 }
             }
         }
-        
+
         private static List<string> GetSubFunctions(string luaObject)
         {
             string func = $"local values = {{}} for key,value in pairs(_G['{luaObject}']) do table.insert(values, key); end return unpack(values);";
@@ -315,6 +441,7 @@ namespace LlamaLibrary
         {
             Logging.Write(Colors.Green, text);
         }
+
         private async Task<bool> MoveSummoningBell(Vector3 loc)
         {
             var moving = MoveResult.GeneratingPath;
@@ -327,8 +454,10 @@ namespace LlamaLibrary
                 moving = Flightor.MoveTo(new FlyToParameters(loc));
                 await Coroutine.Yield();
             }
+
             return moving == MoveResult.ReachedDestination;
         }
+
         public async Task<bool> GoToSummoningBell()
         {
             var searchBell = FindSummoningBell();
@@ -336,13 +465,13 @@ namespace LlamaLibrary
             {
                 if (searchBell.IsWithinInteractRange)
                 {
-                    Log($"Found bell in Interact Range");
+                    Log("Found bell in Interact Range");
                     return true;
                 }
 
                 if (await Navigation.GetTo(WorldManager.ZoneId, searchBell.Location))
                 {
-                    Log($"Used Navgraph/Flightor to get there");
+                    Log("Used Navgraph/Flightor to get there");
                     if (searchBell.IsWithinInteractRange)
                         return true;
                 }
@@ -352,7 +481,7 @@ namespace LlamaLibrary
             int tries = 0;
             if (SummoningBells.Any(i => i.Item1 == WorldManager.ZoneId))
             {
-                Log($"Found a bell in our zone");
+                Log("Found a bell in our zone");
                 bellLocation = SummoningBells.Where(i => i.Item1 == WorldManager.ZoneId).OrderBy(r => Core.Me.Location.DistanceSqr(r.Item2)).First();
             }
             else
@@ -405,10 +534,8 @@ namespace LlamaLibrary
                 Log(bell != null ? $"{bell.Name} {bell.Location} {WorldManager.CurrentZoneName} {bell.IsWithinInteractRange}" : $"Couldn't find bell at {bellLocation.Item2} {bellLocation.Item1}");
                 return bell != null;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
@@ -585,7 +712,7 @@ namespace LlamaLibrary
 
         public async Task<bool> testFacetCheck()
         {
-            var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
+            var patternFinder = new PatternFinder(Core.Memory);
 
             var result = patternFinder.Find("44 89 BF ?? ?? ?? ?? 83 BF ?? ?? ?? ?? ?? Add 3 Read32");
             //Log(result);
@@ -602,7 +729,7 @@ namespace LlamaLibrary
 
         public async Task testGather()
         {
-            var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
+            var patternFinder = new PatternFinder(Core.Memory);
             IntPtr AnimationLocked = patternFinder.Find("48 8D 0D ?? ?? ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 8B ?? ?? ?? ?? ?? 45 33 C9 44 8B C7 89 BB ?? ?? ?? ?? Add 3 TraceRelative");
 
             var GatherLock = Core.Memory.Read<uint>(AnimationLocked + 0x2A);
@@ -692,11 +819,11 @@ namespace LlamaLibrary
 
             npcId.Interact();
 
-            await Coroutine.Wait(5000, () => Talk.DialogOpen);
+            await Coroutine.Wait(5000, () => DialogOpen);
 
-            while (Talk.DialogOpen)
+            while (DialogOpen)
             {
-                Talk.Next();
+                Next();
                 await Coroutine.Sleep(1000);
             }
 
