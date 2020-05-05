@@ -76,6 +76,7 @@
     <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
     <Compile Include="Helpers\GrandCompanyShop.cs" />
+    <Compile Include="Helpers\HuntHelper.cs" />
     <Compile Include="Helpers\ItemConditionals.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />

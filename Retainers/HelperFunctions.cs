@@ -318,25 +318,8 @@ namespace LlamaLibrary.Retainers
         //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
         public static GameObject FindSummoningBell()
         {
-            uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284};
-            var units = GameObjectManager.GameObjects;
-
-            foreach (var unit in units.Where(i => i.IsVisible).OrderBy(r => r.DistanceSqr()))
-            {
-                if (unit.VTable == Offsets.HousingObjectVTable && Core.Memory.Read<uint>(unit.Pointer + 0x80) == 196630)
-                {
-                    return unit;
-                }
-
-                if (!bellIds.Contains(unit.NpcId))
-                {
-                    continue;
-                }
-
-                return unit;
-            }
-
-            return null;
+            uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284, 196630};
+            return GameObjectManager.GameObjects.Where(i => i.IsVisible && bellIds.Contains(i.NpcId)).OrderBy(r => r.DistanceSqr()).FirstOrDefault();
         }
 
         private static void Log(string test)
