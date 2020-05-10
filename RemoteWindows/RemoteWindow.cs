@@ -32,7 +32,7 @@ namespace LlamaLibrary.RemoteWindows
 
         public virtual string Name => _name;
 
-        internal AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(Name);
+        public virtual AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(Name);
 
         protected bool HasAgentInterfaceId => GetAgentInterfaceId() != 0;
 

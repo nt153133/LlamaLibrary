@@ -124,4 +124,7 @@
   <data name="Ventures" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Ventures.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="AllHunts" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AllHunts.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

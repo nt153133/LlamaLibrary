@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,13 +32,12 @@ using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using Action = TreeSharp.Action;
+using ActionType = ff14bot.Enums.ActionType;
 
 namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
-        private Composite _root;
-
         private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
         {
             {0, "Unknown"},
@@ -81,46 +81,9 @@ namespace LlamaLibrary
             {29, "In Craft - Using synthesis action"}
         };
 
-        SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
-
-        public TesterBase()
-        {
-            Task.Factory.StartNew(() =>
-            {
-                // init();
-                _init = true;
-                Log("INIT DONE");
-            });
-        }
-
-        public override string Name => "Tester";
-        public override PulseFlags PulseFlags => PulseFlags.All;
-
-        public override bool IsAutonomous => true;
-        public override bool RequiresProfile => false;
-
-        public override void OnButtonPress()
-        {
-            StringBuilder sb1 = new StringBuilder();
-            foreach (var obj in luaFunctions.Keys.Where(obj => luaFunctions[obj].Count >= 1))
-            {
-                sb1.AppendLine(obj);
-                foreach (var funcName in luaFunctions[obj])
-                {
-                    sb1.AppendLine($"\t{funcName}");
-                }
-            }
-
-            Log($"\n {sb1}");
-        }
-
-        public override Composite Root => _root;
-
-        public override bool WantButton { get; } = true;
         internal static List<RetainerTaskData> VentureData;
-        private volatile bool _init;
 
-        static List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
+        private static readonly List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
         {
             (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
             (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
@@ -145,6 +108,51 @@ namespace LlamaLibrary
             (819, new Vector3(-64.255798f, 19.97406f, -144.274109f)), //The Crystarium(The Crystarium) 
             (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
         };
+
+        public static float PostCombatDelay = 0f;
+
+        internal static bool bool_0;
+        private volatile bool _init;
+        private Composite _root;
+
+        private readonly SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
+
+        public TesterBase()
+        {
+            Task.Factory.StartNew(() =>
+            {
+                // init();
+                _init = true;
+                Log("INIT DONE");
+            });
+        }
+
+        public override string Name => "Tester";
+        public override PulseFlags PulseFlags => PulseFlags.All;
+
+        public override bool IsAutonomous => true;
+        public override bool RequiresProfile => false;
+
+        public override Composite Root => _root;
+
+        public override bool WantButton { get; } = true;
+
+        internal static bool InFight => GameObjectManager.Attackers.Any();
+
+        public override void OnButtonPress()
+        {
+            StringBuilder sb1 = new StringBuilder();
+            foreach (var obj in luaFunctions.Keys.Where(obj => luaFunctions[obj].Count >= 1))
+            {
+                sb1.AppendLine(obj);
+                foreach (var funcName in luaFunctions[obj])
+                {
+                    sb1.AppendLine($"\t{funcName}");
+                }
+            }
+
+            Log($"\n {sb1}");
+        }
 
         internal void init()
         {
@@ -254,16 +262,58 @@ namespace LlamaLibrary
             */
 
             //   await FindAndKillMob(8609);
-            Log("Current Daily Hunts");
-            HuntHelper.Test();
+            //  Log("Current Daily Hunts");
+            //  HuntHelper.Test();
 
 
-            Log("\nAccepted Hunts");
-            HuntHelper.PrintAcceptedHunts();
+            //  Log("\nAccepted Hunts");
+            // HuntHelper.PrintAcceptedHunts();
 
-            Log("\nKill Counts");
+            // Log("\nKill Counts");
             //Log($"is it alive ? {mob.IsAlive}");
-            HuntHelper.PrintKillCounts();
+            // HuntHelper.PrintKillCounts();
+            //305 374
+            /*
+            int[] badLocations = new[] {107, 247};
+            List<int> cantGetTo = new List<int>();
+            foreach (var huntLocation1 in badLocations)
+            {
+                var huntLocation = HuntHelper.DailyHunts[huntLocation1];
+                // LogCritical($"Can't get to {huntLocation1} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location} {DataManager.ZoneNameResults[huntLocation.Map].CurrentLocaleName}");
+                LogSucess($"Going to {huntLocation1}");
+
+                if (huntLocation1 == 107 || huntLocation1 == 247)
+                    await Navigation.GetToIslesOfUmbra();
+
+
+                var path = await Navigation.GetTo(huntLocation.Map, huntLocation.Location);
+
+                if (MovementManager.IsFlying)
+                {
+                    await CommonTasks.Land();
+                }
+
+                if (Core.Me.Location.DistanceSqr(huntLocation.Location) > 40 && GameObjectManager.GameObjects.All(i => i.NpcId != huntLocation.BNpcNameKey))
+                {
+                    cantGetTo.Add(huntLocation1);
+                    LogCritical($"Can't get to {huntLocation} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location}");
+                }
+                else
+                {
+                    LogSucess($"Can get to {huntLocation1}");
+                }
+
+                //await Coroutine.Sleep(2000);
+            }
+
+            LogCritical($"\n {string.Join(",", cantGetTo)}\n");
+*/
+
+
+
+
+
+
 
             // Poi.Current = test;
 
@@ -304,19 +354,156 @@ namespace LlamaLibrary
             }
             
             */
+            var hadOld =  await GetHuntBills();
+            await CompleteHunts();
+
+            if (hadOld)
+            {
+                await GetHuntBills();
+                await CompleteHunts();
+            }
+
+            if (WorldManager.CanTeleport())
+            {
+                WorldManager.TeleportById(Core.Me.HomePoint.Id);
+                await Coroutine.Sleep(5000);
+
+                if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+            }
+            
+            
+
             //Log($"START:\n{sb.ToString()}");
             TreeRoot.Stop("Stop Requested");
             // await Coroutine.Sleep(100);
             return false;
         }
 
-        public static async Task FindAndKillMob(uint NpcId)
+        public async Task<bool> GetHuntBills()
+        {  
+            var statues = HuntHelper.GetDailyStatus();
+
+            foreach ((var orderType, var huntOrderStatus) in statues)
+            {
+                var orderTypeObj = HuntHelper.GetMobHuntOrderType((int) orderType);
+                
+                switch (huntOrderStatus)
+                {
+                    case HuntOrderStatus.OnlyFatesLeft:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Only Fates left for today's dailies so done");
+                        break;
+                    case HuntOrderStatus.OnlyFatesLeftOld:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Only Fates left for old dailies so should yeet them and get new ones");
+                        HuntHelper.DiscardMobHuntType(orderType);
+                        await HuntHelper.GetHuntsByOrderType(orderType);
+                        break;
+                    case HuntOrderStatus.NotAccepted:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Have not accepted today's hunts");
+                        await HuntHelper.GetHuntsByOrderType(orderType);
+                        break;
+                    case HuntOrderStatus.NotAcceptedOld:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Not Accepted and last accepted were old and so should get new ones");
+                        await HuntHelper.GetHuntsByOrderType(orderType);
+                        break;
+                    case HuntOrderStatus.Complete:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Finished today's dailies");
+                        break;
+                    case HuntOrderStatus.CompleteOld:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Finished  old dailies");
+                        await HuntHelper.GetHuntsByOrderType(orderType);
+                        break;
+                    case HuntOrderStatus.Unfinished:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Unfinished current dailies");
+                        break;
+                    case HuntOrderStatus.UnFinishedOld:
+                        Log($"{orderTypeObj.Item.CurrentLocaleName} - Unfinished old dailies");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return statues.Any(i => i.Item2 == HuntOrderStatus.UnFinishedOld);
+        }
+
+        public async Task CompleteHunts()
+        {
+            int[] dailyOrderTypes = new[] {0, 1, 2, 3, 6, 7, 8, 10, 11, 12};
+            int flytoHunt = 418;
+            foreach (var orderType in dailyOrderTypes)
+            {
+                var dailies = HuntHelper.GetAcceptedDailyHunts(orderType);
+                if (dailies.Any(i => !i.IsFinished))
+                {
+                    foreach (var hunt in dailies.Where(i => !i.IsFinished))
+                    {
+                        Log($"{hunt}");
+
+                        if (hunt.HuntTarget == flytoHunt)
+                        {
+                            var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
+                            //LogCritical("Can teleport to AE");
+                            WorldManager.TeleportById(AE.Item1);
+                            await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
+                            await Coroutine.Sleep(2000);
+                            await Navigation.FlightorMove(new Vector3(196.902f, -163.4457f, 113.3596f));
+                            
+                            //
+                            Navigator.PlayerMover.MoveTowards(new Vector3(208.712f, -165.4754f, 128.228f));
+
+                            await Coroutine.Wait(10000, () => CommonBehaviors.IsLoading);
+                            Navigator.Stop();
+                            await Coroutine.Sleep(1000);
+
+                            if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+                            while (!hunt.IsFinished)
+                            {
+                                if (await FindAndKillMob(hunt.NpcID))
+                                {
+                                    Log("Killed one");
+                                    await Coroutine.Sleep(1000);
+                                    if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                                }
+                                else
+                                {
+                                    Log("None found, sleeping 10 sec.");
+                                    await Coroutine.Sleep(10000);
+                                }
+                            }
+                        }
+                        else if (await Navigation.GetTo(hunt.MapId, hunt.Location))
+                        {
+                            while (!hunt.IsFinished)
+                            {
+                                if (await FindAndKillMob(hunt.NpcID))
+                                {
+                                    Log("Killed one");
+                                    await Coroutine.Sleep(1000);
+                                    if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                                }
+                                else
+                                {
+                                    Log("None found, sleeping 10 sec.");
+                                    await Coroutine.Sleep(10000);
+                                }
+                            }
+                        }
+
+                        Log($"Done: {hunt}");
+                        await Coroutine.Sleep(1000);
+                    }
+                }
+            }
+        }
+
+        public static async Task<bool> FindAndKillMob(uint NpcId)
         {
             var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive).OrderBy(r => r.Distance()).FirstOrDefault();
 
             if (mob == default(BattleCharacter))
             {
                 LogCritical($"Couldn't find mob with NPCID {NpcId}");
+                return false;
             }
             else
             {
@@ -324,16 +511,18 @@ namespace LlamaLibrary
                 await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
                 await KillMob(mob);
                 LogSucess($"Did we kill it? {!(mob.IsValid && mob.IsAlive)}");
+                return true;
             }
         }
 
         public static async Task KillMob(BattleCharacter mob)
         {
+            if (!mob.IsValid) return;
             var test = new Poi(mob, PoiType.Kill);
             Poi.Current = test;
 
 
-            var combat = smethod_3();
+            var combat = CombatCoroutine();
 
             while (mob.IsValid && mob.IsAlive)
             {
@@ -342,12 +531,7 @@ namespace LlamaLibrary
             }
         }
 
-        internal static bool InFight => GameObjectManager.Attackers.Any();
-        public static float PostCombatDelay = 0f;
-
-        internal static bool bool_0;
-
-        private static Composite smethod_3()
+        private static Composite CombatCoroutine()
         {
             return new PrioritySelector(new Decorator(object_0 => !InFight && !Core.Me.IsDead, new PrioritySelector(new HookExecutor("Rest", "", new ActionAlwaysFail()), new HookExecutor("PreCombatBuff", "", new ActionAlwaysFail()))),
                                         new Decorator(object_0 => Core.Me.IsDead || Poi.Current == null || Poi.Current.BattleCharacter == null, new Action(delegate { Poi.Clear("Invalid Combat Poi"); })),
@@ -396,7 +580,7 @@ namespace LlamaLibrary
             string func = "local values = {} for key,value in pairs(_G) do table.insert(values, key); end return unpack(values);";
 
             var retValues = Lua.GetReturnValues(func);
-            foreach (var ret in retValues.Where(ret => !ret.StartsWith("_") && !ret.StartsWith("Luc") && !ret.StartsWith("Stm") && !Char.IsDigit(ret[ret.Length - 1]) && !char.IsLower(ret[0])))
+            foreach (var ret in retValues.Where(ret => !ret.StartsWith("_") && !ret.StartsWith("Luc") && !ret.StartsWith("Stm") && !char.IsDigit(ret[ret.Length - 1]) && !char.IsLower(ret[0])))
             {
                 if (ret.Contains(":"))
                 {
@@ -615,7 +799,7 @@ namespace LlamaLibrary
             {
                 if (retainer.VentureTask != 0)
                 {
-                    var now = (Int32) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+                    var now = (int) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                     var timeLeft = retainer.VentureEndTimestamp - now;
 
                     if (timeLeft <= 0 && SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) > 2)
@@ -770,7 +954,7 @@ namespace LlamaLibrary
             //      item.ExtractMateria();
             var a = InventoryManager.FilledSlots.First(i => i.RawItemId == 27712);
 
-            Log(($"{a} {a.BagId} {a.Slot}"));
+            Log($"{a} {a.BagId} {a.Slot}");
             Log($"Inventory Pointer: {Offsets.ItemFuncParam.ToInt64():X}  Function: {Offsets.ItemSplitFunc.ToInt64():X}");
             a.Split(1);
 

@@ -80,6 +80,11 @@ namespace LlamaLibrary.Helpers
             await Navigation.GetTo(GcBase.Key, GcBase.Value);
         }
 
+        public static uint GetNpcByType(GCNpc npc)
+        {
+            return NpcList[Core.Me.GrandCompany][npc];
+        }
+        
         public static async Task InteractWithNpc(GCNpc npc)
         {
             if (Core.Me.GrandCompany == 0) return;

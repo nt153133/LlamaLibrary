@@ -61,6 +61,15 @@ namespace LlamaLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {&quot;1&quot;:{&quot;BNpcNameKey&quot;:785,&quot;Location&quot;:{&quot;X&quot;:-279.682159,&quot;Y&quot;:256.4128,&quot;Z&quot;:339.207031,&quot;MagnitudeSqr&quot;:259031.047,&quot;Magnitude&quot;:508.950928},&quot;Map&quot;:155},&quot;2&quot;:{&quot;BNpcNameKey&quot;:1809,&quot;Location&quot;:{&quot;X&quot;:-425.2555,&quot;Y&quot;:-15.8549,&quot;Z&quot;:-426.810364,&quot;MagnitudeSqr&quot;:363260.7,&quot;Magnitude&quot;:602.7111},&quot;Map&quot;:156},&quot;3&quot;:{&quot;BNpcNameKey&quot;:1829,&quot;Location&quot;:{&quot;X&quot;:-292.6528,&quot;Y&quot;:-41.6489868,&quot;Z&quot;:-327.657,&quot;MagnitudeSqr&quot;:194739.422,&quot;Magnitude&quot;:441.2929},&quot;Map&quot;:138},&quot;4&quot;:{&quot;BNpcNameKey&quot;:869,&quot;Location&quot;:{&quot;X&quot;:-356.110168,&quot;Y&quot;:14.98069,&quot;Z&quot;:-737.064331,&quot;MagnitudeSqr&quot;:67 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string AllHunts {
+            get {
+                return ResourceManager.GetString("AllHunts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {&quot;1&quot;:[{&quot;Key&quot;:5724,&quot;Tier&quot;:0,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;},{&quot;Key&quot;:5725,&quot;Tier&quot;:1,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;},{&quot;Key&quot;:5726,&quot;Tier&quot;:2,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;},{&quot;Key&quot;:5727,&quot;Tier&quot;:3,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;&quot;}],&quot;2&quot;:[{&quot;Key&quot;:5604,&quot;Tier&quot;:0,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5605,&quot;Tier&quot;:1,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5606,&quot;Tier&quot;:2,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5607,&quot;Tier&quot;:3,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:5608,&quot;Tier&quot;:4,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;},{&quot;Key&quot;:18006,&quot;Tier&quot;:5,&quot;Value&quot;:0,&quot;Stat&quot;:&quot;Strength&quot;}],&quot;3&quot;:[{&qu....
         /// </summary>
         internal static string Materia {

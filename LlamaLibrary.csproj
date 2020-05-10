@@ -170,6 +170,7 @@
     <Compile Include="RemoteWindows\MateriaAttachDialog.cs" />
     <Compile Include="RemoteWindows\MiniGameAimg.cs" />
     <Compile Include="RemoteWindows\MiniGameBotanist.cs" />
+    <Compile Include="RemoteWindows\Mobhunt.cs" />
     <Compile Include="RemoteWindows\RecommendEquip.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
@@ -225,6 +226,7 @@
     <Folder Include="Forms\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AllHunts.json" />
     <Content Include="Resources\Materia.json" />
     <Content Include="Resources\Ventures.json" />
   </ItemGroup>
