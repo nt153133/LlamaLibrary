@@ -98,7 +98,7 @@ namespace MasterPieceSupplyTest
 
             items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
 
-            if (!items.Any(i => i.CanHandin && InventoryManager.FilledSlots.Any(j => j.RawItemId == i.ItemID && j.Count >= i.ReqCount)))
+            if (!items.Any(i => i.CanHandin && InventoryManager.FilledSlots.Any(j => j.RawItemId == i.ItemID && !j.HasMateria() && j.Count >= i.ReqCount)))
             {
                 Log("No items available to hand in");
                 return;
@@ -158,7 +158,7 @@ namespace MasterPieceSupplyTest
 
                 var item = items.FirstOrDefault(j => j.ItemID == windowItemIds[index]);
                 var index1 = index;
-                var handover = InventoryManager.FilledSlots.Where(k => k.RawItemId == item.ItemID && k.Count >= required[index1]).OrderByDescending(k => k.HqFlag).FirstOrDefault();
+                var handover = InventoryManager.FilledSlots.Where(k => k.RawItemId == item.ItemID && !k.HasMateria() && k.Count >= required[index1]).OrderByDescending(k => k.HqFlag).FirstOrDefault();
                 if (handover == default(BagSlot)) continue;
                 Log($"{handover.Name} {handover.IsHighQuality}");
                 if (handover.IsHighQuality)
@@ -245,7 +245,7 @@ namespace MasterPieceSupplyTest
 
             List<LisbethOrder> outList = new List<LisbethOrder>();
             int id = 0;
-            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
+            foreach (var item in ContentsInfoDetail.Instance.GetCraftingTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && !i.HasMateria() && i.Count >= item.Value.Key)))
             {
                 Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
                 var order = new LisbethOrder(id, 1, (int) item.Key.Id, item.Value.Key, item.Value.Value);
@@ -254,7 +254,7 @@ namespace MasterPieceSupplyTest
                 id++;
             }
 
-            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id && i.Count >= item.Value.Key)))
+            foreach (var item in ContentsInfoDetail.Instance.GetGatheringTurninItems().Where(item => !InventoryManager.FilledSlots.Any(i => i.RawItemId == item.Key.Id  && i.Count >= item.Value.Key)))
             {
                 Logging.Write($"{item.Key} Qty: {item.Value.Key} Class: {item.Value.Value}");
                 string type = "Gather";
