@@ -430,6 +430,7 @@ namespace LlamaLibrary
         {
             int[] dailyOrderTypes = new[] {0, 1, 2, 3, 6, 7, 8, 10, 11, 12};
             int flytoHunt = 418;
+            int[] umbra = new[] {305, 374};
             foreach (var orderType in dailyOrderTypes)
             {
                 var dailies = HuntHelper.GetAcceptedDailyHunts(orderType);
@@ -468,6 +469,27 @@ namespace LlamaLibrary
                                 {
                                     Log("None found, sleeping 10 sec.");
                                     await Coroutine.Sleep(10000);
+                                }
+                            }
+                        }
+                        else if (umbra.Contains(hunt.HuntTarget))
+                        {
+                            await Navigation.GetToIslesOfUmbra();
+                            if (await Navigation.GetTo(hunt.MapId, hunt.Location))
+                            {
+                                while (!hunt.IsFinished)
+                                {
+                                    if (await FindAndKillMob(hunt.NpcID))
+                                    {
+                                        Log("Killed one");
+                                        await Coroutine.Sleep(1000);
+                                        if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                                    }
+                                    else
+                                    {
+                                        Log("None found, sleeping 10 sec.");
+                                        await Coroutine.Sleep(10000);
+                                    }
                                 }
                             }
                         }
