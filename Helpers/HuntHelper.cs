@@ -214,14 +214,27 @@ namespace LlamaLibrary.Helpers
 
             var listStart = orderType.OrderStart - 1;
             var v8 = Core.Memory.Read<byte>(Offsets.HuntData + orderTypeIndex + 0x16);
+            if ((listStart + v8 > MaxOrderTypes) && !accepted[orderTypeIndex])
+            {
+                return result;
+            }
 
             int max = 5;
 
             for (byte i = 0; i < max; i++)
             {
+                //Log($"Read hunt {listStart + v8} {i}");
+
                 var hunt = GetMobHuntOrder((uint) listStart + v8, (uint) i);
                 var target = GetMobHuntTarget(hunt.MobHuntTarget);
                 if (target.FateRequired) continue;
+
+                if (hunt.MobHuntTarget == 0 && orderTypeIndex == 0)
+                {
+                    //Log($"Going to get GC hunts");
+                    //GetHuntsByOrderType(0).Wait();
+                    return new List<DailyHuntOrder>();
+                }
 
                 if (!DailyHunts.ContainsKey(hunt.MobHuntTarget))
                 {
@@ -370,34 +383,41 @@ namespace LlamaLibrary.Helpers
 
                 var oldDailies = dailies.Where((t, i) => t.NpcID != serverDailies[i].NpcID).Any();
 
+                if (!accepted && dailies.Count == 0)
+                {
+                    result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.NotAccepted));
+                    continue;
+                }
+
+
                 //LogCritical($"oldDilies = {oldDailies} count server {serverDailies.Count}");
 
                 if ((accepted && dailies.All(i => i.IsFinished)) || !accepted)
                 {
                     if (accepted && dailies.All(i => i.IsFinished) && !oldDailies)
                     {
-                       // Log($"{orderTypeObj.Item.CurrentLocaleName} - Only Fates left for today's dailies so done");
-                        result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.OnlyFatesLeft));
+                        // Log($"{orderTypeObj.Item.CurrentLocaleName} - Only Fates left for today's dailies so done");
+                        result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.OnlyFatesLeft));
                     }
                     else if (accepted && dailies.All(i => i.IsFinished))
                     {
-                       // Log($"{orderTypeObj.Item.CurrentLocaleName} - Only Fates left for old dailies so should yeet and get new ones");
-                        result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.OnlyFatesLeftOld));
+                        // Log($"{orderTypeObj.Item.CurrentLocaleName} - Only Fates left for old dailies so should yeet and get new ones");
+                        result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.OnlyFatesLeftOld));
                     }
                     else if (!accepted && dailies.All(i => i.IsFinished && i.CurrentKills > 0) && oldDailies)
                     {
-                       // Log($"{orderTypeObj.Item.CurrentLocaleName} - Not Accepted and last accepted were old and we so should get new ones?");
-                        result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.NotAcceptedOld));
+                        // Log($"{orderTypeObj.Item.CurrentLocaleName} - Not Accepted and last accepted were old and we so should get new ones?");
+                        result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.NotAcceptedOld));
                     }
                     else if (!accepted && dailies.All(i => i.IsFinished && i.CurrentKills > 0) && !oldDailies)
                     {
                         //Log($"{orderTypeObj.Item.CurrentLocaleName} - Finished today's dailies");
-                        result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.Complete));
+                        result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.Complete));
                     }
                     else
                     {
                         //Log($"{orderTypeObj.Item.CurrentLocaleName} - Have not accepted today's hunts");
-                        result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.NotAccepted));
+                        result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.NotAccepted));
                     }
 
                     continue;
@@ -405,18 +425,18 @@ namespace LlamaLibrary.Helpers
 
                 if (dailies.Any(i => !i.IsFinished) && oldDailies)
                 {
-                   // Log($"{orderTypeObj.Item.CurrentLocaleName} - Unfinished old dailies");
-                    result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.UnFinishedOld));
+                    // Log($"{orderTypeObj.Item.CurrentLocaleName} - Unfinished old dailies");
+                    result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.UnFinishedOld));
                 }
                 else if (dailies.Any(i => !i.IsFinished) && !oldDailies)
                 {
-                   // Log($"{orderTypeObj.Item.CurrentLocaleName} - Unfinished current dailies");
-                    result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.Unfinished));
+                    // Log($"{orderTypeObj.Item.CurrentLocaleName} - Unfinished current dailies");
+                    result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.Unfinished));
                 }
                 else
                 {
-                  //  Log($"All possible {orderTypeObj.Item.CurrentLocaleName} dailies done {dailies.Count()}");
-                    result.Add(((uint, HuntOrderStatus)) (orderType,HuntOrderStatus.Complete));
+                    //  Log($"All possible {orderTypeObj.Item.CurrentLocaleName} dailies done {dailies.Count()}");
+                    result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.Complete));
                 }
             }
 
@@ -431,13 +451,13 @@ namespace LlamaLibrary.Helpers
             {
                 board = HuntBoards.FirstOrDefault(i => i.NpcId == GrandCompanyHelper.GetNpcByType(GCNpc.Hunt_Board));
             }
-            
+
             if (board != default(HuntBoardNpc))
             {
                 await board.GetHuntOrderType(orderType);
             }
         }
-        
+
         private static void Log(object read)
         {
             Logging.Write(Colors.Gold, $"[{Name}] {read}");
@@ -458,7 +478,7 @@ namespace LlamaLibrary.Helpers
         {
             Logging.Write(Colors.Gold, $"[{Name}] {ptr.ToString("X")}");
         }
-        
+
         private static T loadResource<T>(string text)
         {
             return JsonConvert.DeserializeObject<T>(text);
@@ -712,6 +732,4 @@ namespace LlamaLibrary.Helpers
 
         public GameObject GetNpc => GameObjectManager.GetObjectByNPCId(NpcId);
     }
-    
-    
 }

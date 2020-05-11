@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -273,8 +273,8 @@ namespace LlamaLibrary
             //Log($"is it alive ? {mob.IsAlive}");
             // HuntHelper.PrintKillCounts();
             //305 374
-            /*
-            int[] badLocations = new[] {107, 247};
+     /*       
+            int[] badLocations = new[] {457};
             List<int> cantGetTo = new List<int>();
             foreach (var huntLocation1 in badLocations)
             {
@@ -300,6 +300,20 @@ namespace LlamaLibrary
                 }
                 else
                 {
+                    while (true)
+                    {
+                        if (await FindAndKillMob((uint) huntLocation.BNpcNameKey))
+                        {
+                            Log("Killed one");
+                            await Coroutine.Sleep(1000);
+                            if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                        }
+                        else
+                        {
+                            Log("None found, sleeping 10 sec.");
+                            await Coroutine.Sleep(10000);
+                        }
+                    }
                     LogSucess($"Can get to {huntLocation1}");
                 }
 
@@ -307,6 +321,7 @@ namespace LlamaLibrary
             }
 
             LogCritical($"\n {string.Join(",", cantGetTo)}\n");
+
 */
 
 
@@ -314,12 +329,6 @@ namespace LlamaLibrary
 
 
 
-
-            // Poi.Current = test;
-
-
-            //await BrainBehavior.CombatLogic.ExecuteCoroutine();
-            //await composite_0.ExecuteCoroutine();
             //ActionRunCoroutine test = new ActionRunCoroutine(() => composite_0);
             /*
                         if (await GoToSummoningBell()) 
@@ -439,7 +448,15 @@ namespace LlamaLibrary
                     foreach (var hunt in dailies.Where(i => !i.IsFinished))
                     {
                         Log($"{hunt}");
-
+                        while (Core.Me.InCombat)
+                        {
+                            var target = GameObjectManager.Attackers.FirstOrDefault();
+                            if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
+                            {
+                                await Navigation.GetTo(WorldManager.ZoneId, target.Location);
+                                await KillMob(target);
+                            }
+                        }
                         if (hunt.HuntTarget == flytoHunt)
                         {
                             var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
@@ -520,6 +537,15 @@ namespace LlamaLibrary
 
         public static async Task<bool> FindAndKillMob(uint NpcId)
         {
+            while (Core.Me.InCombat)
+            {
+                var target = GameObjectManager.Attackers.FirstOrDefault();
+                if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
+                {
+                    await Navigation.GetTo(WorldManager.ZoneId, target.Location);
+                    await KillMob(target);
+                }
+            }
             var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive).OrderBy(r => r.Distance()).FirstOrDefault();
 
             if (mob == default(BattleCharacter))
@@ -546,7 +572,7 @@ namespace LlamaLibrary
 
             var combat = CombatCoroutine();
 
-            while (mob.IsValid && mob.IsAlive)
+            while (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
             {
                 await combat.ExecuteCoroutine();
                 await Coroutine.Yield();
@@ -564,7 +590,7 @@ namespace LlamaLibrary
                                                           return RunStatus.Failure;
                                                       })),
                                         new Decorator(object_0 => Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
-                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(r => Navigation.OffMeshMove(Poi.Current.Unit.Location).Wait())),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero , new Action(r => Navigation.OffMeshMove(Poi.Current.Unit.Location).Wait())),
                                         new HookExecutor("PreCombatLogic"),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
                                                       new PrioritySelector(new Decorator(object_0 => Core.Player.IsMounted &&
