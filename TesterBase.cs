@@ -570,11 +570,12 @@ namespace LlamaLibrary
             Poi.Current = test;
 
 
-            var combat = CombatCoroutine();
+           // var combat = CombatCoroutine();
 
             while (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
             {
-                await combat.ExecuteCoroutine();
+                LogCritical("Looping combat");
+                await CombatCoroutine().ExecuteCoroutine();
                 await Coroutine.Yield();
             }
         }
