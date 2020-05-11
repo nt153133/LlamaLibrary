@@ -430,7 +430,7 @@ namespace LlamaLibrary
         {
             int[] dailyOrderTypes = new[] {0, 1, 2, 3, 6, 7, 8, 10, 11, 12};
             int flytoHunt = 418;
-            int[] umbra = new[] {305, 374};
+            int[] umbra = new[] {107, 247};
             foreach (var orderType in dailyOrderTypes)
             {
                 var dailies = HuntHelper.GetAcceptedDailyHunts(orderType);
