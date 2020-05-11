@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -575,7 +575,7 @@ namespace LlamaLibrary
                                                                                              ActionManager.Dismount();
                                                                                              Navigator.Stop();
                                                                                          })),
-                                                                           new Decorator(object_0 => !Core.Me.InCombat, new HookExecutor("Pull", "Run when pulling a mob to kill.", RoutineManager.Current.PullBehavior)),
+                                                                           new Decorator(object_0 => !Core.Me.InCombat || (!Core.Me.InCombat && !Poi.Current.BattleCharacter.InCombat), new HookExecutor("Pull", "Run when pulling a mob to kill.", RoutineManager.Current.PullBehavior)),
                                                                            new Decorator(object_0 => Core.Me.InCombat,
                                                                                          new PrioritySelector(new Decorator(object_0 => PostCombatDelay > 0f && !bool_0,
                                                                                                                             new Action(delegate
