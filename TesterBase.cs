@@ -533,6 +533,16 @@ namespace LlamaLibrary
                     }
                 }
             }
+            
+            while (Core.Me.InCombat)
+            {
+                var target = GameObjectManager.Attackers.FirstOrDefault();
+                if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
+                {
+                    await Navigation.GetTo(WorldManager.ZoneId, target.Location);
+                    await KillMob(target);
+                }
+            }
         }
 
         public static async Task<bool> FindAndKillMob(uint NpcId)
@@ -591,12 +601,11 @@ namespace LlamaLibrary
                                                           return RunStatus.Failure;
                                                       })),
                                         new Decorator(object_0 => Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
-                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero , new Action(r => Navigation.OffMeshMove(Poi.Current.Unit.Location).Wait())),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero , new Action(r => Navigation.OffMeshMoveInteract(Poi.Current.Unit).Wait())),
                                         new HookExecutor("PreCombatLogic"),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
                                                       new PrioritySelector(new Decorator(object_0 => Core.Player.IsMounted &&
-                                                                                                     Core.Target.Location.Distance2D(Core.Player.Location) <
-                                                                                                     Core.Player.CombatReach + RoutineManager.Current.PullRange + Core.Target.CombatReach,
+                                                                                                     Core.Target.Location.Distance2D(Core.Player.Location) < Core.Me.CombatReach + RoutineManager.Current.PullRange,
                                                                                          new Action(delegate
                                                                                          {
                                                                                              ActionManager.Dismount();
