@@ -209,13 +209,15 @@ namespace LlamaLibrary.Helpers
             //|| !accepted[orderTypeIndex]
             if (!unlocked || orderType.Type == MobHuntType.Weekly)
             {
+              //  Log($"not unlocked or weekly");
                 return result;
             }
 
             var listStart = orderType.OrderStart - 1;
             var v8 = Core.Memory.Read<byte>(Offsets.HuntData + orderTypeIndex + 0x16);
-            if ((listStart + v8 > MaxOrderTypes) && !accepted[orderTypeIndex])
+            if ((listStart + v8 > 620) && !accepted[orderTypeIndex])
             {
+               // Log($"Have not been picked up {orderTypeIndex} {listStart + v8 } {accepted[orderTypeIndex]}");
                 return result;
             }
 
@@ -416,7 +418,7 @@ namespace LlamaLibrary.Helpers
                     }
                     else
                     {
-                        //Log($"{orderTypeObj.Item.CurrentLocaleName} - Have not accepted today's hunts");
+                        //Log($"{orderTypeObj.Item.CurrentLocaleName} - {dailies.All(i => i.IsFinished && i.CurrentKills > 0)} {dailies.All(i => i.IsFinished)} {oldDailies} Have not accepted today's hunts");
                         result.Add(((uint, HuntOrderStatus)) (orderType, HuntOrderStatus.NotAccepted));
                     }
 
