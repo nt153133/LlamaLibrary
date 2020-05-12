@@ -52,6 +52,8 @@ namespace LlamaLibrary
                 case PlayerIcon.Recruiting_Party_Members:
                     await Coroutine.Sleep(1000);
                     break;
+                case PlayerIcon.Trial_Adventurer:
+                case PlayerIcon.New_Adventurer:
                 case PlayerIcon.None:
                 {
                     if (PfWindow == null)
