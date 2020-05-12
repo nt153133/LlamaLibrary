@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -454,6 +454,14 @@ namespace LlamaLibrary
                     }
                 }
 
+                if (WorldManager.ZoneId == 402 && hunt.MapId == 402)
+                {
+                    var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
+                    WorldManager.TeleportById(AE.Item1);
+                    await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
+                    await Coroutine.Sleep(2000);
+                }
+
                 if (hunt.HuntTarget == flytoHunt)
                 {
                     var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
@@ -576,6 +584,7 @@ namespace LlamaLibrary
                 await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
                 await KillMob(mob);
                 LogSucess($"Did we kill it? {!(mob.IsValid && mob.IsAlive)}");
+                Navigator.PlayerMover.MoveStop();
                 return true;
             }
         }
