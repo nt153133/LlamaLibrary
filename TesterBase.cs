@@ -273,60 +273,56 @@ namespace LlamaLibrary
             //Log($"is it alive ? {mob.IsAlive}");
             // HuntHelper.PrintKillCounts();
             //305 374
-     /*       
-            int[] badLocations = new[] {457};
-            List<int> cantGetTo = new List<int>();
-            foreach (var huntLocation1 in badLocations)
-            {
-                var huntLocation = HuntHelper.DailyHunts[huntLocation1];
-                // LogCritical($"Can't get to {huntLocation1} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location} {DataManager.ZoneNameResults[huntLocation.Map].CurrentLocaleName}");
-                LogSucess($"Going to {huntLocation1}");
-
-                if (huntLocation1 == 107 || huntLocation1 == 247)
-                    await Navigation.GetToIslesOfUmbra();
-
-
-                var path = await Navigation.GetTo(huntLocation.Map, huntLocation.Location);
-
-                if (MovementManager.IsFlying)
-                {
-                    await CommonTasks.Land();
-                }
-
-                if (Core.Me.Location.DistanceSqr(huntLocation.Location) > 40 && GameObjectManager.GameObjects.All(i => i.NpcId != huntLocation.BNpcNameKey))
-                {
-                    cantGetTo.Add(huntLocation1);
-                    LogCritical($"Can't get to {huntLocation} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location}");
-                }
-                else
-                {
-                    while (true)
-                    {
-                        if (await FindAndKillMob((uint) huntLocation.BNpcNameKey))
-                        {
-                            Log("Killed one");
-                            await Coroutine.Sleep(1000);
-                            if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
-                        }
-                        else
-                        {
-                            Log("None found, sleeping 10 sec.");
-                            await Coroutine.Sleep(10000);
-                        }
-                    }
-                    LogSucess($"Can get to {huntLocation1}");
-                }
-
-                //await Coroutine.Sleep(2000);
-            }
-
-            LogCritical($"\n {string.Join(",", cantGetTo)}\n");
-
-*/
-
-
-
-
+            /*       
+                   int[] badLocations = new[] {457};
+                   List<int> cantGetTo = new List<int>();
+                   foreach (var huntLocation1 in badLocations)
+                   {
+                       var huntLocation = HuntHelper.DailyHunts[huntLocation1];
+                       // LogCritical($"Can't get to {huntLocation1} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location} {DataManager.ZoneNameResults[huntLocation.Map].CurrentLocaleName}");
+                       LogSucess($"Going to {huntLocation1}");
+       
+                       if (huntLocation1 == 107 || huntLocation1 == 247)
+                           await Navigation.GetToIslesOfUmbra();
+       
+       
+                       var path = await Navigation.GetTo(huntLocation.Map, huntLocation.Location);
+       
+                       if (MovementManager.IsFlying)
+                       {
+                           await CommonTasks.Land();
+                       }
+       
+                       if (Core.Me.Location.DistanceSqr(huntLocation.Location) > 40 && GameObjectManager.GameObjects.All(i => i.NpcId != huntLocation.BNpcNameKey))
+                       {
+                           cantGetTo.Add(huntLocation1);
+                           LogCritical($"Can't get to {huntLocation} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location}");
+                       }
+                       else
+                       {
+                           while (true)
+                           {
+                               if (await FindAndKillMob((uint) huntLocation.BNpcNameKey))
+                               {
+                                   Log("Killed one");
+                                   await Coroutine.Sleep(1000);
+                                   if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                               }
+                               else
+                               {
+                                   Log("None found, sleeping 10 sec.");
+                                   await Coroutine.Sleep(10000);
+                               }
+                           }
+                           LogSucess($"Can get to {huntLocation1}");
+                       }
+       
+                       //await Coroutine.Sleep(2000);
+                   }
+       
+                   LogCritical($"\n {string.Join(",", cantGetTo)}\n");
+       
+       */
 
 
             //ActionRunCoroutine test = new ActionRunCoroutine(() => composite_0);
@@ -363,7 +359,7 @@ namespace LlamaLibrary
             }
             
             */
-            var hadOld =  await GetHuntBills();
+            var hadOld = await GetHuntBills();
             await CompleteHunts();
 
             if (hadOld)
@@ -379,8 +375,7 @@ namespace LlamaLibrary
 
                 if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
             }
-            
-            
+
 
             //Log($"START:\n{sb.ToString()}");
             TreeRoot.Stop("Stop Requested");
@@ -389,13 +384,13 @@ namespace LlamaLibrary
         }
 
         public async Task<bool> GetHuntBills()
-        {  
+        {
             var statues = HuntHelper.GetDailyStatus();
 
             foreach ((var orderType, var huntOrderStatus) in statues)
             {
                 var orderTypeObj = HuntHelper.GetMobHuntOrderType((int) orderType);
-                
+
                 switch (huntOrderStatus)
                 {
                     case HuntOrderStatus.OnlyFatesLeft:
@@ -440,100 +435,111 @@ namespace LlamaLibrary
             int[] dailyOrderTypes = new[] {0, 1, 2, 3, 6, 7, 8, 10, 11, 12};
             int flytoHunt = 418;
             int[] umbra = new[] {107, 247};
-            foreach (var orderType in dailyOrderTypes)
+            var hunts = new List<DailyHuntOrder>();
+            foreach (var dailyOrderType in dailyOrderTypes)
             {
-                var dailies = HuntHelper.GetAcceptedDailyHunts(orderType);
+                hunts.AddRange(HuntHelper.GetAcceptedDailyHunts(dailyOrderType).Where(i => !i.IsFinished));
+            }
+
+            foreach (var hunt in hunts.OrderBy(i => i.MapId).ThenBy(j => j.Location.X))
+            {
+                Log($"{hunt}");
+                while (Core.Me.InCombat)
+                {
+                    var target = GameObjectManager.Attackers.FirstOrDefault();
+                    if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
+                    {
+                        await Navigation.GetTo(WorldManager.ZoneId, target.Location);
+                        await KillMob(target);
+                    }
+                }
+
+                if (hunt.HuntTarget == flytoHunt)
+                {
+                    var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
+                    //LogCritical("Can teleport to AE");
+                    WorldManager.TeleportById(AE.Item1);
+                    await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
+                    await Coroutine.Sleep(2000);
+                    await Navigation.FlightorMove(new Vector3(196.902f, -163.4457f, 113.3596f));
+
+                    //
+                    Navigator.PlayerMover.MoveTowards(new Vector3(208.712f, -165.4754f, 128.228f));
+
+                    await Coroutine.Wait(10000, () => CommonBehaviors.IsLoading);
+                    Navigator.Stop();
+                    await Coroutine.Sleep(1000);
+
+                    if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+                    while (!hunt.IsFinished)
+                    {
+                        if (await FindAndKillMob(hunt.NpcID))
+                        {
+                            Log("Killed one");
+                            await Coroutine.Sleep(1000);
+                            if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                        }
+                        else
+                        {
+                            Log("None found, sleeping 10 sec.");
+                            await Coroutine.Sleep(10000);
+                        }
+                    }
+                }
+                else if (umbra.Contains(hunt.HuntTarget))
+                {
+                    await Navigation.GetToIslesOfUmbra();
+                    if (await Navigation.GetTo(hunt.MapId, hunt.Location))
+                    {
+                        while (!hunt.IsFinished)
+                        {
+                            if (await FindAndKillMob(hunt.NpcID))
+                            {
+                                Log("Killed one");
+                                await Coroutine.Sleep(1000);
+                                if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                            }
+                            else
+                            {
+                                Log("None found, sleeping 10 sec.");
+                                await Coroutine.Sleep(10000);
+                            }
+                        }
+                    }
+                }
+                else if (await Navigation.GetTo(hunt.MapId, hunt.Location))
+                {
+                    while (!hunt.IsFinished)
+                    {
+                        if (await FindAndKillMob(hunt.NpcID))
+                        {
+                            Log("Killed one");
+                            await Coroutine.Sleep(1000);
+                            if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                        }
+                        else
+                        {
+                            Log("None found, sleeping 10 sec.");
+                            await Coroutine.Sleep(10000);
+                        }
+                    }
+                }
+
+                Log($"Done: {hunt}");
+                await Coroutine.Sleep(1000);
+            }
+
+            /*foreach (var orderType in dailyOrderTypes)
+            {
+                var dailies = HuntHelper.GetAcceptedDailyHunts(orderType).OrderBy(i=> i.MapId).ThenBy(j => j.Location.X);
                 if (dailies.Any(i => !i.IsFinished))
                 {
                     foreach (var hunt in dailies.Where(i => !i.IsFinished))
                     {
-                        Log($"{hunt}");
-                        while (Core.Me.InCombat)
-                        {
-                            var target = GameObjectManager.Attackers.FirstOrDefault();
-                            if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
-                            {
-                                await Navigation.GetTo(WorldManager.ZoneId, target.Location);
-                                await KillMob(target);
-                            }
-                        }
-                        if (hunt.HuntTarget == flytoHunt)
-                        {
-                            var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
-                            //LogCritical("Can teleport to AE");
-                            WorldManager.TeleportById(AE.Item1);
-                            await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
-                            await Coroutine.Sleep(2000);
-                            await Navigation.FlightorMove(new Vector3(196.902f, -163.4457f, 113.3596f));
-                            
-                            //
-                            Navigator.PlayerMover.MoveTowards(new Vector3(208.712f, -165.4754f, 128.228f));
-
-                            await Coroutine.Wait(10000, () => CommonBehaviors.IsLoading);
-                            Navigator.Stop();
-                            await Coroutine.Sleep(1000);
-
-                            if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
-                            while (!hunt.IsFinished)
-                            {
-                                if (await FindAndKillMob(hunt.NpcID))
-                                {
-                                    Log("Killed one");
-                                    await Coroutine.Sleep(1000);
-                                    if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
-                                }
-                                else
-                                {
-                                    Log("None found, sleeping 10 sec.");
-                                    await Coroutine.Sleep(10000);
-                                }
-                            }
-                        }
-                        else if (umbra.Contains(hunt.HuntTarget))
-                        {
-                            await Navigation.GetToIslesOfUmbra();
-                            if (await Navigation.GetTo(hunt.MapId, hunt.Location))
-                            {
-                                while (!hunt.IsFinished)
-                                {
-                                    if (await FindAndKillMob(hunt.NpcID))
-                                    {
-                                        Log("Killed one");
-                                        await Coroutine.Sleep(1000);
-                                        if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
-                                    }
-                                    else
-                                    {
-                                        Log("None found, sleeping 10 sec.");
-                                        await Coroutine.Sleep(10000);
-                                    }
-                                }
-                            }
-                        }
-                        else if (await Navigation.GetTo(hunt.MapId, hunt.Location))
-                        {
-                            while (!hunt.IsFinished)
-                            {
-                                if (await FindAndKillMob(hunt.NpcID))
-                                {
-                                    Log("Killed one");
-                                    await Coroutine.Sleep(1000);
-                                    if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
-                                }
-                                else
-                                {
-                                    Log("None found, sleeping 10 sec.");
-                                    await Coroutine.Sleep(10000);
-                                }
-                            }
-                        }
-
-                        Log($"Done: {hunt}");
-                        await Coroutine.Sleep(1000);
-                    }
+                       
                 }
-            }
-            
+            }*/
+
             while (Core.Me.InCombat)
             {
                 var target = GameObjectManager.Attackers.FirstOrDefault();
@@ -556,6 +562,7 @@ namespace LlamaLibrary
                     await KillMob(target);
                 }
             }
+
             var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive).OrderBy(r => r.Distance()).FirstOrDefault();
 
             if (mob == default(BattleCharacter))
@@ -580,7 +587,7 @@ namespace LlamaLibrary
             Poi.Current = test;
 
 
-           // var combat = CombatCoroutine();
+            // var combat = CombatCoroutine();
 
             while (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
             {
@@ -601,7 +608,7 @@ namespace LlamaLibrary
                                                           return RunStatus.Failure;
                                                       })),
                                         new Decorator(object_0 => Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
-                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero , new Action(r => Navigation.OffMeshMoveInteract(Poi.Current.Unit).Wait())),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(r => Navigation.OffMeshMoveInteract(Poi.Current.Unit).Wait())),
                                         new HookExecutor("PreCombatLogic"),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
                                                       new PrioritySelector(new Decorator(object_0 => Core.Player.IsMounted &&
@@ -611,7 +618,8 @@ namespace LlamaLibrary
                                                                                              ActionManager.Dismount();
                                                                                              Navigator.Stop();
                                                                                          })),
-                                                                           new Decorator(object_0 => !Core.Me.InCombat || (!Core.Me.InCombat && !Poi.Current.BattleCharacter.InCombat), new HookExecutor("Pull", "Run when pulling a mob to kill.", RoutineManager.Current.PullBehavior)),
+                                                                           new Decorator(object_0 => !Core.Me.InCombat || (!Core.Me.InCombat && !Poi.Current.BattleCharacter.InCombat),
+                                                                                         new HookExecutor("Pull", "Run when pulling a mob to kill.", RoutineManager.Current.PullBehavior)),
                                                                            new Decorator(object_0 => Core.Me.InCombat,
                                                                                          new PrioritySelector(new Decorator(object_0 => PostCombatDelay > 0f && !bool_0,
                                                                                                                             new Action(delegate
