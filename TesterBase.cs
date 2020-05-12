@@ -563,7 +563,7 @@ namespace LlamaLibrary
                 }
             }
 
-            var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive).OrderBy(r => r.Distance()).FirstOrDefault();
+            var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive && !i.IsFate).OrderBy(r => r.Distance()).FirstOrDefault();
 
             if (mob == default(BattleCharacter))
             {
@@ -591,8 +591,13 @@ namespace LlamaLibrary
 
             while (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
             {
+                //("Looping combat");
+                if (!await CombatCoroutine().ExecuteCoroutine())
+                {
+                    LogCritical("Looping combat Composite False");
+                    break;
+                }
                 LogCritical("Looping combat");
-                await CombatCoroutine().ExecuteCoroutine();
                 await Coroutine.Yield();
             }
         }
@@ -605,10 +610,14 @@ namespace LlamaLibrary
                                                       new Action(delegate
                                                       {
                                                           Poi.Clear("Targeted unit is dead, clearing Poi and carrying on!");
-                                                          return RunStatus.Failure;
+                                                          return RunStatus.Success;
                                                       })),
-                                        new Decorator(object_0 => Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
-                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(r => Navigation.OffMeshMoveInteract(Poi.Current.Unit).Wait())),
+                                        new Decorator(object_0 => Poi.Current != null && Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr &&  Poi.Current.Unit.IsValid && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(delegate
+                                        {
+                                            Poi.Clear("Targeted unit is zero, clearing Poi and carrying on!");
+                                            return RunStatus.Success;
+                                        })),
                                         new HookExecutor("PreCombatLogic"),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
                                                       new PrioritySelector(new Decorator(object_0 => Core.Player.IsMounted &&

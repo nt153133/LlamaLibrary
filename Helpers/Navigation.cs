@@ -30,6 +30,20 @@ namespace LlamaLibrary.Helpers
 
         public static async Task<bool> GetTo(uint ZoneId, Vector3 XYZ)
         {
+            if (ZoneId == 621)
+            {
+                var AE = WorldManager.AetheryteIdsForZone(ZoneId).OrderBy(i => i.Item2.DistanceSqr(XYZ)).First();
+                //LogCritical("Can teleport to AE");
+                WorldManager.TeleportById(AE.Item1);
+                await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
+                await Coroutine.Sleep(2000);
+                return await FlightorMove(XYZ);
+            }
+            
+            if (ZoneId == 401 && WorldManager.ZoneId == ZoneId)
+            {
+                return await FlightorMove(XYZ);
+            }
             var path = await GenerateNodes(ZoneId, XYZ );
             
             if (ZoneId == 399 && path == null && WorldManager.ZoneId != ZoneId)
