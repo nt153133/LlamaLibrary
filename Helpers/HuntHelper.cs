@@ -226,8 +226,16 @@ namespace LlamaLibrary.Helpers
             for (byte i = 0; i < max; i++)
             {
                 //Log($"Read hunt {listStart + v8} {i}");
+                MobHuntOrder hunt;
+                try
+                {
+                    hunt = GetMobHuntOrder((uint) listStart + v8, (uint) i);
+                }
+                catch
+                {
+                    return result;
+                }
 
-                var hunt = GetMobHuntOrder((uint) listStart + v8, (uint) i);
                 var target = GetMobHuntTarget(hunt.MobHuntTarget);
                 if (target.FateRequired) continue;
 
