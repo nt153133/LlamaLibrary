@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -38,6 +38,14 @@ namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
+        public static readonly InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[4]
+        {
+            InventoryBagId.Bag1,
+            InventoryBagId.Bag2,
+            InventoryBagId.Bag3,
+            InventoryBagId.Bag4
+        };
+        
         private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
         {
             {0, "Unknown"},
@@ -83,6 +91,8 @@ namespace LlamaLibrary
 
         internal static List<RetainerTaskData> VentureData;
 
+        private static List<BagSlot> playerItems;
+
         private static readonly List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
         {
             (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
@@ -116,6 +126,7 @@ namespace LlamaLibrary
         private Composite _root;
 
         private readonly SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
+        private static List<uint> blacklist = new List<uint>();
 
         public TesterBase()
         {
@@ -178,6 +189,18 @@ namespace LlamaLibrary
             _root = null;
         }
 
+        class BagSlotComparer : IEqualityComparer<BagSlot>
+        {
+            public bool Equals(BagSlot x, BagSlot y)
+            {
+                return x.TrueItemId == y.TrueItemId ;
+            }
+
+            public int GetHashCode(BagSlot obj)
+            {
+                return obj.Item.GetHashCode();
+            }
+        }
 
         private async Task<bool> Run()
         {
@@ -188,8 +211,10 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
+            playerItems = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).Select(i => i.FilledSlots).SelectMany(x => x).AsParallel().ToList();
+            
             // RoutineManager.Current.PullBehavior.Start();
-
+            
             /*
             Log($"{await GrandCompanyShop.BuyKnownItem(6141, 5)}"); //Cordial
             await Coroutine.Sleep(1000);
@@ -446,7 +471,7 @@ namespace LlamaLibrary
                 Log($"{hunt}");
                 while (Core.Me.InCombat)
                 {
-                    var target = GameObjectManager.Attackers.FirstOrDefault();
+                    var target = GameObjectManager.Attackers.FirstOrDefault( i=> i.InCombat);
                     if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
                     {
                         await Navigation.GetTo(WorldManager.ZoneId, target.Location);
@@ -534,6 +559,11 @@ namespace LlamaLibrary
                 }
 
                 Log($"Done: {hunt}");
+                var newPlayerItems = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).Select(i => i.FilledSlots).SelectMany(x => x).AsParallel().ToList();
+                var newitems = newPlayerItems.Except(playerItems, new BagSlotComparer());
+                Log("New loot");
+                Log($"{string.Join("," ,newitems)}");
+                blacklist.Clear();
                 await Coroutine.Sleep(1000);
             }
 
@@ -550,7 +580,7 @@ namespace LlamaLibrary
 
             while (Core.Me.InCombat)
             {
-                var target = GameObjectManager.Attackers.FirstOrDefault();
+                var target = GameObjectManager.Attackers.FirstOrDefault( i=> i.InCombat);
                 if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
                 {
                     await Navigation.GetTo(WorldManager.ZoneId, target.Location);
@@ -558,6 +588,8 @@ namespace LlamaLibrary
                 }
             }
         }
+        
+        
 
         public static async Task<bool> FindAndKillMob(uint NpcId)
         {
@@ -571,7 +603,7 @@ namespace LlamaLibrary
                 }
             }
 
-            var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive && !i.IsFate).OrderBy(r => r.Distance()).FirstOrDefault();
+            var mob = GameObjectManager.GetObjectsOfType<BattleCharacter>(true).Where(i => i.NpcId == NpcId && i.IsValid && i.IsAlive && !i.IsFate && !blacklist.Contains(i.ObjectId)).OrderBy(r => r.Distance()).FirstOrDefault();
 
             if (mob == default(BattleCharacter))
             {
@@ -581,7 +613,13 @@ namespace LlamaLibrary
             else
             {
                 LogSucess($"Found mob {mob}");
-                await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
+                if ( !await Navigation.GetTo(WorldManager.ZoneId, mob.Location))
+                {
+                    LogCritical("Can't get to, blacklisting mob");
+                    blacklist.Add(mob.ObjectId);
+                    return false;
+                }
+                
                 await KillMob(mob);
                 LogSucess($"Did we kill it? {!(mob.IsValid && mob.IsAlive)}");
                 Navigator.PlayerMover.MoveStop();
@@ -594,10 +632,6 @@ namespace LlamaLibrary
             if (!mob.IsValid) return;
             var test = new Poi(mob, PoiType.Kill);
             Poi.Current = test;
-
-
-            // var combat = CombatCoroutine();
-
             while (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
             {
                 //("Looping combat");
@@ -606,7 +640,13 @@ namespace LlamaLibrary
                     LogCritical("Looping combat Composite False");
                     break;
                 }
-                LogCritical("Looping combat");
+                if(mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
+                    LogCritical("Looping combat");
+                else
+                {
+                    LogCritical("Combat Done");
+                    break;
+                }
                 await Coroutine.Yield();
             }
         }

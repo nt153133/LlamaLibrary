@@ -30,7 +30,7 @@ namespace LlamaLibrary.Helpers
 
         public static async Task<bool> GetTo(uint ZoneId, Vector3 XYZ)
         {
-            if (ZoneId == 620)
+            /*if (ZoneId == 620)
             {
                 var AE = WorldManager.AetheryteIdsForZone(ZoneId).OrderBy(i => i.Item2.DistanceSqr(XYZ)).First();
                 //LogCritical("Can teleport to AE");
@@ -38,7 +38,7 @@ namespace LlamaLibrary.Helpers
                 await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
                 await Coroutine.Sleep(2000);
                 return await FlightorMove(XYZ);
-            }
+            }*/
             
             if (ZoneId == 401 && WorldManager.ZoneId == ZoneId)
             {
