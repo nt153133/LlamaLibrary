@@ -152,6 +152,7 @@
     <Compile Include="RemoteWindows\Character.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
     <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
+    <Compile Include="RemoteWindows\Conversation.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />

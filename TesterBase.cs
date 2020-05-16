@@ -471,7 +471,7 @@ namespace LlamaLibrary
                 Log($"{hunt}");
                 while (Core.Me.InCombat)
                 {
-                    var target = GameObjectManager.Attackers.FirstOrDefault( i=> i.InCombat);
+                    var target = GameObjectManager.Attackers.FirstOrDefault( i=> i.InCombat && i.IsAlive);
                     if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
                     {
                         await Navigation.GetTo(WorldManager.ZoneId, target.Location);
@@ -593,7 +593,7 @@ namespace LlamaLibrary
 
         public static async Task<bool> FindAndKillMob(uint NpcId)
         {
-            while (Core.Me.InCombat)
+            while (Core.Me.InCombat && GameObjectManager.Attackers.FirstOrDefault() != null && GameObjectManager.Attackers.FirstOrDefault().IsAlive)
             {
                 var target = GameObjectManager.Attackers.FirstOrDefault();
                 if (target != default(BattleCharacter) && target.IsValid && target.IsAlive)
@@ -629,7 +629,7 @@ namespace LlamaLibrary
 
         public static async Task KillMob(BattleCharacter mob)
         {
-            if (!mob.IsValid) return;
+            if (!mob.IsValid || !mob.IsAlive) return;
             var test = new Poi(mob, PoiType.Kill);
             Poi.Current = test;
             while (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
@@ -640,8 +640,14 @@ namespace LlamaLibrary
                     LogCritical("Looping combat Composite False");
                     break;
                 }
-                if(mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
-                    LogCritical("Looping combat");
+                GameObjectManager.Update();
+                await Coroutine.Yield();
+                if (mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)
+                {
+                    LogCritical($"Looping combat {mob} {Poi.Current} {(mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)} ");
+                    await Coroutine.Sleep(500);
+                    LogCritical($"Looping combat {(mob.IsValid && mob.IsAlive && Poi.Current != null && Poi.Current.Unit != null)} ");
+                }
                 else
                 {
                     LogCritical("Combat Done");
@@ -659,13 +665,13 @@ namespace LlamaLibrary
                                                       new Action(delegate
                                                       {
                                                           Poi.Clear("Targeted unit is dead, clearing Poi and carrying on!");
-                                                          return RunStatus.Success;
+                                                          return RunStatus.Failure;
                                                       })),
                                         new Decorator(object_0 => Poi.Current != null && Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr &&  Poi.Current.Unit.IsValid && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(delegate
                                         {
                                             Poi.Clear("Targeted unit is zero, clearing Poi and carrying on!");
-                                            return RunStatus.Success;
+                                            return RunStatus.Failure;
                                         })),
                                         new HookExecutor("PreCombatLogic"),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
