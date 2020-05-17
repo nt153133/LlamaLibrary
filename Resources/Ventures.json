@@ -11022,5 +11022,83 @@
     "RequiredGathering": 1167,
     "NameRaw": "Waterside Exploration XXV",
     "ItemId": 0
+  },
+  {
+    "Id": 855,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1459,
+    "NameRaw": "Raw Onyx",
+    "ItemId": 27731
+  },
+  {
+    "Id": 856,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1528,
+    "NameRaw": "Prismstone",
+    "ItemId": 27705
+  },
+  {
+    "Id": 857,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1528,
+    "NameRaw": "Tungsten Ore",
+    "ItemId": 27704
+  },
+  {
+    "Id": 858,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1459,
+    "NameRaw": "Lemonette",
+    "ItemId": 27835
+  },
+  {
+    "Id": 859,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1528,
+    "NameRaw": "Sandalwood Log",
+    "ItemId": 27688
+  },
+  {
+    "Id": 860,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1528,
+    "NameRaw": "Ethereal Cocoon",
+    "ItemId": 27761
   }
 ]
