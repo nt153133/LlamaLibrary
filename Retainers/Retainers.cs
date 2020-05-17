@@ -493,10 +493,18 @@ namespace LlamaLibrary.Retainers
 
                     var taskId = AgentRetainerVenture.Instance.RetainerTask;
 
-                    var task = VentureData.Value.First(i => i.Id == taskId);
+                    var task = VentureData.Value.FirstOrDefault(i => i.Id == taskId);
 
-                    Log($"Finished Venture {task.Name}");
-                    Log($"Reassigning Venture {task.Name}");
+                    if (task != default(RetainerTaskData))
+                    {
+                        Log($"Finished Venture {task.Name}");
+                        Log($"Reassigning Venture {task.Name}");
+                    }
+                    else
+                    {
+                        Log($"Finished Venture");
+                        Log($"Reassigning Venture");
+                    }
 
                     RetainerTaskResult.Reassign();
 
