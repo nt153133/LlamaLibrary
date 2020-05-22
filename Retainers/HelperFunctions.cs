@@ -71,7 +71,7 @@ namespace LlamaLibrary.Retainers
             (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
         };
 
-        private static readonly uint GilItemId = DataManager.GetItem("Gil").Id; // 1;
+        internal static readonly uint GilItemId = DataManager.GetItem("Gil").Id; // 1;
 
         public static int UnixTimestamp => (Int32) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
