@@ -28,5 +28,20 @@ namespace LlamaLibrary.RemoteWindows
             else if (CutSceneSelectString.IsOpen)
                 CutSceneSelectString.ClickSlot(line);
         }
+        
+        public static void SelectQuit()
+        {
+            uint line;
+            if (SelectString.IsOpen)
+            {
+                line = (uint) (SelectString.LineCount - 1);
+                SelectString.ClickSlot(line);
+            }
+            else if (SelectIconString.IsOpen)
+            {
+                line = (uint) (SelectIconString.LineCount - 1);
+                SelectIconString.ClickSlot(line);
+            }
+        }
     }
 }
