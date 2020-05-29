@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
@@ -36,6 +37,17 @@ namespace LlamaLibrary.RemoteWindows
         public void OpenMasterPieceSupplyWindow()
         {
             SendAction(2, 3, 0xC, 3, 6);
+        }
+
+        public string GetElementString(int index)
+        {
+            return ___Elements()[index].Data != 0 ? Core.Memory.ReadString((IntPtr) ___Elements()[index].Data, Encoding.UTF8) : "";
+        }
+
+        public int GetNumberOfBeastTribeAllowance()
+        {
+            var line = Instance.GetElementString(50);
+            return line == "" ? 0 : int.Parse(line.Split(':')[1].Trim());
         }
     }
 }
