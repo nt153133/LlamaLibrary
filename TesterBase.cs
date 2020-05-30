@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -667,12 +667,14 @@ namespace LlamaLibrary
                                                           Poi.Clear("Targeted unit is dead, clearing Poi and carrying on!");
                                                           return RunStatus.Failure;
                                                       })),
-                                        new Decorator(object_0 => Poi.Current != null && Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr &&  Poi.Current.Unit.IsValid && Poi.Current.Unit.Distance() < 30f, new Action(delegate { Poi.Current.Unit.Target(); })),
-                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero, new Action(delegate
-                                        {
-                                            Poi.Clear("Targeted unit is zero, clearing Poi and carrying on!");
-                                            return RunStatus.Failure;
-                                        })),
+                                        new Decorator(object_0 => Poi.Current != null && Poi.Current.Unit != null && Poi.Current.Unit.IsValid && Poi.Current.Unit.Pointer != Core.Me.PrimaryTargetPtr  && Poi.Current.Unit.Distance() < 30f,
+                                                      new Action(delegate { Poi.Current.Unit.Target(); })),
+                                        new Decorator(object_0 => Core.Me.PrimaryTargetPtr == IntPtr.Zero,
+                                                      new Action(delegate
+                                                      {
+                                                          Poi.Clear("Targeted unit is zero, clearing Poi and carrying on!");
+                                                          return RunStatus.Failure;
+                                                      })),
                                         new HookExecutor("PreCombatLogic"),
                                         new Decorator(object_0 => Core.Me.PrimaryTargetPtr != IntPtr.Zero,
                                                       new PrioritySelector(new Decorator(object_0 => Core.Player.IsMounted &&
