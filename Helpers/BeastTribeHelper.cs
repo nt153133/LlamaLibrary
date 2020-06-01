@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Media;
 using ff14bot;
 using ff14bot.Helpers;
@@ -23,14 +25,41 @@ namespace LlamaLibrary.Helpers
             [Offset("Search 4C 8D 1D ? ? ? ? 88 44 24 ? Add 3 TraceRelative")]
             internal static IntPtr QuestPointer;
             [Offset("Search 0F B6 9C C8 ? ? ? ? Add 4 Read32")]
-            internal static int BeastTribeRank;
+            internal static int BeastTribeStart;
             [Offset("Search 66 89 BC C8 ? ? ? ? Add 4 Read32")]
             internal static int BeastTribeRep;
             [Offset("Search 83 FB ? 73 ? E8 ? ? ? ? 8B CB 48 03 C9 0F B6 9C C8 ? ? ? ? Add 2 Read8")]
             internal static int BeastTribeCount;
         }
-        
+
+
+
         private static string Name => "BeastTribeHelper";
+        private static BeastTribeExd[] _beastTribes;
+        
+        static BeastTribeHelper()
+        {
+            List<BeastTribeExd> tribes= new List<BeastTribeExd>();
+            
+            for (int i = 1; i < Offsets.BeastTribeCount; i++)
+            {
+                var result = Core.Memory.CallInjected64<IntPtr>(Offsets.GetBeastTribeExd, i);
+                tribes.Add(Core.Memory.Read<BeastTribeExd>(result));
+                //Log($"{Core.Memory.Read<BeastTribeExd>(result)}") ;
+            }
+
+            _beastTribes = tribes.ToArray();
+        }
+
+        public static void PrintBeastTribes()
+        {
+            var tribes = GetBeastTribes();
+
+            for (int i = 0; i < tribes.Length; i++)
+            {
+                Log(tribes[i].Unlocked ? $"{_beastTribes[i].Name} - {tribes[i].ToString()} MaxRank: {_beastTribes[i].MaxRank}" : $"{_beastTribes[i].Name} - No Unlocked");
+            }
+        }
 
         public static void PrintDailies()
         {
@@ -43,10 +72,28 @@ namespace LlamaLibrary.Helpers
             
         }
 
+        public static string GetBeastTribeName(int index)
+        {
+            var result = Core.Memory.CallInjected64<IntPtr>(Offsets.GetBeastTribeExd, index);
+            return result != IntPtr.Zero ? Core.Memory.ReadString(result + 0x28, Encoding.UTF8) : "";
+        }
+        
+        public static int GetBeastTribeMaxRank(int index)
+        {
+            var result = Core.Memory.CallInjected64<IntPtr>(Offsets.GetBeastTribeExd, index);
+            return result != IntPtr.Zero ? Core.Memory.Read<byte>(result + 0x22) : 0;
+        }
+
         public static DailyQuestRead[] GetCurrentDailies()
         {
-            Log($"{(Offsets.QuestPointer + Offsets.DailyQuestOffset).ToString("X")}");
+            //Log($"{(Offsets.QuestPointer + Offsets.DailyQuestOffset).ToString("X")}");
             return Core.Memory.ReadArray<DailyQuestRead>(Offsets.QuestPointer + Offsets.DailyQuestOffset, Offsets.DailyQuestCount);
+        }
+        
+        public static BeastTribeStat[] GetBeastTribes()
+        {
+            //Log($"{(Offsets.QuestPointer + Offsets.BeastTribeStart).ToString("X")} {Offsets.BeastTribeStart}");
+            return Core.Memory.ReadArray<BeastTribeStat>(Offsets.QuestPointer + Offsets.BeastTribeStart, Offsets.BeastTribeCount -1);
         }
         
         private static void Log(string text)
@@ -81,6 +128,44 @@ namespace LlamaLibrary.Helpers
             }
 
             public bool Accepted => IDRaw != 0;
+        }
+        
+        [StructLayout(LayoutKind.Explicit, Size = 0x10)]
+        public struct BeastTribeStat
+        {
+            [FieldOffset(0)]
+            public ushort Rank;
+
+            [FieldOffset(0x2)]
+            public ushort Reputation;
+            public bool Unlocked => Rank != 0;
+
+            public override string ToString()
+            {
+                return $"Rank: {Rank} Reputation: {Reputation}";
+            }
+        }
+        
+        [StructLayout(LayoutKind.Explicit, Size = 0x60)]
+        public struct BeastTribeExd
+        {
+            [FieldOffset(0x22)]
+            public byte MaxRank;
+
+            [FieldOffset(0x23)]
+            public byte Expansion;
+            
+            [FieldOffset(0x1C)]
+            public ushort Currency;
+            
+            [FieldOffset(0x28)]
+            [MarshalAs(UnmanagedType.LPUTF8Str)]
+            public string Name;
+
+            public override string ToString()
+            {
+                return $"MaxRank: {MaxRank} Expansion: {Expansion} Currency: {Currency} Name: {Name}";//Name: {Name}
+            }
         }
     }
 }

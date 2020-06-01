@@ -371,6 +371,7 @@ namespace LlamaLibrary
             //int.Parse(line.Split(':')[1].Trim());
             //Log($"START:\n{sb.ToString()}");
             BeastTribeHelper.PrintDailies();
+            BeastTribeHelper.PrintBeastTribes();
             TreeRoot.Stop("Stop Requested");
             // await Coroutine.Sleep(100);
             return false;
