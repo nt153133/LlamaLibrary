@@ -74,6 +74,7 @@
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="GatherTest.cs" />
+    <Compile Include="Helpers\BeastTribeHelper.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
     <Compile Include="Helpers\GrandCompanyShop.cs" />
     <Compile Include="Helpers\HuntHelper.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Helpers\RowenaHelper.cs" />
     <Compile Include="Helpers\Translator.cs" />
     <Compile Include="HouseChecker.cs" />
+    <Compile Include="HuntBase.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
     <Compile Include="GCSupplyBase.cs" />
