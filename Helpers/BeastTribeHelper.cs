@@ -31,9 +31,7 @@ namespace LlamaLibrary.Helpers
             [Offset("Search 83 FB ? 73 ? E8 ? ? ? ? 8B CB 48 03 C9 0F B6 9C C8 ? ? ? ? Add 2 Read8")]
             internal static int BeastTribeCount;
         }
-
-
-
+        
         private static string Name => "BeastTribeHelper";
         private static BeastTribeExd[] _beastTribes;
         
@@ -57,7 +55,7 @@ namespace LlamaLibrary.Helpers
 
             for (int i = 0; i < tribes.Length; i++)
             {
-                Log(tribes[i].Unlocked ? $"{_beastTribes[i].Name} - {tribes[i].ToString()} MaxRank: {_beastTribes[i].MaxRank}" : $"{_beastTribes[i].Name} - No Unlocked");
+                Log(tribes[i].Unlocked ? $"{_beastTribes[i].Name} - {tribes[i].ToString()} MaxRank: {_beastTribes[i].MaxRank}" : $"{_beastTribes[i].Name} - Not Unlocked");
             }
         }
 
