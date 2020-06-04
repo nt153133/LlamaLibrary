@@ -83,6 +83,7 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
     <Compile Include="Helpers\RowenaHelper.cs" />
+    <Compile Include="Helpers\Timers.cs" />
     <Compile Include="Helpers\Translator.cs" />
     <Compile Include="HouseChecker.cs" />
     <Compile Include="HuntBase.cs" />
