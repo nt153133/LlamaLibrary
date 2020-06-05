@@ -132,10 +132,12 @@ namespace LlamaLibrary.Helpers
         public struct BeastTribeStat
         {
             [FieldOffset(0)]
-            public ushort Rank;
+            public ushort _Rank;
 
             [FieldOffset(0x2)]
             public ushort Reputation;
+
+            public ushort Rank => (ushort) (_Rank & 0x7F);
             public bool Unlocked => Rank != 0;
 
             public override string ToString()
