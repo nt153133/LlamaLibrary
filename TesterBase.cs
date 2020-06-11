@@ -19,6 +19,7 @@ using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
+using ff14bot.RemoteWindows.GoldSaucer;
 using GreyMagic;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
@@ -372,6 +373,15 @@ namespace LlamaLibrary
             //Log($"START:\n{sb.ToString()}");
             BeastTribeHelper.PrintDailies();
             BeastTribeHelper.PrintBeastTribes();
+            Timers.PrintTimers();
+            AgentGoldSaucerInfo.Instance.Toggle();
+            await Coroutine.Wait(5000, () => GSInfoGeneral.IsOpen);
+            if (GSInfoGeneral.IsOpen)
+            {
+                await Coroutine.Sleep(500);
+                Log($"Mini Cactpot tickets left: {GSInfoGeneral.DailyAllowancesLeft}");
+                AgentGoldSaucerInfo.Instance.Toggle();
+            }
             TreeRoot.Stop("Stop Requested");
             // await Coroutine.Sleep(100);
             return false;
