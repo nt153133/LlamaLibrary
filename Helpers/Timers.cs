@@ -21,7 +21,7 @@ namespace LlamaLibrary.Helpers
         private const int MaxRows = 6;
         private static string Name => "Timers";
         private static CycleTime[] _cycles = new CycleTime[MaxRows];
-        private static string[] description = {"","Duty/Beast Tribe Dailies", "Weekly Reset", "Unknown", "GC/Rowena", "Unknown"};
+        private static readonly string[] Description = {"","Duty/Beast Tribe Dailies", "Weekly Reset", "Unknown", "GC/Rowena", "Unknown"};
 
         public static DateTimeOffset CurrentTime => DateTimeOffset.FromUnixTimeSeconds((long) CurrentTimeStamp);
 
@@ -40,7 +40,7 @@ namespace LlamaLibrary.Helpers
             {
                 var time = DateTimeOffset.FromUnixTimeSeconds(GetNextCycle(i));
 
-                Log($"{time.LocalDateTime} ({description[i]})"); 
+                Log($"{time.LocalDateTime} ({Description[i]})"); 
             }
         }
 
@@ -58,6 +58,7 @@ namespace LlamaLibrary.Helpers
         internal static long GetNextCycle(int index)
         {
             var row = _cycles[index];
+            Log($"Getting Cycle: ({index})"); 
             return row.FirstCycle + row.Cycle * ((uint)(ushort)(((uint)CurrentTimeStamp - row.FirstCycle) / row.Cycle) + 1);
         }
         
@@ -87,6 +88,8 @@ namespace LlamaLibrary.Helpers
             [FieldOffset(0x4)]
             public uint Cycle;
         }
-        
+
     }
+    
+
 }

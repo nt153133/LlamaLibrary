@@ -382,6 +382,12 @@ namespace LlamaLibrary
                 Log($"Mini Cactpot tickets left: {GSInfoGeneral.DailyAllowancesLeft}");
                 AgentGoldSaucerInfo.Instance.Toggle();
             }
+            
+            TimersSettings testTimers = TimersSettings.Instance;
+            Log($"Cycle 1: {testTimers.GetTimer(1)}");
+            Log($"Cycle 2: {testTimers.GetTimer(2)}");
+            Log($"Cycle 4: {testTimers.GetTimer(4)}");
+            
             TreeRoot.Stop("Stop Requested");
             // await Coroutine.Sleep(100);
             return false;
