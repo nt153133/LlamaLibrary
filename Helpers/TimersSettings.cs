@@ -94,6 +94,6 @@ namespace LlamaLibrary.Helpers
         }
 
         [JsonIgnore]
-        public bool IsValid => (ResetTime - LastChecked).TotalSeconds > 0;
+        public bool IsValid => ((ResetTime - LastChecked).TotalSeconds > 0) && !((Timers.CurrentTime - ResetTime).TotalSeconds > 0);
     }
 }
