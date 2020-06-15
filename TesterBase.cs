@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using Clio.Utilities;
+using Clio.Utilities.Helpers;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
@@ -39,8 +42,6 @@ namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
-
-
         private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
         {
             {0, "Unknown"},
@@ -86,7 +87,6 @@ namespace LlamaLibrary
 
         internal static List<RetainerTaskData> VentureData;
 
-        
 
         private static readonly List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
         {
@@ -141,7 +141,6 @@ namespace LlamaLibrary
 
         public override bool WantButton { get; } = true;
 
-        
 
         public override void OnButtonPress()
         {
@@ -183,9 +182,11 @@ namespace LlamaLibrary
         }
 
 
-
         private async Task<bool> Run()
         {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
@@ -364,13 +365,14 @@ namespace LlamaLibrary
             
             */
 
-          //  DumpLuaFunctions();
-            
-       
+            //  DumpLuaFunctions();
+
 
             //var line = LlamaLibrary.RemoteWindows.ContentsInfo.Instance.GetElementString(50);
             //int.Parse(line.Split(':')[1].Trim());
             //Log($"START:\n{sb.ToString()}");
+
+
             BeastTribeHelper.PrintDailies();
             BeastTribeHelper.PrintBeastTribes();
             Timers.PrintTimers();
@@ -382,18 +384,63 @@ namespace LlamaLibrary
                 Log($"Mini Cactpot tickets left: {GSInfoGeneral.DailyAllowancesLeft}");
                 AgentGoldSaucerInfo.Instance.Toggle();
             }
-            
+
             TimersSettings testTimers = TimersSettings.Instance;
             Log($"Cycle 1: {testTimers.GetTimer(1)}");
             Log($"Cycle 2: {testTimers.GetTimer(2)}");
             Log($"Cycle 4: {testTimers.GetTimer(4)}");
-            
+
+
             TreeRoot.Stop("Stop Requested");
+
             // await Coroutine.Sleep(100);
             return false;
         }
 
-        
+
+        private async Task BuyHouse()
+        {
+            Random _rnd = new Random();
+            ;
+            var placard = GameObjectManager.GetObjectsByNPCId(2002736).OrderBy(i => i.Distance()).FirstOrDefault();
+            if (placard != null)
+            {
+                do
+                {
+                    if (!HousingSignBoard.Instance.IsOpen)
+                    {
+                        placard.Interact();
+                        await Coroutine.Wait(3000, () => HousingSignBoard.Instance.IsOpen);
+                    }
+
+                    if (HousingSignBoard.Instance.IsOpen)
+                    {
+                        if (HousingSignBoard.Instance.IsForSale)
+                        {
+                            await Coroutine.Sleep(_rnd.Next(200, 400));
+                            HousingSignBoard.Instance.ClickBuy();
+                            await Coroutine.Wait(3000, () => Conversation.IsOpen);
+                            if (Conversation.IsOpen)
+                            {
+                                await Coroutine.Sleep(_rnd.Next(50, 300));
+                                Conversation.SelectLine(0);
+                                await Coroutine.Wait(3000, () => SelectYesno.IsOpen);
+                                SelectYesno.Yes();
+                                await Coroutine.Sleep(_rnd.Next(23, 600));
+                            }
+                        }
+                    }
+
+                    await Coroutine.Sleep(_rnd.Next(2500, 5000));
+                    placard.Interact();
+                    await Coroutine.Wait(3000, () => HousingSignBoard.Instance.IsOpen);
+                }
+                while (HousingSignBoard.Instance.IsForSale);
+
+                Lua.DoString("return _G['EventHandler']:Shutdown();");
+            }
+        }
+
         private void DumpLuaFunctions()
         {
             string func = "local values = {} for key,value in pairs(_G) do table.insert(values, key); end return unpack(values);";
@@ -758,9 +805,9 @@ namespace LlamaLibrary
             Logging.Write(Colors.Pink, msg);
         }
 
-        private void Log(string text)
+        private static void Log(string text)
         {
-            var msg = "[" + Name + "] " + text;
+            var msg = "[Tester] " + text;
             Logging.Write(Colors.Pink, msg);
         }
 
