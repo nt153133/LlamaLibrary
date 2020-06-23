@@ -157,8 +157,13 @@ namespace LlamaLibrary
         {
 
             if (WorldManager.RawZoneId != 901)
+            {
                 await EnterDiadem();
-            
+                Log($"Waiting for instance time");
+                await Coroutine.Wait(5000, () => TimeLeftInDiadem.TotalMinutes > 1);
+                Log($"Time left {TimeLeftInDiadem:hh\\:mm\\:ss}");
+            }
+
             lastChange = new WaitTimer(new TimeSpan(0,7,0));
             Log($"Current Weather: {WorldManager.CurrentWeather}  {WorldManager.CurrentWeatherId}");
             
@@ -206,6 +211,7 @@ namespace LlamaLibrary
 
             if (DutyManager.InInstance)
             {
+                Log($"Out of time: {TimeLeftInDiadem:hh\\:mm\\:ss} Left");
                 DutyManager.LeaveActiveDuty();
 
                 if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
