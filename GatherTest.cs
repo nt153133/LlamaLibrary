@@ -23,6 +23,7 @@ using ff14bot.RemoteWindows;
 using GreyMagic;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
+using LlamaLibrary.Memory;
 using TreeSharp;
 using Action = System.Action;
 
@@ -324,10 +325,7 @@ namespace LlamaLibrary
         
         public async Task testGather()
         {
-            var patternFinder = new PatternFinder(Core.Memory);
-            IntPtr AnimationLocked = patternFinder.Find("48 8D 0D ?? ?? ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 8B ?? ?? ?? ?? ?? 45 33 C9 44 8B C7 89 BB ?? ?? ?? ?? Add 3 TraceRelative");
-
-            var GatherLock = Core.Memory.Read<uint>(AnimationLocked + 0x2A);
+            var GatherLock = Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A);
             Log("in Test Gather");
             if (GatheringManager.WindowOpen)
             {
@@ -338,19 +336,15 @@ namespace LlamaLibrary
                 while (GatheringManager.SwingsRemaining > 0)
                 {
                     items.GatherItem();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
                 }
             }
         }
         
         public async Task testMine()
         {
-            var patternFinder = new PatternFinder(Core.Memory);
-            IntPtr AnimationLocked = patternFinder.Find("48 8D 0D ?? ?? ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 8B ?? ?? ?? ?? ?? 45 33 C9 44 8B C7 89 BB ?? ?? ?? ?? Add 3 TraceRelative");
-
-            var GatherLock = Core.Memory.Read<uint>(AnimationLocked + 0x2A);
-            Log("in Test Gather");
+            //Log("in Test Gather");
             if (GatheringManager.WindowOpen)
             {
                 GatheringItem items = GatheringManager.GatheringWindowItems.FirstOrDefault(i => i.IsFilled && i.CanGather);
@@ -381,21 +375,17 @@ namespace LlamaLibrary
                         ActionManager.DoAction(272, Core.Me);
                         await Coroutine.Sleep(2500);
                     }
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
                     items?.GatherItem();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
                 }
             }
         }
         
         public async Task testBtn()
         {
-            var patternFinder = new PatternFinder(Core.Memory);
-            IntPtr AnimationLocked = patternFinder.Find("48 8D 0D ?? ?? ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 8B ?? ?? ?? ?? ?? 45 33 C9 44 8B C7 89 BB ?? ?? ?? ?? Add 3 TraceRelative");
-
-            var GatherLock = Core.Memory.Read<uint>(AnimationLocked + 0x2A);
-            Log("in Test Gather");
+            //Log("in Test Gather");
             if (GatheringManager.WindowOpen)
             {
                 GatheringItem items = GatheringManager.GatheringWindowItems.FirstOrDefault(i => i.IsFilled && i.CanGather);
@@ -425,10 +415,10 @@ namespace LlamaLibrary
                         ActionManager.DoAction(273, Core.Me);
                         await Coroutine.Sleep(2500);
                     }
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
                     items?.GatherItem();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(AnimationLocked + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
                 }
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using ff14bot;
@@ -13,6 +14,7 @@ using ff14bot.Managers;
 using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
+using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
 using TreeSharp;
 
@@ -25,6 +27,8 @@ namespace LlamaLibrary.Reduce
         private static bool done;
 
         private static readonly Version v = new Version(1, 0, 3);
+
+        public static bool IsBusy => (DutyManager.InInstance || DutyManager.InQueue || DutyManager.DutyReady || Core.Me.IsCasting || Core.Me.IsMounted || Core.Me.InCombat || Talk.DialogOpen || MovementManager.IsMoving || MovementManager.IsOccupied);
 
         private static readonly InventoryBagId[] inventoryBagIds = new InventoryBagId[4]
         {
@@ -181,12 +185,22 @@ namespace LlamaLibrary.Reduce
 
         private async Task<bool> Run()
         {
-            await Reduction();
-            await Desynth();
-            if (ReduceSettings.Instance.OpenCoffers) await CofferTask();
-            //ReduceSettings.Instance.Save();
+            if (!IsBusy)
+            {
+                await Reduction();
+                await Desynth();
+                if (ReduceSettings.Instance.OpenCoffers) await CofferTask();
+                
+                if (Translator.Language != Language.Chn)
+                    await Extract();
+                
+                //ReduceSettings.Instance.Save();
+            }
+
             if (!ReduceSettings.Instance.StayRunning)
                 TreeRoot.Stop("Stop Requested");
+            
+            await Coroutine.Sleep(1000);
             return true;
         }
 
@@ -223,6 +237,8 @@ namespace LlamaLibrary.Reduce
 
         public static async Task<bool> Desynth()
         {
+            if (IsBusy)
+                return true;
             //Desynthesis
             var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
             var agentSalvage = Offsets.SalvageAgent;
@@ -247,15 +263,14 @@ namespace LlamaLibrary.Reduce
             foreach (var item in itemsToDesynth)
             {
                // Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
-
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
-
+                
                 lock (Core.Memory.Executor.AssemblyLock)
                 {
                     Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
                 }
 
-               // await Coroutine.Sleep(500);
+               await Coroutine.Sleep(500);
 
 
                 await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
@@ -263,7 +278,7 @@ namespace LlamaLibrary.Reduce
                 if (SalvageDialog.IsOpen)
                 {
                     RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
-                    //await Coroutine.Sleep(500);
+                    await Coroutine.Sleep(500);
                     await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
 
                     if (SalvageResult.IsOpen)
@@ -283,6 +298,8 @@ namespace LlamaLibrary.Reduce
                     Log("SalvageDialog didn't open");
                     break;
                 }
+                if (IsBusy)
+                    break;
             }
             
             
@@ -290,6 +307,38 @@ namespace LlamaLibrary.Reduce
             return true;
         }
 
+        public static async Task Extract()
+        {
+            if (IsBusy)
+                return;
+            
+            var gear = InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems).FilledSlots.Where((i => i.SpiritBond == 100f));
+            if (gear.Any())
+            {
+                foreach (var slot in gear)
+                {
+                    Log($"Extract Materia from: {slot}");
+                    slot.ExtractMateria();
+                  //  await Coroutine.Wait(5000, () => MaterializeDialog.IsOpen);
+                 //   if (MaterializeDialog.IsOpen)
+                //    {
+                //        MaterializeDialog.Yes();
+                        await Coroutine.Wait(5000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
+                        await Coroutine.Wait(6000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
+                        await Coroutine.Sleep(100);
+              //      }
+                    /*else
+                    {
+                        Log("MaterializeDialog didn't open");
+                        break;
+                    }*/
+                    
+                    if (IsBusy)
+                        return;
+                }
+            }
+        }
+        
         private static bool ExtraCheck(BagSlot bs)
         {
             //return ReduceSettings.Instance.IncludeDE10000 && (bs.Item.RequiredLevel < 70 && bs.Item.DesynthesisIndex < 10000);
