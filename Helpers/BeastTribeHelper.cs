@@ -12,7 +12,7 @@ namespace LlamaLibrary.Helpers
 {
     public class BeastTribeHelper
     {
-        internal static class Offsets
+        private static class Offsets
         {
             [Offset("Search E8 ? ? ? ? BA ? ? ? ? 48 8B C8 48 83 C4 ? E9 ? ? ? ? ? ? ? ? ? ? E9 ? ? ? ? TraceCall")]
             internal static IntPtr GetQuestPointer;
