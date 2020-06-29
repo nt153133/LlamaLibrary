@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using ff14bot;
@@ -28,7 +27,8 @@ namespace LlamaLibrary.Reduce
 
         private static readonly Version v = new Version(1, 0, 3);
 
-        public static bool IsBusy => (DutyManager.InInstance || DutyManager.InQueue || DutyManager.DutyReady || Core.Me.IsCasting || Core.Me.IsMounted || Core.Me.InCombat || Talk.DialogOpen || MovementManager.IsMoving || MovementManager.IsOccupied);
+        public static bool IsBusy => DutyManager.InInstance || DutyManager.InQueue || DutyManager.DutyReady || Core.Me.IsCasting || Core.Me.IsMounted || Core.Me.InCombat || Talk.DialogOpen || MovementManager.IsMoving ||
+                                     MovementManager.IsOccupied;
 
         private static readonly InventoryBagId[] inventoryBagIds = new InventoryBagId[4]
         {
@@ -85,7 +85,6 @@ namespace LlamaLibrary.Reduce
         }
 
 #if RB_CN
-
                 private IntPtr offset = Core.Memory.GetAbsolute(new IntPtr(0xA6E170)) ; //0xA90fd0;
 #else
 
@@ -148,12 +147,12 @@ namespace LlamaLibrary.Reduce
             var msg = string.Format("[" + botName + "] " + text, args);
             Logging.WriteVerbose(msg);
         }
-        
+
         public override void Initialize()
         {
             OffsetManager.Init();
         }
-        
+
         private async Task<bool> CofferTask()
         {
             foreach (var bagslot in InventoryManager.FilledSlots.Where(bagslot => bagslot.Item.ItemAction == 388))
@@ -190,16 +189,16 @@ namespace LlamaLibrary.Reduce
                 await Reduction();
                 await Desynth();
                 if (ReduceSettings.Instance.OpenCoffers) await CofferTask();
-                
+
                 if (Translator.Language != Language.Chn)
                     await Extract();
-                
+
                 //ReduceSettings.Instance.Save();
             }
 
             if (!ReduceSettings.Instance.StayRunning)
                 TreeRoot.Stop("Stop Requested");
-            
+
             await Coroutine.Sleep(1000);
             return true;
         }
@@ -219,17 +218,75 @@ namespace LlamaLibrary.Reduce
             {
                 ActionManager.Dismount();
             }
+
             await Coroutine.Wait(5000, () => !MovementManager.IsOccupied && !Core.Me.IsMounted);
 
             Console.WriteLine("{" + string.Join($"", Core.Me.Name) + "}");
 
-            while (InventoryManager.FilledSlots.Any(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce))//&& WorldManager.ZoneId == (ushort) ReduceSettings.Instance.AEZone )
+            while (InventoryManager.FilledSlots.Any(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce)) //&& WorldManager.ZoneId == (ushort) ReduceSettings.Instance.AEZone )
             {
                 var item = InventoryManager.FilledSlots.FirstOrDefault(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce);
 
                 if (item == null) break;
                 Log($"Reducing - Name: {item.Item.CurrentLocaleName}");
                 await CommonTasks.AetherialReduction(item);
+            }
+
+            return true;
+        }
+
+        public static async Task<bool> Desynth(IEnumerable<BagSlot> itemsToDesynth)
+        {
+            if (IsBusy)
+                return true;
+
+            var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
+            var agentSalvage = Offsets.SalvageAgent;
+
+            Log($"{itemsToDesynth.Count()}");
+            foreach (var item in itemsToDesynth)
+            {
+                Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
+
+                while (item.IsFilled)
+                {
+                    lock (Core.Memory.Executor.AssemblyLock)
+                    {
+                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
+                    }
+
+                    await Coroutine.Sleep(200);
+                    // Log($"Wait Window");
+                    await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
+
+                    if (SalvageDialog.IsOpen)
+                    {
+                        //  Log($"Open Window");
+                        RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
+                        await Coroutine.Sleep(500);
+                        //await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+                    }
+
+                    // Log($"Wait byte 1");
+                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
+                    // Log($"Wait byte 0");
+                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
+                    await Coroutine.Sleep(100);
+
+
+                    if (IsBusy)
+                        break;
+                }
+                if (IsBusy)
+                    break;
+            }
+
+            await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+
+            if (SalvageResult.IsOpen)
+            {
+                SalvageResult.Close();
+                await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
             }
 
             return true;
@@ -244,33 +301,33 @@ namespace LlamaLibrary.Reduce
             var agentSalvage = Offsets.SalvageAgent;
 
             //if (MovementManager.IsOccupied) return false;
-  //          if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
-            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs)))))
+            //          if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
+            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs)))))
             {
                 Log($"None found");
                 return false;
             }
 
-/*            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
-                .SelectMany(bag => bag.FilledSlots
-                    .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));*/
+            /*            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
+                            .SelectMany(bag => bag.FilledSlots
+                                .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));*/
 
             var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                 .SelectMany(bag => bag.FilledSlots
-                    .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName)  || ExtraCheck(bs))));
+                                .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));
 
             Log($"{itemsToDesynth.Count()}");
             foreach (var item in itemsToDesynth)
             {
-               // Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
+                // Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
-                
+
                 lock (Core.Memory.Executor.AssemblyLock)
                 {
                     Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
                 }
 
-               await Coroutine.Sleep(500);
+                await Coroutine.Sleep(500);
 
 
                 await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
@@ -298,11 +355,11 @@ namespace LlamaLibrary.Reduce
                     Log("SalvageDialog didn't open");
                     break;
                 }
+
                 if (IsBusy)
                     break;
             }
-            
-            
+
 
             return true;
         }
@@ -311,34 +368,24 @@ namespace LlamaLibrary.Reduce
         {
             if (IsBusy)
                 return;
-            
-            var gear = InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems).FilledSlots.Where((i => i.SpiritBond == 100f));
+
+            var gear = InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems).FilledSlots.Where(i => i.SpiritBond == 100f);
             if (gear.Any())
             {
                 foreach (var slot in gear)
                 {
                     Log($"Extract Materia from: {slot}");
                     slot.ExtractMateria();
-                  //  await Coroutine.Wait(5000, () => MaterializeDialog.IsOpen);
-                 //   if (MaterializeDialog.IsOpen)
-                //    {
-                //        MaterializeDialog.Yes();
-                        await Coroutine.Wait(5000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
-                        await Coroutine.Wait(6000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
-                        await Coroutine.Sleep(100);
-              //      }
-                    /*else
-                    {
-                        Log("MaterializeDialog didn't open");
-                        break;
-                    }*/
-                    
+                    await Coroutine.Wait(5000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
+                    await Coroutine.Wait(6000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
+                    await Coroutine.Sleep(100);
+
                     if (IsBusy)
                         return;
                 }
             }
         }
-        
+
         private static bool ExtraCheck(BagSlot bs)
         {
             //return ReduceSettings.Instance.IncludeDE10000 && (bs.Item.RequiredLevel < 70 && bs.Item.DesynthesisIndex < 10000);
