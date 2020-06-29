@@ -240,6 +240,9 @@ namespace LlamaLibrary.Reduce
             if (IsBusy)
                 return true;
 
+            if (!itemsToDesynth.Any())
+                return true;
+
             var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
             var agentSalvage = Offsets.SalvageAgent;
 
