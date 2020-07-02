@@ -250,8 +250,8 @@ namespace LlamaLibrary.Reduce
             foreach (var item in itemsToDesynth)
             {
                 Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
-
-                while (item.IsFilled)
+                var itemId = item.RawItemId;
+                while (item.IsFilled && item.RawItemId == itemId)
                 {
                     lock (Core.Memory.Executor.AssemblyLock)
                     {
