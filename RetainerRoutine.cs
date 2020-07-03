@@ -223,10 +223,10 @@ namespace LlamaLibrary
             if (RetainerTasks.IsOpen)
             {
                 RetainerTasks.CloseTasks();
-                await Coroutine.Wait(1500, () => DialogOpen);
+                await Coroutine.Wait(1500, () => DialogOpen || RetainerList.Instance.IsOpen);
                 await Coroutine.Sleep(200);
                 if (DialogOpen) Next();
-                await Coroutine.Sleep(200);
+                //await Coroutine.Sleep(200);
                 await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
                 return await RetainerList.Instance.SelectRetainer(retainerIndex);
             }
@@ -250,12 +250,12 @@ namespace LlamaLibrary
             if (SelectYesno.IsOpen)
             {
                 SelectYesno.Yes();
-                await Coroutine.Wait(1500, () => DialogOpen);
+                await Coroutine.Wait(1500, () => DialogOpen ||RetainerList.Instance.IsOpen);
             }
 
             await Coroutine.Sleep(200);
             if (DialogOpen) Next();
-            await Coroutine.Sleep(200);
+            //await Coroutine.Sleep(200);
             return await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
         }
 
@@ -323,7 +323,7 @@ namespace LlamaLibrary
                     RetainerTaskAsk.Close();
                 }
 
-                await Coroutine.Wait(1500, () => DialogOpen);
+                await Coroutine.Wait(1500, () => DialogOpen ||SelectString.IsOpen);
                 await Coroutine.Sleep(200);
                 if (DialogOpen) Next();
                 await Coroutine.Sleep(200);

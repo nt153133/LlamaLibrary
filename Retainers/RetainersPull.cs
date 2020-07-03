@@ -269,7 +269,7 @@ namespace LlamaLibrary.Retainers
                     RetainerTaskAsk.Close();
                 }
 
-                await Coroutine.Wait(1500, () => DialogOpen);
+                await Coroutine.Wait(1500, () => DialogOpen ||SelectString.IsOpen);
                 await Coroutine.Sleep(200);
                 if (DialogOpen) Next();
                 await Coroutine.Sleep(200);
