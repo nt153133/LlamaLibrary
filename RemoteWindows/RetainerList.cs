@@ -86,7 +86,7 @@ namespace LlamaLibrary.RemoteWindows
 
                 //await Coroutine.Sleep(300);
 
-                await Coroutine.Wait(9000, () => DialogOpen);
+                await Coroutine.Wait(9000, () => DialogOpen || SelectString.IsOpen);
 
                 if (DialogOpen) Next();
 
