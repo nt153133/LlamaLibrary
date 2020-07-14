@@ -89,7 +89,17 @@ namespace LlamaLibrary.OrderbotTags
                     await FreeShop.Instance.BuyItem((uint) itemId);
                 }
 
-                await Coroutine.Wait(2000, () => FreeShop.Instance.IsOpen);
+                await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+
+                if (SelectYesno.IsOpen)
+                {
+                    SelectYesno.Yes();
+                    await Coroutine.Wait(2000, () => !SelectYesno.IsOpen);
+                    await Coroutine.Sleep(500);
+                }
+
+                
+                
                 if (FreeShop.Instance.IsOpen)
                 {
                     FreeShop.Instance.Close();
