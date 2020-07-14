@@ -75,6 +75,7 @@
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="FishingDataBase.cs" />
     <Compile Include="GatherTest.cs" />
+    <Compile Include="Helpers\Achievements.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
     <Compile Include="Helpers\BlueMageSpellBook.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Memory\OffsetManager.cs" />
     <Compile Include="Memory\Offsets.cs" />
     <Compile Include="OrderbotTags\AutoEquip.cs" />
+    <Compile Include="OrderbotTags\BuyBluTotem.cs" />
     <Compile Include="OrderbotTags\BuyScripItem.cs" />
     <Compile Include="OrderbotTags\BuyShopExchangeCurrency.cs" />
     <Compile Include="OrderbotTags\BuyShopExchangeItem.cs" />
@@ -166,6 +168,7 @@
     <Compile Include="RemoteWindows\Conversation.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
     <Compile Include="RemoteWindows\FishGuide.cs" />
+    <Compile Include="RemoteWindows\FreeShop.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
