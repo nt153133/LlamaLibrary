@@ -76,6 +76,7 @@
     <Compile Include="FishingDataBase.cs" />
     <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
+    <Compile Include="Helpers\BlueMageSpellBook.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
     <Compile Include="Helpers\GrandCompanyShop.cs" />
     <Compile Include="Helpers\HuntHelper.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="OrderbotTags\LLSendChat.cs" />
     <Compile Include="OrderbotTags\ExtendedDuty.cs" />
     <Compile Include="OrderbotTags\LowerCollectable.cs" />
+    <Compile Include="OrderbotTags\SetBluSpells.cs" />
     <Compile Include="OutOnALimbBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

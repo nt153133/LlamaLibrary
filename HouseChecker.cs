@@ -264,7 +264,7 @@ namespace LlamaLibrary
             {
                 SelectIconString.ClickLineContains("Lavender Beds");
 
-                await Coroutine.Wait(5000, () => DialogOpen);
+                await Coroutine.Wait(5000, () => DialogOpen || SelectString.IsOpen);
             }
 
             if (DialogOpen) Next();
