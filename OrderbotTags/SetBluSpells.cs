@@ -40,7 +40,7 @@ namespace LlamaLibrary.OrderbotTags
             {
                 newSpells[i] = (uint) spells[i];
             }
-            BlueMageSpellBook.SetSpells(newSpells);
+            await BlueMageSpellBook.SetSpells(newSpells);
             await Coroutine.Sleep(100);
             _isDone = true;
         }
