@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.XmlEngine;
 using ff14bot.NeoProfiles;
@@ -12,6 +13,10 @@ namespace LlamaLibrary.OrderbotTags
     {
         private bool _isDone;
         [XmlAttribute("Spells")] public int[] Spells { get; set; }
+        
+        [XmlAttribute("Clear")]
+        [DefaultValue(false)]
+        public bool Clear { get; set; }
 
         public override bool HighPriority => true;
         
@@ -40,7 +45,12 @@ namespace LlamaLibrary.OrderbotTags
             {
                 newSpells[i] = (uint) spells[i];
             }
-            await BlueMageSpellBook.SetSpells(newSpells);
+            if (Clear)
+                await BlueMageSpellBook.SetAllSpells(newSpells);
+            else
+            {
+                await BlueMageSpellBook.SetSpells(newSpells);
+            }
             await Coroutine.Sleep(100);
             _isDone = true;
         }

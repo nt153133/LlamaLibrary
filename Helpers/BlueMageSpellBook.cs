@@ -30,6 +30,34 @@ namespace LlamaLibrary.Helpers
 
         public static IntPtr SpellLocation => Offsets.ActionManager + Offsets.BluSpellActiveOffset;
 
+        private static void SetSpell(int index, uint spellId)
+        {
+            Core.Memory.CallInjected64<IntPtr>(Offsets.SetSpell, new object[3]
+            {
+                Offsets.ActionManager,
+                index,
+                spellId
+            });
+        }
+        
+        public static async Task SetAllSpells(uint[] spells)
+        {
+            if (spells.Length > Offsets.MaxActive) return;
+            int index = 0;
+            for (int i = 0; i < spells.Length; i++)
+            {
+                SetSpell(i, spells[i]);
+                await Coroutine.Sleep(200);
+                index++;
+            }
+            
+            for (int i = index; i < Offsets.MaxActive + 1; i++)
+            {
+                SetSpell(i, 0);
+                await Coroutine.Sleep(200);
+            }
+        }
+
         public static async Task SetSpells(uint[] spells)
         {
             if (spells.Length > Offsets.MaxActive) return;
@@ -64,13 +92,8 @@ namespace LlamaLibrary.Helpers
 
             foreach (var pair in spellsToModify)
             {
-                Core.Memory.CallInjected64<IntPtr>(Offsets.SetSpell, new object[3]
-                {
-                    Offsets.ActionManager,
-                    pair.Item1,
-                    pair.Item2
-                });
-                await Coroutine.Sleep(500);
+                SetSpell(pair.Item1, pair.Item2);
+                await Coroutine.Sleep(300);
             }
         }
     }
