@@ -71,9 +71,6 @@ namespace LlamaLibrary.Memory
         [Offset("Search 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 49 8B E8 48 8B F2 48 8B F9 48 85 D2 0F 84 ? ? ? ?")]
         internal static IntPtr AffixMateriaFunc;
 
-        [Offset("Search 48 8D 0D ? ? ? ? 74 ? E8 ? ? ? ? 85 C0 Add 3 TraceRelative")]
-        internal static IntPtr AffixMateriaParam;
-
         [Offset("Search 48 89 5C 24 ? 57 48 83 EC ? 41 0F B7 F8 48 8D 0D ? ? ? ?")]
         internal static IntPtr ExtractMateriaFunc;
 
@@ -93,7 +90,7 @@ namespace LlamaLibrary.Memory
         internal static IntPtr GCTurnin;
         
         [Offset("Search 48 8D 0D ?? ?? ?? ?? BA ?? ?? ?? ?? E8 ?? ?? ?? ?? 80 8B ?? ?? ?? ?? ?? 45 33 C9 44 8B C7 89 BB ?? ?? ?? ?? Add 3 TraceRelative")]
-        internal static IntPtr AnimationLock;
+        internal static IntPtr Conditions;
         
         [Offset("Search 41 8D 50 ? E8 ? ? ? ? 84 C0 75 ? 45 33 C0 48 8D 0D ? ? ? ? 41 8D 50 ? E8 ? ? ? ? EB ? 48 8B 0D ? ? ? ? Add 3 Read8")]
         internal static int DesynthLock;

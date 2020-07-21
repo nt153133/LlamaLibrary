@@ -198,7 +198,7 @@ namespace LlamaLibrary.Extensions
             {
                 Core.Memory.CallInjected64<uint>(Offsets.AffixMateriaFunc, new object[3]
                     {
-                        Offsets.AffixMateriaParam,
+                        Offsets.ExtractMateriaParam,
                         bagSlot.Pointer,
                         materia.Pointer
                     });

@@ -325,7 +325,7 @@ namespace LlamaLibrary
         
         public async Task testGather()
         {
-            var GatherLock = Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A);
+            var GatherLock = Core.Memory.Read<uint>(Offsets.Conditions + 0x2A);
             Log("in Test Gather");
             if (GatheringManager.WindowOpen)
             {
@@ -336,8 +336,8 @@ namespace LlamaLibrary
                 while (GatheringManager.SwingsRemaining > 0)
                 {
                     items.GatherItem();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) == 0);
                 }
             }
         }
@@ -375,10 +375,10 @@ namespace LlamaLibrary
                         ActionManager.DoAction(272, Core.Me);
                         await Coroutine.Sleep(2500);
                     }
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) == 0);
                     items?.GatherItem();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) == 0);
                 }
             }
         }
@@ -415,10 +415,10 @@ namespace LlamaLibrary
                         ActionManager.DoAction(273, Core.Me);
                         await Coroutine.Sleep(2500);
                     }
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) == 0);
                     items?.GatherItem();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + 0x2A) == 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x2A) == 0);
                 }
             }
         }
