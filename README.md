@@ -53,3 +53,5 @@ Offmesh follow the leader. You can use this to have an alt follow you through a 
 This is really a main botbase but down here because I'm not happy with it. It will win the game but after a random number of wins it starts winning 0 MGP. Seems like a server side restriction, so i have it stop once it starts winning 0. 
 
 https://discord.gg/bmgCq39
+
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/soACz8y"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px;font-size:28px !important;">Buy me a coffee</span></a>
