@@ -678,6 +678,20 @@ namespace LlamaLibrary.Helpers
             BNpcNameKey = name;
         }
     }
+    
+    public class StoredHuntLocationLisbeth
+    {
+        public int BNpcNameKey;
+        public Vector3 Location;
+        public string Area;
+
+        public StoredHuntLocationLisbeth(int name, string areaId, Vector3 location)
+        {
+            Area = areaId;
+            Location = location;
+            BNpcNameKey = name;
+        }
+    }
 
     public class HuntBoardNpc
     {

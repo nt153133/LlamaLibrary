@@ -271,9 +271,9 @@ namespace LlamaLibrary.Reduce
                     }
 
                     // Log($"Wait byte 1");
-                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
+                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
                     // Log($"Wait byte 0");
-                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
+                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
                     await Coroutine.Sleep(100);
 
 
@@ -344,9 +344,9 @@ namespace LlamaLibrary.Reduce
                     }
 
                     // Log($"Wait byte 1");
-                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
+                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
                     // Log($"Wait byte 0");
-                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
+                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
                     await Coroutine.Sleep(100);
 
 
@@ -373,8 +373,8 @@ namespace LlamaLibrary.Reduce
                 {
                     Log($"Extract Materia from: {slot}");
                     slot.ExtractMateria();
-                    await Coroutine.Wait(5000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) != 0);
-                    await Coroutine.Wait(6000, () => Core.Memory.Read<uint>(Offsets.AnimationLock + Offsets.DesynthLock) == 0);
+                    await Coroutine.Wait(5000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
+                    await Coroutine.Wait(6000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
                     await Coroutine.Sleep(100);
 
                     if (IsBusy)
