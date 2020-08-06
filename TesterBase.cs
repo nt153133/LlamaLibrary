@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +24,7 @@ using ff14bot.NeoProfiles;
 using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
+using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using ff14bot.RemoteWindows.GoldSaucer;
 using GreyMagic;
@@ -186,7 +190,8 @@ namespace LlamaLibrary
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-
+            //await BuyHouse();
+            //TreeRoot.Stop("Stop Requested");
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
@@ -365,12 +370,83 @@ namespace LlamaLibrary
             
             */
 
+
+            /*
+            var hunts = HuntHelper.DailyHunts;
+            var newHunts = new SortedDictionary<int, StoredHuntLocationLisbeth>();
+            newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
+            foreach (var hunt in hunts.Where(i => !newHunts.ContainsKey(i.Key)))
+            {
+                if (hunt.Key == 399)
+                {
+                    await Navigation.GetToMap399();
+                    await Navigation.GetTo(hunt.Value.Map, hunt.Value.Location);
+                }
+                else
+                {
+                    await Navigation.GetTo(hunt.Value.Map, hunt.Value.Location);
+                }
+
+                newHunts.Add(hunt.Key, new StoredHuntLocationLisbeth(hunt.Value.BNpcNameKey, Lisbeth.GetCurrentAreaName, hunt.Value.Location));
+                Log($"{hunt.Key}");
+                using (var outputFile = new StreamWriter($"hunts.json", false))
+                {
+                    outputFile.Write(JsonConvert.SerializeObject(newHunts));
+                }
+            }
+
+            using (var outputFile = new StreamWriter($"hunts1.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(newHunts));
+            }
+            */
+
+
+            //Log($"{Lisbeth.GetCurrentAreaName}");
+
             //  DumpLuaFunctions();
 
 
             //var line = LlamaLibrary.RemoteWindows.ContentsInfo.Instance.GetElementString(50);
             //int.Parse(line.Split(':')[1].Trim());
             //Log($"START:\n{sb.ToString()}");
+
+            /*var row = FoodBuff.GetRow(420);
+
+            for (int i = 0; i < 3; i++)
+            {
+                Log($"Stat: {(ItemAttribute)row.BaseParam[i]} Max: {row.Max[i]}({row.MaxHQ[i]}) Value: {row.Value[i]}%({row.ValueHQ[i]}%) IsRelative: {(row.IsRelative[i]==1 ? "True":"False")}");
+            }*/
+
+
+            //Log($"{Achievements.HasAchievement(2199)}");
+            // Log($"{BlueMageSpellBook.SpellLocation.ToString("X")}");
+
+
+            //DumpOffsets();
+            //await Lisbeth.SelfRepair();
+
+            if (!Lisbeth.GetHookList().Contains("Retainers"))
+            {
+                Lisbeth.AddHook("Retainers", RetainersPull.CheckVentureTask);
+                Log("Lisbeth hook added");
+            }
+
+            //await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
+            //Lisbeth.RemoveHook("Llama");
+
+            
+            //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
+
+            // Log($"\n {sb}");
+            TreeRoot.Stop("Stop Requested");
+            //Core.Me.Stats
+            //await BuyHouse();
+
+            // await Coroutine.Sleep(100);
+
+
+            return false;
 
 
             BeastTribeHelper.PrintDailies();
@@ -391,12 +467,84 @@ namespace LlamaLibrary
             Log($"Cycle 4: {testTimers.GetTimer(4)}");
 
 
+            //            await Reduce.Reduce.Extract();
+
+            //InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems).Last().IsFilled
+            // await BuyHouse();
             TreeRoot.Stop("Stop Requested");
+            return false;
+            //await BuyHouse();
 
             // await Coroutine.Sleep(100);
-            return false;
         }
 
+        private async Task TestHook()
+        {
+            Log("LL hook");
+            //await Navigation.GetToMap399();
+        }
+
+        /*
+        private void DumpLLOffsets()
+        {
+            var sb = new StringBuilder();
+            var sb1 = new StringBuilder();
+            foreach (var patternItem in OffsetManager.patterns)
+            {
+                var name = patternItem.Key;
+                var pattern = patternItem.Value.Replace("Search ", "");
+
+                if (name.ToLowerInvariant().Contains("vtable") && name.ToLowerInvariant().Contains("agent"))
+                {
+                    Log($"Agent_{name}, {pattern}");
+                    sb1.AppendLine($"{name.Replace("Vtable", "").Replace("vtable", "").Replace("VTable", "").Replace("_", "")}, {pattern}");
+                }
+                else if (!name.ToLowerInvariant().Contains("exd"))
+                {
+                    Log($"{name}, {pattern}");
+                    sb.AppendLine($"{name}, {pattern}");
+                }
+            }
+
+            using (var outputFile = new StreamWriter(@"G:\AgentLL.csv", false))
+            {
+                outputFile.Write(sb1.ToString());
+            }
+
+            using (var outputFile = new StreamWriter(@"G:\LL.csv", false))
+            {
+                outputFile.Write(sb.ToString());
+            }
+
+            sb = new StringBuilder();
+            int i = 0;
+            foreach (var vtable in AgentModule.AgentVtables)
+            {
+                sb.AppendLine($"Model_{i},{Core.Memory.GetRelative(vtable).ToString("X")}");
+                i++;
+            }
+
+            using (var outputFile = new StreamWriter(@"G:\AgentOffsets.csv", false))
+            {
+                outputFile.Write(sb.ToString());
+            }
+        }
+        */
+
+        private void GetClassType()
+        {
+            bool IsClassJobBattle = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobBattle();", Core.Player.LuaString)) > 0;
+            bool IsClassJobCrafter = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobCrafter();", Core.Player.LuaString)) > 0;
+            bool IsClassJobFighter = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobFighter();", Core.Player.LuaString)) > 0;
+            bool IsClassJobGatherer = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobGatherer();", Core.Player.LuaString)) > 0;
+            bool IsClassJobSorcerer = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobSorcerer();", Core.Player.LuaString)) > 0;
+
+            Log(string.Format("Battle: {0}", IsClassJobBattle));
+            Log(string.Format("Crafter: {0}", IsClassJobCrafter));
+            Log(string.Format("Fighter: {0}", IsClassJobFighter));
+            Log(string.Format("Gather: {0}", IsClassJobGatherer));
+            Log(string.Format("Sorcerer: {0}", IsClassJobSorcerer));
+        }
 
         private async Task BuyHouse()
         {
@@ -438,6 +586,48 @@ namespace LlamaLibrary
                 while (HousingSignBoard.Instance.IsForSale);
 
                 Lua.DoString("return _G['EventHandler']:Shutdown();");
+            }
+        }
+
+        private void DumpOffsets()
+        {
+            var off = typeof(Core).GetProperty("Offsets", BindingFlags.NonPublic | BindingFlags.Static);
+            StringBuilder stringBuilder = new StringBuilder();
+            int i = 0;
+            int j = 0;
+            int p1 = 0;
+            int p2 = 0;
+            foreach (var p in off.PropertyType.GetFields())
+            {
+                var tp = p.GetValue(off.GetValue(null));
+                //stringBuilder.Append($"\nOffset Struct_{i + 88} {i + 1} ({p.FieldType.GetFields().Length})");
+                j = 0;
+                p1 = 0;
+                p2 = 0;
+                foreach (var t in p.FieldType.GetFields())
+                {
+                    //stringBuilder.Append(string.Format("\nField: {0} \t", p2));
+
+                    if (t.FieldType == typeof(IntPtr))
+                    {
+                        //IntPtr ptr = new IntPtr(((IntPtr) t.GetValue(tp)).ToInt64() - Core.Memory.ImageBase.ToInt64());
+                        IntPtr ptr = (((IntPtr) t.GetValue(tp)));
+                        stringBuilder.Append($"Struct{i + 88}_IntPtr{p1}, {Core.Memory.GetRelative(ptr).ToInt64()}\n");
+                        //stringBuilder.Append(string.Format("\tPtr Offset_{0}: 0x{1:x}", p1, ptr.ToInt64()));
+
+                        p1++;
+                    }
+
+                    p2++;
+                }
+
+                //stringBuilder.Append("\n");
+                i++;
+            }
+
+            using (var outputFile = new StreamWriter($"RB{Assembly.GetEntryAssembly().GetName().Version.Build}.csv", false))
+            {
+                outputFile.Write(stringBuilder.ToString());
             }
         }
 

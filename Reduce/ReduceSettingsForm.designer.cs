@@ -47,10 +47,9 @@ namespace LlamaLibrary.Reduce
             // 
             // ArmoryCheck
             // 
-            this.ArmoryCheck.Location = new System.Drawing.Point(8, 22);
-            this.ArmoryCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ArmoryCheck.Location = new System.Drawing.Point(7, 19);
             this.ArmoryCheck.Name = "ArmoryCheck";
-            this.ArmoryCheck.Size = new System.Drawing.Size(136, 28);
+            this.ArmoryCheck.Size = new System.Drawing.Size(117, 24);
             this.ArmoryCheck.TabIndex = 0;
             this.ArmoryCheck.Text = "Include Armory";
             this.ArmoryCheck.UseVisualStyleBackColor = true;
@@ -58,10 +57,9 @@ namespace LlamaLibrary.Reduce
             // 
             // DEindexCheck
             // 
-            this.DEindexCheck.Location = new System.Drawing.Point(8, 44);
-            this.DEindexCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.DEindexCheck.Location = new System.Drawing.Point(7, 38);
             this.DEindexCheck.Name = "DEindexCheck";
-            this.DEindexCheck.Size = new System.Drawing.Size(200, 57);
+            this.DEindexCheck.Size = new System.Drawing.Size(171, 49);
             this.DEindexCheck.TabIndex = 1;
             this.DEindexCheck.Text = "Include everything under 10000 DE index";
             this.DEindexCheck.UseVisualStyleBackColor = true;
@@ -69,10 +67,9 @@ namespace LlamaLibrary.Reduce
             // 
             // RunCheck
             // 
-            this.RunCheck.Location = new System.Drawing.Point(8, 96);
-            this.RunCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.RunCheck.Location = new System.Drawing.Point(7, 83);
             this.RunCheck.Name = "RunCheck";
-            this.RunCheck.Size = new System.Drawing.Size(187, 37);
+            this.RunCheck.Size = new System.Drawing.Size(160, 32);
             this.RunCheck.TabIndex = 2;
             this.RunCheck.Text = "StayRunning";
             this.RunCheck.UseVisualStyleBackColor = true;
@@ -84,21 +81,18 @@ namespace LlamaLibrary.Reduce
             this.groupBox1.Controls.Add(this.setZoneBtn);
             this.groupBox1.Controls.Add(this.textZone);
             this.groupBox1.Controls.Add(this.checkBox1);
-            this.groupBox1.Location = new System.Drawing.Point(229, 12);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox1.Location = new System.Drawing.Point(196, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.groupBox1.Size = new System.Drawing.Size(230, 158);
+            this.groupBox1.Size = new System.Drawing.Size(197, 137);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "AE Reduction";
             // 
             // setCurrentZoneBtn
             // 
-            this.setCurrentZoneBtn.Location = new System.Drawing.Point(18, 106);
-            this.setCurrentZoneBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.setCurrentZoneBtn.Location = new System.Drawing.Point(15, 92);
             this.setCurrentZoneBtn.Name = "setCurrentZoneBtn";
-            this.setCurrentZoneBtn.Size = new System.Drawing.Size(130, 27);
+            this.setCurrentZoneBtn.Size = new System.Drawing.Size(111, 23);
             this.setCurrentZoneBtn.TabIndex = 3;
             this.setCurrentZoneBtn.Text = "Set Current Zone";
             this.setCurrentZoneBtn.UseVisualStyleBackColor = true;
@@ -106,10 +100,9 @@ namespace LlamaLibrary.Reduce
             // 
             // setZoneBtn
             // 
-            this.setZoneBtn.Location = new System.Drawing.Point(94, 77);
-            this.setZoneBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.setZoneBtn.Location = new System.Drawing.Point(81, 67);
             this.setZoneBtn.Name = "setZoneBtn";
-            this.setZoneBtn.Size = new System.Drawing.Size(52, 23);
+            this.setZoneBtn.Size = new System.Drawing.Size(45, 20);
             this.setZoneBtn.TabIndex = 2;
             this.setZoneBtn.Text = "Set";
             this.setZoneBtn.UseVisualStyleBackColor = true;
@@ -117,18 +110,16 @@ namespace LlamaLibrary.Reduce
             // 
             // textZone
             // 
-            this.textZone.Location = new System.Drawing.Point(18, 77);
-            this.textZone.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.textZone.Location = new System.Drawing.Point(15, 67);
             this.textZone.Name = "textZone";
-            this.textZone.Size = new System.Drawing.Size(68, 23);
+            this.textZone.Size = new System.Drawing.Size(59, 20);
             this.textZone.TabIndex = 1;
             // 
             // checkBox1
             // 
-            this.checkBox1.Location = new System.Drawing.Point(8, 22);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox1.Location = new System.Drawing.Point(7, 19);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(139, 48);
+            this.checkBox1.Size = new System.Drawing.Size(119, 42);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Only Reduce in zone";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -139,21 +130,18 @@ namespace LlamaLibrary.Reduce
             this.groupBox2.Controls.Add(this.ArmoryCheck);
             this.groupBox2.Controls.Add(this.DEindexCheck);
             this.groupBox2.Controls.Add(this.RunCheck);
-            this.groupBox2.Location = new System.Drawing.Point(13, 12);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.groupBox2.Location = new System.Drawing.Point(11, 10);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.groupBox2.Size = new System.Drawing.Size(206, 150);
+            this.groupBox2.Size = new System.Drawing.Size(177, 130);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Desynthesis";
             // 
             // checkBox2
             // 
-            this.checkBox2.Location = new System.Drawing.Point(471, 27);
-            this.checkBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.checkBox2.Location = new System.Drawing.Point(404, 23);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(110, 33);
+            this.checkBox2.Size = new System.Drawing.Size(94, 29);
             this.checkBox2.TabIndex = 6;
             this.checkBox2.Text = "Open Coffers";
             this.checkBox2.UseVisualStyleBackColor = true;
@@ -161,13 +149,12 @@ namespace LlamaLibrary.Reduce
             // 
             // Settings
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(607, 181);
+            this.ClientSize = new System.Drawing.Size(520, 157);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Settings";
             this.Text = "Settings";
             this.Load += new System.EventHandler(this.Settings_Load);
@@ -177,17 +164,17 @@ namespace LlamaLibrary.Reduce
             this.ResumeLayout(false);
         }
 
-        #endregion
-
         private System.Windows.Forms.CheckBox ArmoryCheck;
-        private System.Windows.Forms.CheckBox DEindexCheck;
-        private System.Windows.Forms.CheckBox RunCheck;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.TextBox textZone;
-        private System.Windows.Forms.Button setZoneBtn;
-        private System.Windows.Forms.Button setCurrentZoneBtn;
         private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox DEindexCheck;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox RunCheck;
+        private System.Windows.Forms.Button setCurrentZoneBtn;
+        private System.Windows.Forms.Button setZoneBtn;
+        private System.Windows.Forms.TextBox textZone;
+
+        #endregion
     }
 }

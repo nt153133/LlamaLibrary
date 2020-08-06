@@ -427,11 +427,11 @@ namespace LlamaLibrary.Retainers
         {
             lock (Core.Memory.Executor.AssemblyLock)
                 Core.Memory.CallInjected64<IntPtr>(Offsets.RequestRetainerData,
-                                                   Offsets.RetainerNetworkPacket,
-                                                   0,
-                                                   0,
-                                                   0,
-                                                   0);
+                                                   (uint)Offsets.RetainerNetworkPacket,
+                                                   (uint)0,
+                                                   (uint)0,
+                                                   (uint)0,
+                                                   (uint)0);
         }
     }
 }

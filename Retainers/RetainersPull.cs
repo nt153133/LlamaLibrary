@@ -12,6 +12,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing.Service_Navigation;
+using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
@@ -141,6 +142,8 @@ namespace LlamaLibrary.Retainers
 
             if (rets.Any(i => i.Active && i.VentureTask !=0 && (i.VentureEndTimestamp - now) <= 0 && SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) > 2))
             {
+                
+                if (CraftingLog.IsOpen) CraftingLog.Close();
                 var bell = await GoToSummoningBell();
 
                 if (bell == false)

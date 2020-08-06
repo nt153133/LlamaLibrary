@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Clio.Utilities;
@@ -29,8 +30,10 @@ using LlamaLibrary.RemoteAgents;
     {
         private static string Name => "LLOffsetManager";
         private static bool initDone = false;
+        private static StringBuilder sb= new StringBuilder();
+        //public static Dictionary<string, string> patterns = new Dictionary<string, string>();
 
-        private static bool _debug = false;
+        private static readonly bool _debug = false;
         internal static void Init()
         {
             if (initDone)
@@ -104,6 +107,8 @@ using LlamaLibrary.RemoteAgents;
             AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers"});//
             ScriptManager.Init(typeof(ScriptConditions.Helpers));
             initDone = true;
+            if (_debug)
+                Log($"\n {sb}");
         }
         
         internal static void AddNamespacesToScriptManager(params string[] param)
@@ -186,11 +191,27 @@ using LlamaLibrary.RemoteAgents;
                     Log($"[{field.DeclaringType.Name}:{field.Name:,27}] Not Found");
                 }
             }
+
             if (!_debug)
             {
                 return result;
             }
+            
+            if (offset!=null)
+                if (field.DeclaringType != null && field.DeclaringType.IsNested && field.FieldType != typeof(int))
+                {
+                    sb.AppendLine($"{field.DeclaringType.DeclaringType.Name}_{field.Name}, {offset.Pattern}");
+                    //patterns.Add($"{field.DeclaringType.DeclaringType.Name}_{field.Name}", offset.Pattern);
+                }
+                else if (field.FieldType != typeof(int))
+                {
+                    sb.AppendLine($"{field.Name}, {offset.Pattern}");
+                    //patterns.Add($"{field.Name}", offset.Pattern);
+                }
 
+            if (valna != null)
+                sb.AppendLine($"{field.DeclaringType.Name},{field.Name},{valna}");
+            
             if(field.DeclaringType != null && field.DeclaringType.IsNested)
                 Log($"[{field.DeclaringType.DeclaringType.Name}:{field.Name:,27}] {result.ToInt64():X}");
             else
