@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -11,6 +12,7 @@ using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
+using ff14bot.Objects;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
@@ -24,6 +26,7 @@ using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
+using Action = System.Action;
 
 namespace LlamaLibrary.Retainers
 {
@@ -142,8 +145,46 @@ namespace LlamaLibrary.Retainers
 
             if (rets.Any(i => i.Active && i.VentureTask !=0 && (i.VentureEndTimestamp - now) <= 0 && SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) > 2))
             {
+                if (FishingManager.State != FishingState.None)
+                {
+                    var quit = ActionManager.CurrentActions.Values.FirstOrDefault(i => i.Id == 299);
+                    if (quit != default(SpellData))
+                    {
+                        Log($"Exiting Fishing");
+                        if (ActionManager.CanCast(quit, Core.Me))
+                        {
+                            ActionManager.DoAction(quit, Core.Me);
+                            await Coroutine.Wait(6000, () => FishingManager.State == FishingState.None);
+                        }
+                    }
+                }
+
+                if (CraftingLog.IsOpen)
+                {
+                    Log($"Closing Crafting Window");
+                    CraftingLog.Close();
+                    await Coroutine.Wait(6000, () => !CraftingLog.IsOpen);
+                }
                 
-                if (CraftingLog.IsOpen) CraftingLog.Close();
+                if (DutyManager.InInstance)
+                {
+                    Log($"Leaving Diadem");
+                    DutyManager.LeaveActiveDuty();
+
+                    if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
+                    {
+                        await Coroutine.Yield();
+                        await Coroutine.Wait(Timeout.Infinite, () => !CommonBehaviors.IsLoading);
+                        await Coroutine.Sleep(5000);
+                    }
+                }
+
+                if (DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied)
+                {
+                    Log("Something went wrong");
+                    return;
+                }
+                
                 var bell = await GoToSummoningBell();
 
                 if (bell == false)
