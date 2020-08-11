@@ -59,11 +59,11 @@ namespace LlamaLibrary.Memory
         [Offset("Search 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 80 B9 ? ? ? ? ? 41 8B F0")]
         internal static IntPtr SellFunc;
 
-        [Offset("Search 40 56 48 83 EC ? 8B F2 48 8B 15 ? ? ? ?")]
-        internal static IntPtr RemoveMateriaFunc;
+        //[Offset("Search 40 56 48 83 EC ? 8B F2 48 8B 15 ? ? ? ?")]
+       // internal static IntPtr RemoveMateriaFunc;
 
-        [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? EB ? 44 0F B7 41 ? Add 3 TraceRelative")]
-        internal static IntPtr MateriaParam;
+      //  [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? EB ? 44 0F B7 41 ? Add 3 TraceRelative")]
+      //  internal static IntPtr MateriaParam;
 
         [Offset("Search 48 89 91 ? ? ? ? 33 D2 C7 81 ? ? ? ? ? ? ? ?")]
         internal static IntPtr MeldWindowFunc;
