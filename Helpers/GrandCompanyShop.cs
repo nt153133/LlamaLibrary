@@ -21,7 +21,7 @@ namespace LlamaLibrary.Helpers
     {
         internal static class Offsets
         {
-            [Offset("Search 0F B6 05 ? ? ? ? 66 3B 43 ? Add 3 TraceRelative")]
+            [Offset("Search 0F B6 15 ? ? ? ? 8D 42 ? 3C ? 77 ? FE CA 48 8D 0D ? ? ? ? Add 3 TraceRelative")]
             internal static IntPtr CurrentGC;
         
             [Offset("Search 48 83 EC ? 48 8B 05 ? ? ? ? 44 8B C1 BA ? ? ? ? 48 8B 88 ? ? ? ? E8 ? ? ? ? 48 85 C0 75 ? 48 83 C4 ? C3 48 8B 00 48 83 C4 ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 48 83 EC ? 80 F9 ?")]
