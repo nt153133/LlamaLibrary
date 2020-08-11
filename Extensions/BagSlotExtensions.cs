@@ -161,7 +161,8 @@ namespace LlamaLibrary.Extensions
 
         public static void RemoveMateria(this BagSlot bagSlot)
         {
-            lock (Core.Memory.Executor.AssemblyLock)
+            
+            /*lock (Core.Memory.Executor.AssemblyLock)
             {
                 using (Core.Memory.TemporaryCacheState(false))
                 {
@@ -172,7 +173,7 @@ namespace LlamaLibrary.Extensions
                         bagSlot.Slot,
                     });
                 }
-            }
+            }*/
         }
         
         public static void ExtractMateria(this BagSlot bagSlot)
