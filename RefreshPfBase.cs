@@ -111,7 +111,7 @@ namespace LlamaLibrary
         private int getAgent()
         {
             var patternFinder = new PatternFinder(Core.Memory);
-            IntPtr agentVtable = patternFinder.Find("48 8D 05 ? ? ? ? 48 89 51 ? 48 89 01 45 33 FF Add 3 TraceRelative");
+            IntPtr agentVtable = patternFinder.Find("48 8D 05 ?? ?? ?? ?? 48 8B F1 48 89 01 48 8D 05 ?? ?? ?? ?? 48 89 41 ?? E8 ?? ?? ?? ?? Add 3 TraceRelative");
 
             return AgentModule.FindAgentIdByVtable(agentVtable);
         }
