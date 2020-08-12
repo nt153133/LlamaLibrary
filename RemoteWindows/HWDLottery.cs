@@ -24,7 +24,7 @@ namespace LlamaLibrary.RemoteWindows
 
         public async Task ClickSpot(int slot)
         {
-            var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
+            //var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
             //IntPtr KupoClick = patternFinder.Find("E8 ? ? ? ? 32 C0 48 8B 5C 24 ? 48 8B 74 24 ? 48 83 C4 ? 5F C3 48 8B 03 48 8B CB FF 50 ? TraceCall");
             
             if (IsOpen)
