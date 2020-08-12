@@ -165,10 +165,16 @@ using LlamaLibrary.RemoteAgents;
                     return (IntPtr) valcn.Value;
                 if (offset == null) return IntPtr.Zero;
 
-                var b1 = true;
-                var results = pf.FindMany(offset.PatternCN, ref b1);
-                if (results != null)
-                    result = results[0];
+                //var b1 = true;
+                try
+                {
+                    result = pf.Find(offset.PatternCN);
+                }
+                catch (Exception e)
+                {
+
+                }
+                
             }
             else
             {
@@ -176,10 +182,14 @@ using LlamaLibrary.RemoteAgents;
                     return (IntPtr) valna.Value;
                 if (offset == null) return IntPtr.Zero;
 
-                var b1 = true;
-                var results = pf.FindMany(offset.Pattern, ref b1);
-                if (results != null && results.Length > 0)
-                    result = results[0];
+                try
+                {
+                    result = pf.Find(offset.PatternCN);
+                }
+                catch (Exception e)
+                {
+
+                }
             }
 
             if (result == IntPtr.Zero)
