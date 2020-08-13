@@ -255,7 +255,7 @@ namespace LlamaLibrary.Reduce
                 {
                     lock (Core.Memory.Executor.AssemblyLock)
                     {
-                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
+                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14,0);
                     }
 
                     await Coroutine.Sleep(200);
@@ -274,9 +274,9 @@ namespace LlamaLibrary.Reduce
                     await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
                     // Log($"Wait byte 0");
                     await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
-                    await Coroutine.Sleep(100);
+                    //await Coroutine.Sleep(100);
 
-
+                    await Coroutine.Wait(6000, () => SalvageResult.IsOpen);
                     if (IsBusy)
                         break;
                 }
@@ -311,6 +311,7 @@ namespace LlamaLibrary.Reduce
                 return false;
             }
 
+            
             /*            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                             .SelectMany(bag => bag.FilledSlots
                                 .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));*/
@@ -328,7 +329,7 @@ namespace LlamaLibrary.Reduce
                 {
                     lock (Core.Memory.Executor.AssemblyLock)
                     {
-                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
+                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14,0);
                     }
 
                     await Coroutine.Sleep(200);
@@ -348,6 +349,7 @@ namespace LlamaLibrary.Reduce
                     // Log($"Wait byte 0");
                     await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
                     await Coroutine.Sleep(100);
+                    await Coroutine.Wait(6000, () => SalvageResult.IsOpen || RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog")!= null);
 
 
                     if (IsBusy)
@@ -356,7 +358,17 @@ namespace LlamaLibrary.Reduce
                 if (IsBusy)
                     break;
             }
-
+            if (SalvageResult.IsOpen)
+            {
+                SalvageResult.Close();
+                await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
+            }
+            
+            if (RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog")!= null)
+            {
+                RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog").SendAction(1, 3uL, 4294967295uL);
+                await Coroutine.Wait(5000, () => RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog")== null);
+            }
 
             return true;
         }

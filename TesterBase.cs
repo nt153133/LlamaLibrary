@@ -5,6 +5,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,6 +42,7 @@ using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using Action = TreeSharp.Action;
 using ActionType = ff14bot.Enums.ActionType;
+using static LlamaLibrary.Retainers.HelperFunctions;
 
 namespace LlamaLibrary
 {
@@ -184,7 +186,6 @@ namespace LlamaLibrary
         {
             _root = null;
         }
-
 
         private async Task<bool> Run()
         {
@@ -369,6 +370,7 @@ namespace LlamaLibrary
             }
             
             */
+            //var pat = "48 89 0D ? ? ? ? 0F B7 89 ? ? ? ? Add 3 TraceRelative";
 
 
             /*
@@ -417,28 +419,39 @@ namespace LlamaLibrary
             {
                 Log($"Stat: {(ItemAttribute)row.BaseParam[i]} Max: {row.Max[i]}({row.MaxHQ[i]}) Value: {row.Value[i]}%({row.ValueHQ[i]}%) IsRelative: {(row.IsRelative[i]==1 ? "True":"False")}");
             }*/
+            /*IntPtr[] array = Core.Memory.ReadArray<IntPtr>(SpecialShopManager.ActiveShopPtr + 0x178, 2);
+            ulong num = (ulong)((long)array[1] - (long)array[0]) / (ulong)(uint)0x1a0;
+
+            var list = Core.Memory.ReadArray<SpecialShopItemLL>(array[0], (int)num);
+
+            foreach (var item in list)
+            {
+                Log(item.ToString());
+            }*/
+
 
 
             //Log($"{Achievements.HasAchievement(2199)}");
             // Log($"{BlueMageSpellBook.SpellLocation.ToString("X")}");
 
-
-            //DumpOffsets();
             //await Lisbeth.SelfRepair();
-
-            if (!Lisbeth.GetHookList().Contains("Retainers"))
-            {
-                Lisbeth.AddHook("Retainers", RetainersPull.CheckVentureTask);
-                Log("Lisbeth hook added");
-            }
 
             //await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
             //Lisbeth.RemoveHook("Llama");
 
-            
+
             //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
 
             // Log($"\n {sb}");
+            if (CollectablesShop.Instance.IsOpen)
+            {
+                foreach (var item in CollectablesShop.Instance.ListItems())
+                {
+                    Log(item);
+                }
+
+            }
+
             TreeRoot.Stop("Stop Requested");
             //Core.Me.Stats
             //await BuyHouse();
