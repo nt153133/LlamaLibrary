@@ -25,7 +25,7 @@ namespace LlamaLibrary.RemoteWindows
             var result = new List<string>();
             for (int j = 0; j < count; j++)
             {
-                if (currentElements[32 + (j * 11)].TrimmedData < 100) continue; //IconID
+                if (currentElements[32 + (j * 11)].TrimmedData == ___Elements()[21].TrimmedData) continue; //IconID
                 var itemID = currentElements[34 + (j * 11)].TrimmedData;
                 //if (itemID == 0 || itemID > 1500000 || itemID < 500000)  continue;
                 result.Add($"{j}: {DataManager.GetItem((uint) (itemID - 500000))} {itemID}");
