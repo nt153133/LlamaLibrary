@@ -16,7 +16,7 @@ namespace LlamaLibrary.Helpers
         private static MethodInfo _travelMethod;
         public static Func<string> _getCurrentAreaName;
         private static Func<Task> _stopGentlyAndWait, _equipOptimalGear, _extractMateria, _selfRepair, _selfRepairWithMenderFallback;
-        private static Action _stopGently;
+        private static Func<Task> _stopGently;
         private static Action<string, Func<Task>> _addHook;
         private static Action<string> _removeHook;
         private static Func<List<string>> _getHookList;
@@ -44,17 +44,24 @@ namespace LlamaLibrary.Helpers
                 var m = apiObject.GetType().GetMethod("GetCurrentAreaName");
                 if (m != null)
                 {
-                    _getCurrentAreaName = (Func<string>) Delegate.CreateDelegate(typeof(Func<string>), apiObject, "GetCurrentAreaName");
-                    _stopGently = (Action) Delegate.CreateDelegate(typeof(Action), apiObject, "StopGently");
-                    _stopGentlyAndWait = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "StopGentlyAndWait");
-                    _addHook = (Action<string, Func<Task>>) Delegate.CreateDelegate(typeof(Action<string, Func<Task>>), apiObject, "AddHook");
-                    _removeHook = (Action<string>) Delegate.CreateDelegate(typeof(Action<string>), apiObject, "RemoveHook");
-                    _getHookList = (Func<List<string>>) Delegate.CreateDelegate(typeof(Func<List<string>>), apiObject, "GetHookList");
+                    try
+                    {
+                        _getCurrentAreaName = (Func<string>) Delegate.CreateDelegate(typeof(Func<string>), apiObject, "GetCurrentAreaName");
+                        _stopGently = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "StopGently");
+                        //_stopGentlyAndWait = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "StopGentlyAndWait");
+                        _addHook = (Action<string, Func<Task>>) Delegate.CreateDelegate(typeof(Action<string, Func<Task>>), apiObject, "AddHook");
+                        _removeHook = (Action<string>) Delegate.CreateDelegate(typeof(Action<string>), apiObject, "RemoveHook");
+                        _getHookList = (Func<List<string>>) Delegate.CreateDelegate(typeof(Func<List<string>>), apiObject, "GetHookList");
 
-                    _equipOptimalGear = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "EquipOptimalGear");
-                    _extractMateria = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "ExtractMateria");
-                    _selfRepair = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepair");
-                    _selfRepairWithMenderFallback = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepairWithMenderFallback");
+                        _equipOptimalGear = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "EquipOptimalGear");
+                        _extractMateria = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "ExtractMateria");
+                        _selfRepair = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepair");
+                        _selfRepairWithMenderFallback = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepairWithMenderFallback");
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogCritical(e.ToString());
+                    }
                 }
             }
 
@@ -89,16 +96,11 @@ namespace LlamaLibrary.Helpers
             return await (Task<bool>) _travelMethod.Invoke(_lisbeth, new object[] {area, position});
         }
         
-        public static void StopGently()
+        public static async Task StopGently()
         {
-            _stopGently?.Invoke();
+            await _stopGently();
         }
 
-        public static async Task StopGentlyAndWait()
-        {
-            if (_stopGentlyAndWait == null) { return; }
-            await _stopGentlyAndWait();
-        }
 
         public static void AddHook(string name, Func<Task> function)
         {
