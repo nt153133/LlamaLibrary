@@ -9,10 +9,13 @@ Orginal work done by zzi, contibutions by Omninewb, Freiheit, and mastahg
                                                                                  */
 
 using System;
+using ff14bot;
 using LlamaLibrary.Memory.Attributes;
 
 namespace LlamaLibrary.Memory
 {
+    
+    
 #pragma warning disable CS0649
     internal static partial class Offsets
     {
@@ -127,6 +130,24 @@ namespace LlamaLibrary.Memory
 
         [Offset("Search B9 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 5C 24 ?? C6 85 ?? ?? ?? ?? ?? Add 1 Read32")]
         internal static int RetainerNetworkPacket;
+
+        [Offset("Search 40 57 41 54 41 55 41 56 41 57 48 83 EC ? 45 0F B7 F1")]
+        internal static IntPtr RemoveMateriaFunc;
+
+        [Offset("Search 48 8B 05 ? ? ? ? C3 ? ? ? ? ? ? ? ? 48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? Add 3 TraceRelative")]
+        internal static IntPtr EventHandlerOff;
+
+        private static IntPtr _eventHandler = IntPtr.Zero;
+
+        public static IntPtr EventHandler
+        {
+            get
+            {
+                if (_eventHandler == IntPtr.Zero)
+                    _eventHandler = Core.Memory.Read<IntPtr>(EventHandlerOff);
+                return _eventHandler;
+            }
+        }
     }
 
 
