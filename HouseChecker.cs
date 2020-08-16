@@ -392,9 +392,9 @@ namespace LlamaLibrary
                 for (var i = 0; i < HousingSelectBlock.Instance.NumberOfWards; i++)
                 {
                     HousingSelectBlock.Instance.SelectWard(i);
-
+                
                     await Coroutine.Sleep(500);
-
+                    //Log($"Ward {AgentHousingSelectBlock.Instance.WardNumber + 1}");
                     var plotStatus = AgentHousingSelectBlock.Instance.ReadPlots(HousingSelectBlock.Instance.NumberOfPlots);
 
                     for (var j = 0; j < plotStatus.Length; j++)
