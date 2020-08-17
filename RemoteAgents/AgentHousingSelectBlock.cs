@@ -12,9 +12,9 @@ namespace LlamaLibrary.RemoteAgents
         {
             [Offset("Search 4C 8D 2D ? ? ? ? 48 89 74 24 ? Add 3 TraceRelative")]
             internal static IntPtr VTable;
-            [Offset("Search 0F B6 56 ? 0F B7 4E ? Add 3 Read8")]
+            [Offset("Search 89 71 ? 8B C6 Add 2 Read8")]
             internal static int WardNumber;
-            [Offset("Search 83 FB ? 0F 8D ? ? ? ? 80 7C 33 ? ? Add 2 Read8")]
+            [Offset("Search 4D 8D 6C 24 ? C7 44 24 ? ? ? ? Add 4 Read8")]
             internal static int PlotOffset;
         }
         protected AgentHousingSelectBlock(IntPtr pointer) : base(pointer)
