@@ -78,9 +78,11 @@ namespace LlamaLibrary.Materia
             {
                 bindingSourceInventory.Add(bagSlot);
             }
-
+            
             itemCb.DisplayMember = "Name";
             itemCb.DataSource = bindingSourceInventory;
+            itemCb.Update();
+            itemCb_SelectionChangeCommitted(this, null);
 
             if (_selectedBagSlot != null)
             {

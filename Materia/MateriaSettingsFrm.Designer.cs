@@ -51,13 +51,13 @@ namespace LlamaLibrary.Materia
             this.bindingSourceAffix = new System.Windows.Forms.BindingSource(this.components);
             this.button3 = new System.Windows.Forms.Button();
             this.bindingSourceInventoryMateria = new System.Windows.Forms.BindingSource(this.components);
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSourceInventory)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.bindingSourceInventory)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSourceAffix)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSourceInventoryMateria)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.bindingSourceAffix)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.bindingSourceInventoryMateria)).BeginInit();
             this.SuspendLayout();
             // 
             // itemCb
@@ -75,7 +75,7 @@ namespace LlamaLibrary.Materia
             // 
             this.materiaListBox.BackColor = System.Drawing.SystemColors.Info;
             this.materiaListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.materiaListBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.materiaListBox.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.materiaListBox.FormattingEnabled = true;
             this.materiaListBox.ItemHeight = 17;
             this.materiaListBox.Location = new System.Drawing.Point(7, 31);
@@ -89,7 +89,7 @@ namespace LlamaLibrary.Materia
             this.button1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.button1.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.button1.Location = new System.Drawing.Point(3, 206);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(285, 27);
@@ -130,7 +130,7 @@ namespace LlamaLibrary.Materia
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(291, 236);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Remove";
@@ -143,7 +143,7 @@ namespace LlamaLibrary.Materia
             this.tabPage2.Controls.Add(this.button3);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(291, 236);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Affix";
@@ -271,37 +271,36 @@ namespace LlamaLibrary.Materia
             this.Name = "MateriaSettingsFrm";
             this.Text = "Materia Settings";
             this.Load += new System.EventHandler(this.MateriaSettingsFrm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSourceInventory)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.bindingSourceInventory)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSourceAffix)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bindingSourceInventoryMateria)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.bindingSourceAffix)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.bindingSourceInventoryMateria)).EndInit();
             this.ResumeLayout(false);
-
         }
 
-        #endregion
-
+        private System.Windows.Forms.ComboBox affixCb;
+        private System.Windows.Forms.BindingSource bindingSourceAffix;
         private System.Windows.Forms.BindingSource bindingSourceInventory;
-        private System.Windows.Forms.ComboBox itemCb;
-        private System.Windows.Forms.ListBox materiaListBox;
+        private System.Windows.Forms.BindingSource bindingSourceInventoryMateria;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.BindingSource bindingSourceAffix;
-        private System.Windows.Forms.ComboBox affixCb;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ComboBox itemCb;
         private System.Windows.Forms.ComboBox MateriaCb1;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ComboBox MateriaCb2;
         private System.Windows.Forms.ComboBox MateriaCb3;
         private System.Windows.Forms.ComboBox MateriaCb4;
         private System.Windows.Forms.ComboBox MateriaCb5;
-        private System.Windows.Forms.BindingSource bindingSourceInventoryMateria;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ListBox materiaListBox;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+
+        #endregion
     }
 }

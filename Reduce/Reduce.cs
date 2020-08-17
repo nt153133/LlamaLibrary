@@ -253,26 +253,27 @@ namespace LlamaLibrary.Reduce
                 var itemId = item.RawItemId;
                 while (item.IsFilled && item.RawItemId == itemId)
                 {
+                    Log($"Call Desynth");
                     lock (Core.Memory.Executor.AssemblyLock)
                     {
                         Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14,0);
                     }
 
                     await Coroutine.Sleep(200);
-                    // Log($"Wait Window");
+                    Log($"Wait Window");
                     await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
 
                     if (SalvageDialog.IsOpen)
                     {
-                        //  Log($"Open Window");
+                        Log($"Open Window");
                         RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
                         await Coroutine.Sleep(500);
                         //await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
                     }
 
-                    // Log($"Wait byte 1");
+                    Log($"Wait byte 1 {Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock)}");
                     await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
-                    // Log($"Wait byte 0");
+                    Log($"Wait byte 0 {Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock)}");
                     await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
                     //await Coroutine.Sleep(100);
 
