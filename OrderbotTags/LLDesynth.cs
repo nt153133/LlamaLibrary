@@ -61,9 +61,8 @@ namespace LlamaLibrary.OrderbotTags
 
                 lock (Core.Memory.Executor.AssemblyLock)
                 {
-                    Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14);
+                    Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14,0);
                 }
-
                 // await Coroutine.Sleep(500);
 
 
