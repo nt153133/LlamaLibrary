@@ -11100,5 +11100,44 @@
     "RequiredGathering": 1528,
     "NameRaw": "Ethereal Cocoon",
     "ItemId": 27761
+  },
+  {
+    "Id": 861,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1528,
+    "NameRaw": "Beryllium Ore",
+    "ItemId": 28717
+  },
+  {
+    "Id": 862,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1528,
+    "NameRaw": "Sandalwood Sap",
+    "ItemId": 28716
+  },
+  {
+    "Id": 863,
+    "ClassJobCategory": 19,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1222,
+    "NameRaw": "Sweetmeat Mussel",
+    "ItemId": 28719
   }
 ]
