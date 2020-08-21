@@ -258,7 +258,7 @@ namespace LlamaLibrary.Retainers
 
         public async Task<bool> RetainerCheck(RetainerInfo retainer)
         {
-            if (RetainerSettings.Instance.ReassignVentures && retainer.Job != ClassJobType.Adventurer)
+            if (RetainerSettings.Instance.ReassignVentures && retainer.Active && retainer.Job != ClassJobType.Adventurer)
             {
                 if (retainer.VentureTask != 0)
                 {

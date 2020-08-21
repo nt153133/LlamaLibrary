@@ -63,6 +63,7 @@
     <Compile Include="Enums\GCNpc.cs" />
     <Compile Include="Enums\MiniGameResult.cs" />
     <Compile Include="Enums\MyItemRole.cs" />
+    <Compile Include="Enums\RetainerCity.cs" />
     <Compile Include="Enums\RetainerRole.cs" />
     <Compile Include="Enums\VentureStatus.cs" />
     <Compile Include="Extensions\BagExtensions.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using ff14bot.Enums;
+using LlamaLibrary.PersonalTester;
 
 namespace LlamaLibrary.Structs
 {
@@ -24,7 +25,7 @@ namespace LlamaLibrary.Structs
 
         public int Gil;
 
-        public byte MarketZone;
+        public RetainerCity MarketZone;
         
         public byte NumberOfMbItems;
         
@@ -32,7 +33,7 @@ namespace LlamaLibrary.Structs
         
         private byte Unknown2;
         
-        public int MBUpdateTimestamp;
+        public int MBTimeOutTimestamp;
         
         public int VentureTask;
         

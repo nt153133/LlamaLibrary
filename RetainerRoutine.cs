@@ -153,6 +153,50 @@ namespace LlamaLibrary
 
             return true;
         }
+        
+        internal async static Task<bool> ReadRetainers(Func<RetainerInfo, int, Task> retainerTask)
+        {
+            if (!RetainerList.Instance.IsOpen)
+            {
+                await UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't find open bell either you have none or not near a bell");
+                return false;
+            }
+
+            var count = await HelperFunctions.GetNumberOfRetainers();
+            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
+            var numRetainers = ordered.Length;
+
+            if (numRetainers <= 0)
+            {
+                LogCritical("Can't find number of retainers either you have none or not near a bell");
+                RetainerList.Instance.Close();
+                TreeRoot.Stop("Failed: Find a bell or some retainers");
+                return true;
+            }
+
+            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
+            {
+                Log($"Selecting {ordered[retainerIndex]}");
+                await SelectRetainer(retainerIndex);
+
+                await retainerTask(ordered[retainerIndex],retainerIndex);
+
+                await DeSelectRetainer();
+                Log($"Done with {ordered[retainerIndex]}");
+            }
+
+            RetainerList.Instance.Close();
+
+            return true;
+        }
 
         internal async static Task<bool> ReadRetainers(Func<RetainerInfo, Task> retainerTask)
         {
