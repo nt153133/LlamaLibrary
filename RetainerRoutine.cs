@@ -197,6 +197,64 @@ namespace LlamaLibrary
 
             return true;
         }
+        
+        internal async static Task<List<CompleteRetainer>> ReadRetainers(Func<RetainerInfo, int, Task<CompleteRetainer> > retainerTask)
+        {
+            List<CompleteRetainer> Retainers = new List<CompleteRetainer>();
+            if (!RetainerList.Instance.IsOpen)
+            {
+                await HelperFunctions.UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't find open bell either you have none or not near a bell");
+                return Retainers;
+            }
+
+            var count = await HelperFunctions.GetNumberOfRetainers();
+            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
+            var numRetainers = ordered.Length;
+
+            if (numRetainers <= 0)
+            {
+                LogCritical("Can't find number of retainers either you have none or not near a bell");
+                RetainerList.Instance.Close();
+                TreeRoot.Stop("Failed: Find a bell or some retainers");
+                return Retainers;
+            }
+
+            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
+            {
+                Log($"Selecting {ordered[retainerIndex]}");
+                await RetainerRoutine.SelectRetainer(retainerIndex);
+
+                Retainers.Add(await retainerTask(ordered[retainerIndex],retainerIndex));
+
+                await RetainerRoutine.DeSelectRetainer();
+                Log($"Done with {ordered[retainerIndex]}");
+            }
+
+            RetainerList.Instance.Close();
+
+            return Retainers;
+        }
+        
+        
+        public static async Task<CompleteRetainer> RetainerCheck(RetainerInfo retainer, int Index)
+        {
+            Log($"Selected Retainer ({Index}): {retainer.Name}");
+
+            var ItemsForSale = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Retainer_Market).FilledSlots.ToList();
+            var Inventory = InventoryManager.GetBagsByInventoryBagId(HelperFunctions.RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).ToList();
+            
+            var completeRetainer = new CompleteRetainer(retainer, Index, ItemsForSale, Inventory);
+            
+            return completeRetainer;
+        }
 
         internal async static Task<bool> ReadRetainers(Func<RetainerInfo, Task> retainerTask)
         {
