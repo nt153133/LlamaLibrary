@@ -63,13 +63,13 @@ namespace LlamaLibrary
 
         public static async Task<bool> Handin()
         {
-            if (Translator.Language == Language.Chn)
-                await HandinOld();
-            else
-            {
+           // if (Translator.Language == Language.Chn)
+           //     await HandinOld();
+          //  else
+          //  {
                 await HandinNew();
                 await GatheringHandin();
-            }
+          //  }
             return true;
         }
 
