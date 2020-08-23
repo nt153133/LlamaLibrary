@@ -246,7 +246,7 @@ namespace LlamaLibrary
         public static async Task<CompleteRetainer> RetainerCheck(RetainerInfo retainer, int Index)
         {
             //Log($"Selected Retainer ({Index}): {retainer.Name}");
-            if (SelectString.IsOpen)
+            /*if (SelectString.IsOpen)
             {
                 SelectString.ClickLineContains(Translator.SellInventory);
                 await Coroutine.Wait(9000, () =>RaptureAtkUnitManager.GetWindowByName("RetainerSellList") != null);
@@ -254,7 +254,7 @@ namespace LlamaLibrary
                 RaptureAtkUnitManager.GetWindowByName("RetainerSellList").SendAction(1, 3uL, 4294967295uL);
                 await Coroutine.Wait(9000, () =>SelectString.IsOpen);
                 
-            }
+            }*/
 
             var ItemsForSale = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Retainer_Market).FilledSlots.ToList();
 

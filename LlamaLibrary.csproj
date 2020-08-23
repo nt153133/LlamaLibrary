@@ -200,6 +200,7 @@
     <Compile Include="RetainerRoutine.cs" />
     <Compile Include="Retainers\CompleteRetainer.cs" />
     <Compile Include="Retainers\HelperFunctions.cs" />
+    <Compile Include="Retainers\RetainerInventoryItem.cs" />
     <Compile Include="Retainers\RetainerInventory.cs" />
     <Compile Include="Retainers\Retainers.cs" />
     <Compile Include="Retainers\RetainerSettings.cs" />
