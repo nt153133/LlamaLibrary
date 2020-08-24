@@ -16,6 +16,10 @@ namespace LlamaLibrary.RemoteWindows
             internal static IntPtr KupoFunction;
         }
 
+        public override void Close()
+        {
+            SendAction(1,3,2);
+        }
 
         public HWDLottery() : base(WindowName)
         {
