@@ -107,6 +107,7 @@ namespace LlamaLibrary.Materia
             {
                 affixCb.DisplayMember = "Name";
                 affixCb.DataSource = bindingSourceAffix;
+                SetComboBoxes(_selectedBagSlotAffix);
             }
 
             //materiaListBox.DataSource = MateriaBase.Materia(_selectedBagSlot);
@@ -115,6 +116,10 @@ namespace LlamaLibrary.Materia
 
         private void affixCb_SelectedIndexChanged(object sender, EventArgs e)
         {
+            _selectedBagSlotAffix = (BagSlot)affixCb.SelectedItem;
+            // affixLb.DataSource = MateriaBase.Materia(_selectedBagSlotAffix);
+            // affixLb.DisplayMember = "ItemName";
+            SetComboBoxes(_selectedBagSlotAffix);
         }
 
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
@@ -153,6 +158,7 @@ namespace LlamaLibrary.Materia
                 {
                     affixCb.DisplayMember = "Name";
                     affixCb.DataSource = bindingSourceAffix;
+                    SetComboBoxes(_selectedBagSlotAffix);
                 }
             }
             //MessageBox.Show("You are in the TabControl.SelectedIndexChanged event.");
@@ -163,24 +169,24 @@ namespace LlamaLibrary.Materia
             var list = MateriaBase.Materia(slot);
             //var inventoryMateria =
             bindingSourceInventoryMateria.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia);
-            // var materia = InventoryManager.FilledSlots.Where(i=> i.Item.EquipmentCatagory == ItemUiCategory.Materia).ToList();
-
+            var materia = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+            materia.Add(new MateriaToAffix(null));
             switch (list.Count)
             {
                 case 0:
-                    MateriaCb1.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList(); ;
+                    MateriaCb1.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList(); ;
                     MateriaCb1.Enabled = true;
                     MateriaCb1.DisplayMember = "Display";
-                    MateriaCb2.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb2.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb2.Enabled = true;
                     MateriaCb2.DisplayMember = "Display";
-                    MateriaCb3.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb3.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb3.Enabled = true;
                     MateriaCb3.DisplayMember = "Display";
-                    MateriaCb4.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb4.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb4.Enabled = true;
                     MateriaCb4.DisplayMember = "Display";
-                    MateriaCb5.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb5.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb5.Enabled = true;
                     MateriaCb5.DisplayMember = "Display";
                     break;
@@ -191,13 +197,13 @@ namespace LlamaLibrary.Materia
                     MateriaCb1.DisplayMember = "ItemName";
                     MateriaCb1.Refresh();
                     MateriaCb1.Enabled = false;
-                    MateriaCb2.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb2.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb2.DisplayMember = "Display";
-                    MateriaCb3.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb3.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb3.DisplayMember = "Display";
-                    MateriaCb4.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb4.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb4.DisplayMember = "Display";
-                    MateriaCb5.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb5.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb5.DisplayMember = "Display";
                     MateriaCb2.Enabled = true;
                     MateriaCb3.Enabled = true;
@@ -216,11 +222,11 @@ namespace LlamaLibrary.Materia
                     MateriaCb2.SelectedIndex = 1;
                     MateriaCb2.DisplayMember = "ItemName";
                     MateriaCb2.Enabled = false;
-                    MateriaCb3.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb3.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb3.DisplayMember = "Display";
-                    MateriaCb4.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb4.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb4.DisplayMember = "Display";
-                    MateriaCb5.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb5.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb5.DisplayMember = "Display";
                     MateriaCb3.Enabled = true;
                     MateriaCb4.Enabled = true;
@@ -244,9 +250,9 @@ namespace LlamaLibrary.Materia
                     MateriaCb3.SelectedIndex = 2;
                     MateriaCb3.DisplayMember = "ItemName";
                     MateriaCb3.Enabled = false;
-                    MateriaCb4.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb4.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb4.DisplayMember = "Display";
-                    MateriaCb5.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb5.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb5.DisplayMember = "Display";
                     MateriaCb4.Enabled = true;
                     MateriaCb5.Enabled = true;
@@ -274,7 +280,7 @@ namespace LlamaLibrary.Materia
                     MateriaCb4.DataSource = list.ToArray();
                     MateriaCb4.SelectedIndex = 3;
                     MateriaCb4.DisplayMember = "ItemName";
-                    MateriaCb5.DataSource = InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
+                    MateriaCb5.DataSource = materia.ToList();//InventoryManager.FilledSlots.Where(i => i.Item.EquipmentCatagory == ItemUiCategory.Materia).Select(r => new MateriaToAffix(r)).ToList();
                     MateriaCb5.DisplayMember = "Display";
                     MateriaCb5.Enabled = true;
                     break;
@@ -348,12 +354,20 @@ namespace LlamaLibrary.Materia
         public BagSlot BagSlot;
         public MateriaItem MateriaItem;
 
-        public string Display => $"{BagSlot.Item.CurrentLocaleName} +{MateriaItem.Value} {MateriaItem.Stat}";
+        public string Display => BagSlot == null ? "Stop" : $"{BagSlot.Item.CurrentLocaleName} +{MateriaItem.Value} {MateriaItem.Stat}";
 
         public MateriaToAffix(BagSlot slot)
         {
+            if (slot == null)
+            {
+                BagSlot = null;
+                return;
+            }
+
             BagSlot = slot;
             MateriaItem = MateriaBase.MateriaList.SelectMany(i => i.Value).FirstOrDefault(r => r.Key == slot.RawItemId);
+
+
         }
     }
 }

@@ -139,7 +139,7 @@ namespace LlamaLibrary.Materia
                 for (int i = 0; i < materiaList.Count; i++)
                 {
                     if (materiaList[i] == null)
-                        continue;
+                        break;
 
                     Log($"Want to affix materia {i} {materiaList[i]}");
 
