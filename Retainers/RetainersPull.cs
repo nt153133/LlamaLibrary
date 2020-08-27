@@ -162,8 +162,9 @@ namespace LlamaLibrary.Retainers
                 if (CraftingLog.IsOpen)
                 {
                     Log($"Closing Crafting Window");
-                    CraftingLog.Close();
+                    await Lisbeth.ExitCrafting();
                     await Coroutine.Wait(6000, () => !CraftingLog.IsOpen);
+                    await Coroutine.Wait(6000, () => !CraftingManager.IsCrafting && !MovementManager.IsOccupied);
                 }
                 
                 if (DutyManager.InInstance)
@@ -179,7 +180,7 @@ namespace LlamaLibrary.Retainers
                     }
                 }
 
-                if (DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied)
+                if (DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied || CraftingManager.IsCrafting)
                 {
                     Log("Something went wrong");
                     return;

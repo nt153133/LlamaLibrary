@@ -20,6 +20,7 @@ namespace LlamaLibrary.Helpers
         private static Action<string, Func<Task>> _addHook;
         private static Action<string> _removeHook;
         private static Func<List<string>> _getHookList;
+        private static Func<Task<bool>> _exitCrafting;
 
         static Lisbeth()
         {
@@ -52,7 +53,7 @@ namespace LlamaLibrary.Helpers
                         _addHook = (Action<string, Func<Task>>) Delegate.CreateDelegate(typeof(Action<string, Func<Task>>), apiObject, "AddHook");
                         _removeHook = (Action<string>) Delegate.CreateDelegate(typeof(Action<string>), apiObject, "RemoveHook");
                         _getHookList = (Func<List<string>>) Delegate.CreateDelegate(typeof(Func<List<string>>), apiObject, "GetHookList");
-
+                        _exitCrafting = (Func<Task<bool>>) Delegate.CreateDelegate(typeof(Func<Task<bool>>), apiObject, "ExitCrafting");
                         _equipOptimalGear = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "EquipOptimalGear");
                         _extractMateria = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "ExtractMateria");
                         _selfRepair = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepair");
@@ -126,6 +127,11 @@ namespace LlamaLibrary.Helpers
         public static List<string> GetHookList()
         {
             return _getHookList?.Invoke();
+        }
+        
+        public static Task<bool> ExitCrafting()
+        {
+            return _exitCrafting?.Invoke();
         }
 
         public static async Task EquipOptimalGear()
