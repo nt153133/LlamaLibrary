@@ -147,6 +147,8 @@ namespace LlamaLibrary
 
         public override bool WantButton { get; } = true;
 
+        public Dictionary<string, List<Composite>> hooks;
+
 
         public override void OnButtonPress()
         {
@@ -179,6 +181,11 @@ namespace LlamaLibrary
 
         public override void Start()
         {
+            //hooks = TreeHooks.Instance.Hooks;
+           // TreeHooks.Instance.ClearAll();
+            
+            
+            
             _root = new ActionRunCoroutine(r => Run());
         }
 
@@ -191,13 +198,27 @@ namespace LlamaLibrary
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
+
+            if (Request.IsOpen)
+            {
+                Log($"ItemList Start: {RequestHelper.ItemListStart.ToString("X")} ");
+                Log($"List open, ItemCount: {RequestHelper.ItemCount} ItemCount2: {RequestHelper.ItemCount2}");
+
+                var list = RequestHelper.GetItems();
+
+                foreach (var item in list)
+                {
+                    Log(item.DynamicString());
+                }
+            }
+            
             //await BuyHouse();
             //TreeRoot.Stop("Stop Requested");
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
 
-
+            
             //DutyManager.AvailableContent
             // RoutineManager.Current.PullBehavior.Start();
 
@@ -244,7 +265,7 @@ namespace LlamaLibrary
 
             //var composite_0 = BrainBehavior.CreateBrain();
 
-
+            //DumpLuaFunctions();
             /*
             if (mob.Distance() > (RoutineManager.Current.PullRange - 1))
             {
@@ -396,6 +417,8 @@ namespace LlamaLibrary
                     outputFile.Write(JsonConvert.SerializeObject(newHunts));
                 }
             }
+            
+            
 
             using (var outputFile = new StreamWriter($"hunts1.json", false))
             {
@@ -425,39 +448,57 @@ namespace LlamaLibrary
             var list = Core.Memory.ReadArray<SpecialShopItemLL>(array[0], (int)num);
 
             foreach (var item in list)
-            {
+            {try t
                 Log(item.ToString());
             }*/
 
+           // Log(AgentWorldTravelSelect.Instance.CurrentWorld.ToString());
 
 
+           //Lisbeth.AddHook("Llama",LlamaLibrary.Retainers.RetainersPull.CheckVentureTask);
+  
             //Log($"{Achievements.HasAchievement(2199)}");
             // Log($"{BlueMageSpellBook.SpellLocation.ToString("X")}");
 
             //await Lisbeth.SelfRepair();
+            /*Lisbeth.AddHook("Llama",TestHook);
+            await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
+            Lisbeth.RemoveHook("Llama");
 
-            //await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
-            //Lisbeth.RemoveHook("Llama");
-
+            var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
+            var failed = new Dictionary<int, StoredHuntLocationLisbeth>();
+            var start = 0; 
+            foreach (var hunt in newHunts.Where(i=> i.Key >= start))
+            {
+                if (!await Lisbeth.TravelTo(hunt.Value.Area, hunt.Value.Location));
+                {
+                    failed.Add(hunt.Key, hunt.Value);
+                    using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+                    {
+                        outputFile.Write(JsonConvert.SerializeObject(failed));
+                    }
+                }
+                Log($"Finished {start}");
+                start++;
+            }
+            using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(failed));
+            }*/
 
             //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
-
+            
             // Log($"\n {sb}");
-            if (CollectablesShop.Instance.IsOpen)
-            {
-                foreach (var item in CollectablesShop.Instance.ListItems())
-                {
-                    Log(item);
-                }
-
-            }
-
+            //DumpLLOffsets();
+            //DumpOffsets();
+            //await testKupoTickets();
             TreeRoot.Stop("Stop Requested");
             //Core.Me.Stats
             //await BuyHouse();
-
+            //AtkAddonControl windowByName = RaptureAtkUnitManager.Update()
             // await Coroutine.Sleep(100);
-
+            
+            //Log(Core.Me.IsFate);
 
             return false;
 
@@ -491,12 +532,18 @@ namespace LlamaLibrary
             // await Coroutine.Sleep(100);
         }
 
+        private void LogPtr(IntPtr pointer)
+        {
+            Log(pointer.ToString("X"));
+        }
+
         private async Task TestHook()
         {
             Log("LL hook");
             //await Navigation.GetToMap399();
         }
 
+        
         /*
         private void DumpLLOffsets()
         {
@@ -543,21 +590,9 @@ namespace LlamaLibrary
             }
         }
         */
+        
 
-        private void GetClassType()
-        {
-            bool IsClassJobBattle = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobBattle();", Core.Player.LuaString)) > 0;
-            bool IsClassJobCrafter = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobCrafter();", Core.Player.LuaString)) > 0;
-            bool IsClassJobFighter = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobFighter();", Core.Player.LuaString)) > 0;
-            bool IsClassJobGatherer = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobGatherer();", Core.Player.LuaString)) > 0;
-            bool IsClassJobSorcerer = Lua.GetReturnVal<int>(string.Format("return _G['{0}']:IsClassJobSorcerer();", Core.Player.LuaString)) > 0;
-
-            Log(string.Format("Battle: {0}", IsClassJobBattle));
-            Log(string.Format("Crafter: {0}", IsClassJobCrafter));
-            Log(string.Format("Fighter: {0}", IsClassJobFighter));
-            Log(string.Format("Gather: {0}", IsClassJobGatherer));
-            Log(string.Format("Sorcerer: {0}", IsClassJobSorcerer));
-        }
+       
 
         private async Task BuyHouse()
         {

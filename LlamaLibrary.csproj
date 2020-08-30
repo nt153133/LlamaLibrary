@@ -86,6 +86,7 @@
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
+    <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\RowenaHelper.cs" />
     <Compile Include="Helpers\Timers.cs" />
     <Compile Include="Helpers\TimersSettings.cs" />
@@ -221,6 +222,7 @@
     <Compile Include="Structs\HousingPlot.cs" />
     <Compile Include="Structs\ItemStored.cs" />
     <Compile Include="Structs\LisbethOrder.cs" />
+    <Compile Include="Structs\RequestItem.cs" />
     <Compile Include="Structs\RetainerInfo.cs" />
     <Compile Include="Structs\RowenaItem.cs" />
     <Compile Include="TesterBase.cs" />
