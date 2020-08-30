@@ -15,6 +15,14 @@ namespace LlamaLibrary.Structs
         [FieldOffset(0x8)]
         public readonly uint IconID;
         
+        [FieldOffset(0x7A)]
+        [MarshalAs (UnmanagedType.ByValArray, SizeConst=5)]
+        public readonly ushort[] MateriaRow;
+
+        [FieldOffset(0x84)]
+        [MarshalAs (UnmanagedType.ByValArray, SizeConst=5)]
+        public readonly byte[] MateriaColumn;
+        
         [FieldOffset(0x78)]
         public readonly byte _HQ;
         
