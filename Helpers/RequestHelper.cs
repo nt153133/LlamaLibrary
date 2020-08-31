@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using ff14bot;
+using ff14bot.Managers;
+using ff14bot.RemoteWindows;
 using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.Structs;
 
@@ -28,6 +32,41 @@ namespace LlamaLibrary.Helpers
         public static RequestItem[] GetItems()
         {
             return Core.Memory.ReadArray<RequestItem>(ItemListStart, ItemCount);
+        }
+
+        public static bool HaveTurninItems()
+        {
+            if (!Request.IsOpen) return false;
+            bool haveAll = true;
+            foreach (var item in GetItems())
+            {
+                var items = InventoryManager.FilledSlots.Where(i => i.RawItemId == item.ItemId && i.Count >= item.Count);
+                if (item.HQ)
+                    haveAll = haveAll && items.Any(i => i.IsHighQuality);
+                else
+                {
+                    haveAll = haveAll && items.Any();
+                }
+            }
+            return haveAll;
+        }
+
+        public static bool HandOver()
+        {
+            if (!Request.IsOpen || !HaveTurninItems()) return false;
+            
+            foreach (var item in GetItems())
+            {
+                var items = InventoryManager.FilledSlots.Where(i => i.RawItemId == item.ItemId && i.Count >= item.Count);
+                if (item.HQ)
+                    items.First(i => i.IsHighQuality).Handover();
+                else
+                {
+                    items.First().Handover();
+                }
+            }
+
+            return Request.HandOverButtonClickable;
         }
     }
 }
