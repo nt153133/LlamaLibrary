@@ -200,7 +200,6 @@ namespace LlamaLibrary
 
             if (Request.IsOpen)
             {
-                Log($"ItemList Start: {RequestHelper.ItemListStart.ToString("X")} ");
                 Log($"List open, ItemCount: {RequestHelper.ItemCount} ItemCount2: {RequestHelper.ItemCount2}");
 
                 var list = RequestHelper.GetItems();
@@ -209,7 +208,11 @@ namespace LlamaLibrary
                 {
                     Log(item.DynamicString());
                 }
+                
+                Log($"HandOver: {RequestHelper.HandOver()}");
             }
+
+            
             
             //await BuyHouse();
             //TreeRoot.Stop("Stop Requested");
