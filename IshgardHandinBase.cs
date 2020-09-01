@@ -688,13 +688,13 @@ namespace LlamaLibrary
             return true;
         }
 
-        public static async Task<bool> BuyItem(uint ItemId)
+        public static async Task<bool> BuyItem(uint ItemId, int SelectStringLine = 0)
         {
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             Navigator.PlayerMover = new SlideMover();
             var ishgardHandin = new IshgardHandin();
 
-            await ishgardHandin.BuyItem(ItemId);
+            await ishgardHandin.BuyItem(ItemId,SelectStringLine);
 
             return true;
         }

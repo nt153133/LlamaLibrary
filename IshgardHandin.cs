@@ -1,5 +1,6 @@
 ﻿using System.CodeDom;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -120,8 +121,16 @@ namespace LlamaLibrary
                 Log("Clicking");
                 await HWDLottery.Instance.ClickSpot(slot);
                 await Coroutine.Sleep(1000);
+                Log("Closeing");
                 HWDLottery.Instance.Close();
-                Log("Close");
+                await Coroutine.Wait(2000, () => !HWDLottery.Instance.IsOpen);
+                if (HWDLottery.Instance.IsOpen)
+                {
+                    Log("Closeing Again");
+                    HWDLottery.Instance.Close();
+                }
+
+                
                 
                 await Coroutine.Wait(5000, () => SelectYesno.IsOpen || Talk.DialogOpen);
                 Log($"Select Yes/No {SelectYesno.IsOpen} Talk {Talk.DialogOpen}");
@@ -240,7 +249,7 @@ namespace LlamaLibrary
             return false;
         }
 
-        public async Task<bool> BuyItem(uint itemId)
+        public async Task<bool> BuyItem(uint itemId, int SelectStringLine = 0)
         {
             
             if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
@@ -255,7 +264,12 @@ namespace LlamaLibrary
             if (!ShopExchangeCurrency.Open)
             {
                 VendorNpc.Interact();
-                await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open || Talk.DialogOpen);
+                await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open || Talk.DialogOpen || Conversation.IsOpen);
+                if (Conversation.IsOpen)
+                {
+                    Conversation.SelectLine((uint) SelectStringLine);
+                    await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open);
+                }
             }
 
             if (ShopExchangeCurrency.Open)

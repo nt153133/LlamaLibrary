@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.XmlEngine;
 using ff14bot.NeoProfiles;
@@ -12,6 +13,10 @@ namespace LlamaLibrary.OrderbotTags
         private bool _isDone;
 
         [XmlAttribute("ItemId")] public int ItemId { get; set; }
+        
+        [XmlAttribute("SelectString")] 
+        [DefaultValue(0)]
+        public int SelectStringLine { get; set; }
 
         public override bool HighPriority => true;
 
@@ -38,7 +43,7 @@ namespace LlamaLibrary.OrderbotTags
         private async Task BuyWhiteScrip(int itemId)
         {
             await Coroutine.Sleep(500);
-            await IshgardHandinBase.BuyItem((uint) itemId);
+            await IshgardHandinBase.BuyItem((uint) itemId,SelectStringLine);
 
             _isDone = true;
         }
