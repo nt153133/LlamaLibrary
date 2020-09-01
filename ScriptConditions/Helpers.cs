@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
+using ff14bot.Directors;
 using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Objects;
@@ -68,6 +69,16 @@ namespace LlamaLibrary.ScriptConditions
         public static int AverageItemLevel()
         {
             return InventoryManager.EquippedItems.Where(k => k.IsFilled).Sum(i => i.Item.ItemLevel) / InventoryManager.EquippedItems.Count(k => k.IsFilled);
+        }
+
+        public static int GetInstanceTodo(int objective)
+        {
+            if (DirectorManager.ActiveDirector is InstanceContentDirector activeAsInstance)
+            {
+                return activeAsInstance.GetTodoArgs(objective).Item1;
+            }
+
+            return -1;
         }
 
         public static async Task<bool> UpdateGearSet()
