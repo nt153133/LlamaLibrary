@@ -67,6 +67,12 @@ namespace MasterPieceSupplyTest
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
             var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+            
+            /*
+            foreach (var item in items)
+            {
+                Logging.Write(item.ItemID);
+            }*/
 
             if (!items.Any(i => i.CanHandin))
             {
@@ -242,6 +248,8 @@ namespace MasterPieceSupplyTest
                 Logging.Write($"Nope failed");
                 return "";
             }
+
+
 
             List<LisbethOrder> outList = new List<LisbethOrder>();
             int id = 0;

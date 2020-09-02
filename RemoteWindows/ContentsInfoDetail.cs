@@ -18,12 +18,12 @@ namespace LlamaLibrary.RemoteWindows
         
         public int GetNumberOfCraftingTurnins()
         {
-            return IsOpen ? ___Elements()[55].TrimmedData : 0;
+            return IsOpen ? ___Elements()[51].TrimmedData : 0;
         }
         
         public int GetNumberOfGatheringTurnins()
         {
-            return IsOpen ? ___Elements()[56].TrimmedData : 0;
+            return IsOpen ? ___Elements()[52].TrimmedData : 0;
         }
         
         public List<Item> GetCraftingTurninItemsIds()
@@ -48,9 +48,9 @@ namespace LlamaLibrary.RemoteWindows
         {
             var result = new Dictionary<Item, KeyValuePair<int,string>>();
             var currentElements = ___Elements();
-            var itemElements = new ArraySegment<TwoInt>(currentElements, 209, GetNumberOfCraftingTurnins()).ToArray();
-            var jobElements = new ArraySegment<TwoInt>(currentElements, 217, GetNumberOfCraftingTurnins()).ToArray();
-            var qtyElements = new ArraySegment<TwoInt>(currentElements, 225, GetNumberOfCraftingTurnins()).ToArray();
+            var itemElements = new ArraySegment<TwoInt>(currentElements, 205, GetNumberOfCraftingTurnins()).ToArray();
+            var jobElements = new ArraySegment<TwoInt>(currentElements, 213, GetNumberOfCraftingTurnins()).ToArray();
+            var qtyElements = new ArraySegment<TwoInt>(currentElements, 221, GetNumberOfCraftingTurnins()).ToArray();
             
             for (var i = 0; i < GetNumberOfCraftingTurnins(); i++)
             {
@@ -64,9 +64,9 @@ namespace LlamaLibrary.RemoteWindows
         {
             var result = new Dictionary<Item, KeyValuePair<int,string>>();
             var currentElements = ___Elements();
-            var itemElements = new ArraySegment<TwoInt>(currentElements, 268, GetNumberOfGatheringTurnins()).ToArray();
-            var jobElements = new ArraySegment<TwoInt>(currentElements, 271, GetNumberOfGatheringTurnins()).ToArray();
-            var qtyElements = new ArraySegment<TwoInt>(currentElements, 274, GetNumberOfGatheringTurnins()).ToArray();
+            var itemElements = new ArraySegment<TwoInt>(currentElements, 264, GetNumberOfGatheringTurnins()).ToArray();
+            var jobElements = new ArraySegment<TwoInt>(currentElements, 267, GetNumberOfGatheringTurnins()).ToArray();
+            var qtyElements = new ArraySegment<TwoInt>(currentElements, 270, GetNumberOfGatheringTurnins()).ToArray();
             
             for (var i = 0; i < GetNumberOfGatheringTurnins(); i++)
             {
