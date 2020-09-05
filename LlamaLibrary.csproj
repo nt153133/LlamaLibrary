@@ -115,6 +115,7 @@
     <Compile Include="OrderbotTags\BuyShopExchangeItem.cs" />
     <Compile Include="OrderbotTags\BuyWhiteScriptItem.cs" />
     <Compile Include="OrderbotTags\ChangeClass.cs" />
+    <Compile Include="OrderbotTags\Fate.cs" />
     <Compile Include="OrderbotTags\GetTo.cs" />
     <Compile Include="OrderbotTags\LisbethOrderBot.cs" />
     <Compile Include="OrderbotTags\LLDesynth.cs" />
