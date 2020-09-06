@@ -27,7 +27,7 @@ using Action = TreeSharp.Action;
 namespace ff14bot.NeoProfiles
 {
     [XmlElement("LLFate")]
-    public class FateTag : ProfileBehavior
+    public class LLFate : ProfileBehavior
     {
         private bool _done;
         private int _min, _max, _timeout;
@@ -630,7 +630,7 @@ namespace ff14bot.NeoProfiles
             if (!unit.CanAttack)
                 return false;
 
-            if (Vector3.Distance(unit.Location, FateTag.Position) > 50)
+            if (Vector3.Distance(unit.Location, LLFate.Position) > 50)
                 return false;
 
             return !incombat;
