@@ -20,6 +20,9 @@ namespace LlamaLibrary.Structs
         [FieldOffset(0x1b)]
         public byte leftToHandIn;
         
+        [FieldOffset(0x1C)]
+        public byte JobClass;
+        
         [FieldOffset(0x18)]
         private byte starred;
 
