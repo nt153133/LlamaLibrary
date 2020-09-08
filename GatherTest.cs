@@ -33,7 +33,9 @@ namespace LlamaLibrary
     {
         
        // public static InstanceContentDirector Director => DirectorManager.ActiveDirector as InstanceContentDirector;
-       public TimeSpan TimeLeftInDiadem => TimeSpan.FromSeconds(Core.Memory.Read<float>(DirectorManager.ActiveDirector.Pointer + 0x640));
+       public int TimerOffset;
+
+       public TimeSpan TimeLeftInDiadem => TimeSpan.FromSeconds(Core.Memory.Read<float>(DirectorManager.ActiveDirector.Pointer + TimerOffset)); //640
         //Wind new Vector3(greenf), BTN
         private static readonly Vector3[] umbralTempest =
         {
@@ -79,8 +81,8 @@ namespace LlamaLibrary
         
         private static readonly Vector3[] afkSpots =
         {
-
-            new Vector3(-169.0124f, -1.308149f, -310.2521f),
+//-182.1712, 0.8445628, -298.0846
+            new Vector3(-182.1712f, 0.8445628f, -298.0846f),
             
             new Vector3(214.7894f, -144.3608f, -267.1053f),
             
@@ -104,7 +106,7 @@ namespace LlamaLibrary
 
         private static Vector3 standBy = new Vector3(-164.3966f, -1.072426f, -302.2528f);
         
-        private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232};
+        private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232,33584, 33585, 33586, 33587};
 
         private static int lastWeather = 0;
 
@@ -114,6 +116,14 @@ namespace LlamaLibrary
 
         public GatherTest()
         {
+            if (Translator.Language == Language.Chn)
+            {
+                TimerOffset = 0x640;
+            }
+            else
+            {
+                TimerOffset = 0x650;
+            }
         }
 
         public override string Name => "DiademGather";
@@ -226,7 +236,20 @@ namespace LlamaLibrary
            
         }
         
-        
+        public async Task UseCordial()
+        {
+            if (Core.Me.CurrentGP < 500)
+            {
+                await Coroutine.Sleep(2000);
+                var cordial = InventoryManager.FilledSlots.FirstOrDefault(i => i.RawItemId == 12669);
+
+                if (cordial != default(BagSlot))
+                {
+                    cordial.UseItem();
+                    await Coroutine.Sleep(2000);
+                }
+            }
+        }
 
         public void GetNodes()
         {
@@ -290,6 +313,8 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(2000);
                 }
                 
+                //await UseCordial();
+                
                 node = WeatherNodeList.FirstOrDefault();
                 node.Interact();
                 
@@ -301,7 +326,10 @@ namespace LlamaLibrary
                     await testMine();
                 else if (Core.Me.CurrentJob == ClassJobType.Botanist)
                     await testBtn();
+                
+                //await UseCordial();
                 Log("Done Test Gather");
+                //DutyManager.LeaveActiveDuty();
             }
         }
 
@@ -347,7 +375,7 @@ namespace LlamaLibrary
             //Log("in Test Gather");
             if (GatheringManager.WindowOpen)
             {
-                GatheringItem items = GatheringManager.GatheringWindowItems.FirstOrDefault(i => i.IsFilled && i.CanGather);
+                GatheringItem items = GatheringManager.GatheringWindowItems.Where(i => i.IsFilled && i.CanGather).OrderByDescending(s => s.Stars).FirstOrDefault();
 
                 if (Core.Me.CurrentGP >= 500)
                 {
@@ -388,7 +416,7 @@ namespace LlamaLibrary
             //Log("in Test Gather");
             if (GatheringManager.WindowOpen)
             {
-                GatheringItem items = GatheringManager.GatheringWindowItems.FirstOrDefault(i => i.IsFilled && i.CanGather);
+                GatheringItem items = GatheringManager.GatheringWindowItems.Where(i => i.IsFilled && i.CanGather).OrderByDescending(s => s.Stars).FirstOrDefault();
                 if (Core.Me.CurrentGP >= 500)
                 {
                     await Coroutine.Wait(5000, () => ActionManager.CanCast(224, Core.Me));
