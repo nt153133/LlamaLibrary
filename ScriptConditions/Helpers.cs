@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot.Directors;
@@ -21,9 +22,10 @@ namespace LlamaLibrary.ScriptConditions
             29839
         };
         
-        private static readonly uint[] idList0 = { 29896,29897,29901,29902,29903,29909,29910,29911,29912,29913,29919,29920,29921,29922,29923,29929,29930,29931,29932,29933,29939,29940,29941,29942,29943,29946,29947 };
-        private static readonly uint[] idList1 = { 29894,29895,29898,29899,29900,29904,29905,29906,29907,29908,29914,29915,29916,29917,29918,29924,29925,29926,29927,29928,29934,29935,29936,29937,29938,29944,29945 };
-		private static readonly uint[] idList2 = { 29994,29995,29996,29997,29998,29999,30000,30001,30002,30003,30004,30005,30006,30007,30008,30009,30010,30011,30012,30013 };
+        private static readonly uint[] idList0 = { 29896,29897,29901,29902,29903,29909,29910,29911,29912,29913,29919,29920,29921,29922,29923,29929,29930,29931,29932,29933,29939,29940,29941,29942,29943,29946,29947,31278,31279,31283,31284,31285,31291,31292,31293,31294,31295,31301,31302,31303,31304,31305,31311,31312,31313,31314,31315,31318,31319 };
+        private static readonly uint[] idList1 = { 29894,29895,29898,29899,29900,29904,29905,29906,29907,29908,29914,29915,29916,29917,29918,29924,29925,29926,29927,29928,29934,29935,29936,29937,29938,29944,29945,31276,31277,31280,31281,31282,31286,31287,31288,31289,31290,31296,31297,31298,31299,31300,31306,31307,31308,31309,31310,31316,31317 };
+        private static readonly uint[] idList2 = { 29994,29995,29996,29997,29998,29999,30000,30001,30002,30003,30004,30005,30008,30009,30006,30007,30010,30011,30012,30013,31578,31579,31580,31581,31582,31583,31584,31585,31586,31587,31588,31589,31590,31591,31592,31593,31594,31595,31596,31597,31598,31599,31600,31601,31602 };
+
 
 
         public static int HasIshgardItem()
@@ -80,6 +82,23 @@ namespace LlamaLibrary.ScriptConditions
 
             return -1;
         }
+
+        /*public static int GetLeveTodoArgsItem1(int index)
+        {
+            if (DirectorManager.ActiveDirector == null) return -1;
+            var type = DirectorManager.ActiveDirector.GetType();
+
+            if (type == typeof(ff14bot.Directors.BattleLeveConciliate))
+                return (DirectorManager.ActiveDirector as BattleLeveConciliate).GetTodoArgs(index).Item1;
+            if (type == typeof(ff14bot.Directors.BattleLeveSweep))
+                return (DirectorManager.ActiveDirector as BattleLeveSweep).GetTodoArgs(index).Item1;
+            if (type == typeof(ff14bot.Directors.BattleLeveDetect))
+                return (DirectorManager.ActiveDirector as BattleLeveDetect).GetTodoArgs(index).Item1;
+            if (type == typeof(ff14bot.Directors.BattleLeveGuide))
+                return (DirectorManager.ActiveDirector as BattleLeveGuide).GetTodoArgs(index).Item1;
+            
+            DirectorManager.ActiveDirector.GetTodoArgs(index)
+        }*/
 
         public static async Task<bool> UpdateGearSet()
         {
@@ -161,5 +180,7 @@ namespace LlamaLibrary.ScriptConditions
                                                Task.Delay(timeout)))
                 throw new TimeoutException();
         }
+        
+        
     }
 }
