@@ -329,7 +329,13 @@ namespace LlamaLibrary
                 
                 //await UseCordial();
                 Log("Done Test Gather");
-                //DutyManager.LeaveActiveDuty();
+                /*DutyManager.LeaveActiveDuty();
+                if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
+                {
+                    await Coroutine.Yield();
+                    await Coroutine.Wait(Timeout.Infinite, () => !CommonBehaviors.IsLoading);
+                    await Coroutine.Sleep(10000);
+                }*/
             }
         }
 
