@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
+using ff14bot.Behavior;
 using ff14bot.Directors;
 using ff14bot.Enums;
 using ff14bot.Managers;
@@ -81,6 +82,18 @@ namespace LlamaLibrary.ScriptConditions
             }
 
             return -1;
+        }
+
+        public static bool MsLeftInDungeonGt(long time)
+        {
+            if (DirectorManager.ActiveDirector == null) return false;
+            
+            if (DirectorManager.ActiveDirector is InstanceContentDirector activeAsInstance)
+            {
+                return activeAsInstance.TimeLeftInDungeon.Milliseconds > time;
+            }
+
+            return false;
         }
 
         /*public static int GetLeveTodoArgsItem1(int index)
