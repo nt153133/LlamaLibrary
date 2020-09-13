@@ -50,7 +50,7 @@ namespace LlamaLibrary.ScriptConditions
 		
 		public static bool HasIshgardGatheringFisher()
         {
-            return InventoryManager.FilledSlots.Any(i => idList2.Contains(i.RawItemId) && i.Count > 10);
+            return InventoryManager.FilledSlots.Any(i => idList2.Contains(i.RawItemId) && i.Count > 1);
         }
 
         public static bool LLHasItemNQ(int itemID)

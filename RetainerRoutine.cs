@@ -238,7 +238,7 @@ namespace LlamaLibrary
             }
 
             RetainerList.Instance.Close();
-
+            await Coroutine.Wait(5000, () => !RetainerList.Instance.IsOpen);
             return Retainers;
         }
 
@@ -269,8 +269,36 @@ namespace LlamaLibrary
 
             return completeRetainer;
         }
-        
-        
+
+        internal static async Task<RetainerInfo[]> OpenAndCountRetainers()
+        {
+            if (!RetainerList.Instance.IsOpen)
+            {
+                await UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't find open bell either you have none or not near a bell");
+                return null;
+            }
+
+            var count = await GetNumberOfRetainers();
+            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+
+            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
+            return ordered;
+        }
+
+        internal static async Task CloseRetainers()
+        {
+            if (RetainerList.Instance.IsOpen)
+            {
+                RetainerList.Instance.Close();
+                await Coroutine.Wait(5000, () => !RetainerList.Instance.IsOpen);
+            }
+        }
 
         internal static async Task<bool> ReadRetainers(Func<RetainerInfo, Task> retainerTask)
         {
@@ -457,7 +485,7 @@ namespace LlamaLibrary
             return true;
         }
 
-        private static void Log(string text, params object[] args)
+        public static void Log(string text, params object[] args)
         {
             var msg = string.Format("[" + Name + "] " + text, args);
             Logging.Write(Colors.DodgerBlue, msg);
@@ -469,7 +497,7 @@ namespace LlamaLibrary
             Logging.Write(Colors.Goldenrod, msg);
         }
 
-        private static void LogCritical(string text)
+        public static void LogCritical(string text)
         {
             Logging.Write(Colors.OrangeRed, "[" + Name + "] " + text);
         }
