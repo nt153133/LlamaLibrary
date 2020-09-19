@@ -229,7 +229,7 @@ namespace LlamaLibrary
             if (SelectString.IsOpen)
             {
                 if (Translator.Language == Language.Chn)
-                    SelectString.ClickLineEquals("冒险者住宅区传送");
+                    SelectString.ClickLineContains("冒险者住宅区传送");
                 else
                     SelectString.ClickLineContains("Residential");
             }
