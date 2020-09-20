@@ -55,7 +55,7 @@ namespace LlamaLibrary
         {
         }
 
-        private static short PrimaryKey
+        public static short PrimaryKey
         {
             get
             {
