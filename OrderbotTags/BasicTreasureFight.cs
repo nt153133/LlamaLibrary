@@ -11,6 +11,7 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
+using ff14bot.RemoteWindows;
 using LlamaLibrary.Helpers;
 using TreeSharp;
 using ActionType = ff14bot.Enums.ActionType;
@@ -30,13 +31,17 @@ namespace LlamaLibrary.OrderbotTags
             .FilledSlots.Select(i => i.RawItemId);
 
         //we are done when the item is gone
-        public override bool IsDone => !TreasureMap.MapPrimary.Keys.Any(i => Items.Contains(i));
+        public override bool IsDone => 
+            !TreasureMap.MapPrimary.Keys.Any(i => Items.Contains(i)) &&
+            !GameObjectManager.GameObjects.Any(i => i.Type == GameObjectType.Treasure) &&
+            !GameObjectManager.Attackers.Any();
 
         protected override Composite CreateBehavior()
         {
             return new PrioritySelector(
                 CommonBehaviors.HandleLoading,
-                new ActionRunCoroutine(t => Lisbeth.TravelTo(ZoneId.ToString(), XYZ)),
+                //GetTo
+                new Decorator(c => WorldManager.ZoneId != ZoneId || !Navigator.InPosition(Core.Me.Location, XYZ, 10),new ActionRunCoroutine(t => Lisbeth.TravelTo(ZoneId.ToString(), XYZ))),
                 //We have not dug yet.
                 new Decorator(r => Navigator.InPosition(Core.Me.Location, XYZ, 10) && !GameObjectManager.GameObjects.Any(i => i.Type == GameObjectType.Treasure), 
                         new ActionRunCoroutine(async s =>
@@ -63,7 +68,11 @@ namespace LlamaLibrary.OrderbotTags
 
                         await CommonTasks.StopAndDismount();
                         coffer.Interact();
-                        await Coroutine.Wait(10000, () => GameObjectManager.Attackers.Any() || Core.Me.IsCasting);
+                        await Coroutine.Wait(10000, () => GameObjectManager.Attackers.Any() || Core.Me.IsCasting || SelectYesno.IsOpen);
+                        if (SelectYesno.IsOpen)
+                        {
+                            SelectYesno.ClickYes();
+                        }
                         if (Core.Me.IsCasting && !GameObjectManager.Attackers.Any())
                         {
                             await Coroutine.Wait(10000, () => GameObjectManager.Attackers.Any() || !Core.Me.IsCasting);
