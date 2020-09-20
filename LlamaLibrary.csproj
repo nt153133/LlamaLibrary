@@ -109,6 +109,7 @@
     <Compile Include="Memory\OffsetManager.cs" />
     <Compile Include="Memory\Offsets.cs" />
     <Compile Include="OrderbotTags\AutoEquip.cs" />
+    <Compile Include="OrderbotTags\BasicTreasureFight.cs" />
     <Compile Include="OrderbotTags\BuyBluTotem.cs" />
     <Compile Include="OrderbotTags\BuyScripItem.cs" />
     <Compile Include="OrderbotTags\BuyShopExchangeCurrency.cs" />
