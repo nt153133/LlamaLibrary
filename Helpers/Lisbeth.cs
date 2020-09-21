@@ -21,6 +21,8 @@ namespace LlamaLibrary.Helpers
         private static Action<string> _removeHook;
         private static Func<List<string>> _getHookList;
         private static Func<Task<bool>> _exitCrafting;
+        private static Func<string, Vector3, Task<bool>> _travelToWithArea;
+        private static Func<uint, uint, Vector3, Task<bool>> _travelTo;
 
         static Lisbeth()
         {
@@ -37,7 +39,6 @@ namespace LlamaLibrary.Helpers
             var lisbethObjectProperty = loader.GetType().GetProperty("Lisbeth");
             var lisbeth = lisbethObjectProperty?.GetValue(loader);
             var orderMethod = lisbeth?.GetType().GetMethod("ExecuteOrders");
-            var travelMethod = lisbeth?.GetType().GetMethod("TravelTo");
             var apiObject = lisbeth.GetType().GetProperty("Api")?.GetValue(lisbeth);
             if (lisbeth == null || orderMethod == null) return;
             if (apiObject != null)
@@ -58,6 +59,8 @@ namespace LlamaLibrary.Helpers
                         _extractMateria = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "ExtractMateria");
                         _selfRepair = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepair");
                         _selfRepairWithMenderFallback = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepairWithMenderFallback");
+                        _travelTo = (Func<uint, uint, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<uint, uint, Vector3, Task<bool>>), apiObject, "TravelTo");
+                        _travelToWithArea = (Func<string, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<string, Vector3, Task<bool>>), apiObject, "TravelToWithArea");
                     }
                     catch (Exception e)
                     {
@@ -68,7 +71,7 @@ namespace LlamaLibrary.Helpers
 
             _orderMethod = orderMethod;
             _lisbeth = lisbeth;
-            _travelMethod = travelMethod;
+            //_travelMethod = travelMethod;
 
             Logging.Write("Lisbeth found.");
         }
@@ -99,13 +102,18 @@ namespace LlamaLibrary.Helpers
 
         internal static async Task<bool> TravelTo(string area, Vector3 position)
         {
-            if (_travelMethod != null) return await (Task<bool>) _travelMethod.Invoke(_lisbeth, new object[] {area, position});
+            if (_travelToWithArea != null) return await _travelToWithArea(area, position);
 
             FindLisbeth();
-            if (_travelMethod == null)
+            if (_travelToWithArea == null)
                 return false;
 
-            return await (Task<bool>) _travelMethod.Invoke(_lisbeth, new object[] {area, position});
+            return await _travelToWithArea(area, position);
+        }
+        
+        public static async Task<bool> TravelToZones(uint zoneId, uint subzoneId, Vector3 position)
+        {
+            return await _travelTo(zoneId, subzoneId, position);
         }
         
         public static async Task StopGently()

@@ -46,7 +46,7 @@ namespace LlamaLibrary.OrderbotTags
             return new PrioritySelector(
                 CommonBehaviors.HandleLoading,
                 //GetTo
-                new Decorator(c => WorldManager.ZoneId != ZoneId || !Navigator.InPosition(Core.Me.Location, XYZ, 10),new ActionRunCoroutine(t => Lisbeth.TravelTo(DataManager.ZoneNameResults[(uint) ZoneId].EnglishName, XYZ))),
+                new Decorator(c => WorldManager.ZoneId != ZoneId || !Navigator.InPosition(Core.Me.Location, XYZ, 10),new ActionRunCoroutine(t => Lisbeth.TravelToZones((uint) ZoneId, (uint) SubZoneId,XYZ))),
                 //We have not dug yet.
                 new Decorator(r => Navigator.InPosition(Core.Me.Location, XYZ, 10) && !GameObjectManager.GameObjects.Any(i => i.Type == GameObjectType.Treasure), 
                         new ActionRunCoroutine(async s =>
