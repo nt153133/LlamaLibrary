@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Buddy.Coroutines;
 using Clio.Utilities;
@@ -26,6 +27,10 @@ namespace LlamaLibrary.OrderbotTags
 
         [XmlAttribute("ZoneId")]
         public int ZoneId { get; set; }
+        
+        [XmlAttribute("SubZoneId")]
+        [DefaultValue(0)]
+        public int SubZoneId { get; set; }
 
         private static IEnumerable<uint> Items => InventoryManager.GetBagByInventoryBagId(InventoryBagId.KeyItems)
             .FilledSlots.Select(i => i.RawItemId);
@@ -41,7 +46,7 @@ namespace LlamaLibrary.OrderbotTags
             return new PrioritySelector(
                 CommonBehaviors.HandleLoading,
                 //GetTo
-                new Decorator(c => WorldManager.ZoneId != ZoneId || !Navigator.InPosition(Core.Me.Location, XYZ, 10),new ActionRunCoroutine(t => Lisbeth.TravelTo(ZoneId.ToString(), XYZ))),
+                new Decorator(c => WorldManager.ZoneId != ZoneId || !Navigator.InPosition(Core.Me.Location, XYZ, 10),new ActionRunCoroutine(t => Lisbeth.TravelTo(DataManager.ZoneNameResults[(uint) ZoneId].EnglishName, XYZ))),
                 //We have not dug yet.
                 new Decorator(r => Navigator.InPosition(Core.Me.Location, XYZ, 10) && !GameObjectManager.GameObjects.Any(i => i.Type == GameObjectType.Treasure), 
                         new ActionRunCoroutine(async s =>
