@@ -74,7 +74,6 @@
     <Compile Include="Extensions\LocalPlayerExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
-    <Compile Include="FishingDataBase.cs" />
     <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\Achievements.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
@@ -96,6 +95,7 @@
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
     <Compile Include="GCSupplyBase.cs" />
+    <Compile Include="maps.cs" />
     <Compile Include="Materia\Materia.cs" />
     <Compile Include="Materia\MateriaItem.cs" />
     <Compile Include="Materia\MateriaSettingsFrm.cs">
@@ -122,14 +122,10 @@
     <Compile Include="OrderbotTags\LLDesynth.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
-    <Compile Include="OrderbotTags\LLPickupQuest.cs" />
     <Compile Include="OrderbotTags\LLoadProfile.cs" />
     <Compile Include="OrderbotTags\LLStopBot.cs" />
-    <Compile Include="OrderbotTags\LLTalkTo.cs" />
-    <Compile Include="OrderbotTags\LLEmoteNpc.cs" />
     <Compile Include="OrderbotTags\LLUseSpell.cs" />
     <Compile Include="OrderbotTags\LLSendChat.cs" />
-    <Compile Include="OrderbotTags\ExtendedDuty.cs" />
     <Compile Include="OrderbotTags\LowerCollectable.cs" />
     <Compile Include="OrderbotTags\SetBluSpells.cs" />
     <Compile Include="OutOnALimbBase.cs" />
@@ -246,9 +242,6 @@
     <EmbeddedResource Include="Retainers\RetainersSettingsForm.resx">
       <DependentUpon>RetainersSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AllHunts.json" />
