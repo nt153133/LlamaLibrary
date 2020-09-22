@@ -68,6 +68,11 @@ namespace LlamaLibrary.ScriptConditions
             return (int) SpecialCurrencyManager.GetCurrencyCount((SpecialCurrency) 28063);
         }
 
+        public static bool HasMap()
+        {
+            return ActionHelper.HasMap();
+        }
+
         public static int AverageItemLevel()
         {
             return InventoryManager.EquippedItems.Where(k => k.IsFilled).Sum(i => i.Item.ItemLevel) / InventoryManager.EquippedItems.Count(k => k.IsFilled);

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ff14bot;
+using ff14bot.Enums;
 using ff14bot.Managers;
 using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
@@ -25,7 +28,7 @@ namespace LlamaLibrary.Helpers
 
         public static bool DoActionDecipher(BagSlot slot)
         {
-            if (slot.Item.MyItemRole() != MyItemRole.Map) return false;
+            if ((slot.Item.MyItemRole() != MyItemRole.Map) || HasMap())return false;
             return Core.Memory.CallInjected64<byte>(Offsets.DoAction, new object[6]
             {
                 Offsets.ActionManagerParam, //rcx
@@ -34,8 +37,30 @@ namespace LlamaLibrary.Helpers
                 (long) Core.Player.ObjectId, //r9
                 (int)slot.Item.Id, //a5 +0x28
                 0 //a6 + 0x30
-                //a7 +0x38
             }) == 1;
+        }
+        
+        public static bool HasMap()
+        {
+            uint[] questMaps = new uint[]{2001351,2001705,2001772,200974};
+            return InventoryManager.GetBagByInventoryBagId(InventoryBagId.KeyItems).FilledSlots.Any(i => i.EnglishName.EndsWith("map", StringComparison.InvariantCultureIgnoreCase) && !questMaps.Contains(i.RawItemId));
+        }
+
+        public static void DiscardCurrentMap()
+        {
+            var map = CurrentMap();
+
+            if (map != default(BagSlot))
+            {
+                map.Discard();
+            }
+        }
+
+        public static BagSlot CurrentMap()
+        {
+            uint[] questMaps = new uint[]{2001351,2001705,2001772,200974};
+            var map = InventoryManager.GetBagByInventoryBagId(InventoryBagId.KeyItems).FilledSlots.Where(i => i.EnglishName.EndsWith("map", StringComparison.InvariantCultureIgnoreCase) && !questMaps.Contains(i.RawItemId)).ToList();
+            return map.Any() ? map.First() : default(BagSlot);
         }
 
     }
