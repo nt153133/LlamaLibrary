@@ -76,6 +76,7 @@
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="GatherTest.cs" />
     <Compile Include="Helpers\Achievements.cs" />
+    <Compile Include="Helpers\ActionHelper.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
     <Compile Include="Helpers\BlueMageSpellBook.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
