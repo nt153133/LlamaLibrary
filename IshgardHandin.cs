@@ -73,7 +73,19 @@ namespace LlamaLibrary
                    HWDGathereInspect.Instance.ClickAutoSubmit();
                    await Coroutine.Wait(6000, () => HWDGathereInspect.Instance.CanRequestInspection());
                    if (HWDGathereInspect.Instance.CanRequestInspection())
+                   {
                        HWDGathereInspect.Instance.ClickRequestInspection();
+                       if (ScriptConditions.Helpers.GetSkybuilderScrips() > 9000 )
+                           await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+                       else
+                       {
+                           await Coroutine.Sleep(100);
+                       }
+                       if (SelectYesno.IsOpen)
+                       {
+                           SelectYesno.Yes();
+                       }
+                   }
                 }
             }
 
