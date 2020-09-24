@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
+using ff14bot;
 using ff14bot.Behavior;
 using ff14bot.Directors;
 using ff14bot.Enums;
@@ -88,6 +89,14 @@ namespace LlamaLibrary.ScriptConditions
             return -1;
         }
 
+
+        public static int CurrentGCSeals()
+        {
+            uint[] sealTypes = {20, 21, 22};
+            var bagslot = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).FirstOrDefault(i => i.RawItemId == sealTypes[(int)Core.Me.GrandCompany -1]);
+            return (int) (bagslot?.Count ?? (uint) 0);
+        }
+        
         public static bool MsLeftInDungeonGt(long time)
         {
             if (DirectorManager.ActiveDirector == null) return false;
