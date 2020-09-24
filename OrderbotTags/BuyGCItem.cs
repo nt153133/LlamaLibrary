@@ -7,6 +7,7 @@ using TreeSharp;
 
 namespace LlamaLibrary.OrderbotTags
 {
+    [XmlElement("BuyGCItem")]
     public class BuyGCItem: ProfileBehavior
     {
 
