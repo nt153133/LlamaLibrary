@@ -8,7 +8,10 @@
         {
             _name = WindowName;
         }
-        
-        
+
+        public void ClickAttach()
+        {
+            SendAction(1,3,0);
+        }
     }
 }

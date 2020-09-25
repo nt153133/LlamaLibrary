@@ -12,7 +12,9 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
+using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.Properties;
+using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using Newtonsoft.Json;
 using TreeSharp;
@@ -160,21 +162,21 @@ namespace LlamaLibrary.Materia
                                 return false;
                             }
 
-                           // MateriaAttach.Instance.ClickItem(0);
-                           // await Coroutine.Sleep(1000);
+                            // MateriaAttach.Instance.ClickItem(0);
+                            // await Coroutine.Sleep(1000);
                             MateriaAttach.Instance.ClickMateria(0);
-                            await Coroutine.Sleep(1000);
+                            await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
                             await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen);
                         }
 
                         if (!MateriaAttachDialog.Instance.IsOpen)
                         {
-                           // MateriaAttach.Instance.ClickItem(0);
-                           // await Coroutine.Sleep(1000);
+                            // MateriaAttach.Instance.ClickItem(0);
+                            //await Coroutine.Sleep(1000);
                             MateriaAttach.Instance.ClickMateria(0);
-                            await Coroutine.Sleep(1000);
+                            await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
                             await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen);
-
+                            await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
                             if (!MateriaAttachDialog.Instance.IsOpen)
                             {
                                 Log($"Can't open meld dialog");
@@ -183,19 +185,44 @@ namespace LlamaLibrary.Materia
                         }
 
                         //Log($"{Offsets.AffixMateriaFunc.ToInt64():X}  {Offsets.AffixMateriaParam.ToInt64():X}   {bagSlot.Pointer.ToInt64():X}  {materiaList[i].Pointer.ToInt64():X}");
+                        Log("Wait Ready");
+                        await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
+                        Log("Wait CanMeld");
+                        await Coroutine.Wait(7000, () => AgentMeld.Instance.CanMeld);
                         bagSlot.AffixMateria(materiaList[i]);
-                        await Coroutine.Sleep(7000);
+                        Log("Clicked affix wait not Ready");
+                        await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
+                        Log("Clicked affix wait Ready");
+                        await Coroutine.Wait(7000, () => !AgentMeld.Instance.Ready);
+                        // await Coroutine.Sleep(7000);
+                        Log("Clicked wait window");
+                        await Coroutine.Wait(7000, () => !MateriaAttachDialog.Instance.IsOpen);
+                        Log("Wait 2 windows");
+                        await Coroutine.Wait(5000, () => MateriaAttachDialog.Instance.IsOpen || MateriaAttach.Instance.IsOpen);
+                        //    await Coroutine.Sleep(1000);
 
-                        await Coroutine.Wait(7000, () => MateriaAttach.Instance.IsOpen || MateriaAttachDialog.Instance.IsOpen);
-                        await Coroutine.Sleep(1000);
+
+                        while (MateriaAttachDialog.Instance.IsOpen)
+                        {
+                            Log("While window");
+                            MateriaAttachDialog.Instance.ClickAttach();
+                            await Coroutine.Wait(7000, () => !AgentMeld.Instance.CanMeld);
+                            await Coroutine.Wait(7000, () => AgentMeld.Instance.CanMeld);
+                            //await Coroutine.Wait(7000, () => !MateriaAttachDialog.Instance.IsOpen);
+                            await Coroutine.Wait(7000, () => MateriaAttachDialog.Instance.IsOpen || MateriaAttach.Instance.IsOpen);
+                        }
+
+
                         if (MateriaAttach.Instance.IsOpen)
                         {
+                            Log("Closing window");
                             MateriaAttach.Instance.Close();
-                            await Coroutine.Sleep(1000);
+                            await Coroutine.Wait(7000, () => !MateriaAttach.Instance.IsOpen);
+                            //await Coroutine.Wait(7000, () => !AgentMeld.Instance.Ready);
+                            //await Coroutine.Sleep(1000);
                         }
                     }
-                    
-                    
+
 
                     if (!materiaList[i].IsFilled)
                         return false;
@@ -213,7 +240,7 @@ namespace LlamaLibrary.Materia
                 int count = MateriaCount(bagSlot);
                 for (int i = 0; i < count; i++)
                 {
-                    Log($"Removing materia {count - i }");
+                    Log($"Removing materia {count - i}");
                     bagSlot.RemoveMateria();
                     await Coroutine.Sleep(6000);
                 }
