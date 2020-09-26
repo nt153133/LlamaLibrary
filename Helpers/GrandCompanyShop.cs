@@ -5,6 +5,7 @@ using System.Runtime.Remoting.Activation;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
+using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
@@ -69,11 +70,20 @@ namespace LlamaLibrary.Helpers
                     Logger.Info($"Clicked Yes");
                     
                 }
+                await Coroutine.Sleep(800);
                 GrandCompanyExchange.Instance.Close();
                 await Coroutine.Wait(5000, () => !GrandCompanyExchange.Instance.IsOpen);
                 Core.Me.ClearTarget();
                 await Coroutine.Sleep(500);
                 return qtyCanBuy;
+            }
+            else
+            {
+                Logger.Info($"{(ActiveShopPtr + Offsets.GCArrayStart).ToString("X")}");
+                foreach (var item1 in Items)
+                {
+                    Logger.Info($"{item1.ToString()}");
+                }
             }
             GrandCompanyExchange.Instance.Close();
             await Coroutine.Wait(5000, () => !GrandCompanyExchange.Instance.IsOpen);
@@ -98,12 +108,14 @@ namespace LlamaLibrary.Helpers
             {
                 if (GrandCompanyExchange.Instance.GCRankGroup != GCRankGroup)
                 {
+                    Logger.Info($"Change GC Rank to {GCRankGroup}");
                     GrandCompanyExchange.Instance.ChangeRankGroup(GCRankGroup);
                     await Coroutine.Sleep(500);
                 }
 
+                Logger.Info($"Change ChangeItemGroup to {category}");
                 GrandCompanyExchange.Instance.ChangeItemGroup((int) category);
-                await Coroutine.Sleep(1000);
+                await Coroutine.Sleep(5000);
                 return await BuyItem(ItemId, qty);
             }
 
