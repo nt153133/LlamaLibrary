@@ -186,9 +186,10 @@ namespace LlamaLibrary.Materia
 
                         //Log($"{Offsets.AffixMateriaFunc.ToInt64():X}  {Offsets.AffixMateriaParam.ToInt64():X}   {bagSlot.Pointer.ToInt64():X}  {materiaList[i].Pointer.ToInt64():X}");
                         Log("Wait Ready");
-                        await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
-                        Log("Wait CanMeld");
-                        await Coroutine.Wait(7000, () => AgentMeld.Instance.CanMeld);
+                        await Coroutine.Wait(7000, () => MateriaAttachDialog.Instance.IsOpen);
+                       // await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
+                       // Log("Wait CanMeld");
+                       // await Coroutine.Wait(7000, () => AgentMeld.Instance.CanMeld);
                         bagSlot.AffixMateria(materiaList[i]);
                         Log("Clicked affix wait not Ready");
                         await Coroutine.Wait(7000, () => AgentMeld.Instance.Ready);
