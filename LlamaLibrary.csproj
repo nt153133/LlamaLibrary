@@ -120,6 +120,7 @@
     <Compile Include="OrderbotTags\ChangeClass.cs" />
     <Compile Include="OrderbotTags\Fate.cs" />
     <Compile Include="OrderbotTags\GetTo.cs" />
+    <Compile Include="OrderbotTags\JoinDuty.cs" />
     <Compile Include="OrderbotTags\LeaveDuty.cs" />
     <Compile Include="OrderbotTags\LisbethOrderBot.cs" />
     <Compile Include="OrderbotTags\LLDesynth.cs" />
