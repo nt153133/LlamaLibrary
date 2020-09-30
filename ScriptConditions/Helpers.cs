@@ -84,6 +84,21 @@ namespace LlamaLibrary.ScriptConditions
             return (int) (InventoryManager.EquippedItems.First().SpiritBond * 100);
         }
         
+        public static int ZodiacLightLevel()
+        {
+            return (int) (InventoryManager.EquippedItems.First().SpiritBond * 100);
+        }
+        
+        public static int ZodiacCompletedMahatma()
+        {
+            return (ZodiacLightLevel() / 500) ;
+        }
+        
+        public static bool ZodiacMahatmaIsDone()
+        {
+            return ((ZodiacLightLevel() % 500) == 80) ;
+        }   
+        
         public static int GetInstanceTodo(int objective)
         {
             if (DirectorManager.ActiveDirector is InstanceContentDirector activeAsInstance)
