@@ -91,7 +91,7 @@ namespace LlamaLibrary.ScriptConditions
         
         public static int ZodiacCompletedMahatma()
         {
-            return (ZodiacLightLevel() / 500) ;
+            return (int)(ZodiacLightLevel() / 500) ;
         }
         
         public static bool ZodiacMahatmaIsDone()
