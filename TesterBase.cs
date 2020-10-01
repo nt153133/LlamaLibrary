@@ -48,6 +48,8 @@ namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
+        
+        bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
         private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
         {
             {0, "Unknown"},
@@ -569,6 +571,7 @@ namespace LlamaLibrary
                 {
                     Navigator.NavigationProvider.ClearStuckInfo();
                     Navigator.Stop();
+                    await Coroutine.Wait(5000, () => !IsJumping); 
                     entrance.Interact();
                     await Coroutine.Wait(10000, () => SelectYesno.IsOpen);
                     if (SelectYesno.IsOpen)
