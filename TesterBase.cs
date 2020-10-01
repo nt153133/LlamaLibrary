@@ -563,8 +563,8 @@ namespace LlamaLibrary
             Log("Should be there");
             await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId); 
             Log("After wait");
-            var entrance = GameObjectManager.GetObjectsByNPCId(2002737).OrderBy(x => x.Distance2D()).First();
-            var aptEntrance =GameObjectManager.GetObjectsByNPCId(2007402).OrderBy(x => x.Distance2D()).First();//2007402
+            var entrance = GameObjectManager.GetObjectsByNPCId(2002737).OrderBy(x => x.Distance2D()).FirstOrDefault();
+            var aptEntrance =GameObjectManager.GetObjectsByNPCId(2007402).OrderBy(x => x.Distance2D()).FirstOrDefault();//2007402
             if (aptEntrance != null && entrance.DistanceSqr() > aptEntrance.DistanceSqr())
             {
                 Log("At Apartment");
