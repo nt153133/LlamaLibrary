@@ -377,7 +377,7 @@ namespace LlamaLibrary
                 return await RetainerList.Instance.SelectRetainer(retainerIndex);
             }
 
-            if (!RetainerList.Instance.IsOpen && NearestSummoningBell() != null)
+            if (!RetainerList.Instance.IsOpen && FindSummoningBell() != null)
             {
                 await UseSummoningBell();
                 await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);

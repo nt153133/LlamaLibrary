@@ -183,8 +183,7 @@ namespace LlamaLibrary
         {
             //hooks = TreeHooks.Instance.Hooks;
            // TreeHooks.Instance.ClearAll();
-            
-          
+           
             _root = new ActionRunCoroutine(r => Run());
         }
 
@@ -198,29 +197,14 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
-            if (Request.IsOpen)
-            {
-                Log($"List open, ItemCount: {RequestHelper.ItemCount} ItemCount2: {RequestHelper.ItemCount2}");
 
-                var list = RequestHelper.GetItems();
-
-                foreach (var item in list)
-                {
-                    Log(item.DynamicString());
-                }
-                
-                Log($"HandOver: {RequestHelper.HandOver()}");
-            }
-
-            
-            
             //await BuyHouse();
             //TreeRoot.Stop("Stop Requested");
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
 
-            
+
             //DutyManager.AvailableContent
             // RoutineManager.Current.PullBehavior.Start();
 
@@ -454,11 +438,11 @@ namespace LlamaLibrary
                 Log(item.ToString());
             }*/
 
-           // Log(AgentWorldTravelSelect.Instance.CurrentWorld.ToString());
+            // Log(AgentWorldTravelSelect.Instance.CurrentWorld.ToString());
 
 
-           //Lisbeth.AddHook("Llama",LlamaLibrary.Retainers.RetainersPull.CheckVentureTask);
-  
+            //Lisbeth.AddHook("Llama",LlamaLibrary.Retainers.RetainersPull.CheckVentureTask);
+
             //Log($"{Achievements.HasAchievement(2199)}");
             // Log($"{BlueMageSpellBook.SpellLocation.ToString("X")}");
 
@@ -489,14 +473,51 @@ namespace LlamaLibrary
             }*/
 
             //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
-            
+
             // Log($"\n {sb}");
             //DumpLLOffsets();
+            
+            /*InventoryBagId[] FCChest = new InventoryBagId[] {InventoryBagId.GrandCompany_Page1, InventoryBagId.GrandCompany_Page2, InventoryBagId.GrandCompany_Page3, (InventoryBagId) 20003, (InventoryBagId) 20004};
+
+            var slots = InventoryManager.GetBagsByInventoryBagId(FCChest).SelectMany(x=> x.FilledSlots);
+            foreach (var slot in slots)
+            {
+               // Log(slot);
+            }*/
+
+            uint[] privateHousing = new uint[] {59, 60, 61, 97};
+            uint[] FCHousing = new uint[] {56,57,58,96};
+
+            var AE = WorldManager.AvailableLocations;
+
+            var PrivateHouses = AE.Where(x => privateHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
+            var FCHouses = AE.Where(x => FCHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
+            
+            bool HavePrivateHousing = PrivateHouses.Any();
+            bool HaveFCHousing = FCHouses.Any();
+
+
+            Log($"Private House Access: {HavePrivateHousing} FC House Access: {HaveFCHousing}");
+            
+            //await GoToHousingBell(FCHouses.First());
+            
+            
+            if (HavePrivateHousing)
+            {
+                await GoToHousingBell(PrivateHouses.First());
+            }
+            else if (HaveFCHousing)
+            {
+                await GoToHousingBell(FCHouses.First());
+            }
+            
+            
             //DumpOffsets();
+            //await BuyHouse();
             //await testKupoTickets();
             TreeRoot.Stop("Stop Requested");
             //Core.Me.Stats
-            //await BuyHouse();
+            
             //AtkAddonControl windowByName = RaptureAtkUnitManager.Update()
             // await Coroutine.Sleep(100);
             
@@ -534,6 +555,39 @@ namespace LlamaLibrary
             // await Coroutine.Sleep(100);
         }
 
+        private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
+        {
+            await CommonTasks.Teleport(house.AetheryteId);
+            Log("Should be there");
+            await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId); 
+            Log("After wait");
+            var entrance = GameObjectManager.GetObjectsByNPCId(2002737).OrderBy(x => x.Distance2D()).First();
+            if (entrance != default(GameObject))
+            {
+                await Navigation.FlightorMove(entrance.Location);
+                if (entrance.IsWithinInteractRange)
+                {
+                    entrance.Interact();
+                    await Coroutine.Wait(10000, () => SelectYesno.IsOpen);
+                    if (SelectYesno.IsOpen)
+                    {
+                        SelectYesno.Yes();
+                    }
+
+                    await CommonTasks.HandleLoading();
+                }
+
+                var bell = HelperFunctions.FindSummoningBell();
+                if (bell != null)
+                {
+                    await HelperFunctions.GoToSummoningBell();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void LogPtr(IntPtr pointer)
         {
             Log(pointer.ToString("X"));
@@ -544,6 +598,7 @@ namespace LlamaLibrary
             Log("LL hook");
             //await Navigation.GetToMap399();
         }
+
 
         
         /*
@@ -629,12 +684,15 @@ namespace LlamaLibrary
                         }
                     }
 
-                    await Coroutine.Sleep(_rnd.Next(2500, 5000));
+                    await Coroutine.Sleep(_rnd.Next(1500, 3000));
                     placard.Interact();
                     await Coroutine.Wait(3000, () => HousingSignBoard.Instance.IsOpen);
                 }
                 while (HousingSignBoard.Instance.IsForSale);
 
+                await Coroutine.Wait(3000, () => HousingSignBoard.Instance.IsOpen);
+                HousingSignBoard.Instance.Close();
+                await Coroutine.Wait(3000, () => !HousingSignBoard.Instance.IsOpen);
                 Lua.DoString("return _G['EventHandler']:Shutdown();");
             }
         }
@@ -863,7 +921,7 @@ namespace LlamaLibrary
                 await HelperFunctions.UseSummoningBell();
                 await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
             }
-
+            
             if (!RetainerList.Instance.IsOpen)
             {
                 Log("Can't find open bell either you have none or not near a bell");
