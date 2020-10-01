@@ -567,6 +567,8 @@ namespace LlamaLibrary
                 await Navigation.FlightorMove(entrance.Location);
                 if (entrance.IsWithinInteractRange)
                 {
+                    Navigator.NavigationProvider.ClearStuckInfo();
+                    Navigator.Stop();
                     entrance.Interact();
                     await Coroutine.Wait(10000, () => SelectYesno.IsOpen);
                     if (SelectYesno.IsOpen)
