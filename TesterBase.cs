@@ -564,7 +564,34 @@ namespace LlamaLibrary
             await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId); 
             Log("After wait");
             var entrance = GameObjectManager.GetObjectsByNPCId(2002737).OrderBy(x => x.Distance2D()).First();
-            if (entrance != default(GameObject))
+            var aptEntrance =GameObjectManager.GetObjectsByNPCId(2007402).OrderBy(x => x.Distance2D()).First();//2007402
+            if (aptEntrance != null && entrance.DistanceSqr() > aptEntrance.DistanceSqr())
+            {
+                Log("At Apartment");
+                await Navigation.FlightorMove(aptEntrance.Location);
+                if (aptEntrance.IsWithinInteractRange)
+                {
+                    Navigator.NavigationProvider.ClearStuckInfo();
+                    Navigator.Stop();
+                    await Coroutine.Wait(5000, () => !IsJumping); 
+                    aptEntrance.Interact();
+                    await Coroutine.Wait(10000, () => SelectString.IsOpen);
+                    if (SelectString.IsOpen)
+                    {
+                        SelectString.ClickSlot(0);
+                    }
+
+                    await CommonTasks.HandleLoading();
+                }
+
+                var bell = HelperFunctions.FindSummoningBell();
+                if (bell != null)
+                {
+                    await HelperFunctions.GoToSummoningBell();
+                    return true;
+                }
+            }
+            else if (entrance != default(GameObject))
             {
                 await Navigation.FlightorMove(entrance.Location);
                 if (entrance.IsWithinInteractRange)
