@@ -193,7 +193,7 @@ namespace LlamaLibrary.Helpers
 
                 await Coroutine.Yield();
             }
-
+            Navigator.PlayerMover.MoveStop();
             return moving == MoveResult.ReachedDestination;
         }
 
