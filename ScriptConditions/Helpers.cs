@@ -10,6 +10,7 @@ using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Objects;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.RemoteAgents;
 using Character = LlamaLibrary.RemoteWindows.Character;
@@ -115,6 +116,16 @@ namespace LlamaLibrary.ScriptConditions
             uint[] sealTypes = {20, 21, 22};
             var bagslot = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).FirstOrDefault(i => i.RawItemId == sealTypes[(int)Core.Me.GrandCompany -1]);
             return (int) (bagslot?.Count ?? (uint) 0);
+        }
+        
+        public static int MaxGCSeals()
+        {
+            return (int)Core.Me.MaxGCSeals();
+        }
+        
+        public static int GilCount()
+        {
+            return (int)InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).Where(r => r.IsFilled).FirstOrDefault(item => item.RawItemId == DataManager.GetItem("Gil").Id).Count;
         }
         
         public static bool MsLeftInDungeonGt(long time)
