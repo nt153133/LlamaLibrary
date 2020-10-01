@@ -559,62 +559,73 @@ namespace LlamaLibrary
 
         private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
         {
+            Log($"Teleporting to housing: (ZID: {house.ZoneId}, AID: {house.AetheryteId}) {house.Name}");
             await CommonTasks.Teleport(house.AetheryteId);
-            Log("Should be there");
-            await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId); 
-            Log("After wait");
-            var entrance = GameObjectManager.GetObjectsByNPCId(2002737).OrderBy(x => x.Distance2D()).FirstOrDefault();
-            var aptEntrance =GameObjectManager.GetObjectsByNPCId(2007402).OrderBy(x => x.Distance2D()).FirstOrDefault();//2007402
-            if (aptEntrance != null && entrance.DistanceSqr() > aptEntrance.DistanceSqr())
-            {
-                Log("At Apartment");
-                await Navigation.FlightorMove(aptEntrance.Location);
-                if (aptEntrance.IsWithinInteractRange)
-                {
-                    Navigator.NavigationProvider.ClearStuckInfo();
-                    Navigator.Stop();
-                    await Coroutine.Wait(5000, () => !IsJumping); 
-                    aptEntrance.Interact();
-                    await Coroutine.Wait(10000, () => SelectString.IsOpen);
-                    if (SelectString.IsOpen)
-                    {
-                        SelectString.ClickSlot(0);
-                    }
 
-                    await CommonTasks.HandleLoading();
-                }
+            Log("Waiting for zone to change");
+            await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId);
 
-                var bell = HelperFunctions.FindSummoningBell();
-                if (bell != null)
-                {
-                    await HelperFunctions.GoToSummoningBell();
-                    return true;
-                }
-            }
-            else if (entrance != default(GameObject))
+            Log("Getting closest housing entrance");
+            uint houseEntranceId = 2002737;
+            uint aptEntranceId = 2007402;
+
+            var entranceIds = new uint[] { houseEntranceId, aptEntranceId };
+
+            var entrance = GameObjectManager.GetObjectsByNPCIds<GameObject>(entranceIds).OrderBy(x => x.Distance2D()).FirstOrDefault();
+            if (entrance != null)
             {
+                Log("Found housing entrance, approaching");
                 await Navigation.FlightorMove(entrance.Location);
+
                 if (entrance.IsWithinInteractRange)
                 {
                     Navigator.NavigationProvider.ClearStuckInfo();
                     Navigator.Stop();
-                    await Coroutine.Wait(5000, () => !IsJumping); 
+                    await Coroutine.Wait(5000, () => !IsJumping);
+
                     entrance.Interact();
-                    await Coroutine.Wait(10000, () => SelectYesno.IsOpen);
-                    if (SelectYesno.IsOpen)
+
+                    // Handle different housing entrance menus
+                    if (entrance.NpcId == houseEntranceId)
                     {
-                        SelectYesno.Yes();
+                        Log("Entering house");
+
+                        await Coroutine.Wait(10000, () => SelectYesno.IsOpen);
+                        if (SelectYesno.IsOpen)
+                        {
+                            SelectYesno.Yes();
+                        }
+                    }
+                    else if (entrance.NpcId == aptEntranceId)
+                    {
+                        Log("Entering apartment");
+
+                        await Coroutine.Wait(10000, () => SelectString.IsOpen);
+                        if (SelectString.IsOpen)
+                        {
+                            SelectString.ClickSlot(0);
+                        }
                     }
 
                     await CommonTasks.HandleLoading();
-                }
 
-                var bell = HelperFunctions.FindSummoningBell();
-                if (bell != null)
-                {
-                    await HelperFunctions.GoToSummoningBell();
-                    return true;
+                    Log("Getting best summoning bell");
+                    var bell = HelperFunctions.FindSummoningBell();
+                    if (bell != null)
+                    {
+                        Log("Found summoning bell, approaching");
+                        await HelperFunctions.GoToSummoningBell();
+                        return true;
+                    }
+                    else
+                    {
+                        Log("Couldn't find any summoning bells");
+                    }
                 }
+            }
+            else
+            {
+                Log($"Couldn't find any housing entrances.  Are we in the right zone?  Current: ({WorldManager.ZoneId}) {WorldManager.CurrentZoneName}");
             }
 
             return false;
