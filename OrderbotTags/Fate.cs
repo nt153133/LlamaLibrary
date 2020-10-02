@@ -44,12 +44,21 @@ namespace ff14bot.NeoProfiles
         [XmlAttribute("While")]
         [XmlAttribute("while")]
         public string WhileCondition { get; set; }
-        
-        
+
+
+        [XmlAttribute("FateIDs")]
+        [XmlAttribute("FateIds")]
         [XmlAttribute("FateID")]
         [XmlAttribute("FateId")]
-        [DefaultValue(0)]
-        public int FateID { get; set; }
+        [DefaultValue(new int[0])]
+        public int[] FateIds { get; set; }
+
+        [XmlAttribute("BlacklistID")]
+        [XmlAttribute("BlacklistId")]
+        [XmlAttribute("BlacklistIDs")]
+        [XmlAttribute("BlacklistIds")]
+        [DefaultValue(new int[0])]
+        public int[] BlacklistIds { get; set; }
 
         [XmlAttribute("Timeout")]
         [DefaultValue("600")]
@@ -606,8 +615,14 @@ namespace ff14bot.NeoProfiles
             List<FateData> ReturnList = new List<FateData>();
             foreach (FateData f in List)
             {
-                if (f.Icon.ToString() == "Boss" && f.Progress > 85 || fatebotInstance.BlackListedFates.Contains(f.Name))
-                    Logging.Write("Skipping Fate {0}. Progress is greater than 85% or the fate is blacklisted.", f.Name);
+                if (f.Icon.ToString() == "Boss" && f.Progress > 85)
+                {
+                    Logging.Write("Skipping Fate {0}. Boss fate progress is greater than 85%.", f.Name);
+                }
+                else if (fatebotInstance.BlackListedFates.Contains(f.Name) || BlacklistIds.Contains((int)f.Id))
+                {
+                    Logging.Write("Skipping Fate {0}. Fate is blacklisted.", f.Name);
+                }
                 else
                 {
                     ReturnList.Add(f);
@@ -620,10 +635,10 @@ namespace ff14bot.NeoProfiles
 
         public async Task<bool> getFates()
         {
-            if (FateID != 0)
+            if (FateIds.Length > 0)
             {
                 //Logging.Write("Looking for Fate: {0}.", FateID);
-                currentfate = IsFateActive((uint) FateID);
+                currentfate = IsFateActive(FateIds);
                 if (currentfate == null)
                 {
                     
@@ -631,7 +646,7 @@ namespace ff14bot.NeoProfiles
                 }
                 else
                 {
-                    Logging.Write("Adding Fate: {0}. Distance is {1}.", currentfate.Name, Core.Me.Distance(currentfate.Location));
+                    Logging.Write("Adding Focused Fate: {0}. Distance is {1}.", currentfate.Name, Core.Me.Distance(currentfate.Location));
                     return true;
                 }
             }
@@ -644,10 +659,10 @@ namespace ff14bot.NeoProfiles
             return true;
         }
 
-        // check all fates and return the FateData wiht the given Id or null
-        public static FateData IsFateActive(uint id)
+        // check all fates and return the FateData with the given Ids or null
+        public static FateData IsFateActive(int[] ids)
         {
-            var _fate = FateManager.ActiveFates.Where(fate => fate.Id == id).Take(1);
+            var _fate = FateManager.ActiveFates.Where(fate => ids.Contains((int)fate.Id)).Take(1);
             var fateArray = _fate as FateData[] ?? _fate.ToArray();
             if (fateArray.Length > 0)
             { return fateArray[0]; }
