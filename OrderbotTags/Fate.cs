@@ -8,7 +8,9 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Objects;
+using ff14bot.Pathing;
 using ff14bot.RemoteWindows;
+using ff14bot.Settings;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -92,7 +94,7 @@ namespace ff14bot.NeoProfiles
         {
             if (GetCondition() != null)
             {
-                return (GetCondition()());
+                return (!GetCondition()());
 
             }
 
@@ -155,8 +157,9 @@ namespace ff14bot.NeoProfiles
 
             #region Movment
 
-                  new Decorator(ret => currentstep == 1 && Vector3.Distance(Core.Player.Location, Position) > (currentfate.Radius - 10),
-                         CommonBehaviors.MoveAndStop(ret => Position, Distance, stopInRange: true, destinationName: "Moving to Fates.")
+                  new Decorator(
+                      ret => currentstep == 1 && Vector3.Distance(Core.Player.Location, Position) > (currentfate.Radius - 10),
+                         new ActionRunCoroutine(obj => FlyTo(Position, true, true))
 
                   ),
 
@@ -238,6 +241,142 @@ namespace ff14bot.NeoProfiles
         }
 
         // End of B Tree
+
+        #region FlightMovement
+
+        private static async Task<bool> FlyTo(Vector3 destination, bool land = false, bool dismount = false, bool ignoreIndoors = true, float minHeight = 0f)
+        {
+            if (destination == Vector3.Zero) { return false; }
+
+            if (Core.Me.InCombat) { return false; }
+
+            while (!Core.Me.IsDead)
+            {
+                if (InPosition(destination))
+                {
+                    await StopMovement();
+                    break;
+                }
+
+                if (CommonBehaviors.IsLoading)
+                {
+                    await CommonTasks.HandleLoading();
+                    break;
+                }
+
+                if (!Core.Me.IsMounted && Core.Me.Location.Distance(destination) > CharacterSettings.Instance.MountDistance)
+                {
+                    await CommonTasks.SummonFlyingMount();
+                    await Coroutine.Sleep(500);
+                }
+
+                var parameters = new FlyToParameters(destination) { CheckIndoors = !ignoreIndoors };
+                if (MovementManager.IsDiving) parameters.CheckIndoors = false;
+                if (minHeight > 0) parameters.MinHeight = minHeight;
+
+                Flightor.MoveTo(parameters);
+                await Coroutine.Yield();
+            }
+
+            if (!MovementManager.IsDiving && MovementManager.IsFlying && land)
+            {
+                await Land();
+                await Coroutine.Sleep(500);
+            }
+
+            if (Core.Me.IsMounted && dismount)
+            {
+                await Dismount();
+                await Coroutine.Sleep(500);
+            }
+
+            Flightor.Clear();
+
+            return true;
+        }
+
+        private static async Task<bool> StopMovement()
+        {
+            if (!MovementManager.IsFlying)
+            {
+                if (!MovementManager.IsMoving) { return true; }
+
+                int ticks = 0;
+                while (MovementManager.IsMoving && ticks < 100)
+                {
+                    MovementManager.MoveStop();
+                    await Coroutine.Sleep(100);
+                    ticks++;
+                }
+
+                if (ticks >= 100) { Logging.WriteVerbose("Timeout whilst trying to stop movement."); }
+
+                return true;
+            }
+            else
+            {
+                MovementManager.MoveStop();
+                await Coroutine.Sleep(100);
+                return true;
+            }
+        }
+
+        private static async Task<bool> Land()
+        {
+            if (!MovementManager.IsFlying || MovementManager.IsSwimming) { return true; }
+
+            int ticks = 0;
+            if (await CommonTasks.CanLand() == CanLandResult.Yes)
+            {
+                while (ticks < 100 && await CommonTasks.Land())
+                {
+                    if (!MovementManager.IsFlying) { break; }
+                    await Coroutine.Sleep(100);
+                    ticks++;
+                }
+
+                if (ticks >= 100) { Logging.WriteVerbose("Timeout whilst trying to land."); }
+            }
+            else
+            {
+                var closestObject = GameObjectManager.GameObjects.OrderBy(r => r.DistanceSqr(Core.Me.Location)).FirstOrDefault();
+                if (await CommonTasks.DescendTo(closestObject.Y) == DescendToResult.Success)
+                {
+                    MovementManager.StopDescending();
+                    Logging.WriteVerbose("Manual descend complete.");
+                }
+
+            }
+
+            return true;
+        }
+
+        private static async Task<bool> Dismount()
+        {
+            if (!Core.Me.IsMounted) { return true; }
+
+            int ticks = 0;
+            while (Core.Me.IsMounted && ticks < 100)
+            {
+                ActionManager.Dismount();
+                await Coroutine.Sleep(100);
+                ticks++;
+            }
+
+            if (ticks >= 100) { Logging.WriteVerbose("Timeout whilst trying to dismount."); }
+
+            return true;
+        }
+
+        private static bool InPosition(Vector3 location)
+        {
+            if (Core.Me.Location.Distance2DSqr(location) > 5.0f * 5.0f) { return false; }
+
+            var yTolerance = Math.Max(3.5f, 5.0f);
+            return Math.Abs(location.Y - Core.Me.Location.Y) < yTolerance;
+        }
+
+        #endregion FlightMovement
 
         private async Task MoveToFocusedFate()
         {
