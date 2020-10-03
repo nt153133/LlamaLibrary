@@ -145,6 +145,8 @@ namespace LlamaLibrary.Helpers
             {5594, (0, GCShopCategory.Materiel)},
             {5595, (0, GCShopCategory.Materiel)},
             {5596, (0, GCShopCategory.Materiel)},
+            {6017, (0, GCShopCategory.Materiel)},
+            {6018, (0, GCShopCategory.Materiel)},
             {6019, (0, GCShopCategory.Materiel)},
             {15855, (0, GCShopCategory.Materiel)},
             {15856, (0, GCShopCategory.Materiel)},
