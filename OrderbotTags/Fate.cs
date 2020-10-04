@@ -45,6 +45,10 @@ namespace ff14bot.NeoProfiles
         [XmlAttribute("while")]
         public string WhileCondition { get; set; }
 
+        [XmlAttribute("UseFlight")]
+        [XmlAttribute("useflight")]
+        [DefaultValue(true)]
+        public bool UseFlight { get; set; }
 
         [XmlAttribute("FateIDs")]
         [XmlAttribute("FateIds")]
@@ -168,7 +172,7 @@ namespace ff14bot.NeoProfiles
 
                   new Decorator(
                       ret => currentstep == 1 && Vector3.Distance(Core.Player.Location, Position) > (currentfate.Radius - 10),
-                         new ActionRunCoroutine(obj => FlyTo(Position, true, true))
+                         UseFlight ? new ActionRunCoroutine(obj => FlyTo(Position, true, true)) : CommonBehaviors.MoveAndStop(ret => Position, Distance, stopInRange: true, destinationName: "Moving to Fates.")
 
                   ),
 
