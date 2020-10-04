@@ -219,6 +219,7 @@
     <Compile Include="Retainers\RetainersSettingsForm.designer.cs">
       <DependentUpon>RetainersSettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ScriptConditions\Extras.cs" />
     <Compile Include="ScriptConditions\Helpers.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
     <Compile Include="Structs\GatheringNodeData.cs" />
