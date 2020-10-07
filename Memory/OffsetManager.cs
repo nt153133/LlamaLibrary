@@ -104,7 +104,7 @@ using LlamaLibrary.RemoteAgents;
                 else
                     Log($"\tFound one {test.ToString("X")} but no agent");
             }
-            AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers"});//
+            AddNamespacesToScriptManager(new[] {"LlamaLibrary", "LlamaLibrary.ScriptConditions", "LlamaLibrary.ScriptConditions.Helpers","LlamaLibrary.ScriptConditions.Extras"});//
             ScriptManager.Init(typeof(ScriptConditions.Helpers));
             initDone = true;
             if (_debug)
