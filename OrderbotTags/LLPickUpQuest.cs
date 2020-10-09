@@ -1,4 +1,4 @@
-﻿using Clio.XmlEngine;
+using Clio.XmlEngine;
 using ff14bot.RemoteWindows;
 using System.ComponentModel;
 using TreeSharp;
@@ -19,7 +19,13 @@ namespace ff14bot.NeoProfiles.Tags
                 new Decorator(ret => SelectString.IsOpen,
                     new Action(r =>
                     {
-                        SelectString.ClickSlot((uint)DialogOption);
+						SelectYesno.ClickYes();
+                    })
+                ),
+                new Decorator(ret => SelectYesno.IsOpen,
+                    new Action(r =>
+                    {
+                        SelectYesno.ClickYes();
                     })
                 ),
                 base.CreateBehavior()
