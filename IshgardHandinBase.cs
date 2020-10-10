@@ -9,7 +9,9 @@ using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
+using ff14bot.Objects;
 using ff14bot.Pathing.Service_Navigation;
+using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
@@ -64,6 +66,7 @@ namespace LlamaLibrary
 
         public static async Task<bool> Handin()
         {
+            await StopCrafting();
             if (Translator.Language == Language.Chn)
             {
                 await HandinOld();
@@ -75,6 +78,52 @@ namespace LlamaLibrary
                 await GatheringHandin();
             }
 
+            return true;
+        }
+
+        public static async Task<bool> StopCrafting()
+        {
+            if (FishingManager.State != FishingState.None)
+            {
+                var quit = ActionManager.CurrentActions.Values.FirstOrDefault(i => i.Id == 299);
+                if (quit != default(SpellData))
+                {
+                    Log($"Exiting Fishing");
+                    if (ActionManager.CanCast(quit, Core.Me))
+                    {
+                        ActionManager.DoAction(quit, Core.Me);
+                        await Coroutine.Wait(6000, () => FishingManager.State == FishingState.None);
+                    }
+                }
+            }
+
+            if (CraftingLog.IsOpen)
+            {
+                Log($"Closing Crafting Window");
+                await Lisbeth.ExitCrafting();
+                await Coroutine.Wait(6000, () => !CraftingLog.IsOpen);
+                await Coroutine.Wait(6000, () => !CraftingManager.IsCrafting && !MovementManager.IsOccupied);
+            }
+
+            if (DutyManager.InInstance)
+            {
+                Log($"Leaving Diadem");
+                DutyManager.LeaveActiveDuty();
+
+                if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
+                {
+                    await Coroutine.Yield();
+                    await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+                    await Coroutine.Sleep(5000);
+                }
+            }
+
+            if (DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied || CraftingManager.IsCrafting)
+            {
+                Log("Something went wrong.");
+                TreeRoot.Stop("Stopping bot.");
+                return false;
+            }
             return true;
         }
 
