@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -23,6 +24,11 @@ namespace ff14bot
         public override bool HighPriority => true;
 
         [XmlAttribute("Job")] public string job { get; set; }
+        
+        [XmlAttribute("Force")] 
+        [XmlAttribute("force")] 
+        [DefaultValue(false)]
+        public bool force { get; set; }
 
 
         protected override void OnStart()
@@ -44,7 +50,7 @@ namespace ff14bot
             ClassJobType newjob;
             var foundJob = Enum.TryParse(job.Trim(), true, out newjob);
 
-            if (Core.Me.CurrentJob == newjob)
+            if (Core.Me.CurrentJob == newjob && !force)
             {
                 _isDone = true;
                 return;
