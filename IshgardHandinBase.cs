@@ -83,44 +83,54 @@ namespace LlamaLibrary
 
         public static async Task<bool> StopCrafting()
         {
-            if (FishingManager.State != FishingState.None)
+            for (int tryStep = 1; tryStep < 6; tryStep++)
             {
-                var quit = ActionManager.CurrentActions.Values.FirstOrDefault(i => i.Id == 299);
-                if (quit != default(SpellData))
+                if (!(DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied || CraftingManager.IsCrafting)) break;
+
+                Log($"We're occupied. Trying to exit out. Attempt #{tryStep}");
+
+                if (FishingManager.State != FishingState.None)
                 {
-                    Log($"Exiting Fishing");
-                    if (ActionManager.CanCast(quit, Core.Me))
+                    var quit = ActionManager.CurrentActions.Values.FirstOrDefault(i => i.Id == 299);
+                    if (quit != default(SpellData))
                     {
-                        ActionManager.DoAction(quit, Core.Me);
-                        await Coroutine.Wait(6000, () => FishingManager.State == FishingState.None);
+                        Log($"Exiting Fishing.");
+                        if (ActionManager.CanCast(quit, Core.Me))
+                        {
+                            ActionManager.DoAction(quit, Core.Me);
+                            await Coroutine.Wait(6000, () => FishingManager.State == FishingState.None);
+                        }
                     }
                 }
-            }
 
-            if (CraftingLog.IsOpen)
-            {
-                Log($"Closing Crafting Window");
-                await Lisbeth.ExitCrafting();
-                await Coroutine.Wait(6000, () => !CraftingLog.IsOpen);
-                await Coroutine.Wait(6000, () => !CraftingManager.IsCrafting && !MovementManager.IsOccupied);
-            }
-
-            if (DutyManager.InInstance)
-            {
-                Log($"Leaving Diadem");
-                DutyManager.LeaveActiveDuty();
-
-                if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
+                if (CraftingLog.IsOpen || CraftingManager.IsCrafting)
                 {
-                    await Coroutine.Yield();
-                    await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
-                    await Coroutine.Sleep(5000);
+                    Log($"Closing Crafting Window.");
+                    await Lisbeth.ExitCrafting();
+                    CraftingLog.Close();
+                    await Coroutine.Wait(6000, () => !CraftingLog.IsOpen);
+                    await Coroutine.Wait(6000, () => !CraftingManager.IsCrafting && !MovementManager.IsOccupied);
                 }
+
+                if (DutyManager.InInstance)
+                {
+                    Log($"Leaving Diadem.");
+                    DutyManager.LeaveActiveDuty();
+
+                    if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
+                    {
+                        await Coroutine.Yield();
+                        await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+                        await Coroutine.Sleep(5000);
+                    }
+                }
+
+                await Coroutine.Sleep(2500);
             }
 
             if (DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied || CraftingManager.IsCrafting)
             {
-                Log("Something went wrong.");
+                Log("Something went wrong, we're still occupied.");
                 TreeRoot.Stop("Stopping bot.");
                 return false;
             }
