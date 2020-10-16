@@ -64,6 +64,11 @@ namespace LlamaLibrary.ScriptConditions
         {
             return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsHighQuality) > 1;
         }
+        
+        public static bool LLHasItemCollectable(int itemID)
+        {
+            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsCollectable) > 1;
+        }
 
         public static int GetSkybuilderScrips()
         {
