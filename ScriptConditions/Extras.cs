@@ -19,5 +19,10 @@ namespace LlamaLibrary.ScriptConditions
                 else return GameObjectManager.GetObjectsByNPCIds<BattleCharacter>(ids).Count(i => i.CanAttack && i.IsTargetable);
             }
         }
+		
+		public static int SphereCompletion(int itemID)
+				{
+					return (int) (InventoryManager.FilledInventoryAndArmory.FirstOrDefault(i => i.RawItemId == (uint)itemID).SpiritBond);
+				}		
     }
 }
