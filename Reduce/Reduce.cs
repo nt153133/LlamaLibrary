@@ -15,6 +15,7 @@ using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
+using LlamaLibrary.RemoteWindows;
 using TreeSharp;
 
 namespace LlamaLibrary.Reduce
@@ -238,59 +239,39 @@ namespace LlamaLibrary.Reduce
         public static async Task<bool> Desynth(IEnumerable<BagSlot> itemsToDesynth)
         {
             if (IsBusy)
-                return true;
-
-            if (!itemsToDesynth.Any())
-                return true;
-
-            var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
-            var agentSalvage = Offsets.SalvageAgent;
-
-            Log($"{itemsToDesynth.Count()}");
-            foreach (var item in itemsToDesynth)
             {
-                Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
-                var itemId = item.RawItemId;
-                while (item.IsFilled && item.RawItemId == itemId)
-                {
-                    Log($"Call Desynth");
-                    lock (Core.Memory.Executor.AssemblyLock)
-                    {
-                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14,0);
-                    }
-
-                    await Coroutine.Sleep(200);
-                    Log($"Wait Window");
-                    await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
-
-                    if (SalvageDialog.IsOpen)
-                    {
-                        Log($"Open Window");
-                        RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
-                        await Coroutine.Sleep(500);
-                        //await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
-                    }
-
-                    Log($"Wait byte 1 {Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock)}");
-                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
-                    Log($"Wait byte 0 {Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock)}");
-                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
-                    //await Coroutine.Sleep(100);
-
-                    await Coroutine.Wait(6000, () => SalvageResult.IsOpen);
-                    if (IsBusy)
-                        break;
-                }
+                await GeneralFunctions.StopBusy(leaveDuty:false);
                 if (IsBusy)
-                    break;
+                {
+                    Log("Can't desynth right now, we're busy.");
+                    return false;
+                }
             }
 
-            await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
+            List<BagSlot> toDesynthList = itemsToDesynth.ToList();
+
+            if (!toDesynthList.Any())
+            {
+                Log("No items to desynth.");
+                return false;
+            }
+
+            Log($"# of slots to Desynth: {toDesynthList.Count()}");
+            foreach (var bagSlot in toDesynthList)
+            {
+                await DesynthItem(bagSlot);
+            }
 
             if (SalvageResult.IsOpen)
             {
                 SalvageResult.Close();
                 await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
+            }
+            
+            if (SalvageAutoDialog.Instance.IsOpen)
+            {
+                SalvageAutoDialog.Instance.Close();
+                await Coroutine.Wait(5000, () => !SalvageAutoDialog.Instance.IsOpen);
             }
 
             return true;
@@ -299,87 +280,114 @@ namespace LlamaLibrary.Reduce
         public static async Task<bool> Desynth()
         {
             if (IsBusy)
-                return true;
-            //Desynthesis
-            var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
-            var agentSalvage = Offsets.SalvageAgent;
+            {
+                await GeneralFunctions.StopBusy(leaveDuty:false);
+                if (IsBusy)
+                {
+                    Log("Can't desynth right now, we're busy.");
+                    return false;
+                }
+            }
+            
+            List<BagSlot> toDesynthList = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
+                                                           .SelectMany(bag => bag.FilledSlots
+                                                                                 .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs)))).ToList();
 
             //if (MovementManager.IsOccupied) return false;
             //          if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable)))
-            if (!InventoryManager.GetBagsByInventoryBagId(BagsToCheck()).Any(bag => bag.FilledSlots.Any(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs)))))
-            {
-                Log($"None found");
-                return false;
-            }
 
-            
+
             /*            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                             .SelectMany(bag => bag.FilledSlots
                                 .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));*/
+            
 
-            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
-                .SelectMany(bag => bag.FilledSlots
-                                .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));
-
-            Log($"{itemsToDesynth.Count()}");
-            foreach (var item in itemsToDesynth)
+            
+            if (!toDesynthList.Any())
             {
-                Log($"Desynthesize Item - Name: {item.Item.CurrentLocaleName}");
-
-                while (item.IsFilled)
-                {
-                    lock (Core.Memory.Executor.AssemblyLock)
-                    {
-                        Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, item.Pointer, 14,0);
-                    }
-
-                    await Coroutine.Sleep(200);
-                    // Log($"Wait Window");
-                    await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
-
-                    if (SalvageDialog.IsOpen)
-                    {
-                        //  Log($"Open Window");
-                        RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
-                        await Coroutine.Sleep(500);
-                        //await Coroutine.Wait(10000, () => SalvageResult.IsOpen);
-                    }
-
-                    // Log($"Wait byte 1");
-                    await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
-                    // Log($"Wait byte 0");
-                    await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
-                    await Coroutine.Sleep(100);
-                    await Coroutine.Wait(6000, () => SalvageResult.IsOpen || RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog")!= null);
-
-
-                    if (IsBusy)
-                        break;
-                }
-                if (IsBusy)
-                    break;
+                Log("No items to desynth.");
+                return false;
             }
+            
+            Log($"# of slots to Desynth: {toDesynthList.Count()}");
+
+            foreach (var bagSlot in toDesynthList)
+            {
+                await DesynthItem(bagSlot);
+            }
+
             if (SalvageResult.IsOpen)
             {
                 SalvageResult.Close();
                 await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
             }
             
-            if (RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog")!= null)
+            if (SalvageAutoDialog.Instance.IsOpen)
             {
-                RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog").SendAction(1, 3uL, 4294967295uL);
-                await Coroutine.Wait(5000, () => RaptureAtkUnitManager.GetWindowByName("SalvageAutoDialog")== null);
+                SalvageAutoDialog.Instance.Close();
+                await Coroutine.Wait(5000, () => !SalvageAutoDialog.Instance.IsOpen);
             }
 
             return true;
         }
 
+        public static async Task DesynthItem(BagSlot slot)
+        {
+            var agentSalvageInterface = AgentInterface<AgentSalvage>.Instance;
+            var agentSalvage = Offsets.SalvageAgent;
+
+            Log($"Desynthesize Item - Name: {slot.Item.CurrentLocaleName}{(slot.Item.IsHighQuality ? " HQ" : string.Empty)}");
+            var itemId = slot.RawItemId;
+            while (slot.IsValid && slot.IsFilled && slot.RawItemId == itemId)
+            {
+                lock (Core.Memory.Executor.AssemblyLock)
+                {
+                    Core.Memory.CallInjected64<int>(agentSalvage, agentSalvageInterface.Pointer, slot.Pointer, 14, 0);
+                }
+
+                await Coroutine.Sleep(200);
+                // Log($"Waiting for SalvageDialog.");
+                await Coroutine.Wait(5000, () => SalvageDialog.IsOpen);
+
+                if (SalvageDialog.IsOpen)
+                {
+                    //  Log($"Sending Desynth action.");
+                    RaptureAtkUnitManager.GetWindowByName("SalvageDialog").SendAction(1, 3, 0);
+                    await Coroutine.Sleep(500);
+                }
+
+                // Log($"Wait for DesynthLock byte 1.");
+                await Coroutine.Wait(5000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
+                // Log($"Wait for DesynthLock byte 0");
+                await Coroutine.Wait(6000, () => Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
+                await Coroutine.Sleep(100);
+                await Coroutine.Wait(6000, () => SalvageResult.IsOpen || SalvageAutoDialog.Instance.IsOpen);
+
+
+                if (SalvageAutoDialog.Instance.IsOpen)
+                {
+                    await Coroutine.Wait(-1, () => !slot.IsValid || !slot.IsFilled || Core.Memory.NoCacheRead<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
+                    await Coroutine.Sleep(300);
+                    SalvageAutoDialog.Instance.Close();
+                    await Coroutine.Wait(5000, () => !SalvageAutoDialog.Instance.IsOpen);
+                    continue;
+                }
+                
+                if (IsBusy)
+                    break;
+            }
+        }
+
         public static async Task Extract()
         {
             if (IsBusy)
-                return;
+            {
+                await GeneralFunctions.SmallTalk();
+                await GeneralFunctions.StopBusy(leaveDuty:false);
+                if (IsBusy) return;
+            }
 
-            var gear = InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems).FilledSlots.Where(i => i.SpiritBond == 100f);
+            var gear = InventoryManager.FilledInventoryAndArmory.Where(x => x.SpiritBond == 100f);
             if (gear.Any())
             {
                 foreach (var slot in gear)
