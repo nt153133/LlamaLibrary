@@ -66,7 +66,7 @@ namespace LlamaLibrary
 
         public static async Task<bool> Handin()
         {
-            await GeneralFunctions.StopCrafting();
+            await GeneralFunctions.StopBusy();
             if (Translator.Language == Language.Chn)
             {
                 await HandinOld();
