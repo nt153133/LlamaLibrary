@@ -145,7 +145,7 @@ namespace LlamaLibrary.Retainers
 
             if (rets.Any(i => i.Active && i.VentureTask !=0 && (i.VentureEndTimestamp - now) <= 0 && SpecialCurrencyManager.GetCurrencyCount(SpecialCurrency.Venture) > 2))
             {
-                await GeneralFunctions.StopBusy();
+                await GeneralFunctions.StopBusy(dismount:false);
 
                 if (DutyManager.InInstance || CraftingLog.IsOpen || FishingManager.State != FishingState.None || MovementManager.IsOccupied || CraftingManager.IsCrafting)
                 {
