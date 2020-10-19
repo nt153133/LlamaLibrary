@@ -32,8 +32,14 @@ namespace LlamaLibrary.OrderbotTags
         public int selectString { get; set; }
 
         [XmlAttribute("Count")]
+        [XmlAttribute("count")]
         [DefaultValue(1)]
         public int count { get; set; }
+        
+        [XmlAttribute("Dialog")]
+        [XmlAttribute("dialog")]
+        [DefaultValue(false)]
+        public bool dialog { get; set; } = false;
 
         public override bool HighPriority => true;
 
@@ -52,12 +58,12 @@ namespace LlamaLibrary.OrderbotTags
 
         protected override Composite CreateBehavior()
         {
-            return new ActionRunCoroutine(r => BuyItem(ItemId, NpcId, count, selectString));
+            return new ActionRunCoroutine(r => BuyItem(ItemId, NpcId, count, selectString, dialog));
         }
 
-        private async Task BuyItem(int itemId, int npcId, int count, int selectString)
+        private async Task BuyItem(int itemId, int npcId, int count, int selectString, bool dialog)
         {
-            var unit = GameObjectManager.GetObjectsByNPCId<Character>((uint) npcId).OrderBy(r => r.Distance()).FirstOrDefault();
+            var unit = GameObjectManager.GetObjectsByNPCId((uint) npcId).OrderBy(r => r.Distance()).FirstOrDefault();
 
             if (unit == null)
             {
@@ -73,15 +79,38 @@ namespace LlamaLibrary.OrderbotTags
 
             unit.Interact();
 
-            await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
-
-            if (SelectIconString.IsOpen)
+            if (dialog)
             {
-                SelectIconString.ClickSlot((uint) selectString);
+                await Coroutine.Wait(5000, () => Talk.DialogOpen);
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Sleep(1000);
+                }
+            }
+
+            await Coroutine.Wait(5000, () => ShopExchangeItem.Instance.IsOpen || Conversation.IsOpen);
+
+            if (Conversation.IsOpen)
+            {
+                Conversation.SelectLine((uint) selectString);
+
+                if (dialog)
+                {
+                    await Coroutine.Wait(5000, () => Talk.DialogOpen);
+
+                    while (Talk.DialogOpen)
+                    {
+                        Talk.Next();
+                        await Coroutine.Sleep(1000);
+                    }
+                }
+
 
                 await Coroutine.Wait(5000, () => ShopExchangeItem.Instance.IsOpen);
 
-                
+
                 if (ShopExchangeItem.Instance.IsOpen)
                 {
                     //Log("Opened");
@@ -93,6 +122,10 @@ namespace LlamaLibrary.OrderbotTags
                 {
                     ShopExchangeItem.Instance.Close();
                 }
+            }
+            else if (ShopExchangeItem.Instance.IsOpen)
+            {
+                await ShopExchangeItem.Instance.Purchase((uint) itemId, (uint) count);
             }
 
             _isDone = true;
