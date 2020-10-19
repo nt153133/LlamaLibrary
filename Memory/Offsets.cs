@@ -29,6 +29,9 @@ namespace LlamaLibrary.Memory
 
         [Offset("Search 48 89 5C 24 ? 57 48 83 EC ? 88 51 ? 49 8B F9")]
         internal static IntPtr RepairWindowOpen;
+        
+        [Offset("Search 48 8D 05 ? ? ? ? 48 89 03 B9 ? ? ? ? 4C 89 43 ? Add 3 TraceRelative")]
+        internal static IntPtr RepairVTable;
 
         [Offset("Search 48 8B 0D ? ? ? ? 4C 8B C0 33 D2 Add 3 TraceRelative")]
         internal static IntPtr SearchResultPtr;
