@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,8 +49,8 @@ namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
-        
         bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
+
         private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
         {
             {0, "Unknown"},
@@ -92,6 +93,7 @@ namespace LlamaLibrary
             {30, "In Craft - Using touch action"},
             {29, "In Craft - Using synthesis action"}
         };
+
 
         internal static List<RetainerTaskData> VentureData;
 
@@ -184,8 +186,8 @@ namespace LlamaLibrary
         public override void Start()
         {
             //hooks = TreeHooks.Instance.Hooks;
-           // TreeHooks.Instance.ClearAll();
-           
+            // TreeHooks.Instance.ClearAll();
+
             _root = new ActionRunCoroutine(r => Run());
         }
 
@@ -194,12 +196,112 @@ namespace LlamaLibrary
             _root = null;
         }
 
+        public static async Task InteractWithDenys(int selectString)
+        {
+            var npc = GameObjectManager.GetObjectByNPCId(1032900);
+            if (npc == null)
+            {
+                await Navigation.GetTo(418, new Vector3(-160.28f, 17.00897f, -55.8437f));
+                npc = GameObjectManager.GetObjectByNPCId(1032900);
+            }
+
+            if (npc != null && !npc.IsWithinInteractRange)
+            {
+                await Navigation.GetTo(418, new Vector3(-160.28f, 17.00897f, -55.8437f));
+            }
+            
+            if (npc != null && npc.IsWithinInteractRange)
+            {
+                npc.Interact();
+                await Coroutine.Wait(10000, () => Conversation.IsOpen);
+                if (Conversation.IsOpen)
+                {
+                    Conversation.SelectLine((uint) selectString);
+                }
+            }
+        }
+
         private async Task<bool> Run()
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
 
+            var TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
+            {
+                {31101, new CraftingRelicTurnin(31101, 0, 1, 2000, 30315)},
+                {31109, new CraftingRelicTurnin(31109, 0, 0, 3000, 30316)},
+                {31102, new CraftingRelicTurnin(31102, 1, 1, 2000, 30317)},
+                {31110, new CraftingRelicTurnin(31110, 1, 0, 3000, 30318)},
+                {31103, new CraftingRelicTurnin(31103, 2, 1, 2000, 30319)},
+                {31111, new CraftingRelicTurnin(31111, 2, 0, 3000, 30320)},
+                {31104, new CraftingRelicTurnin(31104, 3, 1, 2000, 30321)},
+                {31112, new CraftingRelicTurnin(31112, 3, 0, 3000, 30322)},
+                {31105, new CraftingRelicTurnin(31105, 4, 1, 2000, 30323)},
+                {31113, new CraftingRelicTurnin(31113, 4, 0, 3000, 30324)},
+                {31106, new CraftingRelicTurnin(31106, 5, 1, 2000, 30325)},
+                {31114, new CraftingRelicTurnin(31114, 5, 0, 3000, 30326)},
+                {31107, new CraftingRelicTurnin(31107, 6, 1, 2000, 30327)},
+                {31115, new CraftingRelicTurnin(31115, 6, 0, 3000, 30328)},
+                {31108, new CraftingRelicTurnin(31108, 7, 1, 2000, 30329)},
+                {31116, new CraftingRelicTurnin(31116, 7, 0, 3000, 30330)}
+
+            };
+
+            var collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x=> x.RawItemId).Distinct();
+            var collectablesAll = InventoryManager.FilledSlots.Where(i => i.IsCollectable);
+
+            if (collectables.Any(i=> TurnItemList.Keys.Contains(i)))
+            {
+                Log("Have collectables");
+                foreach (var collectable in collectablesAll)
+                {
+                    if (TurnItemList.Keys.Contains(collectable.RawItemId))
+                    {
+                        var turnin = TurnItemList[collectable.RawItemId];
+                        if (collectable.Collectability < turnin.MinCollectability)
+                        {
+                            Log($"Discarding {collectable.Name} is at {collectable.Collectability} which is under {turnin.MinCollectability}");
+                            collectable.Discard();
+                        }
+                    }
+                }
+                
+                collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x=> x.RawItemId).Distinct();
+
+                await InteractWithDenys(2);
+                await Coroutine.Wait(10000, () => CollectablesShop.Instance.IsOpen);
+
+
+                if (CollectablesShop.Instance.IsOpen)
+                {
+                    Log("Window open");
+                    foreach (var item in collectables)
+                    {
+                        Log($"Turning in {DataManager.GetItem(item).CurrentLocaleName}");
+                        var turnin = TurnItemList[item];
+                        
+                        Log($"Pressing job {turnin.Job}");
+                        CollectablesShop.Instance.SelectJob(turnin.Job);
+                        await Coroutine.Sleep(500);
+                        Log($"Pressing position {turnin.Position}");
+                        CollectablesShop.Instance.SelectItem(turnin.Position);
+                        await Coroutine.Sleep(1000);
+                        int i = 0;
+                        while (CollectablesShop.Instance.TurninCount > 0)
+                        {
+                            Log($"Pressing trade {i}");
+                            i++;
+                            CollectablesShop.Instance.Trade();
+                            await Coroutine.Sleep(100);
+                        }
+                    }
+                    
+                    CollectablesShop.Instance.Close();
+                    await Coroutine.Wait(10000, () => !CollectablesShop.Instance.IsOpen);
+                }
+                
+            }
             //await BuyHouse();
             //TreeRoot.Stop("Stop Requested");
             //await LeveWindow(1018997);
@@ -478,7 +580,7 @@ namespace LlamaLibrary
 
             // Log($"\n {sb}");
             //DumpLLOffsets();
-            
+
             /*InventoryBagId[] FCChest = new InventoryBagId[] {InventoryBagId.GrandCompany_Page1, InventoryBagId.GrandCompany_Page2, InventoryBagId.GrandCompany_Page3, (InventoryBagId) 20003, (InventoryBagId) 20004};
 
             var slots = InventoryManager.GetBagsByInventoryBagId(FCChest).SelectMany(x=> x.FilledSlots);
@@ -486,6 +588,17 @@ namespace LlamaLibrary
             {
                // Log(slot);
             }*/
+
+            /*
+            var windowItemIds = LlamaLibrary.RemoteWindows.GrandCompanySupplyList.Instance.GetTurninItemsIds();
+
+            for (int i = 0; i < LlamaLibrary.RemoteWindows.GrandCompanySupplyList.Instance.GetNumberOfTurnins(); i++)
+            {
+                Log($"Can turn in {DataManager.GetItem(windowItemIds[i])}");
+                //bool shouldTurnin = 
+            }
+
+
 
             uint[] privateHousing = new uint[] {59, 60, 61, 97};
             uint[] FCHousing = new uint[] {56,57,58,96};
@@ -507,22 +620,23 @@ namespace LlamaLibrary
             if (HavePrivateHousing)
             {
                 await GoToHousingBell(PrivateHouses.First());
-            }
+            }plop
             else if (HaveFCHousing)
             {
                 await GoToHousingBell(FCHouses.First());
             }
-            
-            
+            */
+
+
             //DumpOffsets();
             //await BuyHouse();
             //await testKupoTickets();
             TreeRoot.Stop("Stop Requested");
             //Core.Me.Stats
-            
+
             //AtkAddonControl windowByName = RaptureAtkUnitManager.Update()
             // await Coroutine.Sleep(100);
-            
+
             //Log(Core.Me.IsFate);
 
             return false;
@@ -569,7 +683,7 @@ namespace LlamaLibrary
             uint houseEntranceId = 2002737;
             uint aptEntranceId = 2007402;
 
-            var entranceIds = new uint[] { houseEntranceId, aptEntranceId };
+            var entranceIds = new uint[] {houseEntranceId, aptEntranceId};
 
             var entrance = GameObjectManager.GetObjectsByNPCIds<GameObject>(entranceIds).OrderBy(x => x.Distance2D()).FirstOrDefault();
             if (entrance != null)
@@ -643,7 +757,6 @@ namespace LlamaLibrary
         }
 
 
-        
         /*
         private void DumpLLOffsets()
         {
@@ -690,9 +803,79 @@ namespace LlamaLibrary
             }
         }
         */
-        
 
-       
+        private async Task TestMathma()
+        {
+            await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+
+            if (ff14bot.RemoteWindows.SelectIconString.IsOpen)
+            {
+                Logging.WriteDiagnostic("SelectIconString Open. Clicking Mahatma Exchange.");
+                ff14bot.RemoteWindows.SelectIconString.ClickSlot(0);
+            }
+            else
+            {
+                Logging.WriteDiagnostic("SelectIconString Failed to open.");
+            }
+
+
+            uint Slot = (uint) (LlamaLibrary.ScriptConditions.Helpers.ZodiacCompletedMahatma());
+            await Buddy.Coroutines.Coroutine.Sleep(1000);
+
+            ff14bot.Managers.GameObjectManager.GetObjectByNPCId(1011791).Interact();
+
+            await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+
+            if (ff14bot.RemoteWindows.SelectIconString.IsOpen)
+            {
+                Logging.WriteDiagnostic("SelectIconString Open. Clicking Mahatma Exchange.");
+                ff14bot.RemoteWindows.SelectIconString.ClickSlot(0);
+            }
+
+            await Coroutine.Wait(5000, () => Talk.DialogOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+            if (await Coroutine.Wait(1000, () => Talk.DialogOpen))
+            {
+                Talk.Next();
+            }
+
+            await Coroutine.Wait(5000, () => SelectString.IsOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+            if (ff14bot.RemoteWindows.SelectString.IsOpen)
+            {
+                Logging.WriteDiagnostic("SelectString Open. Choosing weapon.");
+                ff14bot.RemoteWindows.SelectString.ClickSlot(0);
+                await Coroutine.Wait(5000, () => !SelectString.IsOpen);
+            }
+
+            await Coroutine.Wait(5000, () => SelectString.IsOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+            if (ff14bot.RemoteWindows.SelectString.IsOpen)
+            {
+                Logging.WriteDiagnostic("Choosing next Mahatma.");
+                SelectString.ClickSlot(Slot + 1);
+            }
+
+            await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+            if (ff14bot.RemoteWindows.SelectYesno.IsOpen)
+            {
+                Logging.WriteDiagnostic("Selecting Yes.");
+                ff14bot.RemoteWindows.SelectYesno.ClickYes();
+            }
+
+            await Coroutine.Wait(5000, () => Talk.DialogOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+            while (Talk.DialogOpen)
+            {
+                Talk.Next();
+                await Coroutine.Wait(2000, () => !Talk.DialogOpen);
+                await Buddy.Coroutines.Coroutine.Sleep(1000);
+            }
+        }
+
 
         private async Task BuyHouse()
         {
@@ -964,7 +1147,7 @@ namespace LlamaLibrary
                 await HelperFunctions.UseSummoningBell();
                 await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
             }
-            
+
             if (!RetainerList.Instance.IsOpen)
             {
                 Log("Can't find open bell either you have none or not near a bell");

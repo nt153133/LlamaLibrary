@@ -12,12 +12,28 @@ namespace LlamaLibrary.RemoteWindows
     {
         private const string WindowName = "CollectablesShop";
 
-        public int count => ___Elements()[20].TrimmedData -1;
+        public int RowCount => ___Elements()[20].TrimmedData -1;
+        public int TurninCount => ___Elements()[4843].TrimmedData;
         public CollectablesShop() : base(WindowName)
         {
             _name = WindowName;
         }
 
+        public void SelectJob(int job)
+        {
+            SendAction(2,3,0xE,4,(ulong) job);
+        }
+        
+        public void SelectItem(int line)
+        {
+            SendAction(2,3,0xC,4,(ulong) line);
+        }
+
+        public void Trade()
+        {
+            SendAction(2,3,0xf,4,0);
+        }
+        
         public List<string> ListItems()
         {
             int count = ___Elements()[20].TrimmedData -1;
