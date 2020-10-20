@@ -9,7 +9,6 @@ using ff14bot.RemoteWindows;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using ff14bot.RemoteAgents;
 using LlamaLibrary.Memory;

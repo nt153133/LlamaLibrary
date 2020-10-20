@@ -32,6 +32,25 @@ namespace LlamaLibrary.Extensions
                    type != ClassJobType.Weaver;
         }
 
+        internal static bool IsDoh(this ClassJobType type)
+        {
+            return type == ClassJobType.Carpenter ||
+                   type == ClassJobType.Blacksmith ||
+                   type == ClassJobType.Armorer ||
+                   type == ClassJobType.Goldsmith ||
+                   type == ClassJobType.Leatherworker ||
+                   type == ClassJobType.Weaver ||
+                   type == ClassJobType.Alchemist ||
+                   type == ClassJobType.Culinarian;
+        }
+        
+        internal static bool IsDol(this ClassJobType type)
+        {
+            return type == ClassJobType.Miner ||
+                   type == ClassJobType.Botanist ||
+                   type == ClassJobType.Fisher;
+        }
+
         internal static ClassJobType ClassJob(this RetainerRole type)
         {
             return (ClassJobType)Enum.Parse(typeof(ClassJobType), type.ToString());
