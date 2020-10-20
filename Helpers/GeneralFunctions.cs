@@ -9,11 +9,10 @@ using ff14bot.RemoteWindows;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using ff14bot.RemoteAgents;
-using GreyMagic;
 using LlamaLibrary.Memory;
-using TreeSharp;
 
 namespace LlamaLibrary.Helpers
 {
@@ -76,11 +75,16 @@ namespace LlamaLibrary.Helpers
 
                 if (dismount && Core.Me.IsMounted)
                 {
+                    Log("Dismounting.");
                     ActionManager.Dismount();
                     await Coroutine.Wait(3000, () => !Core.Me.IsMounted);
                 }
 
-                if (InSmallTalk) await SmallTalk();
+                if (InSmallTalk)
+                {
+                    Log("Skipping smalltalk.");
+                    await SmallTalk();
+                }
 
                 await Coroutine.Sleep(2500);
             }
@@ -96,45 +100,55 @@ namespace LlamaLibrary.Helpers
 
         public static async Task SmallTalk()
         {
-            await Coroutine.Wait(1000, () => InSmallTalk);
+            await Coroutine.Wait(500, () => InSmallTalk);
             
             while (InSmallTalk)
             {
                 await Coroutine.Yield();
+                
                 if (SelectYesno.IsOpen)
                 {
                     SelectYesno.ClickYes();
                 }
+                
                 if (SelectString.IsOpen)
                 {
-                    RaptureAtkUnitManager.GetWindowByName("SelectString").SendAction(1, 3UL, (ulong)uint.MaxValue);
-                    await Coroutine.Wait(1000, () => !SelectString.IsOpen);
-                    if (SelectString.IsOpen)
+                    if (!await WindowEscapeSpam("SelectString"))
                     {
                         if (SelectString.Lines().Contains("Cancel")) SelectString.ClickLineContains("Cancel");
-                        else SelectString.ClickSlot(0);
+                        else if (SelectString.Lines().Contains("Quit")) SelectString.ClickLineContains("Quit");
+                        else if (SelectString.Lines().Contains("Exit")) SelectString.ClickLineContains("Exit");
+                        else SelectString.ClickSlot((uint)(SelectString.LineCount - 1));
                     }
                 }
+                
                 if (SelectIconString.IsOpen)
                 {
-                    RaptureAtkUnitManager.GetWindowByName("SelectIconString").SendAction(1, 3UL, (ulong)uint.MaxValue);
-                    await Coroutine.Wait(1000, () => !SelectIconString.IsOpen);
-                    if (SelectIconString.IsOpen)
+                    if (!await WindowEscapeSpam("SelectIconString"))
                     {
-                        if (SelectIconString.Lines().Contains("Cancel")) SelectIconString.ClickLineContains("Cancel");
-                        else SelectIconString.ClickSlot(0);
+                        if (SelectIconString.Lines().Contains("Cancel")) SelectString.ClickLineContains("Cancel");
+                        else if (SelectIconString.Lines().Contains("Quit")) SelectString.ClickLineContains("Quit");
+                        else if (SelectIconString.Lines().Contains("Exit")) SelectString.ClickLineContains("Exit");
+                        else SelectIconString.ClickSlot((uint)(SelectIconString.LineCount - 1));
                     }
                 }
 
                 if (Talk.DialogOpen)
                 {
-                    Talk.Next();
+                    while (Talk.DialogOpen)
+                    {
+                        Talk.Next();
+                        await Coroutine.Wait(100, () => !Talk.DialogOpen);
+                        await Coroutine.Wait(100, () => Talk.DialogOpen);
+                        await Coroutine.Yield();
+                    }
                 }
 
                 if (JournalAccept.IsOpen)
                 {
                     JournalAccept.Decline();
                 }
+                
                 if (QuestLogManager.InCutscene)
                 {
                     AgentCutScene.Instance.PromptSkip();
@@ -143,8 +157,28 @@ namespace LlamaLibrary.Helpers
                         SelectString.ClickSlot(0);
                     }
                 }
+                
                 await Coroutine.Wait(500, () => InSmallTalk);
             }
+        }
+
+        private static async Task<bool> WindowEscapeSpam(string windowName)
+        {
+            for (var i = 0; i < 5 && RaptureAtkUnitManager.GetWindowByName(windowName) != null; i++)
+            {
+                RaptureAtkUnitManager.Update();
+                
+                if (RaptureAtkUnitManager.GetWindowByName(windowName) != null)
+                {
+                    RaptureAtkUnitManager.GetWindowByName(windowName).SendAction(1, 3UL, (ulong)uint.MaxValue);
+                }
+                
+                await Coroutine.Wait(300, () => RaptureAtkUnitManager.GetWindowByName(windowName) == null);
+                await Coroutine.Wait(300, () => RaptureAtkUnitManager.GetWindowByName(windowName) != null);
+                await Coroutine.Yield();
+            }
+
+            return RaptureAtkUnitManager.GetWindowByName(windowName) == null;
         }
 
         public static IEnumerable<BagSlot> NonGearSetItems()
