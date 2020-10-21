@@ -221,13 +221,44 @@ namespace LlamaLibrary
             }
         }
 
-        private async Task<bool> Run()
+        public static async Task TurninSkySteelGathering()
         {
-            Navigator.PlayerMover = new SlideMover();
-            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            var GatheringItems = new Dictionary<uint, (uint Reward, uint Cost)>
+            {
+                {31125,(30331,10)},
+                {31130,(30333,10)},
+                {31127,(30335,10)},
+                {31132,(30337,10)},
+                {31129,(30339,10)},
+                {31134,(30340,10)}
+            };
+            
+            var turninItems = InventoryManager.FilledSlots.Where(i => i.IsHighQuality && GatheringItems.Keys.Contains(i.RawItemId));
 
+            if (turninItems.Any())
+            {
+                await InteractWithDenys(3);
+                await Coroutine.Wait(10000, () => ShopExchangeItem.Instance.IsOpen);
+                if (ShopExchangeItem.Instance.IsOpen)
+                {
+                    Log($"Window Open");
+                    foreach (var turnin in turninItems)
+                    {
+                        var reward = GatheringItems[turnin.RawItemId].Reward;
+                        var amt = (turnin.Count / GatheringItems[turnin.RawItemId].Cost);
+                        Log($"Buying {amt}x{DataManager.GetItem(reward).CurrentLocaleName}");
+                        await ShopExchangeItem.Instance.Purchase(reward, amt);
+                        await Coroutine.Sleep(500);
+                    }
+                    ShopExchangeItem.Instance.Close();
+                    await Coroutine.Wait(10000, () => !ShopExchangeItem.Instance.IsOpen);
+                }
+            }
+        }
 
-            var TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
+        public static async Task TurninSkySteelCrafting()
+        {
+            Dictionary<uint, CraftingRelicTurnin> TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
             {
                 {31101, new CraftingRelicTurnin(31101, 0, 1, 2000, 30315)},
                 {31109, new CraftingRelicTurnin(31109, 0, 0, 3000, 30316)},
@@ -275,22 +306,22 @@ namespace LlamaLibrary
 
                 if (CollectablesShop.Instance.IsOpen)
                 {
-                    Log("Window open");
+                   // Log("Window open");
                     foreach (var item in collectables)
                     {
                         Log($"Turning in {DataManager.GetItem(item).CurrentLocaleName}");
                         var turnin = TurnItemList[item];
                         
-                        Log($"Pressing job {turnin.Job}");
+                       // Log($"Pressing job {turnin.Job}");
                         CollectablesShop.Instance.SelectJob(turnin.Job);
                         await Coroutine.Sleep(500);
-                        Log($"Pressing position {turnin.Position}");
+                      //  Log($"Pressing position {turnin.Position}");
                         CollectablesShop.Instance.SelectItem(turnin.Position);
                         await Coroutine.Sleep(1000);
                         int i = 0;
                         while (CollectablesShop.Instance.TurninCount > 0)
                         {
-                            Log($"Pressing trade {i}");
+                           // Log($"Pressing trade {i}");
                             i++;
                             CollectablesShop.Instance.Trade();
                             await Coroutine.Sleep(100);
@@ -300,8 +331,18 @@ namespace LlamaLibrary
                     CollectablesShop.Instance.Close();
                     await Coroutine.Wait(10000, () => !CollectablesShop.Instance.IsOpen);
                 }
-                
             }
+        }
+        
+        private async Task<bool> Run()
+        {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+
+
+
+            await TurninSkySteelGathering();
+            await TurninSkySteelCrafting();
             //await BuyHouse();
             //TreeRoot.Stop("Stop Requested");
             //await LeveWindow(1018997);
