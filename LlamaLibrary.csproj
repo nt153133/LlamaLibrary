@@ -128,6 +128,7 @@
     <Compile Include="OrderbotTags\LisbethOrderBot.cs" />
     <Compile Include="OrderbotTags\LLChangeZone.cs" />
     <Compile Include="OrderbotTags\LLDesynth.cs" />
+    <Compile Include="OrderbotTags\LLGoHome.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
     <Compile Include="OrderbotTags\LLOpenChest.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
