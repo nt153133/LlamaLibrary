@@ -339,7 +339,7 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
-
+            
 
             await TurninSkySteelGathering();
             await TurninSkySteelCrafting();
