@@ -50,10 +50,13 @@ namespace LlamaLibrary.Helpers
                     }
                 }
 
-                if (CraftingLog.IsOpen || CraftingManager.IsCrafting)
+                if (CraftingLog.IsOpen || CraftingManager.IsCrafting || Synthesis.IsOpen)
                 {
                     Log($"Closing Crafting Window.");
                     await Lisbeth.ExitCrafting();
+                    Synthesis.Close();
+                    await Coroutine.Wait(6000, () => !Synthesis.IsOpen);
+                    await Coroutine.Wait(1500, () => CraftingLog.IsOpen);
                     CraftingLog.Close();
                     await Coroutine.Wait(6000, () => !CraftingLog.IsOpen);
                     await Coroutine.Wait(6000, () => !CraftingManager.IsCrafting && !MovementManager.IsOccupied);
