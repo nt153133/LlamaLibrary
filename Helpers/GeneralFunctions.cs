@@ -226,6 +226,13 @@ namespace LlamaLibrary.Helpers
             else Log("No items to repair.");
         }
 
+        public static int GetGearSetiLvl(GearSet gs)
+        {
+            IReadOnlyCollection<Item> gear = gs.Gear.Select(i => i.Item).Where(g => g.ItemLevel > 0 && g.CurrentLocaleName != "").ToList();
+            if (!gear.Any()) return 0;
+            return (int) gear.Sum(i => i.ItemLevel) / gear.Count();
+        }
+
         public static async Task GoHome()
         {
             uint[] privateHousing = new uint[] {59, 60, 61, 97};
