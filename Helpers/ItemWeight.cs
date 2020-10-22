@@ -8,10 +8,10 @@ namespace LlamaLibrary.Helpers
 {
     public static class ItemWeight
     {
-        public static float GetItemWeight(Item item, ClassJobType job = 0)
+        public static float GetItemWeight(Item item, ClassJobType job = ClassJobType.Adventurer)
         {
             if (!MainHandsAndOffHands.Contains(item.EquipmentCatagory) && !item.IsArmor && !item.IsWeapon) return -1f;
-            if (job == 0) job = Core.Me.CurrentJob;
+            if (job == ClassJobType.Adventurer) job = Core.Me.CurrentJob;
             if (!item.IsValidForClass(job)) return -1f;
             var level = Core.Me.Levels[job];
             if ((item.Id == 2634 || item.Id == 2633) && level <= 10) return 5000f;
