@@ -42,32 +42,32 @@ namespace LlamaLibrary.ScriptConditions
         
         public static bool HasIshgardGatheringMining()
         {
-            return InventoryManager.FilledSlots.Any(i => idList0.Contains(i.RawItemId) && i.Count > 10);
+            return InventoryManager.FilledSlots.Any(i => idList0.Contains(i.RawItemId) && i.Count >= 10);
         }
         
         public static bool HasIshgardGatheringBotanist()
         {
-            return InventoryManager.FilledSlots.Any(i => idList1.Contains(i.RawItemId) && i.Count > 10);
+            return InventoryManager.FilledSlots.Any(i => idList1.Contains(i.RawItemId) && i.Count >= 10);
         }
 		
 		public static bool HasIshgardGatheringFisher()
         {
-            return InventoryManager.FilledSlots.Any(i => idList2.Contains(i.RawItemId) && i.Count > 1);
+            return InventoryManager.FilledSlots.Any(i => idList2.Contains(i.RawItemId) && i.Count >= 1);
         }
 
         public static bool LLHasItemNQ(int itemID)
         {
-            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsHighQuality == false) > 1;
+            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsHighQuality == false) >= 1;
         }
 
         public static bool LLHasItemHQ(int itemID)
         {
-            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsHighQuality) > 1;
+            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsHighQuality) >= 1;
         }
         
         public static bool LLHasItemCollectable(int itemID)
         {
-            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsCollectable) > 1;
+            return InventoryManager.FilledSlots.Count(i => i.RawItemId == itemID && i.IsCollectable) >= 1;
         }
 
         public static int GetSkybuilderScrips()
