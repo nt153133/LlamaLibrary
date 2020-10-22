@@ -145,6 +145,11 @@ namespace LlamaLibrary.ScriptConditions
             return false;
         }
 
+        public static bool IsDutyAvailable(int duty)
+        {
+            return DutyManager.AvailableContent.Keys.Contains((uint)duty);
+        }
+
         /*public static int GetLeveTodoArgsItem1(int index)
         {
             if (DirectorManager.ActiveDirector == null) return -1;
