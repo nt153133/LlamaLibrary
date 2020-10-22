@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Behavior;
@@ -110,6 +110,11 @@ namespace LlamaLibrary.Helpers
             while (InSmallTalk)
             {
                 await Coroutine.Yield();
+
+                if (CommonBehaviors.IsLoading)
+                {
+                    await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+                }
                 
                 if (SelectYesno.IsOpen)
                 {
