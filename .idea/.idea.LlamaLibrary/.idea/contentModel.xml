@@ -46,6 +46,7 @@
         <e p="GrandCompanyShop.cs" t="Include" />
         <e p="HuntHelper.cs" t="Include" />
         <e p="ItemConditionals.cs" t="Include" />
+        <e p="ItemWeight.cs" t="Include" />
         <e p="Lisbeth.cs" t="Include" />
         <e p="Logger.cs" t="Include" />
         <e p="Navigation.cs" t="Include" />
@@ -97,12 +98,15 @@
         <e p="LisbethOrderBot.cs" t="Include" />
         <e p="LLChangeZone.cs" t="Include" />
         <e p="LLDesynth.cs" t="Include" />
+        <e p="LLGoHome.cs" t="Include" />
         <e p="LLHandOver.cs" t="Include" />
         <e p="LLoadProfile.cs" t="Include" />
         <e p="LLOpenChest.cs" t="Include" />
         <e p="LLSendChat.cs" t="Include" />
+        <e p="LLSmallTalk.cs" t="Include" />
         <e p="LLStopBot.cs" t="Include" />
         <e p="LLTurnIn.cs" t="Include" />
+        <e p="LLUseObject.cs" t="Include" />
         <e p="LLUseSpell.cs" t="Include" />
         <e p="LowerCollectable.cs" t="Include" />
         <e p="SetBluSpells.cs" t="Include" />
@@ -204,6 +208,7 @@
         <e p="Helpers.cs" t="Include" />
       </e>
       <e p="Structs" t="Include">
+        <e p="CraftingRelicTurnin.cs" t="Include" />
         <e p="FCWorkshopItem.cs" t="Include" />
         <e p="GatheringNodeData.cs" t="Include" />
         <e p="GCShopItem.cs" t="Include" />

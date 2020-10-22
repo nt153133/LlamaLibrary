@@ -205,6 +205,7 @@
     <Compile Include="RemoteWindows\RecommendEquip.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
+    <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\RetainerTaskList.cs" />
     <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\ShopExchangeItem.cs" />
@@ -228,6 +229,7 @@
     </Compile>
     <Compile Include="ScriptConditions\Extras.cs" />
     <Compile Include="ScriptConditions\Helpers.cs" />
+    <Compile Include="Structs\CraftingRelicTurnin.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
     <Compile Include="Structs\GatheringNodeData.cs" />
     <Compile Include="Structs\GCShopItem.cs" />
