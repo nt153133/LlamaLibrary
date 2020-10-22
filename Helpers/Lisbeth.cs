@@ -23,6 +23,7 @@ namespace LlamaLibrary.Helpers
         private static Func<Task<bool>> _exitCrafting;
         private static Func<string, Vector3, Task<bool>> _travelToWithArea;
         private static Func<uint, uint, Vector3, Task<bool>> _travelTo;
+        private static Func<uint, Vector3, Task<bool>> _travelToWithoutSubzone;
 
         static Lisbeth()
         {
@@ -61,6 +62,7 @@ namespace LlamaLibrary.Helpers
                         _selfRepairWithMenderFallback = (Func<Task>) Delegate.CreateDelegate(typeof(Func<Task>), apiObject, "SelfRepairWithMenderFallback");
                         _travelTo = (Func<uint, uint, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<uint, uint, Vector3, Task<bool>>), apiObject, "TravelTo");
                         _travelToWithArea = (Func<string, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<string, Vector3, Task<bool>>), apiObject, "TravelToWithArea");
+                        _travelToWithoutSubzone = (Func<uint, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<uint, Vector3, Task<bool>>), apiObject, "TravelToWithoutSubzone");
                     }
                     catch (Exception e)
                     {
@@ -114,6 +116,11 @@ namespace LlamaLibrary.Helpers
         public static async Task<bool> TravelToZones(uint zoneId, uint subzoneId, Vector3 position)
         {
             return await _travelTo(zoneId, subzoneId, position);
+        }
+        
+        public static async Task<bool> TravelToZones(uint zoneId, Vector3 position)
+        {
+            return await _travelToWithoutSubzone(zoneId, position);
         }
         
         public static async Task StopGently()

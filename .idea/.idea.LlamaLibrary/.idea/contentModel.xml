@@ -38,8 +38,10 @@
       <e p="GCSupplyBase.cs" t="Include" />
       <e p="Helpers" t="Include">
         <e p="Achievements.cs" t="Include" />
+        <e p="ActionHelper.cs" t="Include" />
         <e p="BeastTribeHelper.cs" t="Include" />
         <e p="BlueMageSpellBook.cs" t="Include" />
+        <e p="GeneralFunctions.cs" t="Include" />
         <e p="GrandCompanyHelper.cs" t="Include" />
         <e p="GrandCompanyShop.cs" t="Include" />
         <e p="HuntHelper.cs" t="Include" />
@@ -78,19 +80,26 @@
       <e p="obj" t="ExcludeRecursive" />
       <e p="OrderbotTags" t="Include">
         <e p="AutoEquip.cs" t="Include" />
+        <e p="AutoInventoryEquip.cs" t="Include" />
         <e p="BasicTreasureFight.cs" t="Include" />
         <e p="BuyBluTotem.cs" t="Include" />
+        <e p="BuyGCItem.cs" t="Include" />
         <e p="BuyScripItem.cs" t="Include" />
         <e p="BuyShopExchangeCurrency.cs" t="Include" />
         <e p="BuyShopExchangeItem.cs" t="Include" />
         <e p="BuyWhiteScriptItem.cs" t="Include" />
         <e p="ChangeClass.cs" t="Include" />
+        <e p="EquipWeapon.cs" t="Include" />
         <e p="Fate.cs" t="Include" />
         <e p="GetTo.cs" t="Include" />
+        <e p="JoinDuty.cs" t="Include" />
+        <e p="LeaveDuty.cs" t="Include" />
         <e p="LisbethOrderBot.cs" t="Include" />
+        <e p="LLChangeZone.cs" t="Include" />
         <e p="LLDesynth.cs" t="Include" />
         <e p="LLHandOver.cs" t="Include" />
         <e p="LLoadProfile.cs" t="Include" />
+        <e p="LLOpenChest.cs" t="Include" />
         <e p="LLSendChat.cs" t="Include" />
         <e p="LLStopBot.cs" t="Include" />
         <e p="LLTurnIn.cs" t="Include" />
@@ -165,6 +174,7 @@
         <e p="RemoteWindow.cs" t="Include" />
         <e p="RetainerList.cs" t="Include" />
         <e p="RetainerTaskList.cs" t="Include" />
+        <e p="SalvageAutoDialog.cs" t="Include" />
         <e p="ShopExchangeItem.cs" t="Include" />
         <e p="SubmarinePartsMenu.cs" t="Include" />
       </e>
@@ -190,6 +200,7 @@
         <e p="RetainerTasks.cs" t="Include" />
       </e>
       <e p="ScriptConditions" t="Include">
+        <e p="Extras.cs" t="Include" />
         <e p="Helpers.cs" t="Include" />
       </e>
       <e p="Structs" t="Include">
