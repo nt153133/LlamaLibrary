@@ -123,6 +123,7 @@
     <Compile Include="OrderbotTags\ChangeClass.cs" />
     <Compile Include="OrderbotTags\EquipWeapon.cs" />
     <Compile Include="OrderbotTags\Fate.cs" />
+    <Compile Include="OrderbotTags\GearSetEquipAll.cs" />
     <Compile Include="OrderbotTags\GetTo.cs" />
     <Compile Include="OrderbotTags\JoinDuty.cs" />
     <Compile Include="OrderbotTags\LeaveDuty.cs" />
