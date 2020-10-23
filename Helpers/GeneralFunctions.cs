@@ -103,9 +103,9 @@ namespace LlamaLibrary.Helpers
 
         private static bool InSmallTalk => SelectYesno.IsOpen || SelectString.IsOpen || SelectIconString.IsOpen || Talk.DialogOpen || JournalAccept.IsOpen || QuestLogManager.InCutscene || CommonBehaviors.IsLoading;
 
-        public static async Task SmallTalk()
+        public static async Task SmallTalk(int waitTime = 500)
         {
-            await Coroutine.Wait(500, () => InSmallTalk);
+            await Coroutine.Wait(waitTime, () => InSmallTalk);
             
             while (InSmallTalk)
             {
