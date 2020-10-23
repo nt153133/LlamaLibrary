@@ -29,22 +29,10 @@ namespace LlamaLibrary.ScriptConditions
             return (int) (InventoryManager.FilledInventoryAndArmory.FirstOrDefault(i => i.RawItemId == (uint)itemID).SpiritBond);
         }
 
-        public static int LowestCrafterILvl()
+        public static int HighestILvl(ClassJobType job)
         {
-            IEnumerable<GearSet> sets = GearsetManager.GearSets.Where(g => g.Class.IsDoh() && g.Gear.Any());
-            return sets.Any() ? sets.Min(GeneralFunctions.GetGearSetiLvl) : 0;
-        }
-
-        public static int LowestGathererILvl()
-        {
-            IEnumerable<GearSet> sets = GearsetManager.GearSets.Where(g => g.Class.IsDol() && g.Gear.Any());
-            return sets.Any() ? sets.Min(GeneralFunctions.GetGearSetiLvl) : 0;
-        }
-        
-        public static int LowestMINBTNILvl()
-        {
-            IEnumerable<GearSet> sets = GearsetManager.GearSets.Where(g => g.Class.IsDol() && g.Class != ClassJobType.Fisher && g.Gear.Any());
-            return sets.Any() ? sets.Min(GeneralFunctions.GetGearSetiLvl) : 0;
+            IEnumerable<GearSet> sets = GearsetManager.GearSets.Where(g => g.InUse && g.Class == job && g.Gear.Any());
+            return sets.Any() ? sets.Max(GeneralFunctions.GetGearSetiLvl) : 0;
         }
     }
 }
