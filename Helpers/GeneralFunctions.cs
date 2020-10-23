@@ -24,6 +24,9 @@ namespace LlamaLibrary.Helpers
     public static class GeneralFunctions
     {
         static bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
+        
+        #region StopBusy
+        
         private static bool CheckIfBusy(bool leaveDuty, bool stopFishing, bool dismount)
         {
             if (stopFishing && FishingManager.State != FishingState.None) return true;
@@ -189,7 +192,11 @@ namespace LlamaLibrary.Helpers
 
             return RaptureAtkUnitManager.GetWindowByName(windowName) == null;
         }
+        
+        #endregion StopBusy
 
+        #region InventoryEquip
+        
         public static async Task InventoryEquipBest(bool updateGearSet = true, bool useRecommendEquip = true)
         {
             await StopBusy(leaveDuty: false, dismount: false);
@@ -313,6 +320,8 @@ namespace LlamaLibrary.Helpers
             if (slotId == 13) return new List<ItemUiCategory> {ItemUiCategory.Soul_Crystal};
             return null;
         }
+        
+        #endregion InventoryEquip
 
         public static IEnumerable<BagSlot> NonGearSetItems()
         {
@@ -360,6 +369,8 @@ namespace LlamaLibrary.Helpers
             if (!gear.Any()) return 0;
             return (int) gear.Sum(i => i.ItemLevel) / gear.Count();
         }
+        
+        #region GoHome
 
         public static async Task GoHome()
         {
@@ -463,6 +474,8 @@ namespace LlamaLibrary.Helpers
 
             return false;
         }
+        
+        #endregion GoHome
 
         private static void Log(string text, params object[] args)
         {
