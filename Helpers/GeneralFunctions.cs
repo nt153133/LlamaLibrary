@@ -118,7 +118,7 @@ namespace LlamaLibrary.Helpers
                 
                 if (SelectYesno.IsOpen)
                 {
-                    SelectYesno.ClickYes();
+                    SelectYesno.ClickNo();
                 }
                 
                 if (SelectString.IsOpen)
@@ -142,32 +142,27 @@ namespace LlamaLibrary.Helpers
                         else SelectIconString.ClickSlot((uint)(SelectIconString.LineCount - 1));
                     }
                 }
-
-                if (Talk.DialogOpen)
+                
+                while (QuestLogManager.InCutscene)
                 {
-                    while (Talk.DialogOpen)
-                    {
-                        Talk.Next();
-                        await Coroutine.Wait(100, () => !Talk.DialogOpen);
-                        await Coroutine.Wait(100, () => Talk.DialogOpen);
-                        await Coroutine.Yield();
-                    }
+                    AgentCutScene.Instance.PromptSkip();
+                    if (AgentCutScene.Instance.CanSkip && SelectString.IsOpen) SelectString.ClickSlot(0);
+                    await Coroutine.Yield();
+                }
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(100, () => !Talk.DialogOpen);
+                    await Coroutine.Wait(100, () => Talk.DialogOpen);
+                    await Coroutine.Yield();
                 }
 
                 if (JournalAccept.IsOpen)
                 {
                     JournalAccept.Decline();
                 }
-                
-                if (QuestLogManager.InCutscene)
-                {
-                    AgentCutScene.Instance.PromptSkip();
-                    if (AgentCutScene.Instance.CanSkip && SelectString.IsOpen)
-                    {
-                        SelectString.ClickSlot(0);
-                    }
-                }
-                
+
                 await Coroutine.Wait(500, () => InSmallTalk);
             }
         }
