@@ -82,7 +82,7 @@ namespace LlamaLibrary.Helpers
         }
     }
     
-    public struct SavedTimer
+    public class SavedTimer
     {
         public DateTimeOffset ResetTime;
         public DateTimeOffset LastChecked;

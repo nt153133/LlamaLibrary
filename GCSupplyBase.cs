@@ -32,7 +32,9 @@ namespace MasterPieceSupplyTest
     public class MasterPieceSupplyTester : BotBase
     {
         private Composite _root;
-        public override string Name => "GCDailyLisbeth";
+        public override string Name => _name;
+        
+        public static string _name => "GCDailyLisbeth";
         public override PulseFlags PulseFlags => PulseFlags.All;
 
         public override bool IsAutonomous => true;
@@ -61,7 +63,7 @@ namespace MasterPieceSupplyTest
             _root = null;
         }
 
-        public async Task DoGCDailyTurnins()
+        public async static Task DoGCDailyTurnins()
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
@@ -148,7 +150,7 @@ namespace MasterPieceSupplyTest
             }
         }
 
-        private async Task HandleCurrentGCWindow()
+        private static async Task HandleCurrentGCWindow()
         {
             var bools = GrandCompanySupplyList.Instance.GetTurninBools();
             var windowItemIds = GrandCompanySupplyList.Instance.GetTurninItemsIds();
@@ -222,7 +224,7 @@ namespace MasterPieceSupplyTest
             }
         }
 
-        public async Task<string> GetGCSupplyList()
+        public static async Task<string> GetGCSupplyList()
         {
             if (!ContentsInfoDetail.Instance.IsOpen)
             {
@@ -286,9 +288,9 @@ namespace MasterPieceSupplyTest
             return JsonConvert.SerializeObject(outList, Formatting.None);
         }
 
-        private void Log(string text, params object[] args)
+        private static void Log(string text, params object[] args)
         {
-            var msg = string.Format("[" + Name + "] " + text, args);
+            var msg = string.Format("[" + _name + "] " + text, args);
             Logging.Write(Colors.Gold, msg);
         }
 

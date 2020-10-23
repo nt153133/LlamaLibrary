@@ -23,7 +23,7 @@ namespace LlamaLibrary.Helpers
         private static CycleTime[] _cycles = new CycleTime[MaxRows];
         private static readonly string[] Description = {"","Duty/Beast Tribe Dailies", "Weekly Reset", "Unknown", "GC/Rowena", "Unknown"};
 
-        public static DateTimeOffset CurrentTime => DateTimeOffset.FromUnixTimeSeconds((long) CurrentTimeStamp);
+        public static DateTimeOffset CurrentTime => DateTimeOffset.FromUnixTimeSeconds((long) CurrentTimeStamp).LocalDateTime;
 
         static Timers()
         {
