@@ -10,10 +10,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using ff14bot.Enums;
 using ff14bot.Navigation;
 using ff14bot.RemoteAgents;
 using LlamaLibrary.Memory;
+using LlamaLibrary.RemoteAgents;
+using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Retainers;
+using Character = LlamaLibrary.RemoteWindows.Character;
 
 namespace LlamaLibrary.Helpers
 {
@@ -172,18 +176,142 @@ namespace LlamaLibrary.Helpers
             for (var i = 0; i < 5 && RaptureAtkUnitManager.GetWindowByName(windowName) != null; i++)
             {
                 RaptureAtkUnitManager.Update();
-                
+
                 if (RaptureAtkUnitManager.GetWindowByName(windowName) != null)
                 {
-                    RaptureAtkUnitManager.GetWindowByName(windowName).SendAction(1, 3UL, (ulong)uint.MaxValue);
+                    RaptureAtkUnitManager.GetWindowByName(windowName).SendAction(1, 3UL, (ulong) uint.MaxValue);
                 }
-                
+
                 await Coroutine.Wait(300, () => RaptureAtkUnitManager.GetWindowByName(windowName) == null);
                 await Coroutine.Wait(300, () => RaptureAtkUnitManager.GetWindowByName(windowName) != null);
                 await Coroutine.Yield();
             }
 
             return RaptureAtkUnitManager.GetWindowByName(windowName) == null;
+        }
+
+        public static async Task InventoryEquipBest(bool updateGearSet = true, bool useRecommendEquip = true)
+        {
+            await StopBusy(leaveDuty: false, dismount: false);
+            if (!Character.Instance.IsOpen)
+            {
+                AgentCharacter.Instance.Toggle();
+                await Coroutine.Wait(5000, () => Character.Instance.IsOpen);
+            }
+
+            foreach (var bagSlot in InventoryManager.EquippedItems)
+            {
+                if (!bagSlot.IsValid) continue;
+                if (bagSlot.Slot == 0 && !bagSlot.IsFilled)
+                {
+                    Log("MainHand slot isn't filled. How?");
+                    continue;
+                }
+
+                Item currentItem = bagSlot.Item;
+                List<ItemUiCategory> category = GetEquipUiCategory(bagSlot.Slot);
+                float itemWeight = bagSlot.IsFilled ? ItemWeight.GetItemWeight(bagSlot.Item) : -1;
+
+                BagSlot betterItem = InventoryManager.FilledInventoryAndArmory
+                                                     .Where(bs =>
+                                                         category.Contains(bs.Item.EquipmentCatagory) &&
+                                                         bs.Item.IsValidForCurrentClass &&
+                                                         bs.Item.RequiredLevel <= Core.Me.ClassLevel &&
+                                                         bs.BagId != InventoryBagId.EquippedItems)
+                                                     .OrderByDescending(r => ItemWeight.GetItemWeight(r.Item))
+                                                     .FirstOrDefault();
+                /*
+                Log($"# of Candidates: {betterItemCount}");
+                if (betterItem != null) Log($"{betterItem.Name}");
+                else Log("Betteritem was null.");
+                */
+                if (betterItem == null || !betterItem.IsValid || !betterItem.IsFilled || betterItem == bagSlot || itemWeight >= ItemWeight.GetItemWeight(betterItem.Item)) continue;
+
+                Log(bagSlot.IsFilled ? $"Equipping {betterItem.Name} over {bagSlot.Name}." : $"Equipping {betterItem.Name}.");
+
+                betterItem.Move(bagSlot);
+                await Coroutine.Wait(3000, () => bagSlot.Item != currentItem);
+                if (bagSlot.Item == currentItem)
+                {
+                    Log("Something went wrong. Item remained unchanged.");
+                    continue;
+                }
+
+                await Coroutine.Sleep(500);
+            }
+
+            if (useRecommendEquip)
+            {
+                if (!RecommendEquip.Instance.IsOpen) AgentRecommendEquip.Instance.Toggle();
+                await Coroutine.Wait(1500, () => RecommendEquip.Instance.IsOpen);
+                RecommendEquip.Instance.Confirm();
+                await Coroutine.Sleep(500);
+            }
+
+            if (updateGearSet) await UpdateGearSet();
+
+            Character.Instance.Close();
+            if (!await Coroutine.Wait(800, () => !Character.Instance.IsOpen)) AgentCharacter.Instance.Toggle();
+        }
+
+        public static async Task<bool> UpdateGearSet()
+        {
+            if (!Character.Instance.IsOpen)
+            {
+                AgentCharacter.Instance.Toggle();
+                await Coroutine.Wait(10000, () => Character.Instance.IsOpen);
+                if (!Character.Instance.IsOpen)
+                {
+                    Log("Character window didn't open.");
+                    return false;
+                }
+            }
+
+            if (!Character.Instance.IsOpen) return false;
+
+            if (!await Coroutine.Wait(1200, () => Character.Instance.CanUpdateGearSet()))
+            {
+                Character.Instance.Close();
+                return false;
+            }
+
+            Character.Instance.UpdateGearSet();
+
+            if (await Coroutine.Wait(1500, () => SelectYesno.IsOpen)) SelectYesno.Yes();
+            else
+            {
+                if (Character.Instance.IsOpen)
+                {
+                    Character.Instance.Close();
+                }
+
+                return true;
+            }
+
+            await Coroutine.Wait(10000, () => !SelectYesno.IsOpen);
+            if (SelectYesno.IsOpen) return true;
+
+            if (Character.Instance.IsOpen) Character.Instance.Close();
+
+            return true;
+        }
+
+        private static List<ItemUiCategory> GetEquipUiCategory(ushort slotId)
+        {
+            if (slotId == 0) return ItemWeight.MainHands;
+            if (slotId == 1) return ItemWeight.OffHands;
+            if (slotId == 2) return new List<ItemUiCategory> {ItemUiCategory.Head};
+            if (slotId == 3) return new List<ItemUiCategory> {ItemUiCategory.Body};
+            if (slotId == 4) return new List<ItemUiCategory> {ItemUiCategory.Hands};
+            if (slotId == 5) return new List<ItemUiCategory> {ItemUiCategory.Waist};
+            if (slotId == 6) return new List<ItemUiCategory> {ItemUiCategory.Legs};
+            if (slotId == 7) return new List<ItemUiCategory> {ItemUiCategory.Feet};
+            if (slotId == 8) return new List<ItemUiCategory> {ItemUiCategory.Earrings};
+            if (slotId == 9) return new List<ItemUiCategory> {ItemUiCategory.Necklace};
+            if (slotId == 10) return new List<ItemUiCategory> {ItemUiCategory.Bracelets};
+            if (slotId == 11 || slotId == 12) return new List<ItemUiCategory> {ItemUiCategory.Ring};
+            if (slotId == 13) return new List<ItemUiCategory> {ItemUiCategory.Soul_Crystal};
+            return null;
         }
 
         public static IEnumerable<BagSlot> NonGearSetItems()
