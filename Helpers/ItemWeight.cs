@@ -13,7 +13,9 @@ namespace LlamaLibrary.Helpers
             if (!MainHandsAndOffHands.Contains(item.EquipmentCatagory) && !item.IsArmor && !item.IsWeapon) return -1f;
             if (job == ClassJobType.Adventurer) job = Core.Me.CurrentJob;
             if (!item.IsValidForClass(job)) return -1f;
-            var level = Core.Me.Levels[job];
+            ushort level;
+            if (job == ClassJobType.Scholar || job == ClassJobType.Summoner) level = Core.Me.Levels[ClassJobType.Arcanist];
+            else level = Core.Me.Levels[job];
             if ((item.Id == 2634 || item.Id == 2633) && level <= 10) return 5000f;
             if (item.Id == 8567 && level <= 25) return 5000f;
             if (item.Id == 14043 && level <= 30) return 5000f;
@@ -23,7 +25,8 @@ namespace LlamaLibrary.Helpers
             float weight = 0;
             Dictionary<ItemAttribute, float> values;
             if (job.IsDoh()) values = DoHWeights;
-            else values = job.IsDol() ? DoLWeights : ClassItemWeightStorage.Instance.Values;
+            else if (job.IsDol()) values = DoLWeights;
+            else values = ClassItemWeightStorage.Instance.Values;
 
             foreach (var itemStat in item.Attributes)
             {
