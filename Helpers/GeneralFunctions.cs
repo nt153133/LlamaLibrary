@@ -10,16 +10,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using ff14bot.Enums;
 using ff14bot.Navigation;
 using ff14bot.RemoteAgents;
+using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
+using LlamaLibrary.RemoteAgents;
+using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Retainers;
+using Character = LlamaLibrary.RemoteWindows.Character;
 
 namespace LlamaLibrary.Helpers
 {
     public static class GeneralFunctions
     {
         static bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
+        
+        #region StopBusy
+        
         private static bool CheckIfBusy(bool leaveDuty, bool stopFishing, bool dismount)
         {
             if (stopFishing && FishingManager.State != FishingState.None) return true;
@@ -103,9 +111,9 @@ namespace LlamaLibrary.Helpers
 
         private static bool InSmallTalk => SelectYesno.IsOpen || SelectString.IsOpen || SelectIconString.IsOpen || Talk.DialogOpen || JournalAccept.IsOpen || QuestLogManager.InCutscene || CommonBehaviors.IsLoading;
 
-        public static async Task SmallTalk()
+        public static async Task SmallTalk(int waitTime = 500)
         {
-            await Coroutine.Wait(500, () => InSmallTalk);
+            await Coroutine.Wait(waitTime, () => InSmallTalk);
             
             while (InSmallTalk)
             {
@@ -118,7 +126,7 @@ namespace LlamaLibrary.Helpers
                 
                 if (SelectYesno.IsOpen)
                 {
-                    SelectYesno.ClickYes();
+                    SelectYesno.ClickNo();
                 }
                 
                 if (SelectString.IsOpen)
@@ -142,32 +150,27 @@ namespace LlamaLibrary.Helpers
                         else SelectIconString.ClickSlot((uint)(SelectIconString.LineCount - 1));
                     }
                 }
-
-                if (Talk.DialogOpen)
+                
+                while (QuestLogManager.InCutscene)
                 {
-                    while (Talk.DialogOpen)
-                    {
-                        Talk.Next();
-                        await Coroutine.Wait(100, () => !Talk.DialogOpen);
-                        await Coroutine.Wait(100, () => Talk.DialogOpen);
-                        await Coroutine.Yield();
-                    }
+                    AgentCutScene.Instance.PromptSkip();
+                    if (AgentCutScene.Instance.CanSkip && SelectString.IsOpen) SelectString.ClickSlot(0);
+                    await Coroutine.Yield();
+                }
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(100, () => !Talk.DialogOpen);
+                    await Coroutine.Wait(100, () => Talk.DialogOpen);
+                    await Coroutine.Yield();
                 }
 
                 if (JournalAccept.IsOpen)
                 {
                     JournalAccept.Decline();
                 }
-                
-                if (QuestLogManager.InCutscene)
-                {
-                    AgentCutScene.Instance.PromptSkip();
-                    if (AgentCutScene.Instance.CanSkip && SelectString.IsOpen)
-                    {
-                        SelectString.ClickSlot(0);
-                    }
-                }
-                
+
                 await Coroutine.Wait(500, () => InSmallTalk);
             }
         }
@@ -177,12 +180,12 @@ namespace LlamaLibrary.Helpers
             for (var i = 0; i < 5 && RaptureAtkUnitManager.GetWindowByName(windowName) != null; i++)
             {
                 RaptureAtkUnitManager.Update();
-                
+
                 if (RaptureAtkUnitManager.GetWindowByName(windowName) != null)
                 {
-                    RaptureAtkUnitManager.GetWindowByName(windowName).SendAction(1, 3UL, (ulong)uint.MaxValue);
+                    RaptureAtkUnitManager.GetWindowByName(windowName).SendAction(1, 3UL, (ulong) uint.MaxValue);
                 }
-                
+
                 await Coroutine.Wait(300, () => RaptureAtkUnitManager.GetWindowByName(windowName) == null);
                 await Coroutine.Wait(300, () => RaptureAtkUnitManager.GetWindowByName(windowName) != null);
                 await Coroutine.Yield();
@@ -190,10 +193,214 @@ namespace LlamaLibrary.Helpers
 
             return RaptureAtkUnitManager.GetWindowByName(windowName) == null;
         }
+        
+        #endregion StopBusy
+
+        #region InventoryEquip
+        
+        public static async Task InventoryEquipBest(bool updateGearSet = true, bool useRecommendEquip = true)
+        {
+            await StopBusy(leaveDuty: false, dismount: false);
+            if (!Character.Instance.IsOpen)
+            {
+                AgentCharacter.Instance.Toggle();
+                await Coroutine.Wait(5000, () => Character.Instance.IsOpen);
+            }
+
+            foreach (var bagSlot in InventoryManager.EquippedItems)
+            {
+                if (!bagSlot.IsValid) continue;
+                if (bagSlot.Slot == 0 && !bagSlot.IsFilled)
+                {
+                    Log("MainHand slot isn't filled. How?");
+                    continue;
+                }
+
+                Item currentItem = bagSlot.Item;
+                List<ItemUiCategory> category = GetEquipUiCategory(bagSlot.Slot);
+                float itemWeight = bagSlot.IsFilled ? ItemWeight.GetItemWeight(bagSlot.Item) : -1;
+
+                BagSlot betterItem = InventoryManager.FilledInventoryAndArmory
+                                                     .Where(bs =>
+                                                         category.Contains(bs.Item.EquipmentCatagory) &&
+                                                         bs.Item.IsValidForCurrentClass &&
+                                                         bs.Item.RequiredLevel <= Core.Me.ClassLevel &&
+                                                         bs.BagId != InventoryBagId.EquippedItems)
+                                                     .OrderByDescending(r => ItemWeight.GetItemWeight(r.Item))
+                                                     .FirstOrDefault();
+                /*
+                Log($"# of Candidates: {betterItemCount}");
+                if (betterItem != null) Log($"{betterItem.Name}");
+                else Log("Betteritem was null.");
+                */
+                if (betterItem == null || !betterItem.IsValid || !betterItem.IsFilled || betterItem == bagSlot || itemWeight >= ItemWeight.GetItemWeight(betterItem.Item)) continue;
+
+                Log(bagSlot.IsFilled ? $"Equipping {betterItem.Name} over {bagSlot.Name}." : $"Equipping {betterItem.Name}.");
+
+                betterItem.Move(bagSlot);
+                await Coroutine.Wait(3000, () => bagSlot.Item != currentItem);
+                if (bagSlot.Item == currentItem)
+                {
+                    Log("Something went wrong. Item remained unchanged.");
+                    continue;
+                }
+
+                await Coroutine.Sleep(500);
+            }
+
+            if (useRecommendEquip)
+            {
+                if (!RecommendEquip.Instance.IsOpen) AgentRecommendEquip.Instance.Toggle();
+                await Coroutine.Wait(1500, () => RecommendEquip.Instance.IsOpen);
+                RecommendEquip.Instance.Confirm();
+                await Coroutine.Sleep(500);
+            }
+
+            if (updateGearSet) await UpdateGearSet();
+
+            Character.Instance.Close();
+            if (!await Coroutine.Wait(800, () => !Character.Instance.IsOpen)) AgentCharacter.Instance.Toggle();
+        }
+
+        public static async Task<bool> UpdateGearSet()
+        {
+            if (!Character.Instance.IsOpen)
+            {
+                AgentCharacter.Instance.Toggle();
+                await Coroutine.Wait(10000, () => Character.Instance.IsOpen);
+                if (!Character.Instance.IsOpen)
+                {
+                    Log("Character window didn't open.");
+                    return false;
+                }
+            }
+
+            if (!Character.Instance.IsOpen) return false;
+
+            if (!await Coroutine.Wait(1200, () => Character.Instance.CanUpdateGearSet()))
+            {
+                Character.Instance.Close();
+                return false;
+            }
+
+            Character.Instance.UpdateGearSet();
+
+            if (await Coroutine.Wait(1500, () => SelectYesno.IsOpen)) SelectYesno.Yes();
+            else
+            {
+                if (Character.Instance.IsOpen)
+                {
+                    Character.Instance.Close();
+                }
+
+                return true;
+            }
+
+            await Coroutine.Wait(10000, () => !SelectYesno.IsOpen);
+            if (SelectYesno.IsOpen) return true;
+
+            if (Character.Instance.IsOpen) Character.Instance.Close();
+
+            return true;
+        }
+
+        private static List<ItemUiCategory> GetEquipUiCategory(ushort slotId)
+        {
+            if (slotId == 0) return ItemWeight.MainHands;
+            if (slotId == 1) return ItemWeight.OffHands;
+            if (slotId == 2) return new List<ItemUiCategory> {ItemUiCategory.Head};
+            if (slotId == 3) return new List<ItemUiCategory> {ItemUiCategory.Body};
+            if (slotId == 4) return new List<ItemUiCategory> {ItemUiCategory.Hands};
+            if (slotId == 5) return new List<ItemUiCategory> {ItemUiCategory.Waist};
+            if (slotId == 6) return new List<ItemUiCategory> {ItemUiCategory.Legs};
+            if (slotId == 7) return new List<ItemUiCategory> {ItemUiCategory.Feet};
+            if (slotId == 8) return new List<ItemUiCategory> {ItemUiCategory.Earrings};
+            if (slotId == 9) return new List<ItemUiCategory> {ItemUiCategory.Necklace};
+            if (slotId == 10) return new List<ItemUiCategory> {ItemUiCategory.Bracelets};
+            if (slotId == 11 || slotId == 12) return new List<ItemUiCategory> {ItemUiCategory.Ring};
+            if (slotId == 13) return new List<ItemUiCategory> {ItemUiCategory.Soul_Crystal};
+            return null;
+        }
+        
+        #endregion InventoryEquip
 
         public static IEnumerable<BagSlot> NonGearSetItems()
         {
             return InventoryManager.FilledArmorySlots.Where(bs => !GearsetManager.GearSets.SelectMany(gs => gs.Gear).Select(g => g.Item).Contains(bs.Item));
+        }
+
+        public static async Task RetainerSellItems(IEnumerable<BagSlot> items)
+        {
+            if (await HelperFunctions.GetNumberOfRetainers() == 0)
+            {
+                Log("No retainers found to sell items to.");
+                return;
+            }
+            
+            List<BagSlot> bagSlots = items.ToList();
+            if (!bagSlots.Any())
+            {
+                Log("No items found to sell.");
+                return;
+            }
+
+            await StopBusy();
+            if (!await HelperFunctions.UseSummoningBell())
+            {
+                Log("Couldn't get to summoning bell.");
+                return;
+            }
+            
+            await RetainerRoutine.SelectRetainer(0);
+            RetainerTasks.OpenInventory();
+            if (!await Coroutine.Wait(3000, RetainerTasks.IsInventoryOpen))
+            {
+                Log("Couldn't get Retainer inventory open.");
+                RetainerTasks.CloseInventory();
+                await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
+                RetainerTasks.CloseTasks();
+                await Coroutine.Wait(3000, () => Talk.DialogOpen);
+                if (Talk.DialogOpen) Talk.Next();
+                await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+                await RetainerRoutine.CloseRetainers();
+                return;
+            }
+
+            int itemCount = bagSlots.Count;
+            int i = 1;
+            foreach (var bagSlot in bagSlots)
+            {
+                if (!bagSlot.IsValid || !bagSlot.IsFilled)
+                {
+                    Log("BagSlot isn't valid or filled.");
+                    i++;
+                    continue;
+                }
+                
+                string name = bagSlot.Name;
+                Log($"Attempting to sell #{i++} of {itemCount}: {name}");
+                int waitTime = 600;
+                
+                bagSlot.RetainerSellItem();
+                
+                if (await Coroutine.Wait(500, () => SelectYesno.IsOpen)) SelectYesno.ClickYes();
+                else waitTime -= 500;
+                
+                if (!await Coroutine.Wait(5000, () => !bagSlot.IsValid || !bagSlot.IsFilled)) Log($"We couldn't sell {name}.");
+                else Log($"Sold {name}.");
+                
+                await Coroutine.Sleep(waitTime);
+            }
+            
+            RetainerTasks.CloseInventory();
+            await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
+            RetainerTasks.CloseTasks();
+            await Coroutine.Wait(3000, () => SelectYesno.IsOpen);
+            SelectYesno.ClickYes();
+            await Coroutine.Wait(3000, () => Talk.DialogOpen);
+            if (Talk.DialogOpen) Talk.Next();
+            await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+            await RetainerRoutine.CloseRetainers();
         }
 
         public static async Task RepairAll()
@@ -237,6 +444,8 @@ namespace LlamaLibrary.Helpers
             if (!gear.Any()) return 0;
             return (int) gear.Sum(i => i.ItemLevel) / gear.Count();
         }
+        
+        #region GoHome
 
         public static async Task GoHome()
         {
@@ -340,6 +549,8 @@ namespace LlamaLibrary.Helpers
 
             return false;
         }
+        
+        #endregion GoHome
 
         private static void Log(string text, params object[] args)
         {

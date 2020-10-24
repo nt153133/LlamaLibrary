@@ -1,24 +1,22 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.XmlEngine;
+using ff14bot.Managers;
 using ff14bot.NeoProfiles;
 using TreeSharp;
 using static LlamaLibrary.Helpers.GeneralFunctions;
 
 namespace LlamaLibrary.OrderbotTags
 {
-    [XmlElement("AutoInventoryEquip")]
-    public class AutoInventoryEquip : ProfileBehavior
+    [XmlElement("GearSetEquipAll")]
+    public class GearSetEquipAll : ProfileBehavior
     {
 
             private bool _isDone;
-            
-            [XmlAttribute("UpdateGearSet")]
-            [XmlAttribute("updategearset")]
-            [DefaultValue(true)]
-            private bool UpdateGearSet { get; set; }
-            
+
             [XmlAttribute("RecommendEquip")]
             [XmlAttribute("recommendequip")]
             [DefaultValue(true)]
@@ -54,7 +52,23 @@ namespace LlamaLibrary.OrderbotTags
                     return;
                 }
 
-                await InventoryEquipBest(UpdateGearSet, UseRecommendEquip);
+                List<GearSet> groupedGearSets = GearsetManager
+                                                       .GearSets
+                                                       .Where(g => g.InUse)
+                                                       .OrderByDescending(GetGearSetiLvl)
+                                                       .GroupBy(g => g.Class)
+                                                       .Select(g => g.FirstOrDefault())
+                                                       .ToList();
+
+                await Coroutine.Sleep(3500);
+
+                foreach (var gearSet in groupedGearSets)
+                {
+                    GearsetManager.ChangeGearset(gearSet.Index);
+                    await Coroutine.Sleep(800);
+                    await InventoryEquipBest(useRecommendEquip:UseRecommendEquip);
+                    await Coroutine.Sleep(400);
+                }
 
                 _isDone = true;
             }

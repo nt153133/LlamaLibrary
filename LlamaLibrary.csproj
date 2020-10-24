@@ -123,6 +123,7 @@
     <Compile Include="OrderbotTags\ChangeClass.cs" />
     <Compile Include="OrderbotTags\EquipWeapon.cs" />
     <Compile Include="OrderbotTags\Fate.cs" />
+    <Compile Include="OrderbotTags\GearSetEquipAll.cs" />
     <Compile Include="OrderbotTags\GetTo.cs" />
     <Compile Include="OrderbotTags\JoinDuty.cs" />
     <Compile Include="OrderbotTags\LeaveDuty.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="OrderbotTags\LLGoHome.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
     <Compile Include="OrderbotTags\LLOpenChest.cs" />
+    <Compile Include="OrderbotTags\LLSellItem.cs" />
     <Compile Include="OrderbotTags\LLSmallTalk.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
     <Compile Include="OrderbotTags\LLoadProfile.cs" />
@@ -207,7 +209,6 @@
     <Compile Include="RemoteWindows\RetainerList.cs" />
     <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\RetainerTaskList.cs" />
-    <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\ShopExchangeItem.cs" />
     <Compile Include="RemoteWindows\SubmarinePartsMenu.cs" />
     <Compile Include="Repair.cs" />
