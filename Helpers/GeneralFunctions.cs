@@ -13,6 +13,7 @@ using System.Windows.Media;
 using ff14bot.Enums;
 using ff14bot.Navigation;
 using ff14bot.RemoteAgents;
+using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
@@ -326,6 +327,80 @@ namespace LlamaLibrary.Helpers
         public static IEnumerable<BagSlot> NonGearSetItems()
         {
             return InventoryManager.FilledArmorySlots.Where(bs => !GearsetManager.GearSets.SelectMany(gs => gs.Gear).Select(g => g.Item).Contains(bs.Item));
+        }
+
+        public static async Task RetainerSellItems(IEnumerable<BagSlot> items)
+        {
+            if (await HelperFunctions.GetNumberOfRetainers() == 0)
+            {
+                Log("No retainers found to sell items to.");
+                return;
+            }
+            
+            List<BagSlot> bagSlots = items.ToList();
+            if (!bagSlots.Any())
+            {
+                Log("No items found to sell.");
+                return;
+            }
+
+            await StopBusy();
+            if (!await HelperFunctions.UseSummoningBell())
+            {
+                Log("Couldn't get to summoning bell.");
+                return;
+            }
+            
+            await RetainerRoutine.SelectRetainer(0);
+            RetainerTasks.OpenInventory();
+            if (!await Coroutine.Wait(3000, RetainerTasks.IsInventoryOpen))
+            {
+                Log("Couldn't get Retainer inventory open.");
+                RetainerTasks.CloseInventory();
+                await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
+                RetainerTasks.CloseTasks();
+                await Coroutine.Wait(3000, () => Talk.DialogOpen);
+                if (Talk.DialogOpen) Talk.Next();
+                await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+                await RetainerRoutine.CloseRetainers();
+                return;
+            }
+
+            int itemCount = bagSlots.Count;
+            int i = 1;
+            foreach (var bagSlot in bagSlots)
+            {
+                if (!bagSlot.IsValid || !bagSlot.IsFilled)
+                {
+                    Log("BagSlot isn't valid or filled.");
+                    i++;
+                    continue;
+                }
+                
+                string name = bagSlot.Name;
+                Log($"Attempting to sell #{i++} of {itemCount}: {name}");
+                int waitTime = 600;
+                
+                bagSlot.RetainerSellItem();
+                
+                if (await Coroutine.Wait(500, () => SelectYesno.IsOpen)) SelectYesno.ClickYes();
+                else waitTime -= 500;
+                
+                if (!await Coroutine.Wait(5000, () => !bagSlot.IsValid || !bagSlot.IsFilled)) Log($"We couldn't sell {name}.");
+                else Log($"Sold {name}.");
+                
+                await Coroutine.Sleep(waitTime);
+            }
+            
+            RetainerTasks.CloseInventory();
+            await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
+            RetainerTasks.CloseTasks();
+            await Coroutine.Wait(3000, () => SelectYesno.IsOpen);
+            SelectYesno.ClickYes();
+            await Coroutine.Wait(3000, () => Talk.DialogOpen);
+            if (Talk.DialogOpen) Talk.Next();
+            await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+            await RetainerRoutine.CloseRetainers();
         }
 
         public static async Task RepairAll()
