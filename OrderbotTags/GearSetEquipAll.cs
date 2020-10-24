@@ -60,7 +60,7 @@ namespace LlamaLibrary.OrderbotTags
                                                        .Select(g => g.FirstOrDefault())
                                                        .ToList();
 
-                await Coroutine.Sleep(3500);
+                await Coroutine.Sleep(5000);
 
                 foreach (var gearSet in groupedGearSets)
                 {

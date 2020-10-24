@@ -251,15 +251,14 @@ namespace LlamaLibrary.Helpers
             if (useRecommendEquip)
             {
                 if (!RecommendEquip.Instance.IsOpen) AgentRecommendEquip.Instance.Toggle();
-                await Coroutine.Wait(1500, () => RecommendEquip.Instance.IsOpen);
+                await Coroutine.Wait(3500, () => RecommendEquip.Instance.IsOpen);
                 RecommendEquip.Instance.Confirm();
-                await Coroutine.Sleep(500);
+                await Coroutine.Sleep(800);
             }
 
             if (updateGearSet) await UpdateGearSet();
 
             Character.Instance.Close();
-            if (!await Coroutine.Wait(800, () => !Character.Instance.IsOpen)) AgentCharacter.Instance.Toggle();
         }
 
         public static async Task<bool> UpdateGearSet()
