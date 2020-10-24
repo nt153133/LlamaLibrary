@@ -25,15 +25,15 @@ namespace LlamaLibrary
 {
     public class OutOnALimbBase : BotBase
     {
-        private readonly Random _random = new Random();
+        private static readonly Random _random = new Random();
         private Composite _root;
 
         private Vector3 goldenSaucer = new Vector3(-2.129811f, 1.042503f, -8.071652f);
 
-        private MiniGameResult HitResult = MiniGameResult.None;
+        private static MiniGameResult HitResult = MiniGameResult.None;
 
-        private int baseDelay = 550;
-        private int maxDelay = 700;
+        private static int baseDelay = 550;
+        private static int maxDelay = 700;
 
         private readonly List<Vector3> PlayLocations = new List<Vector3>
         {
@@ -47,7 +47,7 @@ namespace LlamaLibrary
 
         private int threashold;
 
-        private int totalMGP;
+        private static int totalMGP;
 #if RB_CN
         public override string Name => "孤树无援";
 #else
@@ -164,6 +164,99 @@ namespace LlamaLibrary
             //TreeRoot.Stop("Stop Requested");
             return true;
         }
+        
+        public static async Task<bool> RunHomeMGP()
+        {
+            var lang = (Language) typeof(DataManager).GetFields(BindingFlags.Static | BindingFlags.NonPublic)
+                .First(i => i.FieldType == typeof(Language)).GetValue(null);
+
+            if (lang != Language.Eng && lang != Language.Chn) TreeRoot.Stop("Only works on English and Chinese Clients for now");
+
+            while (true)
+            {
+                await StartOutOnLimbHome();
+                //Logger.LogCritical("Start Done");
+                await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
+                //Logger.LogCritical("Ready");
+                if (await PlayBotanist())
+                {
+                    Logger.LogCritical("First win");
+                    do
+                    {
+                        Logger.LogCritical("Loop");
+                        if (!SelectYesno.IsOpen)
+                        {
+                            Logger.LogCritical("Waiting on window");
+                            await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                            await Coroutine.Sleep(_random.Next(300, 500));
+                        }
+
+                        if (SelectYesno.IsOpen && GetDoubleDownReward() == 0)
+                        {
+                            SelectYesno.No();
+                            Logger.LogCritical($"Won Nothing Reward: {GetDoubleDownReward()} total so far {totalMGP}");
+                            await Coroutine.Sleep(_random.Next(300, 500));
+                            //await Coroutine.Sleep(_random.Next(4000,5000));
+                            break;
+                        }
+
+                        if (SelectYesno.IsOpen && (GetDoubleDownInfo().Key <= 2 || GetDoubleDownInfo().Value < 15))
+                        {
+                            SelectYesno.No();
+                            Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()}");
+                            await Coroutine.Sleep(_random.Next(300, 500));
+                            break;
+                        }
+
+                        if (SelectYesno.IsOpen && GetDoubleDownInfo().Key > 1 && GetDoubleDownInfo().Value > 15)
+                        {
+                            Logger.LogCritical($"Click Yes Reward: {GetDoubleDownReward()}");
+                            await Coroutine.Sleep(_random.Next(1000, 1500));
+                            SelectYesno.ClickYes();
+                            await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
+                            //await PlayBotanist();
+                        }
+                        else if (SelectYesno.IsOpen)
+                        {
+                            Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()}");
+                            SelectYesno.No();
+                            await Coroutine.Sleep(_random.Next(300, 500));
+                            break;
+                        }
+                    }
+                    while (await PlayBotanist());
+
+                    await Coroutine.Wait(5000, () => GoldSaucerReward.Instance.IsOpen);
+
+                    if (GoldSaucerReward.Instance.IsOpen)
+                    {
+                        var gained = GoldSaucerReward.Instance.MGPReward;
+                        totalMGP += gained;
+                        Logger.LogCritical($"Won {gained} - Total {totalMGP}");
+
+                        if (gained == 0)
+                        {
+                            Logger.LogCritical($"Won {gained}");
+                            //TreeRoot.Stop("Won zero...issue");
+                            break;
+                        }
+                    }
+
+                    Logger.LogCritical("Starting over");
+                }
+
+                if (GoldSaucerReward.Instance.IsOpen)
+                    GoldSaucerReward.Instance.Close();
+
+                await Coroutine.Wait(5000, () => !GoldSaucerReward.Instance.IsOpen);
+                Logger.LogCritical("Done");
+                await Coroutine.Sleep(_random.Next(3000, 4500));
+            }
+
+            GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
+            //TreeRoot.Stop("Stop Requested");
+            return true;
+        }
 
         public override void Start()
         {
@@ -185,7 +278,7 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
 
 
-            uint npcid = 2005423;
+            uint npcid = 2005423; //197371
 
             if (GameObjectManager.GetObjectByNPCId(npcid) == null)
             {
@@ -229,6 +322,51 @@ namespace LlamaLibrary
                 }
 
                 Navigator.PlayerMover.MoveStop();
+            }
+
+            station.Interact();
+
+            await Coroutine.Wait(5000, () => SelectString.IsOpen);
+
+            SelectString.ClickSlot(0);
+
+            await Coroutine.Wait(5000, () => MiniGameAimg.Instance.IsOpen);
+
+            await Coroutine.Sleep(1000);
+
+            AgentOutOnLimb.Instance.Refresh();
+
+            await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyAimg);
+
+            await Coroutine.Sleep(_random.Next(400, 800));
+
+            MiniGameAimg.Instance.PressButton();
+
+            await Coroutine.Wait(5000, () => MiniGameBotanist.Instance.IsOpen);
+
+            return MiniGameBotanist.Instance.IsOpen;
+        }
+        
+        public static async Task<bool> StartOutOnLimbHome()
+        {
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            Navigator.PlayerMover = new SlideMover();
+
+
+            uint npcid = 197371; //197371
+
+            if (GameObjectManager.GetObjectByNPCId(npcid) == null)
+            {
+                Logger.LogCritical("Not Near Machine");
+                await GeneralFunctions.GoHome();
+            }
+
+            var station = GameObjectManager.GameObjects.Where(i => i.NpcId == 197371).OrderBy(r => r.Distance()).First();
+
+            if (!station.IsWithinInteractRange)
+            {
+                var _target = station.Location;
+                await Navigation.FlightorMove(_target);
             }
 
             station.Interact();
@@ -324,7 +462,7 @@ namespace LlamaLibrary
             return true;
         }
 
-        private void GamelogManagerOnMessageRecevied(object sender, ChatEventArgs e)
+        private static void GamelogManagerOnMessageRecevied(object sender, ChatEventArgs e)
         {
             if (e.ChatLogEntry.MessageType == MessageType.SystemMessages)
 #if RB_CN			
@@ -397,7 +535,7 @@ namespace LlamaLibrary
 #endif
         }
 
-        private async Task<bool> PlayBotanist()
+        private static async Task<bool> PlayBotanist()
         {
             if (!MiniGameBotanist.Instance.IsOpen) return false;
 
@@ -563,7 +701,7 @@ namespace LlamaLibrary
             return SelectYesno.IsOpen;
         }
 
-        private async Task<MiniGameResult> StopAtLocation(int location)
+        private static async Task<MiniGameResult> StopAtLocation(int location)
         {
             if (!AgentOutOnLimb.Instance.IsReadyBotanist)
                 await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -495,10 +495,10 @@ namespace LlamaLibrary
 
                 foreach (var slot in myItems)
                 {
-                    if (InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).FirstOrDefault(i => i.FreeSlots > 1) != null)
+                    if (InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).FirstOrDefault(i => i.FreeSlots >= 1) != null)
                     {
                         RetainerRoutine.LogLoud($"Want to move DUMP {slot} - {slot.Count}");
-                        slot.Move(InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).First(i => i.FreeSlots > 1).GetFirstFreeSlot());
+                        slot.Move(InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).First(i => i.FreeSlots >= 1).GetFirstFreeSlot());
                         //slot.RetainerEntrustQuantity((int) slot.Count);
                         await Coroutine.Sleep(700);
                     }
