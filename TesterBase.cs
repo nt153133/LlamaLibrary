@@ -339,10 +339,11 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
-            
 
-            await TurninSkySteelGathering();
-            await TurninSkySteelCrafting();
+            //await TurninSkySteelGathering();
+            //await TurninSkySteelCrafting();
+
+            
             //await BuyHouse();
             //TreeRoot.Stop("Stop Requested");
             //await LeveWindow(1018997);
@@ -661,17 +662,41 @@ namespace LlamaLibrary
             if (HavePrivateHousing)
             {
                 await GoToHousingBell(PrivateHouses.First());
-            }plop
+            }
             else if (HaveFCHousing)
             {
                 await GoToHousingBell(FCHouses.First());
             }
             */
-
-
+            /*if (Core.Me.GCSeals() > 200)
+            {
+                await GrandCompanyShop.BuyKnownItem(21072, (int) (Core.Me.GCSeals() / 200));
+            }*/
             //DumpOffsets();
             //await BuyHouse();
             //await testKupoTickets();
+
+            var newHunts = HuntHelper.DailyHunts;
+            var failed = new Dictionary<int, StoredHuntLocation>();
+            var start = 0; 
+            foreach (var hunt in newHunts)
+            {
+                if (!await Lisbeth.TravelToZones(hunt.Value.Map, hunt.Value.Location));
+                {
+                    failed.Add(hunt.Key, hunt.Value);
+                    using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+                    {
+                        outputFile.Write(JsonConvert.SerializeObject(failed));
+                    }
+                }
+                Log($"Finished {start}");
+                start++;
+            }
+            using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(failed));
+            }
+            
             TreeRoot.Stop("Stop Requested");
             //Core.Me.Stats
 
@@ -695,10 +720,7 @@ namespace LlamaLibrary
                 AgentGoldSaucerInfo.Instance.Toggle();
             }
 
-            TimersSettings testTimers = TimersSettings.Instance;
-            Log($"Cycle 1: {testTimers.GetTimer(1)}");
-            Log($"Cycle 2: {testTimers.GetTimer(2)}");
-            Log($"Cycle 4: {testTimers.GetTimer(4)}");
+            //TimersSettings testTimers = TimersSettings.Instance;
 
 
             //            await Reduce.Reduce.Extract();
