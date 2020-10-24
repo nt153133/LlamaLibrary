@@ -231,6 +231,26 @@ namespace LlamaLibrary
                         }
                     }
                 }
+                else if (hunt.MapId == 401)
+                {
+                    if (await Lisbeth.TravelToZones(401, 0, hunt.Location))
+                    {
+                        while (!hunt.IsFinished)
+                        {
+                            if (await FindAndKillMob(hunt.NpcID))
+                            {
+                                Log("Killed one");
+                                await Coroutine.Sleep(1000);
+                                if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                            }
+                            else
+                            {
+                                Log("None found, sleeping 10 sec.");
+                                await Coroutine.Sleep(10000);
+                            }
+                        }
+                    }
+                }
                 else if (await Navigation.GetTo(hunt.MapId, hunt.Location))
                 {
                     while (!hunt.IsFinished)

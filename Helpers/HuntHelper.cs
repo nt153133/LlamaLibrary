@@ -683,11 +683,13 @@ namespace LlamaLibrary.Helpers
     {
         public int BNpcNameKey;
         public Vector3 Location;
-        public string Area;
+        public uint Map;
+        public uint SubMap;
 
-        public StoredHuntLocationLisbeth(int name, string areaId, Vector3 location)
+        public StoredHuntLocationLisbeth(int name, uint mapId, uint subMapId, Vector3 location)
         {
-            Area = areaId;
+            Map = mapId;
+            SubMap = subMapId;
             Location = location;
             BNpcNameKey = name;
         }
