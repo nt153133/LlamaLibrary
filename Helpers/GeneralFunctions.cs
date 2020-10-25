@@ -439,9 +439,9 @@ namespace LlamaLibrary.Helpers
 
         public static int GetGearSetiLvl(GearSet gs)
         {
-            IReadOnlyCollection<Item> gear = gs.Gear.Select(i => i.Item).Where(g => g.ItemLevel > 0 && g.CurrentLocaleName != "").ToList();
+            List<ushort> gear = gs.Gear.Select(i => i.Item.ItemLevel).ToList();
             if (!gear.Any()) return 0;
-            return (int) gear.Sum(i => i.ItemLevel) / gear.Count();
+            return (int) gear.Sum(i => i) / gear.Count;
         }
         
         #region GoHome
