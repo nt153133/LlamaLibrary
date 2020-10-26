@@ -55,7 +55,7 @@ namespace LlamaLibrary.OrderbotTags
                 return;
             }
 
-            await RetainerSellItems(InventoryManager.FilledInventoryAndArmory.Where(x => ItemIds.Contains((int) x.RawItemId)));
+            await RetainerSellItems(InventoryManager.FilledSlots.Where(x => ItemIds.Contains((int) x.RawItemId)));
 
             _isDone = true;
         }
