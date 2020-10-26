@@ -6,6 +6,7 @@ using Buddy.Coroutines;
 using Clio.XmlEngine;
 using ff14bot.Managers;
 using ff14bot.NeoProfiles;
+using ff14bot.RemoteWindows;
 using TreeSharp;
 using static LlamaLibrary.Helpers.GeneralFunctions;
 
@@ -60,12 +61,16 @@ namespace LlamaLibrary.OrderbotTags
                                                        .Select(g => g.FirstOrDefault())
                                                        .ToList();
 
-                await Coroutine.Sleep(5000);
+                await Coroutine.Sleep(4000);
 
                 foreach (var gearSet in groupedGearSets)
                 {
                     GearsetManager.ChangeGearset(gearSet.Index);
-                    await Coroutine.Sleep(800);
+                    if (await Coroutine.Wait(1200, () => SelectYesno.IsOpen))
+                    {
+                        SelectYesno.ClickYes();
+                        await Coroutine.Sleep(800);
+                    }
                     await InventoryEquipBest(useRecommendEquip:UseRecommendEquip);
                     await Coroutine.Sleep(400);
                 }
