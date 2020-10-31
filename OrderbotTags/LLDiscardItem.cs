@@ -1,17 +1,19 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.XmlEngine;
 using ff14bot.Managers;
 using ff14bot.NeoProfiles;
+using LlamaLibrary.Extensions;
 using TreeSharp;
 using static LlamaLibrary.Helpers.GeneralFunctions;
 
 namespace LlamaLibrary.OrderbotTags
 {
-    [XmlElement("LLSellItem")]
-    public class LLSellItem : ProfileBehavior
+    [XmlElement("LLDiscardItem")]
+    public class LLDiscardItem : ProfileBehavior
     {
         [XmlAttribute("ItemIDs")]
         [XmlAttribute("ItemIds")]
@@ -41,10 +43,10 @@ namespace LlamaLibrary.OrderbotTags
 
         protected override Composite CreateBehavior()
         {
-            return new ActionRunCoroutine(r => SellItemsToRetainers());
+            return new ActionRunCoroutine(r => DiscardItems());
         }
 
-        private async Task SellItemsToRetainers()
+        private async Task DiscardItems()
         {
             if (_isDone)
             {
@@ -52,7 +54,30 @@ namespace LlamaLibrary.OrderbotTags
                 return;
             }
 
-            await RetainerSellItems(InventoryManager.FilledSlots.Where(x => ItemIds.Contains((int) x.RawItemId)));
+            List<BagSlot> slots = InventoryManager.FilledSlots.Where(x => ItemIds.Contains((int)x.RawItemId)).ToList();
+
+            if (!slots.Any())
+            {
+                _isDone = true;
+                return;
+            }
+            
+            await StopBusy(leaveDuty:false, dismount:false);
+
+            foreach (var slot in slots)
+            {
+                string name = slot.Name;
+                slot.Discard();
+                if (await Coroutine.Wait(5000, () => !slot.IsValid || !slot.IsFilled))
+                {
+                    Log($"Discarded item: {name}.");
+                    await Coroutine.Sleep(800);
+                }
+                else
+                {
+                    Log($"Could not discard item: {name}.");
+                }
+            }
 
             _isDone = true;
         }
