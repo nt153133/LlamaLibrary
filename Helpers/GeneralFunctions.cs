@@ -136,6 +136,7 @@ namespace LlamaLibrary.Helpers
                         if (SelectString.Lines().Contains("Cancel")) SelectString.ClickLineContains("Cancel");
                         else if (SelectString.Lines().Contains("Quit")) SelectString.ClickLineContains("Quit");
                         else if (SelectString.Lines().Contains("Exit")) SelectString.ClickLineContains("Exit");
+                        else if (SelectString.Lines().Contains("Nothing")) SelectString.ClickLineContains("Nothing");
                         else SelectString.ClickSlot((uint)(SelectString.LineCount - 1));
                     }
                 }
@@ -147,6 +148,7 @@ namespace LlamaLibrary.Helpers
                         if (SelectIconString.Lines().Contains("Cancel")) SelectString.ClickLineContains("Cancel");
                         else if (SelectIconString.Lines().Contains("Quit")) SelectString.ClickLineContains("Quit");
                         else if (SelectIconString.Lines().Contains("Exit")) SelectString.ClickLineContains("Exit");
+                        else if (SelectIconString.Lines().Contains("Nothing")) SelectString.ClickLineContains("Nothing");
                         else SelectIconString.ClickSlot((uint)(SelectIconString.LineCount - 1));
                     }
                 }
