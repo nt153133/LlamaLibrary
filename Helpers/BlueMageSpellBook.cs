@@ -30,7 +30,7 @@ namespace LlamaLibrary.Helpers
 
         public static IntPtr SpellLocation => Offsets.ActionManager + Offsets.BluSpellActiveOffset;
 
-        private static void SetSpell(int index, uint spellId)
+        public static void SetSpell(int index, uint spellId)
         {
             Core.Memory.CallInjected64<IntPtr>(Offsets.SetSpell, new object[3]
             {
