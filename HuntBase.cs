@@ -58,7 +58,7 @@ namespace LlamaLibrary
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-
+            ff14bot.Settings.CharacterSettings.Instance.UseMount = true; 
 
             _playerItems = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).Select(i => i.FilledSlots).SelectMany(x => x).AsParallel().ToList();
             var hadOld = await GetHuntBills();
