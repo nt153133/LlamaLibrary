@@ -209,6 +209,43 @@ namespace LlamaLibrary.Helpers
                 await Coroutine.Wait(5000, () => Character.Instance.IsOpen);
             }
 
+            int armoryCount = 0;
+
+            if (useRecommendEquip)
+            {
+                foreach (var bagSlot in InventoryManager.EquippedItems)
+                {
+                    if (!bagSlot.IsValid) continue;
+                    if (bagSlot.Slot == 0 && !bagSlot.IsFilled)
+                    {
+                        Log("MainHand slot isn't filled. How?");
+                        continue;
+                    }
+                    
+                    float itemWeight = bagSlot.IsFilled ? ItemWeight.GetItemWeight(bagSlot.Item) : -1;
+
+                    BagSlot betterItem = InventoryManager.FilledArmorySlots
+                        .Where(bs =>
+                            GetEquipUiCategory(bagSlot.Slot).Contains(bs.Item.EquipmentCatagory) &&
+                            bs.Item.IsValidForCurrentClass &&
+                            bs.Item.RequiredLevel <= Core.Me.ClassLevel &&
+                            bs.BagId != InventoryBagId.EquippedItems)
+                        .OrderByDescending(r => ItemWeight.GetItemWeight(r.Item))
+                        .FirstOrDefault();
+                    
+                    if (betterItem == null || !betterItem.IsValid || !betterItem.IsFilled || betterItem == bagSlot || itemWeight >= ItemWeight.GetItemWeight(betterItem.Item)) continue;
+                    armoryCount++;
+                }
+
+                if (armoryCount > 1)
+                {
+                    if (!RecommendEquip.Instance.IsOpen) AgentRecommendEquip.Instance.Toggle();
+                    await Coroutine.Wait(3500, () => RecommendEquip.Instance.IsOpen);
+                    RecommendEquip.Instance.Confirm();
+                    await Coroutine.Sleep(800);
+                }
+            }
+
             foreach (var bagSlot in InventoryManager.EquippedItems)
             {
                 if (!bagSlot.IsValid) continue;
@@ -217,14 +254,12 @@ namespace LlamaLibrary.Helpers
                     Log("MainHand slot isn't filled. How?");
                     continue;
                 }
-
-                Item currentItem = bagSlot.Item;
-                List<ItemUiCategory> category = GetEquipUiCategory(bagSlot.Slot);
+                
                 float itemWeight = bagSlot.IsFilled ? ItemWeight.GetItemWeight(bagSlot.Item) : -1;
 
                 BagSlot betterItem = InventoryManager.FilledInventoryAndArmory
                                                      .Where(bs =>
-                                                         category.Contains(bs.Item.EquipmentCatagory) &&
+                                                         GetEquipUiCategory(bagSlot.Slot).Contains(bs.Item.EquipmentCatagory) &&
                                                          bs.Item.IsValidForCurrentClass &&
                                                          bs.Item.RequiredLevel <= Core.Me.ClassLevel &&
                                                          bs.BagId != InventoryBagId.EquippedItems)
@@ -238,7 +273,7 @@ namespace LlamaLibrary.Helpers
                 if (betterItem == null || !betterItem.IsValid || !betterItem.IsFilled || betterItem == bagSlot || itemWeight >= ItemWeight.GetItemWeight(betterItem.Item)) continue;
 
                 Log(bagSlot.IsFilled ? $"Equipping {betterItem.Name} over {bagSlot.Name}." : $"Equipping {betterItem.Name}.");
-
+                Item currentItem = bagSlot.Item;
                 betterItem.Move(bagSlot);
                 await Coroutine.Wait(3000, () => bagSlot.Item != currentItem);
                 if (bagSlot.Item == currentItem)
