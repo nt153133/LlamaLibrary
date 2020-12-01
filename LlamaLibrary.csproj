@@ -184,6 +184,9 @@
     <Compile Include="RemoteWindows\Conversation.cs" />
     <Compile Include="RemoteWindows\Dawn.cs" />
     <Compile Include="RemoteWindows\FishGuide.cs" />
+    <Compile Include="RemoteWindows\FreeCompany.cs" />
+    <Compile Include="RemoteWindows\FreeCompanyAction.cs" />
+    <Compile Include="RemoteWindows\FreeCompanyExchange.cs" />
     <Compile Include="RemoteWindows\FreeShop.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
@@ -231,6 +234,7 @@
     <Compile Include="ScriptConditions\Extras.cs" />
     <Compile Include="ScriptConditions\Helpers.cs" />
     <Compile Include="Structs\CraftingRelicTurnin.cs" />
+    <Compile Include="Structs\FcActionShopItem.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
     <Compile Include="Structs\GatheringNodeData.cs" />
     <Compile Include="Structs\GCShopItem.cs" />

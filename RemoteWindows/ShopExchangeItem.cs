@@ -25,7 +25,7 @@ namespace LlamaLibrary.RemoteWindows
             if (!IsOpen) return 0u;
 
             var items = SpecialShopManager.Items;
-
+            
             var specialShopItem = items?.Cast<SpecialShopItem?>().FirstOrDefault(i => i.HasValue && i.Value.ItemIds.Contains(itemId));
             //Logging.Write(Colors.Fuchsia, $"[ShopExchangeItem] Buying {specialShopItem}");
             if (!specialShopItem.HasValue) return 0u;

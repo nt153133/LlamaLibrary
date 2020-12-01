@@ -102,5 +102,34 @@ namespace LlamaLibrary.Helpers
             if (targetNpc.IsWithinInteractRange)
                 targetNpc.Interact();
         }
+        
+        public static async Task GetToGCBase(GrandCompany grandCompany)
+        {
+            var GcBase = BaseLocations[grandCompany];
+            Logger.Info($"{grandCompany} {GcBase.Key} {GcBase.Value}");
+            await Navigation.GetTo(GcBase.Key, GcBase.Value);
+        }
+
+        public static uint GetNpcByType(GCNpc npc,GrandCompany grandCompany)
+        {
+            return NpcList[grandCompany][npc];
+        }
+        
+        public static async Task InteractWithNpc(GCNpc npc,GrandCompany grandCompany)
+        {
+            var targetNpc = GameObjectManager.GetObjectByNPCId(NpcList[grandCompany][npc]);
+            if (targetNpc == null || !targetNpc.IsWithinInteractRange)
+            {
+                await GetToGCBase(grandCompany);
+                targetNpc = GameObjectManager.GetObjectByNPCId(NpcList[grandCompany][npc]);
+            }
+
+            if (targetNpc == null)
+                return;
+            if (!targetNpc.IsWithinInteractRange)
+                await Navigation.OffMeshMoveInteract(targetNpc);
+            if (targetNpc.IsWithinInteractRange)
+                targetNpc.Interact();
+        }
     }
 }
