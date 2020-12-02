@@ -20,12 +20,17 @@ namespace LlamaLibrary.Helpers
             var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
             var fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
 
-            if (curActions.Length == 2) return;
+            if (curActions.Length == 2)
+            {
+                if (FreeCompany.Instance.IsOpen)
+                    FreeCompany.Instance.Close();
+                return;
+            }
             
             var buffs1 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff1);
             var buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
 
-            if (buffs1 == null)
+            if (buffs1 == null && !curActions.Any(i=> i.id == buff1))
             {
                 if (FreeCompany.Instance.IsOpen)
                     FreeCompany.Instance.Close();
@@ -49,7 +54,7 @@ namespace LlamaLibrary.Helpers
                 
             }
             
-            if (buffs2 == null)
+            if (buffs2 == null && !curActions.Any(i=> i.id == buff2))
             {
                 if (FreeCompany.Instance.IsOpen)
                     FreeCompany.Instance.Close();
