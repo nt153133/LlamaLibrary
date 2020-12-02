@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Buddy.Coroutines;
 using Clio.Utilities;
 using ff14bot;
 using ff14bot.Enums;
 using ff14bot.Managers;
+using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
+using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.Helpers
 {
@@ -130,6 +133,34 @@ namespace LlamaLibrary.Helpers
                 await Navigation.OffMeshMoveInteract(targetNpc);
             if (targetNpc.IsWithinInteractRange)
                 targetNpc.Interact();
+        }
+
+        public static async Task BuyFCAction(GrandCompany grandCompany, int actionId)
+        {
+            await InteractWithNpc(GCNpc.OIC_Quartermaster, grandCompany);
+            await Coroutine.Wait(5000, () => Talk.DialogOpen);
+            
+            if (!Talk.DialogOpen)
+            {
+                await InteractWithNpc(GCNpc.OIC_Quartermaster, grandCompany);
+                await Coroutine.Wait(5000, () => Talk.DialogOpen);
+            }
+            if (Talk.DialogOpen)
+            {
+                Talk.Next();
+                await Coroutine.Wait(5000, () => Conversation.IsOpen);
+                if (Conversation.IsOpen)
+                {
+                    Conversation.SelectLine(0);
+                    await Coroutine.Wait(10000, () => FreeCompanyExchange.Instance.IsOpen);
+                    if (FreeCompanyExchange.Instance.IsOpen)
+                    {
+                        await Coroutine.Sleep(500);
+                        await FreeCompanyExchange.Instance.BuyAction(actionId);
+                        FreeCompanyExchange.Instance.Close();
+                    }
+                }
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace LlamaLibrary.RemoteAgents
             [Offset("Search 41 C6 86 ? ? ? ? ? EB ? 41 C6 86 ? ? ? ? ? Add 3 Read32")]
             internal static int CursorLocked;
         }
-        private IntPtr addressLocation = IntPtr.Zero;
+        public IntPtr addressLocation = IntPtr.Zero;
         Random rnd = new Random();
         
         protected AgentOutOnLimb(IntPtr pointer) : base(pointer)
@@ -41,7 +41,7 @@ namespace LlamaLibrary.RemoteAgents
         
         public bool IsReadyBotanist => Core.Memory.Read<byte>(Pointer + Offsets.IsReady) == 3;
         
-        public bool IsReadyAimg => Core.Memory.Read<byte>(Pointer + + Offsets.IsReady) == 2;
+        public bool IsReadyAimg => Core.Memory.Read<byte>(Pointer + Offsets.IsReady) == 2;
 
         public void Refresh()
         {

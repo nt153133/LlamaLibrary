@@ -102,7 +102,7 @@ namespace LlamaLibrary.RemoteAgents
                 await Coroutine.Wait(5000, () => FreeCompanyAction.Instance.IsOpen);
                 if (FreeCompanyAction.Instance.IsOpen)
                 {
-                    uint numCurrentActions = Core.Memory.Read<uint>(ActionAddress + Offsets.CurrentCount);
+                    uint numCurrentActions = Core.Memory.NoCacheRead<uint>(ActionAddress + Offsets.CurrentCount);
                     var currentActions = Core.Memory.ReadArray<FcAction>(ActionAddress + 0x8, (int) numCurrentActions);
                     if (!wasopen)
                         FreeCompany.Instance.Close();
@@ -128,7 +128,7 @@ namespace LlamaLibrary.RemoteAgents
                 await Coroutine.Wait(5000, () => FreeCompanyAction.Instance.IsOpen);
                 if (FreeCompanyAction.Instance.IsOpen)
                 {
-                    var actionCount = Core.Memory.Read<uint>(ActionAddress + Offsets.ActionCount);
+                    var actionCount = Core.Memory.NoCacheRead<uint>(ActionAddress + Offsets.ActionCount);
                     var actions = Core.Memory.ReadArray<FcAction>(ActionAddress + 0x30, (int) actionCount);
                     if (!wasopen)
                         FreeCompany.Instance.Close();

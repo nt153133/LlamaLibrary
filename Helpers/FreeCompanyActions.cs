@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
+using ff14bot.Enums;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 
@@ -8,7 +9,7 @@ namespace LlamaLibrary.Helpers
 {
     public static class FreeCompanyActions
     {
-        public static async Task ActivateBuffs(int buff1, int buff2)
+        public static async Task ActivateBuffs(int buff1, int buff2, GrandCompany grandCompany)
         {
             if (!FreeCompany.Instance.IsOpen)
             {
@@ -23,8 +24,56 @@ namespace LlamaLibrary.Helpers
             
             var buffs1 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff1);
             var buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
+
+            if (buffs1 == null)
+            {
+                if (FreeCompany.Instance.IsOpen)
+                    FreeCompany.Instance.Close();
+                await GrandCompanyHelper.BuyFCAction(grandCompany, buff1);
+                await Coroutine.Sleep(1000);
+                //Logger.Info("Bought buff1");
+                if (!FreeCompany.Instance.IsOpen)
+                {
+                    //Logger.Info("Opening window after buy");
+                    AgentFreeCompany.Instance.Toggle();
+                    await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
+                    if (FreeCompany.Instance.IsOpen)
+                    {
+                        //Logger.Info("Buff 1 bought checking again");
+                        FreeCompany.Instance.SelectActions();
+                        await Coroutine.Wait(5000, () => FreeCompanyAction.Instance.IsOpen);
+                        fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
+                        buffs1 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff1);
+                    }
+                }
+                
+            }
             
-            if (fcActions.Length == 0)
+            if (buffs2 == null)
+            {
+                if (FreeCompany.Instance.IsOpen)
+                    FreeCompany.Instance.Close();
+                await GrandCompanyHelper.BuyFCAction(grandCompany, buff2);
+                await Coroutine.Sleep(1000);
+                //Logger.Info("Bought buff2");
+                if (!FreeCompany.Instance.IsOpen)
+                {
+                    //Logger.Info("Opening window after buy");
+                    AgentFreeCompany.Instance.Toggle();
+                    await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
+                    if (FreeCompany.Instance.IsOpen)
+                    {
+                        //Logger.Info("Buff 2 bought checking again");
+                        FreeCompany.Instance.SelectActions();
+                        await Coroutine.Wait(5000, () => FreeCompanyAction.Instance.IsOpen);
+                        fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
+                        buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
+                    }
+                }
+                
+            }
+            
+            if (curActions.Length == 0)
             {
                 //Log($"No Buffs: Activating");
                 if (!FreeCompanyAction.Instance.IsOpen)
