@@ -79,6 +79,7 @@
     <Compile Include="Helpers\ActionHelper.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
     <Compile Include="Helpers\BlueMageSpellBook.cs" />
+    <Compile Include="Helpers\FreeCompanyActions.cs" />
     <Compile Include="Helpers\GeneralFunctions.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
     <Compile Include="Helpers\GrandCompanyShop.cs" />
