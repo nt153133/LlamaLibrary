@@ -34,5 +34,10 @@ namespace LlamaLibrary.ScriptConditions
             IEnumerable<GearSet> sets = GearsetManager.GearSets.Where(g => g.InUse && g.Class == job && g.Gear.Any());
             return sets.Any() ? sets.Max(GeneralFunctions.GetGearSetiLvl) : 0;
         }
+		
+        public static bool IsFateActive(int fateID)
+        {
+            return FateManager.ActiveFates.Any(i => i.Id == (uint)fateID);
+        }	
     }
 }
