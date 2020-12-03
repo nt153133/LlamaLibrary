@@ -154,7 +154,7 @@ namespace ff14bot.NeoProfiles
 
             #region sync        //level Sync
 
-                 new Decorator(r => currentfate != null && FateManager.WithinFate && ((currentfate.MaxLevel < Core.Player.ClassLevel) || ((Core.Me.ElementalLevel > 0) && currentfate.MaxLevel < Core.Me.ElementalLevel)) && !Core.Me.IsLevelSynced,
+                 new Decorator(r => currentfate != null && FateManager.WithinFate && (((currentfate.MaxLevel < Core.Player.ClassLevel) && !Core.Me.IsLevelSynced) || ((Core.Me.ElementalLevel > 0) && currentfate.MaxLevel < Core.Me.ElementalLevel)),
                   new ActionRunCoroutine(async r =>
                   {
                       Logging.Write("Applying Level Sync.");
