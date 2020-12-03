@@ -43,6 +43,10 @@ namespace ff14bot.NeoProfiles
         [DefaultValue(null)]
         public string Say { get; set; }
 
+        [XmlAttribute("Shout")]
+        [DefaultValue(null)]
+        public string Shout { get; set; }
+
         [XmlAttribute("Emote")]
         [DefaultValue(null)]
         public string Emote { get; set; }
@@ -160,6 +164,12 @@ namespace ff14bot.NeoProfiles
                 Log($"Saying {Say}.");
                 ChatManager.SendChat("/s " + Say);
             }
+			
+            if (Shout!= null)
+            {
+                Log($"Shouting {Shout}.");
+                ChatManager.SendChat("/shout " + Shout);
+            }			
 
             if (Emote != null)
             {
