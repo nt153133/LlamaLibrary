@@ -164,6 +164,14 @@ namespace ff14bot.NeoProfiles
 
                                   return false;
                               })),
+                new Decorator(r => currentfate != null && FateManager.WithinFate,
+                              new ActionRunCoroutine(async r =>
+                              {
+                                  Logging.Write($"In fate {Core.Me.ElementalLevel} > 0 && {currentfate.MaxLevel} < {Core.Me.ElementalLevel}.");
+
+
+                                  return false;
+                              })),
                 new Decorator(r => currentfate != null && FateManager.WithinFate && currentfate.MaxLevel < Core.Player.ClassLevel && !Core.Me.IsLevelSynced,
                               new ActionRunCoroutine(async r =>
                               {
@@ -448,6 +456,8 @@ namespace ff14bot.NeoProfiles
                 Position = currentfate.Location;
                 fateid = currentfate.Id;
                 currentstep = 1;
+                
+
             }
         }
 
