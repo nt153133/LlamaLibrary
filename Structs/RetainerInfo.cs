@@ -8,9 +8,7 @@ namespace LlamaLibrary.Structs
     [StructLayout(LayoutKind.Sequential, Size = 0x48)]
     public struct RetainerInfo
     {
-        public int Unique;
-        
-        public int Other;
+        public ulong Unique;
         
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
         public string Name;
