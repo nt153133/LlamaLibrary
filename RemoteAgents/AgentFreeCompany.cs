@@ -19,7 +19,7 @@ namespace LlamaLibrary.RemoteAgents
         public IntPtr RegisteredVtable => Offsets.VTable;
         private static class Offsets
         {
-            [Offset("Search 48 8D 05 ? ? ? ? 48 89 51 ? 33 F6 Add 3 TraceRelative")]
+            [Offset("Search 48 8D 05 ? ? ? ? 48 8B F9 48 89 01 48 8D 05 ? ? ? ? 48 89 41 ? 48 8D 05 ? ? ? ? 48 89 41 ? 48 81 C1 ? ? ? ? Add 3 TraceRelative")]
             internal static IntPtr VTable;
             [Offset("Search 8B 93 ? ? ? ? 39 93 ? ? ? ? Add 2 Read32")]
             internal static int HistoryCount;

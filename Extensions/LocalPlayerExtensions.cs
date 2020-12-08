@@ -14,18 +14,18 @@ namespace LlamaLibrary.Extensions
     {
         internal static class Offsets
         {
-            [Offset("Search 44 88 84 0A ? ? ? ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 88 91 ? ? ? ? Add 4 Read32")]
-            internal static int GatheringStateOffset;
+            /*[Offset("Search 44 88 84 0A ? ? ? ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 88 91 ? ? ? ? Add 4 Read32")]
+            internal static int GatheringStateOffset;*/
             [Offset("Search 0F B6 15 ? ? ? ? 8D 42 ? 3C ? 77 ? FE CA 48 8D 0D ? ? ? ? Add 3 TraceRelative")]
             internal static IntPtr CurrentGC;
             [Offset("Search 48 83 EC ? 48 8B 05 ? ? ? ? 44 8B C1 BA ? ? ? ? 48 8B 88 ? ? ? ? E8 ? ? ? ? 48 85 C0 75 ? 48 83 C4 ? C3 48 8B 00 48 83 C4 ? C3 ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 48 83 EC ? 80 F9 ?")]
             internal static IntPtr GCGetMaxSealsByRank;
         }
         
-        internal static byte GatheringStatus(this LocalPlayer player)
+        /*internal static byte GatheringStatus(this LocalPlayer player)
         {
             return Core.Memory.Read<byte>(player.Pointer + Offsets.GatheringStateOffset);
-        }
+        }*/
 
         internal static uint GCSeals(this LocalPlayer player)
         {

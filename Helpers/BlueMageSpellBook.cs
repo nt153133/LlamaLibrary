@@ -13,7 +13,7 @@ namespace LlamaLibrary.Helpers
     {
         private static class Offsets
         {
-            [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 85 C0 74 ? FF C3 83 FB ? 72 ? 41 8B 17 Add 3 TraceRelative")]
+            [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 85 C0 74 ? FF C3 83 FB ? 72 ? 49 8B CF Add 3 TraceRelative")]
             internal static IntPtr ActionManager;
             
             [Offset("Search 48 8B C4 48 89 68 ? 48 89 70 ? 41 56 48 83 EC ? 48 63 F2")]

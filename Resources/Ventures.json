@@ -11139,5 +11139,83 @@
     "RequiredGathering": 1222,
     "NameRaw": "Sweetmeat Mussel",
     "ItemId": 28719
+  },
+  {
+    "Id": 864,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1584,
+    "NameRaw": "Fireheart Cobalt",
+    "ItemId": 29968
+  },
+  {
+    "Id": 865,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1584,
+    "NameRaw": "Purpure Shell Chip",
+    "ItemId": 29970
+  },
+  {
+    "Id": 866,
+    "ClassJobCategory": 17,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1584,
+    "NameRaw": "Ashen Alumen",
+    "ItemId": 29976
+  },
+  {
+    "Id": 867,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1584,
+    "NameRaw": "Merbau Log",
+    "ItemId": 29972
+  },
+  {
+    "Id": 868,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1584,
+    "NameRaw": "Duskblooms",
+    "ItemId": 29974
+  },
+  {
+    "Id": 869,
+    "ClassJobCategory": 18,
+    "IsRandom": false,
+    "RetainerLevel": 80,
+    "VentureCost": 1,
+    "MaxTime": 60,
+    "Experience": 4330000,
+    "RequiredItemLevel": 0,
+    "RequiredGathering": 1584,
+    "NameRaw": "Imperial Fern",
+    "ItemId": 29978
   }
 ]
