@@ -189,6 +189,7 @@
     <Compile Include="RemoteWindows\FreeCompanyAction.cs" />
     <Compile Include="RemoteWindows\FreeCompanyExchange.cs" />
     <Compile Include="RemoteWindows\FreeShop.cs" />
+    <Compile Include="RemoteWindows\GatheringMasterpieceLL.cs" />
     <Compile Include="RemoteWindows\GcArmyCapture.cs" />
     <Compile Include="RemoteWindows\GcArmyExpeditionResult.cs" />
     <Compile Include="RemoteWindows\GoldSaucerReward.cs" />
