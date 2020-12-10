@@ -53,13 +53,12 @@ namespace LlamaLibrary.OrderbotTags
                     return;
                 }
 
-                List<GearSet> groupedGearSets = GearsetManager
+                IEnumerable<GearSet> groupedGearSets = GearsetManager
                                                        .GearSets
                                                        .Where(g => g.InUse)
                                                        .OrderByDescending(GetGearSetiLvl)
                                                        .GroupBy(g => g.Class)
-                                                       .Select(g => g.FirstOrDefault())
-                                                       .ToList();
+                                                       .Select(g => g.FirstOrDefault());
 
                 await Coroutine.Sleep(4000);
 
