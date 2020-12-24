@@ -128,6 +128,17 @@ namespace LlamaLibrary.ScriptConditions
             return (int)Core.Me.MaxGCSeals();
         }
         
+        public static int GetNPCIconId(int npcID)
+        {
+            var npc = GameObjectManager.GetObjectByNPCId((uint) npcID);
+            if (npc != null)
+            {
+                return (int) npc.IconId();
+            }
+
+            return 0;
+        }
+        
         public static int GilCount()
         {
             return (int)InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).Where(r => r.IsFilled).FirstOrDefault(item => item.RawItemId == DataManager.GetItem("Gil").Id).Count;
