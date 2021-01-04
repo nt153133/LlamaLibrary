@@ -191,9 +191,9 @@ namespace ff14bot.NeoProfiles
 
                   new Decorator(
                       ret => currentstep == 1 && Vector3.Distance(Core.Player.Location, Position) > (currentfate.Radius - 10),
-                         UseFlight ? new ActionRunCoroutine(obj => Lisbeth.TravelToZones(WorldManager.ZoneId, Position)) : CommonBehaviors.MoveAndStop(ret => Position, Distance, stopInRange: true, destinationName: "Moving to Fates.")
+                         UseFlight ? new ActionRunCoroutine(obj => Lisbeth.TravelToZones(WorldManager.ZoneId, Position)) :new ActionRunCoroutine(obj=> LlamaLibrary.Helpers.Navigation.FlightorMove(Position))// CommonBehaviors.MoveAndStop(ret => Position, Distance, stopInRange: true, destinationName: "Moving to Fates.")
 
-                  ),
+                                                                                                                                                ),
 
             #region Handin
 
@@ -645,7 +645,7 @@ namespace ff14bot.NeoProfiles
                 }
                 else if (fatebotInstance.BlackListedFates.Contains(f.Name) || BlacklistIds.Contains((int)f.Id))
                 {
-                    Logging.Write("Skipping Fate {0}. Fate is blacklisted.", f.Name);
+                    //Logging.Write("Skipping Fate {0}. Fate is blacklisted.", f.Name);
                 }
                 else
                 {
