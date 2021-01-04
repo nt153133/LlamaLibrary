@@ -12,6 +12,7 @@ using ff14bot.Objects;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
+using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteAgents;
 using Character = LlamaLibrary.RemoteWindows.Character;
 
@@ -154,6 +155,20 @@ namespace LlamaLibrary.ScriptConditions
             }
 
             return false;
+        }
+        
+        public static int CurrentMettle()
+        {
+            if (DirectorManager.ActiveDirector == null) return 0;
+            
+            return (int)Core.Memory.Read<uint>(DirectorManager.ActiveDirector.Pointer + Offsets.CurrentMettle);
+        }
+        
+        public static int NextReistanceRank()
+        {
+            if (DirectorManager.ActiveDirector == null) return 0;
+            
+            return (int)Core.Memory.Read<uint>(DirectorManager.ActiveDirector.Pointer + Offsets.NextReistanceRank);
         }
 
         public static bool IsDutyAvailable(int duty)
