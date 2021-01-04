@@ -738,6 +738,8 @@ namespace ff14bot.NeoProfiles
             // MinLevel = "25";
             CachedProvider = CombatTargeting.Instance.Provider;
             CombatTargeting.Instance.Provider = new MySuperAwesomeTargetingProvider();
+            currentfate = null;
+            Poi.Clear("Clearing POI");
             saveNow = DateTime.Now;
         }
 
