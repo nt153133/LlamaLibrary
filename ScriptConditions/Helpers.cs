@@ -164,7 +164,7 @@ namespace LlamaLibrary.ScriptConditions
             return (int)Core.Memory.Read<uint>(DirectorManager.ActiveDirector.Pointer + Offsets.CurrentMettle);
         }
         
-        public static int NextReistanceRank()
+        public static int NextResistanceRank()
         {
             if (DirectorManager.ActiveDirector == null) return 0;
             
