@@ -31,7 +31,7 @@ using LlamaLibrary.RemoteAgents;
         private static string Name => "LLOffsetManager";
         private static bool initDone = false;
         private static StringBuilder sb= new StringBuilder();
-        //public static Dictionary<string, string> patterns = new Dictionary<string, string>();
+        public static Dictionary<string, string> patterns = new Dictionary<string, string>();
 
         private static readonly bool _debug = false;
         internal static void Init()
