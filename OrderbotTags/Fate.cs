@@ -191,7 +191,7 @@ namespace ff14bot.NeoProfiles
 
                   new Decorator(
                       ret => currentstep == 1 && Vector3.Distance(Core.Player.Location, Position) > (currentfate.Radius - 10),
-                         UseFlight ? new ActionRunCoroutine(obj => Lisbeth.TravelToZones(WorldManager.ZoneId, Position)) :new ActionRunCoroutine(obj=> LlamaLibrary.Helpers.Navigation.FlightorMove(Position))// CommonBehaviors.MoveAndStop(ret => Position, Distance, stopInRange: true, destinationName: "Moving to Fates.")
+                         UseFlight ? new ActionRunCoroutine(obj => Lisbeth.TravelToZones(WorldManager.ZoneId, Position)) :new ActionRunCoroutine(obj=> LlamaLibrary.Helpers.Navigation.FlightorMove(currentfate))// CommonBehaviors.MoveAndStop(ret => Position, Distance, stopInRange: true, destinationName: "Moving to Fates.")
 
                                                                                                                                                 ),
 

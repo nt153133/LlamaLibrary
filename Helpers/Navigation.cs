@@ -183,13 +183,33 @@ namespace LlamaLibrary.Helpers
         internal static async Task<bool> FlightorMove(Vector3 loc)
         {
             var moving = MoveResult.GeneratingPath;
+            var target = new FlyToParameters(loc);
             while (!(moving == MoveResult.Done ||
                      moving == MoveResult.ReachedDestination ||
                      moving == MoveResult.Failed ||
                      moving == MoveResult.Failure ||
                      moving == MoveResult.PathGenerationFailed))
             {
-                moving = Flightor.MoveTo(new FlyToParameters(loc));
+                moving = Flightor.MoveTo(target);
+
+                await Coroutine.Yield();
+            }
+            Navigator.PlayerMover.MoveStop();
+            return moving == MoveResult.ReachedDestination;
+        }
+        
+        internal static async Task<bool> FlightorMove(FateData fate)
+        {
+            if (fate == null) return false;
+            var moving = MoveResult.GeneratingPath;
+            var target = new FlyToParameters(fate.Location);
+            while ((!(moving == MoveResult.Done ||
+                     moving == MoveResult.ReachedDestination ||
+                     moving == MoveResult.Failed ||
+                     moving == MoveResult.Failure ||
+                     moving == MoveResult.PathGenerationFailed)) && FateManager.ActiveFates.Any(i=> i.Id == fate.Id && i.IsValid))
+            {
+                moving = Flightor.MoveTo(target);
 
                 await Coroutine.Yield();
             }
