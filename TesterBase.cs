@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using Clio.Utilities;
-using Clio.Utilities.Helpers;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
@@ -26,11 +20,9 @@ using ff14bot.NeoProfiles;
 using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
-using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using ff14bot.RemoteWindows.GoldSaucer;
 using GreyMagic;
-using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
@@ -42,16 +34,12 @@ using LlamaLibrary.Structs;
 using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
-using Action = TreeSharp.Action;
-using ActionType = ff14bot.Enums.ActionType;
 using static LlamaLibrary.Retainers.HelperFunctions;
 
 namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
-        bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
-
         private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
         {
             {0, "Unknown"},
@@ -216,11 +204,13 @@ namespace LlamaLibrary
             {77, "Jackpot III"},
         };
 
+        private readonly SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
+
 
         private volatile bool _init;
         private Composite _root;
 
-        private readonly SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
+        public Dictionary<string, List<Composite>> hooks;
 
 
         public TesterBase()
@@ -233,6 +223,8 @@ namespace LlamaLibrary
             });
         }
 
+        private bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
+
         public override string Name => "Tester";
         public override PulseFlags PulseFlags => PulseFlags.All;
 
@@ -242,8 +234,6 @@ namespace LlamaLibrary
         public override Composite Root => _root;
 
         public override bool WantButton { get; } = true;
-
-        public Dictionary<string, List<Composite>> hooks;
 
 
         public override void OnButtonPress()
@@ -337,7 +327,7 @@ namespace LlamaLibrary
                     foreach (var turnin in turninItems)
                     {
                         var reward = GatheringItems[turnin.RawItemId].Reward;
-                        var amt = (turnin.Count / GatheringItems[turnin.RawItemId].Cost);
+                        var amt = turnin.Count / GatheringItems[turnin.RawItemId].Cost;
                         Log($"Buying {amt}x{DataManager.GetItem(reward).CurrentLocaleName}");
                         await ShopExchangeItem.Instance.Purchase(reward, amt);
                         await Coroutine.Sleep(500);
@@ -431,6 +421,46 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
+            InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
+            {
+                InventoryBagId.Bag1,
+                InventoryBagId.Bag2,
+                InventoryBagId.Bag3,
+                InventoryBagId.Bag4,
+                InventoryBagId.Crystals,
+                InventoryBagId.Currency
+            };
+
+            var targetPlayer = GameObjectManager.Target as BattleCharacter;
+
+            var result = targetPlayer.OpenTradeWindow();
+
+            uint itemid = 2;
+            uint qty = 5;
+            Log($"{result}");
+            if (result == 0)
+            {
+                await Coroutine.Wait(5000, () => Trade.IsOpen);
+                if (Trade.IsOpen)
+                {
+                    var item = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).SelectMany(i => i.FilledSlots).FirstOrDefault(i => i.RawItemId == itemid);
+                    if (item != null)
+                    {
+                        item.TradeItem();
+                        await Coroutine.Wait(5000, () => InputNumeric.IsOpen);
+                        if (InputNumeric.IsOpen)
+                        {
+                            InputNumeric.Ok(qty); //pass nothing for full stack
+                        }
+
+                        RaptureAtkUnitManager.GetWindowByName("Trade").SendAction(1, 3uL, 0);
+                        await Coroutine.Wait(-1, () => Trade.TradeStage == 5);
+                        await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                        if (SelectYesno.IsOpen)
+                            SelectYesno.Yes();
+                    }
+                }
+            }
 
             //await TurninSkySteelGathering();
             //await TurninSkySteelCrafting();
@@ -441,7 +471,6 @@ namespace LlamaLibrary
             //await LeveWindow(1018997);
             //await HousingWards();
             //await testVentures();
-
 
             //DutyManager.AvailableContent
             // RoutineManager.Current.PullBehavior.Start();
@@ -714,6 +743,13 @@ namespace LlamaLibrary
 
             // Log($"\n {sb}");
             //DumpLLOffsets();
+            //ActionManager.DoAction("Scour", Core.Me);
+            /*if (GatheringMasterpieceLL.Instance.IsOpen)
+            {
+                Log($"Collectability: {GatheringMasterpieceLL.Instance.Collectability}/{GatheringMasterpieceLL.Instance.MaxCollectability}");
+                Log($"Integrity: {GatheringMasterpieceLL.Instance.Integrity}/{GatheringMasterpieceLL.Instance.MaxIntegrity}");
+                Log($"IntuitionRate: {GatheringMasterpieceLL.Instance.IntuitionRate} Item: {DataManager.GetItem((uint) GatheringMasterpieceLL.Instance.ItemID).CurrentLocaleName}");
+            }*/
 
             /*InventoryBagId[] FCChest = new InventoryBagId[] {InventoryBagId.GrandCompany_Page1, InventoryBagId.GrandCompany_Page2, InventoryBagId.GrandCompany_Page3, (InventoryBagId) 20003, (InventoryBagId) 20004};
 
@@ -785,25 +821,22 @@ namespace LlamaLibrary
                 Log($"Finished {start}");
                 start++;
             }
+            
             using (var outputFile = new StreamWriter($"hunts_failed.json", false))
             {
                 outputFile.Write(JsonConvert.SerializeObject(failed));
             }*/
             // await OutOnALimbBase.RunHomeMGP();
-            uint[] FCAuras = new uint[] {353, 354, 355, 356, 357, 360, 361, 362, 363, 364, 365, 366, 367, 368, 413, 414, 902};
-            var buffs = Core.Me.Auras.Where(i => FCAuras.Contains(i.Id)).ToList();
-            if (buffs.Count() < 2)
-            {
-                await FreeCompanyActions.ActivateBuffs(31, 41, GrandCompany.Maelstrom);
-            }
+
+
             /*AgentFreeCompany.Instance.Toggle();
             await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
-
+            
             foreach (var buff in buffs)
             {
                 Log($"Current Buffs: {buff.Name}");
             }
-
+            
             var FCActionListCur = await AgentFreeCompany.Instance.GetAvailableActions();
             int cnt = 0;
             foreach (var action in FCActionListCur)
@@ -818,7 +851,7 @@ namespace LlamaLibrary
             {
                 await FreeCompanyActions.ActivateBuffs(31, 41, GrandCompany.Maelstrom);
             }
-
+            
             if (FreeCompany.Instance.IsOpen)
                 FreeCompany.Instance.Close();*/
             /*
@@ -843,7 +876,7 @@ namespace LlamaLibrary
                 }
             }
             */
-            
+
             /*var address1 = new IntPtr(0x273E68848A0);
             var count = Core.Memory.Read<int>(address1 + 4);
             var shop = Core.Memory.ReadArray<FcActionShop>(address1 + 0x8, count);
@@ -857,12 +890,11 @@ namespace LlamaLibrary
                     x++;
                 }*/
 
-            TreeRoot.Stop("Stop Requested");
-
 
             //Core.Me.Stats
 
 
+            TreeRoot.Stop("Stop Requested");
             //AtkAddonControl windowByName = RaptureAtkUnitManager.Update()
             // await Coroutine.Sleep(100);
 
@@ -895,17 +927,6 @@ namespace LlamaLibrary
             //await BuyHouse();
 
             // await Coroutine.Sleep(100);
-        }
-
-
-
-        [StructLayout(LayoutKind.Sequential, Size = 0x10)]
-        struct FcActionShop
-        {
-            public uint id;
-            public uint iconId;
-            public uint rank;
-            public uint cost;
         }
 
         private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
@@ -994,7 +1015,6 @@ namespace LlamaLibrary
         }
 
 
-        /*
         private void DumpLLOffsets()
         {
             var sb = new StringBuilder();
@@ -1039,17 +1059,17 @@ namespace LlamaLibrary
                 outputFile.Write(sb.ToString());
             }
         }
-        */
+
 
         private async Task TestMathma()
         {
             await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
+            await Coroutine.Sleep(500);
 
-            if (ff14bot.RemoteWindows.SelectIconString.IsOpen)
+            if (SelectIconString.IsOpen)
             {
                 Logging.WriteDiagnostic("SelectIconString Open. Clicking Mahatma Exchange.");
-                ff14bot.RemoteWindows.SelectIconString.ClickSlot(0);
+                SelectIconString.ClickSlot(0);
             }
             else
             {
@@ -1057,59 +1077,59 @@ namespace LlamaLibrary
             }
 
 
-            uint Slot = (uint) (LlamaLibrary.ScriptConditions.Helpers.ZodiacCompletedMahatma());
-            await Buddy.Coroutines.Coroutine.Sleep(1000);
+            uint Slot = (uint) ScriptConditions.Helpers.ZodiacCompletedMahatma();
+            await Coroutine.Sleep(1000);
 
-            ff14bot.Managers.GameObjectManager.GetObjectByNPCId(1011791).Interact();
+            GameObjectManager.GetObjectByNPCId(1011791).Interact();
 
             await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
+            await Coroutine.Sleep(500);
 
-            if (ff14bot.RemoteWindows.SelectIconString.IsOpen)
+            if (SelectIconString.IsOpen)
             {
                 Logging.WriteDiagnostic("SelectIconString Open. Clicking Mahatma Exchange.");
-                ff14bot.RemoteWindows.SelectIconString.ClickSlot(0);
+                SelectIconString.ClickSlot(0);
             }
 
-            await Coroutine.Wait(5000, () => Talk.DialogOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
-            if (await Coroutine.Wait(1000, () => Talk.DialogOpen))
+            await Coroutine.Wait(5000, () => DialogOpen);
+            await Coroutine.Sleep(500);
+            if (await Coroutine.Wait(1000, () => DialogOpen))
             {
-                Talk.Next();
+                Next();
             }
 
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
-            if (ff14bot.RemoteWindows.SelectString.IsOpen)
+            await Coroutine.Sleep(500);
+            if (SelectString.IsOpen)
             {
                 Logging.WriteDiagnostic("SelectString Open. Choosing weapon.");
-                ff14bot.RemoteWindows.SelectString.ClickSlot(0);
+                SelectString.ClickSlot(0);
                 await Coroutine.Wait(5000, () => !SelectString.IsOpen);
             }
 
             await Coroutine.Wait(5000, () => SelectString.IsOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
-            if (ff14bot.RemoteWindows.SelectString.IsOpen)
+            await Coroutine.Sleep(500);
+            if (SelectString.IsOpen)
             {
                 Logging.WriteDiagnostic("Choosing next Mahatma.");
                 SelectString.ClickSlot(Slot + 1);
             }
 
             await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
-            if (ff14bot.RemoteWindows.SelectYesno.IsOpen)
+            await Coroutine.Sleep(500);
+            if (SelectYesno.IsOpen)
             {
                 Logging.WriteDiagnostic("Selecting Yes.");
-                ff14bot.RemoteWindows.SelectYesno.ClickYes();
+                SelectYesno.ClickYes();
             }
 
-            await Coroutine.Wait(5000, () => Talk.DialogOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
-            while (Talk.DialogOpen)
+            await Coroutine.Wait(5000, () => DialogOpen);
+            await Coroutine.Sleep(500);
+            while (DialogOpen)
             {
-                Talk.Next();
-                await Coroutine.Wait(2000, () => !Talk.DialogOpen);
-                await Buddy.Coroutines.Coroutine.Sleep(1000);
+                Next();
+                await Coroutine.Wait(2000, () => !DialogOpen);
+                await Coroutine.Sleep(1000);
             }
         }
 
@@ -1182,7 +1202,7 @@ namespace LlamaLibrary
                     if (t.FieldType == typeof(IntPtr))
                     {
                         //IntPtr ptr = new IntPtr(((IntPtr) t.GetValue(tp)).ToInt64() - Core.Memory.ImageBase.ToInt64());
-                        IntPtr ptr = (((IntPtr) t.GetValue(tp)));
+                        IntPtr ptr = (IntPtr) t.GetValue(tp);
                         stringBuilder.Append($"Struct{i + 88}_IntPtr{p1}, {Core.Memory.GetRelative(ptr).ToInt64()}\n");
                         //stringBuilder.Append(string.Format("\tPtr Offset_{0}: 0x{1:x}", p1, ptr.ToInt64()));
 
@@ -1381,7 +1401,7 @@ namespace LlamaLibrary
 
             if (!RetainerList.Instance.IsOpen)
             {
-                await HelperFunctions.UseSummoningBell();
+                await UseSummoningBell();
                 await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
             }
 
@@ -1391,7 +1411,7 @@ namespace LlamaLibrary
                 return;
             }
 
-            var count = await HelperFunctions.GetNumberOfRetainers();
+            var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
             int index = 0;
@@ -1525,14 +1545,14 @@ namespace LlamaLibrary
         {
             var patternFinder = new PatternFinder(Core.Memory);
 
-            var result = patternFinder.Find("44 89 BF ?? ?? ?? ?? 83 BF ?? ?? ?? ?? ?? Add 3 Read32");
+            var result = patternFinder.Find("44 89 BF ?? ?? ?? ?? 83 BF ?? ?? ?? ?? ?? Add 3 Read32").ToInt32();
             //Log(result);
-            uint[] npcs = {1027233, 1027234, 1027235, 1027236, 1027237};
+            uint[] npcs = {1029028, 1033777};
 
             var units = GameObjectManager.GameObjects;
-            foreach (var unit in units.Where(i => npcs.Contains(i.NpcId)))
+            foreach (var unit in units.Where(i => i.Type == GameObjectType.EventNpc))
             {
-                Log("Name:{0}, Type:{3}, ID:{1}, Obj:{2}", unit, unit.NpcId, unit.ObjectId, unit.GetType());
+                Log("Name:{0}, IconID: {1}", unit.Name, Core.Memory.Read<uint>(unit.Pointer + result));
             }
 
             return false;
@@ -1715,6 +1735,47 @@ namespace LlamaLibrary
             Logger.Info(output);
 
             return true;
+        }
+
+        [StructLayout(LayoutKind.Explicit, Size = 0xB0)]
+        public struct SearchResult
+        {
+            [FieldOffset(0x0)]
+            public readonly ulong listingId;
+
+            [FieldOffset(0x8)]
+            public readonly ulong retainerId;
+
+            [FieldOffset(0x10)]
+            public readonly ulong retainerOwnerId;
+
+            [FieldOffset(0x18)]
+            public readonly uint pricePerUnit;
+
+            [FieldOffset(0x1C)]
+            public readonly uint totalTax;
+
+            [FieldOffset(0x20)]
+            public readonly uint qty;
+
+            [FieldOffset(0x38)]
+            public readonly byte HQ;
+
+            [FieldOffset(0x39)]
+            public readonly byte meldNum;
+
+            [FieldOffset(0x40)]
+            public readonly byte retainerCityId;
+        }
+
+
+        [StructLayout(LayoutKind.Sequential, Size = 0x10)]
+        private struct FcActionShop
+        {
+            public readonly uint id;
+            public readonly uint iconId;
+            public readonly uint rank;
+            public readonly uint cost;
         }
     }
 }

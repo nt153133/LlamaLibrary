@@ -244,5 +244,21 @@ namespace LlamaLibrary.Extensions
 
             return count;
         }
+        
+        public static void TradeItem(this BagSlot bagSlot)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.TradeBagSlot, new object[3]
+                    {
+                        Offsets.ItemFuncParam,
+                        bagSlot.Slot,
+                        (uint)bagSlot.BagId
+                    });
+                }
+            }
+        }
     }
 }
