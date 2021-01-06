@@ -116,14 +116,14 @@ namespace LlamaLibrary
 
         public GatherTest()
         {
-            if (Translator.Language == Language.Chn)
+            /*if (Translator.Language == Language.Chn)
             {
                 TimerOffset = 0x640;
             }
             else
-            {
+            {*/
                 TimerOffset = 0x650;
-            }
+          //  }
         }
 
         public override string Name => "DiademGather";
