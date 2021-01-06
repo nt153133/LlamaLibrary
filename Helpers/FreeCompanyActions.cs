@@ -26,7 +26,7 @@ namespace LlamaLibrary.Helpers
                     FreeCompany.Instance.Close();
                 return;
             }
-            
+            await GeneralFunctions.StopBusy(dismount: false);
             var buffs1 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff1);
             var buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
 

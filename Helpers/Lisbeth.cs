@@ -120,6 +120,7 @@ namespace LlamaLibrary.Helpers
         
         public static async Task<bool> TravelToZones(uint zoneId, Vector3 position)
         {
+            Logging.Write($"Lisbeth Travel: Zone:{zoneId}  Pos:{position}");
             return await _travelToWithoutSubzone(zoneId, position);
         }
         

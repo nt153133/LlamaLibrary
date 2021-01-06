@@ -11,6 +11,7 @@ using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
 using ff14bot.Enums;
+using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing.Service_Navigation;
@@ -32,8 +33,8 @@ namespace LlamaLibrary
 
         private static MiniGameResult HitResult = MiniGameResult.None;
 
-        private static int baseDelay = 550;
-        private static int maxDelay = 700;
+        private static int baseDelay = 500;//600
+        private static int maxDelay = 800;//800
 
         private readonly List<Vector3> PlayLocations = new List<Vector3>
         {
@@ -203,7 +204,7 @@ namespace LlamaLibrary
                         if (SelectYesno.IsOpen && (GetDoubleDownInfo().Key <= 2 || GetDoubleDownInfo().Value < 15))
                         {
                             SelectYesno.No();
-                            Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()}");
+                            Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()} TimeLeft: {GetDoubleDownInfo().Value }");
                             await Coroutine.Sleep(_random.Next(300, 500));
                             break;
                         }
@@ -211,14 +212,14 @@ namespace LlamaLibrary
                         if (SelectYesno.IsOpen && GetDoubleDownInfo().Key > 1 && GetDoubleDownInfo().Value > 15)
                         {
                             Logger.LogCritical($"Click Yes Reward: {GetDoubleDownReward()}");
-                            await Coroutine.Sleep(_random.Next(1000, 1500));
+                            await Coroutine.Sleep(_random.Next(300, 500));
                             SelectYesno.ClickYes();
                             await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
                             //await PlayBotanist();
                         }
                         else if (SelectYesno.IsOpen)
                         {
-                            Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()}");
+                            Logger.LogCritical($"Click No Reward: {GetDoubleDownReward()} TimeLeft: {GetDoubleDownInfo().Value }");
                             SelectYesno.No();
                             await Coroutine.Sleep(_random.Next(300, 500));
                             break;
@@ -250,7 +251,7 @@ namespace LlamaLibrary
 
                 await Coroutine.Wait(5000, () => !GoldSaucerReward.Instance.IsOpen);
                 Logger.LogCritical("Done");
-                await Coroutine.Sleep(_random.Next(3000, 4500));
+                await Coroutine.Sleep(_random.Next(8000, 11500));
             }
 
             GamelogManager.MessageRecevied -= GamelogManagerOnMessageRecevied;
@@ -558,6 +559,7 @@ namespace LlamaLibrary
                 if (SelectYesno.IsOpen)
                     return true;
 
+                Logger.LogCritical($"Pointer Loc: {AgentOutOnLimb.Instance.addressLocation.ToString("X")} AgentPointer: {AgentOutOnLimb.Instance.Pointer.ToString("X")}");
                 var result = await StopAtLocation(_random.Next(stopLoc - 1, stopLoc + 1));
                 var stop = false;
                 switch (result)
@@ -617,7 +619,7 @@ namespace LlamaLibrary
                     }
 
                     lastLocation = stopLoc;
-                    Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} stop {stopLoc}");
+                   // Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} stop {stopLoc}");
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist);
                     await Coroutine.Sleep(_random.Next(baseDelay, maxDelay));
                     if (stop)
@@ -666,32 +668,35 @@ namespace LlamaLibrary
                 }
             }
 
-            Logger.Info($"Last Location {lastLocation}");
+            // Logger.Info($"Last Location {lastLocation}");
 
-            Logger.Info($"Last Close Location {lastCloseLocation}");
+            // Logger.Info($"Last Close Location {lastCloseLocation}");
 
             if (lastVeryCloseLocation > 1)
             {
-                Logger.Info($"\tVery Close set location {lastVeryCloseLocation}");
+               // Logger.Info($"\tVery Close set location {lastVeryCloseLocation}");
                 List<int> locations = new List<int>();
-                locations.Add(lastVeryCloseLocation - 5);
-                locations.Add(lastVeryCloseLocation + 5);
+                locations.Add(lastVeryCloseLocation - 7);
+                locations.Add(lastVeryCloseLocation + 7);
                 locations.Add(lastVeryCloseLocation);
-                locations.Add(lastVeryCloseLocation + 3);
+                locations.Add(lastVeryCloseLocation + 5);
                 locations.Shuffle();
                 int i = 0;
-                while (MiniGameBotanist.Instance.GetProgressLeft > 0 || !SelectYesno.IsOpen || i >= (locations.Count-1))
+                while (MiniGameBotanist.Instance.GetProgressLeft > 0 || !SelectYesno.IsOpen || i >= (locations.Count-1) )
                 {
                     //var location = _random.Next(lastVeryCloseLocation - 5, lastVeryCloseLocation + 5);
-                    Logger.Info($"Very Close location {locations[i]}");
+                    //Logger.Info($"Very Close location {locations[i]}");
                     var result = await StopAtLocation(locations[i]);
                     //Logger.Info($"Progress {MiniGameBotanist.Instance.GetProgressLeft} result {result}");
                     if (MiniGameBotanist.Instance.GetProgressLeft == 0)
                         return true;
                     await Coroutine.Wait(5000, () => AgentOutOnLimb.Instance.IsReadyBotanist || SelectYesno.IsOpen);
+                    //Logger.Info($"IsReady {AgentOutOnLimb.Instance.IsReadyBotanist}");
+                    if (!AgentOutOnLimb.Instance.IsReadyBotanist) break;
                     await Coroutine.Sleep(_random.Next(baseDelay, maxDelay));
                     i++;
                 }
+               // Logger.Info($"Done very close");
             }
 
             if (MiniGameBotanist.Instance.GetProgressLeft == 0)
@@ -710,7 +715,7 @@ namespace LlamaLibrary
 
             if (!AgentOutOnLimb.Instance.CursorLocked)
             {
-                Logger.Info("Lock Cursor");
+               // Logger.Info("Lock Cursor");
                 MiniGameBotanist.Instance.PauseCursor();
                 await Coroutine.Sleep(200);
             }
@@ -719,7 +724,7 @@ namespace LlamaLibrary
 
             GamelogManager.MessageRecevied += GamelogManagerOnMessageRecevied;
             HitResult = MiniGameResult.None;
-            await Coroutine.Sleep(250);
+            await Coroutine.Sleep(400);
             MiniGameBotanist.Instance.PressButton();
             var timeleft = MiniGameBotanist.Instance.GetTimeLeft * 1000;
             await Coroutine.Wait(timeleft, () => HitResult != MiniGameResult.None || SelectYesno.IsOpen);

@@ -18,7 +18,7 @@ namespace LlamaLibrary.RemoteWindows
 
         public void PressButton()
         {
-            SendAction(1,3,0xB);
+            SendAction(3,3,0xB,3,0,3,0);
         }
         
         public void PauseCursor()
