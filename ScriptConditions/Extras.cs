@@ -48,6 +48,11 @@ namespace LlamaLibrary.ScriptConditions
         public static int BeastTribeRank(int tribeID)
         {
             return BeastTribeHelper.GetBeastTribeRank(tribeID);
+        }
+
+        public static int DailyQuestAllowance()
+        {
+            return (int) BeastTribeHelper.DailyQuestAllowance();
         }		
     }
 }
