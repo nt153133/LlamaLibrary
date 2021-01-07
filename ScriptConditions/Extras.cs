@@ -38,6 +38,11 @@ namespace LlamaLibrary.ScriptConditions
         public static bool IsFateActive(int fateID)
         {
             return FateManager.ActiveFates.Any(i => i.Id == (uint)fateID);
-        }	
+        }
+
+        public static bool HasLearnedMount(int mountID)
+        {
+            return ActionManager.AvailableMounts.Any(i=> i.Id == ((uint)mountID));
+        }		
     }
 }
