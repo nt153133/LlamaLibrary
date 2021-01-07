@@ -43,6 +43,11 @@ namespace LlamaLibrary.ScriptConditions
         public static bool HasLearnedMount(int mountID)
         {
             return ActionManager.AvailableMounts.Any(i=> i.Id == ((uint)mountID));
+        }
+
+        public static int BeastTribeRank(int tribeID)
+        {
+            return BeastTribeHelper.GetBeastTribeRank(tribeID);
         }		
     }
 }
