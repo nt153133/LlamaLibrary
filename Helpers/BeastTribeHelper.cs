@@ -93,6 +93,12 @@ namespace LlamaLibrary.Helpers
             //Log($"{(Offsets.QuestPointer + Offsets.BeastTribeStart).ToString("X")} {Offsets.BeastTribeStart}");
             return Core.Memory.ReadArray<BeastTribeStat>(Offsets.QuestPointer + Offsets.BeastTribeStart, Offsets.BeastTribeCount -1);
         }
+
+        public static int GetBeastTribeRank(int tribe)
+        {
+            var tribes = GetBeastTribes();
+            return tribes[tribe].Rank;
+        }
         
         private static void Log(string text)
         {
