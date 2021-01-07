@@ -70,6 +70,13 @@ namespace LlamaLibrary.Helpers
             
         }
 
+        public static int DailyQuestAllowance()
+        {
+            var dailies = GetCurrentDailies();
+            var accepted = dailies.Where(i => i.Accepted).Count();
+            return (Offsets.DailyQuestCount - accepted);
+        }
+
         public static string GetBeastTribeName(int index)
         {
             var result = Core.Memory.CallInjected64<IntPtr>(Offsets.GetBeastTribeExd, index);
