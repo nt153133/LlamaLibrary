@@ -34,6 +34,11 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("Count")]
         [DefaultValue(1)]
         public int count { get; set; }
+		
+        [XmlAttribute("Dialog")]
+        [XmlAttribute("dialog")]
+        [DefaultValue(false)]
+        public bool dialog { get; set; } = false;		
 
         public override bool HighPriority => true;
 
@@ -72,12 +77,34 @@ namespace LlamaLibrary.OrderbotTags
             }
 
             unit.Interact();
+			
+            if (dialog)
+            {
+                await Coroutine.Wait(5000, () => Talk.DialogOpen);
+
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Sleep(1000);
+                }
+            }			
 
             await Coroutine.Wait(5000, () => Conversation.IsOpen);
 
             if (Conversation.IsOpen)
             {
                 Conversation.SelectLine((uint) selectString);
+			
+                if (dialog)
+                {
+                    await Coroutine.Wait(5000, () => Talk.DialogOpen);
+
+                    while (Talk.DialogOpen)
+                    {
+                        Talk.Next();
+                        await Coroutine.Sleep(1000);
+                    }
+                }			
 
                 await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open);
 
