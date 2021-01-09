@@ -68,10 +68,6 @@ namespace ff14bot.NeoProfiles
         [XmlAttribute("Timeout")]
         [DefaultValue("600")]
         public string timeout { get; set; }
-		
-        [XmlAttribute("MinProgress")]
-        [DefaultValue(0)]
-        private int MinProgress { get; set; }		
 
         private BattleCharacter npc;
         private FatebotSettings fatebotInstance = FatebotSettings.Instance;
@@ -691,7 +687,7 @@ namespace ff14bot.NeoProfiles
         // check all fates and return the FateData with the given Ids or null
         public static FateData IsFateActive(int[] ids)
         {
-            var _fate = FateManager.ActiveFates.Where(fate => ids.Contains((int)fate.Id) && fate.Progress >= MinProgress).Take(1);
+            var _fate = FateManager.ActiveFates.Where(fate => ids.Contains((int)fate.Id) && fate.Progress > 5).Take(1);
             var fateArray = _fate as FateData[] ?? _fate.ToArray();
             if (fateArray.Length > 0)
             { return fateArray[0]; }
