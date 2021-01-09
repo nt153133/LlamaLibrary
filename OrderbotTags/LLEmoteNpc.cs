@@ -16,7 +16,7 @@ using Action = TreeSharp.Action;
 namespace ff14bot.NeoProfiles
 {
     [XmlElement("LLEmoteNpc")]
-
+	[XmlElement("SoEmoteNpc")]
     public class LLEmoteNpc : HuntBehavior
     {
         public override bool HighPriority => true;
