@@ -659,6 +659,7 @@ namespace ff14bot.NeoProfiles
 
         public async Task<bool> getFates()
         {
+            
             if (FateIds.Length > 0)
             {
                 //Logging.Write("Looking for Fate: {0}.", FateID);
@@ -686,7 +687,7 @@ namespace ff14bot.NeoProfiles
         // check all fates and return the FateData with the given Ids or null
         public static FateData IsFateActive(int[] ids)
         {
-            var _fate = FateManager.ActiveFates.Where(fate => ids.Contains((int)fate.Id)).Take(1);
+            var _fate = FateManager.ActiveFates.Where(fate => ids.Contains((int)fate.Id) && fate.Progress > 5).Take(1);
             var fateArray = _fate as FateData[] ?? _fate.ToArray();
             if (fateArray.Length > 0)
             { return fateArray[0]; }

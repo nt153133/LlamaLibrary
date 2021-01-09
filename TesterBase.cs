@@ -217,7 +217,7 @@ namespace LlamaLibrary
         {
             Task.Factory.StartNew(() =>
             {
-                // init();
+                 init();
                 _init = true;
                 Log("INIT DONE");
             });
@@ -421,6 +421,7 @@ namespace LlamaLibrary
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
+            /*
             InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
             {
                 InventoryBagId.Bag1,
@@ -461,6 +462,7 @@ namespace LlamaLibrary
                     }
                 }
             }
+            */
 
             //await TurninSkySteelGathering();
             //await TurninSkySteelCrafting();
@@ -717,18 +719,29 @@ namespace LlamaLibrary
             /*Lisbeth.AddHook("Llama",TestHook);
             await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
             Lisbeth.RemoveHook("Llama");
-
-            var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
-            var failed = new Dictionary<int, StoredHuntLocationLisbeth>();
-            var start = 0; 
-            foreach (var hunt in newHunts.Where(i=> i.Key >= start))
+*/
+           // var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
+           
+            
+            /*
+            var failed = new Dictionary<int, StoredHuntLocation>();
+            
+            if (File.Exists("hunts_failed.json"))
+                failed = JsonConvert.DeserializeObject<Dictionary<int, StoredHuntLocation>>((new StreamReader("hunts_failed.json")).ReadToEnd());
+            var start = 76; 
+            foreach (var hunt in HuntHelper.DailyHunts.Where(i=> i.Key >= start))
             {
-                if (!await Lisbeth.TravelTo(hunt.Value.Area, hunt.Value.Location));
+                await Lisbeth.TravelToZones(hunt.Value.Map, hunt.Value.Location);
+                if (WorldManager.ZoneId != hunt.Value.Map || Core.Me.Location.DistanceSqr(hunt.Value.Location) > 30)
                 {
-                    failed.Add(hunt.Key, hunt.Value);
-                    using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+                    Log($"Map: {WorldManager.ZoneId} ({hunt.Value.Map}) Dist: {Core.Me.Location.DistanceSqr(hunt.Value.Location)}");
+                    if (!failed.ContainsKey(hunt.Key))
                     {
-                        outputFile.Write(JsonConvert.SerializeObject(failed));
+                        failed.Add(hunt.Key, hunt.Value);
+                        using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+                        {
+                            outputFile.Write(JsonConvert.SerializeObject(failed));
+                        }
                     }
                 }
                 Log($"Finished {start}");
@@ -737,7 +750,10 @@ namespace LlamaLibrary
             using (var outputFile = new StreamWriter($"hunts_failed.json", false))
             {
                 outputFile.Write(JsonConvert.SerializeObject(failed));
-            }*/
+            }
+            */
+            
+    
 
             //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
 
@@ -892,7 +908,13 @@ namespace LlamaLibrary
 
 
             //Core.Me.Stats
-
+            Log($"{AgentMinionNoteBook.Instance.MinionListAddress}");
+            var minions = AgentMinionNoteBook.Instance.GetCurrentMinions();
+            foreach (var minion in minions)
+            {
+                Log($"{minion.MinionId} - {AgentMinionNoteBook.GetMinionName(minion.MinionId)}");
+            }
+           
 
             TreeRoot.Stop("Stop Requested");
             //AtkAddonControl windowByName = RaptureAtkUnitManager.Update()
@@ -927,6 +949,66 @@ namespace LlamaLibrary
             //await BuyHouse();
 
             // await Coroutine.Sleep(100);
+        }
+        
+        public static async Task UpdateWebPage()
+        {
+            string path = @"U:\www\template.php";
+            string path1 = @"U:\www\index.html";
+            
+            // Open the file to read from.
+            string readText = File.ReadAllText(path);
+            //Console.WriteLine(readText);
+            int gil = (int) InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).FilledSlots.First(i => i.RawItemId == 1).Count;
+            int tomes = (int) InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).First(i => i.RawItemId == 40).Count;
+            var zone = WorldManager.CurrentZoneName;
+            readText = readText.Replace("{Gil}", $"{gil:N0}");
+            readText = readText.Replace("{Character_Name}",  Core.Player.Name);
+            readText = readText.Replace("{class}", Core.Player.CurrentJob.ToString());
+            readText = readText.Replace("{Zone}", zone);
+            readText = readText.Replace("{Tomes}", tomes.ToString("N0"));
+            string ventureTr = @"				<tr>
+					<td style=""width: 17.2083%;""><span style=""font-size: 24px;"">Ret</span></td>
+                <td style=""width: 40.7417%; text-align: center;""><span style=""font-size: 24px;"">item</span></td>
+                <td style=""width: 41.525%;""><span style=""font-size: 24px;"">time</span></td>
+                </tr>";
+            
+            string ventureTr1 = @"				<tr>
+				<td>Ret</td>
+                <td>item</td>
+                <td>time</td>
+                </tr>";
+            string retainerTable = "";
+            var count = await GetNumberOfRetainers();
+            var retainers = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
+            var now = (int) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            foreach (var ret in retainers)
+            {
+                var ventureTimeLeft = ret.VentureEndTimestamp - now;
+                var ventureDone = ventureTimeLeft <= 0;
+                var ventureName = VentureData.First(i => i.Id == ret.VentureTask).Name;
+                if (ventureDone)
+                {
+                    if (ret.VentureTask != 0)
+                    {
+                        Log($"{ret.Name} - {ventureName} - Finished\n");
+                        retainerTable += ventureTr.Replace("Ret", ret.Name).Replace("item", ventureName).Replace("time", "Finished") + "\n";
+                    }
+                    else
+                    {
+                        Log( $"{ret.Name}\n");
+                    }
+                }
+                else
+                {
+                    Log( $"{ret.Name} - {ventureName} - {(ret.VentureEndTimestamp - UnixTimestamp)/60} minutes\n");
+                    retainerTable += ventureTr.Replace("Ret", ret.Name).Replace("item", ventureName).Replace("time", $"{(ret.VentureEndTimestamp - UnixTimestamp)/60} minutes") + "\n";
+                }
+            }
+            readText = readText.Replace("{Retainers}", retainerTable);
+            //ActorController.Player
+            File.WriteAllText(path1, readText);
+
         }
 
         private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
