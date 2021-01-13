@@ -106,7 +106,7 @@ namespace LlamaLibrary
 
         private static Vector3 standBy = new Vector3(-164.3966f, -1.072426f, -302.2528f);
         
-        private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232,33584, 33585, 33586, 33587};
+        private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232,33584, 33585, 33586, 33587, 33836,333837,33838,33839};
 
         private static int lastWeather = 0;
 
@@ -116,14 +116,14 @@ namespace LlamaLibrary
 
         public GatherTest()
         {
-            /*if (Translator.Language == Language.Chn)
+            if (Translator.Language == Language.Chn)
             {
-                TimerOffset = 0x640;
+                TimerOffset = 0x650;
             }
             else
-            {*/
-                TimerOffset = 0x650;
-          //  }
+            {
+                TimerOffset = 0x6F0;
+            }
         }
 
         public override string Name => "DiademGather";
@@ -256,10 +256,10 @@ namespace LlamaLibrary
             foreach (var node in NodeList)
             {
                 if (weatherNodes.Contains(node.Base()))
-                    Log($"Weather Node Found: {node.Name} Visible: {node.CanGather}");
+                    Log($"Weather Node Found: {node.Name} ({node.EnglishName}) Base: {node.Base()} Visible: {node.CanGather}");
                 else
                 {
-                    Log($"Node Found: {node.Name} Base: {node.Base()} Visible {node.CanGather}");
+                    Log($"Node Found: {node.Name} ({node.EnglishName})  Base: {node.Base()} Visible {node.CanGather}");
                 }
             }
         }
