@@ -106,7 +106,7 @@ namespace LlamaLibrary
 
         private static Vector3 standBy = new Vector3(-164.3966f, -1.072426f, -302.2528f);
         
-        private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232,33584, 33585, 33586, 33587, 33836,333837,33838,33839};
+        private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232,33584, 33585, 33586, 33587, 33836, 33837,33838,33839};
 
         private static int lastWeather = 0;
 
