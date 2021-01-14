@@ -163,6 +163,7 @@ namespace LlamaLibrary
                     }
                 }
 
+                /*
                 if (WorldManager.ZoneId == 401 && hunt.MapId == 401)
                 {
                     var AE = WorldManager.AetheryteIdsForZone(hunt.MapId).OrderBy(i => i.Item2.DistanceSqr(hunt.Location)).First();
@@ -177,7 +178,7 @@ namespace LlamaLibrary
                     WorldManager.TeleportById(AE.Item1);
                     await Coroutine.Wait(20000, () => WorldManager.ZoneId == AE.Item1);
                     await Coroutine.Sleep(2000);
-                }
+                }*/
 
                 if (hunt.HuntTarget == flytoHunt)
                 {
@@ -231,9 +232,10 @@ namespace LlamaLibrary
                         }
                     }
                 }
-                else if (hunt.MapId == 401)
+                else if (hunt.MapId >= 399)
                 {
-                    if (await Lisbeth.TravelToZones(401, 0, hunt.Location))
+                    await Lisbeth.TravelToZones(hunt.MapId, hunt.Location);
+                    if (Core.Me.Location.Distance2DSqr(hunt.Location) <= 10f)
                     {
                         while (!hunt.IsFinished)
                         {
@@ -248,6 +250,23 @@ namespace LlamaLibrary
                                 Log("None found, sleeping 10 sec.");
                                 await Coroutine.Sleep(10000);
                             }
+                        }
+                    }
+                }
+                else if (await Lisbeth.TravelToZones(hunt.MapId, hunt.Location))
+                {
+                    while (!hunt.IsFinished)
+                    {
+                        if (await FindAndKillMob(hunt.NpcID))
+                        {
+                            Log("Killed one");
+                            await Coroutine.Sleep(1000);
+                            if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                        }
+                        else
+                        {
+                            Log("None found, sleeping max 10 sec.");
+                            await Coroutine.Wait(10000, () => FindMob(hunt.NpcID));
                         }
                     }
                 }
