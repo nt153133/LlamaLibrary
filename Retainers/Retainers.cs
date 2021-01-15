@@ -265,7 +265,7 @@ namespace LlamaLibrary.Retainers
                 if (RetainerSettings.Instance.ReassignVentures && (ordered[retainerIndex].Job != ClassJobType.Adventurer) && ventures > 2 && (ordered[retainerIndex].VentureEndTimestamp - UnixTimestamp) <=0)
                 {
                     Log("Checking Ventures");
-                    await CheckVentures();
+                    await RetainerHandleVentures(); //CheckVentures();
                 }
                 else if ((ordered[retainerIndex].VentureEndTimestamp - UnixTimestamp) > 0)
                 {
@@ -542,6 +542,76 @@ namespace LlamaLibrary.Retainers
             {
                 Log("Venture Not Done");
             }
+
+            return true;
+        }
+        
+        public async Task<bool> RetainerHandleVentures()
+        {
+            if (!SelectString.IsOpen)
+            {
+                return false;
+            }
+
+            if (SelectString.Lines().Contains(Translator.VentureCompleteText))
+            {
+                //Log("Venture Done");
+                SelectString.ClickLineEquals(Translator.VentureCompleteText);
+
+                await Coroutine.Wait(5000, () => RetainerTaskResult.IsOpen);
+
+                if (!RetainerTaskResult.IsOpen)
+                {
+                    Log("RetainerTaskResult didn't open");
+                    return false;
+                }
+
+                var taskId = AgentRetainerVenture.Instance.RetainerTask;
+
+                var task = VentureData.Value.FirstOrDefault(i => i.Id == taskId);
+
+                if (task != default(RetainerTaskData))
+                {
+                    Log($"Finished Venture {task.Name}");
+                    Log($"Reassigning Venture {task.Name}");
+                }
+                else
+                {
+                    Log($"Finished Venture");
+                    Log($"Reassigning Venture");
+                }
+
+                RetainerTaskResult.Reassign();
+
+                await Coroutine.Wait(5000, () => RetainerTaskAsk.IsOpen);
+                if (!RetainerTaskAsk.IsOpen)
+                {
+                    Log("RetainerTaskAsk didn't open");
+                    return false;
+                }
+
+                await Coroutine.Wait(2000, RetainerTaskAskExtensions.CanAssign);
+                if (RetainerTaskAskExtensions.CanAssign())
+                {
+                    RetainerTaskAsk.Confirm();
+                }
+                else
+                {
+                    Log($"RetainerTaskAsk Error: {RetainerTaskAskExtensions.GetErrorReason()}");
+                    RetainerTaskAsk.Close();
+                }
+
+                await Coroutine.Wait(1500, () => DialogOpen || SelectString.IsOpen);
+                await Coroutine.Sleep(200);
+                if (DialogOpen) Next();
+                await Coroutine.Sleep(200);
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+            }
+            else
+            {
+                Log("Venture Not Done");
+            }
+
 
             return true;
         }
