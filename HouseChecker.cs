@@ -58,15 +58,15 @@ namespace LlamaLibrary
 
             if (ConditionParser.HasAetheryte(2))
                 output.AddRange(await GetLavenderPlots());
-
-            if (ConditionParser.HasAetheryte(8))
-                output.AddRange(await GetMistsPlots());
-
+      
             if (ConditionParser.HasAetheryte(9))
                 output.AddRange(await GetGobletPlots());
-
+						
             if (ConditionParser.HasAetheryte(111))
                 output.AddRange(await GetShiroganePlots());
+			
+			if (ConditionParser.HasAetheryte(8))
+                output.AddRange(await GetMistsPlots());
             
             if(!output.Any())
                 Log1($"No Housing Plots For Sale");
@@ -93,27 +93,6 @@ namespace LlamaLibrary
             return true;
         }
 
-
-        public static async Task<List<string>> GetMistsPlots()
-        {
-            if (ConditionParser.IsQuestCompleted(66750))
-                await GetToResidential(8);
-            else
-                await GetToMistsWindow();
-
-            if (!SelectString.IsOpen)
-                return new List<string>();
-
-            await OpenHousingWards();
-            var list = await HousingWards();
-
-            if (ConditionParser.IsQuestCompleted(66750))
-                await CloseHousingWardsNoLoad();
-            else
-                await CloseHousingWards();
-
-            return list;
-        }
 
         public static async Task<List<string>> GetLavenderPlots()
         {
@@ -171,6 +150,27 @@ namespace LlamaLibrary
             var list = await HousingWards();
 
             if (ConditionParser.IsQuestCompleted(68167))
+                await CloseHousingWardsNoLoad();
+            else
+                await CloseHousingWards();
+
+            return list;
+        }
+		
+		public static async Task<List<string>> GetMistsPlots()
+        {
+            if (ConditionParser.IsQuestCompleted(66750))
+                await GetToResidential(8);
+            else
+                await GetToMistsWindow();
+
+            if (!SelectString.IsOpen)
+                return new List<string>();
+
+            await OpenHousingWards();
+            var list = await HousingWards();
+
+            if (ConditionParser.IsQuestCompleted(66750))
                 await CloseHousingWardsNoLoad();
             else
                 await CloseHousingWards();
@@ -311,25 +311,8 @@ namespace LlamaLibrary
             Navigator.PlayerMover.MoveStop();
             await Coroutine.Wait(3000, () => SelectString.IsOpen);
         }
-
-        public static async Task GetToMistsWindow()
-        {
-            await Navigation.GetTo(135, new Vector3(597.4801f, 61.59979f, -110.7737f));
-
-            var zoneChange = new Vector3(598.1823f, 61.52054f, -108.3216f);
-
-            while (!SelectString.IsOpen)
-            {
-                Navigator.PlayerMover.MoveTowards(zoneChange);
-                await Coroutine.Sleep(50);
-                Navigator.PlayerMover.MoveStop();
-            }
-
-            Navigator.PlayerMover.MoveStop();
-            await Coroutine.Wait(3000, () => SelectString.IsOpen);
-        }
-
-        public static async Task GetToShiroganeWindow()
+		
+		public static async Task GetToShiroganeWindow()
         {
             await Navigation.GetTo(628, new Vector3(-116.2294f, -7.010099f, -40.55866f));
 
@@ -359,7 +342,24 @@ namespace LlamaLibrary
 
             await Coroutine.Wait(3000, () => SelectString.IsOpen);
         }
+		
+        public static async Task GetToMistsWindow()
+        {
+            await Navigation.GetTo(135, new Vector3(597.4801f, 61.59979f, -110.7737f));
 
+            var zoneChange = new Vector3(598.1823f, 61.52054f, -108.3216f);
+
+            while (!SelectString.IsOpen)
+            {
+                Navigator.PlayerMover.MoveTowards(zoneChange);
+                await Coroutine.Sleep(50);
+                Navigator.PlayerMover.MoveStop();
+            }
+
+            Navigator.PlayerMover.MoveStop();
+            await Coroutine.Wait(3000, () => SelectString.IsOpen);
+        }
+        
         public static async Task CloseHousingWards()
         {
             if (HousingSelectBlock.Instance.IsOpen)
