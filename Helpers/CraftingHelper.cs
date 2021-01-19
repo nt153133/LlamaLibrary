@@ -19,12 +19,18 @@ namespace LlamaLibrary.Helpers
 
         public static bool AnimationLocked => CraftingManager.AnimationLocked;
 
+        public static bool IsValid(CraftingStatus statis)
+        {
+            if (Status.Stage == 9 || Status.Stage == 10) return true;
+            return false;
+        }
+
         public static int Quality
         {
             get
             {
                 var status = Status;
-                if (Status.Stage == 9)
+                if (IsValid(status))
                 {
                     return (int) status.Quality;
                 }
@@ -40,7 +46,7 @@ namespace LlamaLibrary.Helpers
             get
             {
                 var status = Status;
-                if (Status.Stage == 9)
+                if (IsValid(status))
                 {
                     return (int) status.Step;
                 }
@@ -56,7 +62,7 @@ namespace LlamaLibrary.Helpers
             get
             {
                 var status = Status;
-                if (Status.Stage == 9)
+                if (IsValid(status))
                 {
                     return (int) status.HQ;
                 }
@@ -72,7 +78,7 @@ namespace LlamaLibrary.Helpers
             get
             {
                 var status = Status;
-                if (Status.Stage == 9)
+                if (IsValid(status))
                 {
                     return (int) status.Durability;
                 }
@@ -88,7 +94,7 @@ namespace LlamaLibrary.Helpers
             get
             {
                 var status = Status;
-                if (Status.Stage == 9)
+                if (IsValid(status))
                 {
                     return (int) status.Progress;
                 }
@@ -104,7 +110,7 @@ namespace LlamaLibrary.Helpers
             get
             {
                 var status = Status;
-                if (Status.Stage == 9)
+                if (IsValid(status))
                 {
                     return status.LastAction;
                 }
