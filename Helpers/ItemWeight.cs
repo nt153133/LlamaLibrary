@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ff14bot;
 using ff14bot.Enums;
 using ff14bot.Managers;
+using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
+using Pathfinding;
 
 namespace LlamaLibrary.Helpers
 {
@@ -13,9 +16,7 @@ namespace LlamaLibrary.Helpers
             if (!MainHandsAndOffHands.Contains(item.EquipmentCatagory) && !item.IsArmor && !item.IsWeapon) return -1f;
             if (job == ClassJobType.Adventurer) job = Core.Me.CurrentJob;
             if (!item.IsValidForClass(job)) return -1f;
-            ushort level;
-            if (job == ClassJobType.Scholar || job == ClassJobType.Summoner) level = Core.Me.Levels[ClassJobType.Arcanist];
-            else level = Core.Me.Levels[job];
+            ushort level = ClassJobLevel(job);
             if ((item.Id == 2634 || item.Id == 2633) && level <= 10) return 5000f;
             if (item.Id == 8567 && level <= 25) return 5000f;
             if (item.Id == 14043 && level <= 30) return 5000f;
@@ -51,6 +52,43 @@ namespace LlamaLibrary.Helpers
             {ItemAttribute.Perception, 1},
             {ItemAttribute.GP, 1}
         };
+
+        public static ushort ClassJobLevel(ClassJobType job)
+        {
+            try
+            {
+                return Core.Me.Levels[job];
+            }
+            catch (KeyNotFoundException)
+            {
+                switch (job)
+                {
+                    case ClassJobType.Paladin:
+                        return Core.Me.Levels[ClassJobType.Gladiator];
+                    case ClassJobType.Monk:
+                        return Core.Me.Levels[ClassJobType.Pugilist];
+                    case ClassJobType.Warrior:
+                        return Core.Me.Levels[ClassJobType.Marauder];
+                    case ClassJobType.Dragoon:
+                        return Core.Me.Levels[ClassJobType.Lancer];
+                    case ClassJobType.Bard:
+                        return Core.Me.Levels[ClassJobType.Archer];
+                    case ClassJobType.WhiteMage:
+                        return Core.Me.Levels[ClassJobType.Conjurer];
+                    case ClassJobType.BlackMage:
+                        return Core.Me.Levels[ClassJobType.Thaumaturge];
+                    case ClassJobType.Scholar:
+                        return Core.Me.Levels[ClassJobType.Arcanist];
+                    case ClassJobType.Summoner:
+                        return Core.Me.Levels[ClassJobType.Arcanist];
+                    case ClassJobType.Ninja:
+                        return Core.Me.Levels[ClassJobType.Rogue];
+                    default:
+                        Logger.LogCritical($"Couldn't find level for {job}.");
+                        return 1;
+                }
+            }
+        }
         
         /*
         private static List<ItemUiCategory> MainHands => (from itemUi in (ItemUiCategory[]) Enum.GetValues(typeof(ItemUiCategory))
