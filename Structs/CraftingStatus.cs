@@ -6,6 +6,9 @@ namespace LlamaLibrary.Structs
         [StructLayout(LayoutKind.Explicit, Size = 0x44)]
         public struct CraftingStatus
         {
+            [FieldOffset(0x0)]
+            public readonly uint Stage;
+            
             [FieldOffset(0x10)]
             public readonly uint LastAction;
 
