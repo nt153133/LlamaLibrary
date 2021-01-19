@@ -115,6 +115,7 @@
     <Compile Include="Memory\Offsets.cs" />
     <Compile Include="OrderbotTags\AutoEquip.cs" />
     <Compile Include="OrderbotTags\AutoInventoryEquip.cs" />
+    <Compile Include="OrderbotTags\AutoLisbethEquip.cs" />
     <Compile Include="OrderbotTags\BasicTreasureFight.cs" />
     <Compile Include="OrderbotTags\BuyBluTotem.cs" />
     <Compile Include="OrderbotTags\BuyGCItem.cs" />
@@ -135,10 +136,12 @@
     <Compile Include="OrderbotTags\LLDiscardItem.cs" />
     <Compile Include="OrderbotTags\LLGoHome.cs" />
     <Compile Include="OrderbotTags\LLHandOver.cs" />
-    <Compile Include="OrderbotTags\LLQualityLower.cs" />
     <Compile Include="OrderbotTags\LLOpenChest.cs" />
+    <Compile Include="OrderbotTags\LLQualityLower.cs" />
     <Compile Include="OrderbotTags\LLSellItem.cs" />
     <Compile Include="OrderbotTags\LLSmallTalk.cs" />
+    <Compile Include="OrderbotTags\LLToast.cs" />
+    <Compile Include="OrderbotTags\LLTransport.cs" />
     <Compile Include="OrderbotTags\LLTurnIn.cs" />
     <Compile Include="OrderbotTags\LLoadProfile.cs" />
     <Compile Include="OrderbotTags\LLStopBot.cs" />
@@ -174,6 +177,7 @@
     <Compile Include="RemoteAgents\AgentItemAppraisal.cs" />
     <Compile Include="RemoteAgents\AgentMasterPieceSupply.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
+    <Compile Include="RemoteAgents\AgentMinionNoteBook.cs" />
     <Compile Include="RemoteAgents\AgentOutOnLimb.cs" />
     <Compile Include="RemoteAgents\AgentRecommendEquip.cs" />
     <Compile Include="RemoteAgents\AgentRetainerCharacter.cs" />
@@ -215,8 +219,8 @@
     <Compile Include="RemoteWindows\RecommendEquip.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
-    <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\RetainerTaskList.cs" />
+    <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\ShopExchangeItem.cs" />
     <Compile Include="RemoteWindows\SubmarinePartsMenu.cs" />
     <Compile Include="Repair.cs" />
