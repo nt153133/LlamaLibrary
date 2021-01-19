@@ -238,6 +238,7 @@ namespace LlamaLibrary
 
         public override void OnButtonPress()
         {
+            DumpLuaFunctions();
             StringBuilder sb1 = new StringBuilder();
             foreach (var obj in luaFunctions.Keys.Where(obj => luaFunctions[obj].Count >= 1))
             {
@@ -420,7 +421,80 @@ namespace LlamaLibrary
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
+            /*await testKupoTickets();
 
+            
+            foreach (var item in InventoryManager.FilledSlots.Where(i=> i.EnglishName.ToLowerInvariant().Contains("magicked prism")))
+            {
+                Log($"Discarding {item.Name}");
+                item.Discard();
+                await Coroutine.Sleep(2000);
+            }*/
+            var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
+            var DohLastAction = patternFinder.Find("4C 8D 0D ?? ?? ?? ?? 4D 8B 13 49 8B CB Add 3 TraceRelative");
+            
+            var Stage = Core.Memory.Read<byte>(DohLastAction);
+
+            Log($"Stage: {Stage}");
+            var status = Core.Memory.Read<CraftingStatus>(DohLastAction);
+            
+            Log(status.DynamicString());
+
+            
+
+            //await Helpers.Lisbeth.SelfRepair();
+            //await Helpers.Lisbeth.SelfRepairWithMenderFallback();
+            //ActionHelper.Test();
+            //await testKupoTickets();
+
+            /*var windows = new Dictionary<string, int>();
+            if (File.Exists("windows.json"))
+            {
+                using (var file = new StreamReader("windows.json"))
+                    windows = JsonConvert.DeserializeObject<Dictionary<string, int>>(file.ReadToEnd());
+            }
+
+
+            foreach (var control in RaptureAtkUnitManager.Controls)
+            {
+                if (!windows.ContainsKey(control.Name))
+                {
+                    AgentInterface agentInterface = null;
+                    
+                    try
+                    {
+                        agentInterface = control.TryFindAgentInterface();
+                    }
+                    catch
+                    {
+                        
+                    }
+                    int agentid = agentInterface?.Id ?? -1;
+                    windows.Add(control.Name, agentid);
+                    if (agentid != -1)
+                        Log($"{control.Name} - Agent {agentid}");
+                }
+            }
+            
+            using (var outputFile = new StreamWriter($"agents.csv", false))
+            {
+                foreach (var window in windows.Where(i=> i.Value >0))
+                {
+                    outputFile.WriteLine($"{window.Key},{window.Value},{new IntPtr(AgentModule.AgentVtables[window.Value].ToInt64() - Core.Memory.ImageBase.ToInt64()).ToString("X")}");
+                }
+                
+            }
+            
+            using (var outputFile = new StreamWriter($"windows.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(windows));
+            }
+
+            DumpOffsets();
+
+            Lua.DoString("return _G['EventHandler'].NpcRepair();");*/
+
+            
             /*
             InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
             {
@@ -673,7 +747,6 @@ namespace LlamaLibrary
                 }
             }
             
-            
 
             using (var outputFile = new StreamWriter($"hunts1.json", false))
             {
@@ -818,7 +891,7 @@ namespace LlamaLibrary
             }*/
             //DumpOffsets();
             //await BuyHouse();
-            //await testKupoTickets();
+           // await testKupoTickets();
 
             /*var newHunts = HuntHelper.DailyHunts;
             var failed = new Dictionary<int, StoredHuntLocation>();
@@ -908,12 +981,14 @@ namespace LlamaLibrary
 
 
             //Core.Me.Stats
+            /*
             Log($"{AgentMinionNoteBook.Instance.MinionListAddress}");
             var minions = AgentMinionNoteBook.Instance.GetCurrentMinions();
             foreach (var minion in minions)
             {
                 Log($"{minion.MinionId} - {AgentMinionNoteBook.GetMinionName(minion.MinionId)}");
             }
+            */
            
 
             TreeRoot.Stop("Stop Requested");
