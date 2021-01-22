@@ -30,7 +30,9 @@ namespace LlamaLibrary
     {
         private Composite _root;
 
-        public override string Name => "Housing Checker";
+        public override string Name => NameStatic;
+        
+        public static string NameStatic => "Housing Checker";
         public override PulseFlags PulseFlags => PulseFlags.All;
 
         public override bool IsAutonomous => true;
@@ -60,7 +62,7 @@ namespace LlamaLibrary
             return true;
         }
 
-        public async Task CheckHousing()
+        public static async Task CheckHousing()
         {
                         Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
@@ -544,15 +546,15 @@ namespace LlamaLibrary
             Logging.Write(Colors.Pink, msg);
         }
         
-        private void Log1(string text, params object[] args)
+        private static void Log1(string text, params object[] args)
         {
-            var msg = string.Format("[" + Name + "] " + text, args);
+            var msg = string.Format("[" + NameStatic + "] " + text, args);
             Logging.Write(Colors.Yellow, msg);
         }
         
         private void Log2(string text, params object[] args)
         {
-            var msg = string.Format("[" + Name + "] " + text, args);
+            var msg = string.Format("[" + NameStatic + "] " + text, args);
             Logging.Write(Colors.Red, msg);
         }
     }
