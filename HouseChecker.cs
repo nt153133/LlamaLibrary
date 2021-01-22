@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using Clio.Utilities;
@@ -24,7 +26,7 @@ using static ff14bot.RemoteWindows.Talk;
 
 namespace LlamaLibrary
 {
-    public class HouseChecker : BotBase
+    public class aHouseChecker : BotBase
     {
         private Composite _root;
 
@@ -51,19 +53,97 @@ namespace LlamaLibrary
 
         private async Task<bool> Run()
         {
-            Navigator.PlayerMover = new SlideMover();
+
+            await CheckHousing();
+           // await Coroutine.Sleep(new TimeSpan(0, 1, 0));
+           TreeRoot.Stop("Stop Requested");
+            return true;
+        }
+
+        public async Task CheckHousing()
+        {
+                        Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
             var output = new List<string>();
-
+            bool medium = false;
+            bool large = false;
+            var outputMed = new List<string>();
+            var outputLarge = new List<string>();
+            
             if (ConditionParser.HasAetheryte(2))
                 output.AddRange(await GetLavenderPlots());
+            
+            foreach (var line in output)
+            {
+                if (line.Contains("Medium"))
+                {
+                    medium = true;
+                    outputMed.Add(line);
+                }
+                else if (line.Contains("Large"))
+                {
+                    large = true;
+                    outputLarge.Add(line);
+                }
+            }
+            
+            if (large)
+            {
+                string message = string.Join("\n", outputLarge); 
+                string title = "Large";  
+                MessageBox.Show(message, title);
+            }
 
             if (ConditionParser.HasAetheryte(8))
                 output.AddRange(await GetMistsPlots());
+            
+            foreach (var line in output)
+            {
+                if (line.Contains("Medium"))
+                {
+                    medium = true;
+                    outputMed.Add(line);
+                }
+                else if (line.Contains("Large"))
+                {
+                    large = true;
+                    outputLarge.Add(line);
+                }
+            }
+            
+
+            if (large)
+            {
+                string message = string.Join("\n", outputLarge); 
+                string title = "Large";  
+                MessageBox.Show(message, title);
+            }
 
             if (ConditionParser.HasAetheryte(9))
                 output.AddRange(await GetGobletPlots());
+            
+            foreach (var line in output)
+            {
+                if (line.Contains("Medium"))
+                {
+                    medium = true;
+                    outputMed.Add(line);
+                }
+                else if (line.Contains("Large"))
+                {
+                    large = true;
+                    outputLarge.Add(line);
+                }
+            }
+            
+
+            if (large)
+            {
+                string message = string.Join("\n", outputLarge); 
+                string title = "Large";  
+                MessageBox.Show(message, title);
+            }
 
             if (ConditionParser.HasAetheryte(111))
                 output.AddRange(await GetShiroganePlots());
@@ -78,10 +158,14 @@ namespace LlamaLibrary
                 else if (line.Contains("Medium"))
                 {
                     Log1($"{line}");
+                    medium = true;
+                    outputMed.Add(line);
                 }
                 else if (line.Contains("Large"))
                 {
                     Log1($"{line}");
+                    large = true;
+                    outputLarge.Add(line);
                 }
                 else
                 {
@@ -89,8 +173,19 @@ namespace LlamaLibrary
                 }
             }
 
-            TreeRoot.Stop("Stop Requested");
-            return true;
+            if (medium)
+            {
+                string message = string.Join("\n", outputMed); 
+                string title = "Medium";  
+                MessageBox.Show(message, title);
+            }
+
+            if (large)
+            {
+                string message = string.Join("\n", outputLarge); 
+                string title = "Large";  
+                MessageBox.Show(message, title);
+            }
         }
 
 
