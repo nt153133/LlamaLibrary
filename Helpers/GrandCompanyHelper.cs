@@ -87,7 +87,7 @@ namespace LlamaLibrary.Helpers
         {
             return NpcList[Core.Me.GrandCompany][npc];
         }
-        
+
         public static async Task InteractWithNpc(GCNpc npc)
         {
             if (Core.Me.GrandCompany == 0) return;
@@ -105,7 +105,7 @@ namespace LlamaLibrary.Helpers
             if (targetNpc.IsWithinInteractRange)
                 targetNpc.Interact();
         }
-        
+
         public static async Task GetToGCBase(GrandCompany grandCompany)
         {
             var GcBase = BaseLocations[grandCompany];
@@ -113,12 +113,12 @@ namespace LlamaLibrary.Helpers
             await Navigation.GetTo(GcBase.Key, GcBase.Value);
         }
 
-        public static uint GetNpcByType(GCNpc npc,GrandCompany grandCompany)
+        public static uint GetNpcByType(GCNpc npc, GrandCompany grandCompany)
         {
             return NpcList[grandCompany][npc];
         }
-        
-        public static async Task InteractWithNpc(GCNpc npc,GrandCompany grandCompany)
+
+        public static async Task InteractWithNpc(GCNpc npc, GrandCompany grandCompany)
         {
             var targetNpc = GameObjectManager.GetObjectByNPCId(NpcList[grandCompany][npc]);
             if (targetNpc == null || !targetNpc.IsWithinInteractRange)
@@ -138,17 +138,22 @@ namespace LlamaLibrary.Helpers
         public static async Task BuyFCAction(GrandCompany grandCompany, int actionId)
         {
             await InteractWithNpc(GCNpc.OIC_Quartermaster, grandCompany);
-            await Coroutine.Wait(5000, () => Talk.DialogOpen);
-            
+            await Coroutine.Wait(5000, () => Talk.DialogOpen || Conversation.IsOpen);
+
             if (!Talk.DialogOpen)
             {
                 await InteractWithNpc(GCNpc.OIC_Quartermaster, grandCompany);
                 await Coroutine.Wait(5000, () => Talk.DialogOpen);
             }
-            if (Talk.DialogOpen)
+
+            if (Talk.DialogOpen || Conversation.IsOpen)
             {
-                Talk.Next();
-                await Coroutine.Wait(5000, () => Conversation.IsOpen);
+                if (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(5000, () => Conversation.IsOpen);
+                }
+
                 if (Conversation.IsOpen)
                 {
                     Conversation.SelectLine(0);
@@ -161,6 +166,9 @@ namespace LlamaLibrary.Helpers
                     }
                 }
             }
+
+
         }
     }
 }
+
