@@ -18,6 +18,7 @@ using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Retainers;
+using LlamaLibrary.Structs;
 using Character = LlamaLibrary.RemoteWindows.Character;
 
 namespace LlamaLibrary.Helpers
@@ -587,6 +588,108 @@ namespace LlamaLibrary.Helpers
         }
         
         #endregion GoHome
+		
+        public static async Task TurninOddlyDelicate()
+        {
+            Dictionary<uint, CraftingRelicTurnin> TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
+            {
+				// BaseItemID, Tab, Index, Mini Collectability, RewardItemID
+                {31750, new CraftingRelicTurnin(31750, 0, 0, 2500, 31736)}, //Carpenter Oddly Delicate Pine Lumber --> Oddly Delicate Saw Part
+                {31751, new CraftingRelicTurnin(31751, 1, 0, 2500, 31737)}, //Blacksmith Oddly Delicate Silver gear --> Oddly Delicate Cross-pein Hammer part
+                {31752, new CraftingRelicTurnin(31752, 2, 0, 2500, 31738)}, //Armorer Oddly Delicate Wolfram Square --> Oddly Delicate Raising Hammer part
+                {31753, new CraftingRelicTurnin(31753, 3, 0, 2500, 31739)}, //Goldsmith Oddly Delicate Celestine --> Oddly Delicate Lapidary Hammer Part
+                {31754, new CraftingRelicTurnin(31754, 4, 0, 2500, 31740)}, //Leatherworker Oddly Delicate Gazelle Leather --> Oddly Delicate Round Knife Part
+                {31755, new CraftingRelicTurnin(31755, 5, 0, 2500, 31741)}, //Weaver Oddly Delicate Rhea Cloth --> Oddly Delicate Needle Part
+                {31756, new CraftingRelicTurnin(31756, 6, 0, 2500, 31742)}, //Alchemist Oddly Delicate Holy Water --> Oddly Delicate Alembic Part
+                {31757, new CraftingRelicTurnin(31757, 7, 0, 2500, 31743)}, //Cooking Oddly Delicate Shark Oil --> Oddly Delicate Frypan Part
+				{31768, new CraftingRelicTurnin(31768, 8, 0, 400, 31746)}, //Mining Oddly Delicate Adamantite Ore --> Oddly Delicate Pickaxe Part
+				{31766, new CraftingRelicTurnin(31766, 9, 0, 400, 31744)}, //Botany Oddly Delicate Feather --> Oddly Delicate Hatchet Part
+				{31770, new CraftingRelicTurnin(31770, 10, 0, 126, 31748)}, //Fishing Flinstrike --> Oddly Delicate Fishing Rod part
+				{31771, new CraftingRelicTurnin(31771, 10, 1, 62, 31749)} //Fishing Pickled Pom --> Oddly Delicate Fishing Reel part
+            };
+
+            var collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x => x.RawItemId).Distinct();
+            var collectablesAll = InventoryManager.FilledSlots.Where(i => i.IsCollectable);
+			var npcId = GameObjectManager.GetObjectByNPCId(1035014);
+
+            if (collectables.Any(i => TurnItemList.Keys.Contains(i)))
+            {
+                Log("Have collectables");
+                foreach (var collectable in collectablesAll)
+                {
+                    if (TurnItemList.Keys.Contains(collectable.RawItemId))
+                    {
+                        var turnin = TurnItemList[collectable.RawItemId];
+                        if (collectable.Collectability < turnin.MinCollectability)
+                        {
+                            Log($"Discarding {collectable.Name} is at {collectable.Collectability} which is under {turnin.MinCollectability}");
+                            collectable.Discard();
+                        }
+                    }
+                }
+
+                collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x => x.RawItemId).Distinct();
+
+				if (!npcId.IsWithinInteractRange)
+					{
+						var _target = npcId.Location;
+						Navigator.PlayerMover.MoveTowards(_target);
+						while (_target.Distance2D(Core.Me.Location) >= 4)
+							{
+								Navigator.PlayerMover.MoveTowards(_target);
+								await Coroutine.Sleep(100);
+							}
+								Navigator.PlayerMover.MoveStop();
+					}
+							
+				npcId.Interact();
+				
+				await Coroutine.Wait(10000, () => SelectIconString.IsOpen);
+				
+				if (!SelectIconString.IsOpen)
+				{
+					npcId.Interact();
+					await Coroutine.Wait(10000, () => SelectIconString.IsOpen);
+				}
+
+				await Buddy.Coroutines.Coroutine.Sleep(500);
+				{
+					Logging.WriteDiagnostic("Choosing 'Oddly Delicate Materials Exchange'.");
+					ff14bot.RemoteWindows.SelectIconString.ClickSlot(0);
+				}				
+				
+                await Coroutine.Wait(10000, () => CollectablesShop.Instance.IsOpen);
+
+
+                if (CollectablesShop.Instance.IsOpen)
+                {
+                    // Log("Window open");
+                    foreach (var item in collectables)
+                    {
+                        Log($"Turning in {DataManager.GetItem(item).CurrentLocaleName}");
+                        var turnin = TurnItemList[item];
+
+                        // Log($"Pressing job {turnin.Job}");
+                        CollectablesShop.Instance.SelectJob(turnin.Job);
+                        await Coroutine.Sleep(500);
+                        //  Log($"Pressing position {turnin.Position}");
+                        CollectablesShop.Instance.SelectItem(turnin.Position);
+                        await Coroutine.Sleep(1000);
+                        int i = 0;
+                        while (CollectablesShop.Instance.TurninCount > 0)
+                        {
+                            // Log($"Pressing trade {i}");
+                            i++;
+                            CollectablesShop.Instance.Trade();
+                            await Coroutine.Sleep(100);
+                        }
+                    }
+
+                    CollectablesShop.Instance.Close();
+                    await Coroutine.Wait(10000, () => !CollectablesShop.Instance.IsOpen);
+                }
+            }
+        }								
 
         private static void Log(string text, params object[] args)
         {
