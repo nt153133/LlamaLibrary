@@ -1,4 +1,5 @@
-﻿using System.CodeDom;
+﻿using System;
+using System.CodeDom;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,18 +133,16 @@ namespace LlamaLibrary
             {
                 Log("Clicking");
                 await HWDLottery.Instance.ClickSpot(slot);
-                await Coroutine.Sleep(1000);
-                Log("Closeing");
+                await Coroutine.Sleep(700);
+                Log("Closing");
                 HWDLottery.Instance.Close();
                 await Coroutine.Wait(2000, () => !HWDLottery.Instance.IsOpen);
                 if (HWDLottery.Instance.IsOpen)
                 {
-                    Log("Closeing Again");
+                    Log("Closing Again");
                     HWDLottery.Instance.Close();
                 }
 
-                
-                
                 await Coroutine.Wait(5000, () => SelectYesno.IsOpen || Talk.DialogOpen);
                 Log($"Select Yes/No {SelectYesno.IsOpen} Talk {Talk.DialogOpen}");
                 while (Talk.DialogOpen)
@@ -153,7 +152,7 @@ namespace LlamaLibrary
                     await Coroutine.Wait(2000, () => Talk.DialogOpen || SelectYesno.IsOpen);
                 }
 
-                await Coroutine.Sleep(1000);
+                await Coroutine.Sleep(500);
 
                 await HandInKupoTicket(slot);
 
@@ -165,7 +164,7 @@ namespace LlamaLibrary
             Log("Done with Kupo Tickets");
             return false;
         }
-        public async Task<bool> HandInItem(uint itemId, int index, int job)
+        public async Task<bool> HandInItem(uint itemId, int index, int job, bool stopScripMax = false)
         {
             if ((!HWDSupply.Instance.IsOpen && Npc == null) || Npc.Location.Distance(Core.Me.Location) > 5f) 
                 await Navigation.GetTo(886,new Vector3(43.59162f, -16f, 170.3864f));
@@ -245,8 +244,29 @@ namespace LlamaLibrary
                         continue;
                     }
 
-                    SelectYesno.Yes();
-                    await Coroutine.Sleep(2000);
+                    if (stopScripMax)
+                    {
+                        if (SelectYesno.IsOpen)
+                            SelectYesno.No();
+                        await Coroutine.Sleep(500);
+                        if (Request.IsOpen)
+                        {
+                            Request.Cancel();
+                            await Coroutine.Sleep(500);
+                        }
+
+                        if (HWDSupply.Instance.IsOpen)
+                        {
+                            HWDSupply.Instance.Close();
+                            await Coroutine.Wait(2000, () => !HWDSupply.Instance.IsOpen);
+                        }
+                    }
+                    else
+                    {
+                        SelectYesno.Yes();
+                    }
+                    
+                    await Coroutine.Sleep(1000);
                 }
             }
 
@@ -257,7 +277,7 @@ namespace LlamaLibrary
             }
             
             if (InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
-                await HandInItem(itemId, index, job);
+                await HandInItem(itemId, index, job, stopScripMax);
             return false;
         }
 
@@ -309,6 +329,62 @@ namespace LlamaLibrary
             return false;
         }
 
+        public async Task<bool> BuyItem(uint itemId, int maxCount, int SelectStringLine = 0)
+        {
+            
+            if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
+                await Navigation.GetTo(886,new Vector3(36.33978f, -16f, 145.3877f));
+
+            if (!ShopExchangeCurrency.Open && VendorNpc.Location.Distance(Core.Me.Location) > 4f)
+            {
+                await Navigation.OffMeshMove(VendorNpc.Location);
+                await Coroutine.Sleep(500);
+            }
+
+            if (!ShopExchangeCurrency.Open)
+            {
+                VendorNpc.Interact();
+                await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open || Talk.DialogOpen || Conversation.IsOpen);
+                if (Conversation.IsOpen)
+                {
+                    Conversation.SelectLine((uint) SelectStringLine);
+                    await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open);
+                }
+            }
+
+            if (ShopExchangeCurrency.Open)
+            {
+                var items = SpecialShopManager.Items;
+                var specialShopItem = items?.Cast<SpecialShopItem?>().FirstOrDefault(i => i.HasValue && i.Value.ItemIds.Contains(itemId));
+
+                if (!specialShopItem.HasValue) return false;
+
+                var count = Math.Min(CanAffordScrip(specialShopItem.Value),maxCount);
+
+                if (count > 0) Purchase(itemId, (uint) count);
+
+                await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+
+                SelectYesno.ClickYes();
+                
+                await Coroutine.Wait(500, () => !SelectYesno.IsOpen);
+                await Coroutine.Wait(500, () => SelectYesno.IsOpen);
+                if (SelectYesno.IsOpen)
+                {
+                    SelectYesno.ClickYes();
+                    await Coroutine.Wait(500, () => !SelectYesno.IsOpen);
+                }
+
+                await Coroutine.Sleep(1000);
+
+                ShopExchangeCurrency.Close();
+
+                return true;
+            }
+
+            return false;
+        }
+        
         internal static uint Purchase(uint itemId, uint itemCount)
         {
             var windowByName = RaptureAtkUnitManager.GetWindowByName("ShopExchangeCurrency");
