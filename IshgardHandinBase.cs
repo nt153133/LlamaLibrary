@@ -1546,6 +1546,17 @@ namespace LlamaLibrary
             return true;
         }
 
+        public static async Task<bool> BuyItem(uint ItemId, int maxCount, int SelectStringLine = 0)
+        {
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            Navigator.PlayerMover = new SlideMover();
+            var ishgardHandin = new IshgardHandin();
+
+            await ishgardHandin.BuyItem(ItemId, maxCount, SelectStringLine);
+
+            return true;
+        }
+        
         private static void Log(string text, params object[] args)
         {
             var msg = string.Format("[Ishgard Handin] " + text, args);

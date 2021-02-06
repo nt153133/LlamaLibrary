@@ -37,9 +37,8 @@
       <HintPath>Ext\GreyMagic.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="RebornBuddy, Version=1.0.335.0, Culture=neutral, PublicKeyToken=48d7174f8a943034">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Ext\RebornBuddy.exe</HintPath>
+    <Reference Include="RebornBuddy, Version=1.0.409.0, Culture=neutral, PublicKeyToken=48d7174f8a943034">
+      <HintPath>..\..\rebornbuddy.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,6 +79,7 @@
     <Compile Include="Helpers\ActionHelper.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
     <Compile Include="Helpers\BlueMageSpellBook.cs" />
+    <Compile Include="Helpers\CraftingHelper.cs" />
     <Compile Include="Helpers\FreeCompanyActions.cs" />
     <Compile Include="Helpers\GeneralFunctions.cs" />
     <Compile Include="Helpers\GrandCompanyHelper.cs" />
@@ -95,6 +95,7 @@
     <Compile Include="Helpers\Timers.cs" />
     <Compile Include="Helpers\TimersSettings.cs" />
     <Compile Include="Helpers\Translator.cs" />
+    <Compile Include="Helpers\GardenHelper.cs" />
     <Compile Include="HouseChecker.cs" />
     <Compile Include="HuntBase.cs" />
     <Compile Include="IshgardHandin.cs" />
@@ -174,6 +175,7 @@
     <Compile Include="RemoteAgents\AgentGoldSaucerInfo.cs" />
     <Compile Include="RemoteAgents\AgentHandIn.cs" />
     <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
+    <Compile Include="RemoteAgents\AgentHWDScore.cs" />
     <Compile Include="RemoteAgents\AgentItemAppraisal.cs" />
     <Compile Include="RemoteAgents\AgentMasterPieceSupply.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="RemoteWindows\HugeCraftworksSupply.cs" />
     <Compile Include="RemoteWindows\HWDGathereInspect.cs" />
     <Compile Include="RemoteWindows\HWDLottery.cs" />
+    <Compile Include="RemoteWindows\HWDScore.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />
@@ -243,6 +246,7 @@
     <Compile Include="ScriptConditions\Extras.cs" />
     <Compile Include="ScriptConditions\Helpers.cs" />
     <Compile Include="Structs\CraftingRelicTurnin.cs" />
+    <Compile Include="Structs\CraftingStatus.cs" />
     <Compile Include="Structs\FcActionShopItem.cs" />
     <Compile Include="Structs\FCWorkshopItem.cs" />
     <Compile Include="Structs\GatheringNodeData.cs" />
