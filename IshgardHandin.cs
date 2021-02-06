@@ -199,8 +199,8 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(1000);
                 }
                 //var item = InventoryManager.FilledSlots.FirstOrDefault(i => i.RawItemId == itemId);
-
-                foreach (var item in InventoryManager.FilledSlots.Where(i => i.RawItemId == itemId))
+                var items = InventoryManager.FilledSlots.Where(i => i.RawItemId == itemId);
+                foreach (var item in items)
                 {
                     HWDSupply.Instance.ClickItem(index);
 
@@ -210,11 +210,15 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(100);
                     await Coroutine.Wait(5000, () => Request.HandOverButtonClickable);
                     Request.HandOver();
-                    
-                    if (ScriptConditions.Helpers.GetSkybuilderScrips() > 9000 )
+
+
+                    if (ScriptConditions.Helpers.GetSkybuilderScrips() > 9000)
+                    {
                         await Coroutine.Wait(2000, () => SelectYesno.IsOpen);
+                    }
                     else
                     {
+                        await Coroutine.Wait(5000, () => !Request.IsOpen);
                         await Coroutine.Sleep(100);
                     }
 
@@ -274,6 +278,11 @@ namespace LlamaLibrary
             {
                 Request.Cancel();
                 await Coroutine.Sleep(2000);
+                if (HWDSupply.Instance.IsOpen)
+                {
+                    HWDSupply.Instance.Close();
+                    await Coroutine.Wait(2000, () => !HWDSupply.Instance.IsOpen);
+                }
             }
             
             if (InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
