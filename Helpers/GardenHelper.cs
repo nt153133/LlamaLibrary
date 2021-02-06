@@ -45,7 +45,7 @@ namespace LlamaLibrary.Helpers
     public static class GardenHelper
     {
 		
-		public static async Task<bool> GoGarden(uint AE)
+		public static async Task GoGarden(uint AE)
 		{
 			Navigator.PlayerMover = new SlideMover();
 			Navigator.NavigationProvider = new ServiceNavigationProvider();
@@ -66,7 +66,6 @@ namespace LlamaLibrary.Helpers
 				await Navigation.FlightorMove(gardenPlot.Location);
 				await GardenHelper.Main(); 
 			}
-			return true;
 		}		
 		
          public static bool AlwaysWater { get; set; }
