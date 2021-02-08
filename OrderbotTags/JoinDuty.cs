@@ -24,6 +24,10 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("Trial")] 
         [DefaultValue(false)]
         public bool Trial { get; set; }
+		
+        [XmlAttribute("Undersized")] 
+        [DefaultValue(true)]
+        public bool Undersized { get; set; }		
         
         public override bool HighPriority => true;
 
@@ -49,8 +53,18 @@ namespace LlamaLibrary.OrderbotTags
 
         private async Task JoinDutyTask(int DutyId, bool Trial)
         {
-           Logging.WriteDiagnostic("Queuing for Dungeon");
-		    GameSettingsManager.JoinWithUndersizedParty = true;
+           if (Undersized)
+            {
+				Logging.WriteDiagnostic("Joining Duty as Undersized group.");
+				GameSettingsManager.JoinWithUndersizedParty = true;
+            }
+            else
+            {
+				Logging.WriteDiagnostic("Joining Duty as normal group.");
+				GameSettingsManager.JoinWithUndersizedParty = false;
+            }			
+			
+		   Logging.WriteDiagnostic("Queuing for Dungeon");
            DutyManager.Queue(DataManager.InstanceContentResults[(uint) DutyId]);
            await Coroutine.Wait(5000, () => (DutyManager.QueueState == QueueState.InQueue || DutyManager.QueueState == QueueState.JoiningInstance));
 
