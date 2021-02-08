@@ -44,27 +44,25 @@ namespace LlamaLibrary.Helpers
 	
     public static class GardenHelper
     {
-		
-		public static async Task GoGarden(uint AE)
+        
+		public static async Task GoGarden(uint AE, Vector3 gardenLoc)
 		{
 			Navigator.PlayerMover = new SlideMover();
 			Navigator.NavigationProvider = new ServiceNavigationProvider();
 			var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
 			
-			Log($"Teleporting to housing: (ZID: {house.ZoneId}, AID: {house.AetheryteId}) {house.Name}");
+            Log($"Teleporting to housing: (ZID: {DataManager.ZoneNameResults[house.ZoneId]}, AID: {house.AetheryteId}) {house.Name}");
 			await CommonTasks.Teleport(house.AetheryteId);
 
-			Log("Waiting for zone to change");
+			Log("Waiting for zone to change.");
 			await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId);
 
-			Log("Getting closest gardenning plot");
+			Log("Moving to selected garden plot.");
 
-			var gardenPlot = GardenManager.Plants.FirstOrDefault();
-			if (gardenPlot != null)
+			if (gardenLoc != null)
 			{
-				Log("Found nearby gardenning plot, approaching");
-				await Navigation.FlightorMove(gardenPlot.Location);
-				await GardenHelper.Main(); 
+				await Navigation.FlightorMove(gardenLoc);
+				await GardenHelper.Main(gardenLoc); 
 			}
 		}		
 		
@@ -72,9 +70,9 @@ namespace LlamaLibrary.Helpers
 
         //public static void Log(string text, params object[] args) { Logger.Info(text, args); }
 
-        public static async Task<bool> Main()
+        public static async Task<bool> Main(Vector3 gardenLoc)
         {
-            var watering = GardenManager.Plants.Where(r => !Blacklist.Contains(r) && r.Distance2D(Core.Player) < 5).ToArray();
+            var watering = GardenManager.Plants.Where(r => !Blacklist.Contains(r) && r.Distance2D(gardenLoc) < 10).ToArray();
             foreach (var plant in watering)
                 //Water it if it needs it or if we have fertilized it 5 or more times.
                 if (AlwaysWater || GardenManager.NeedsWatering(plant))
@@ -105,7 +103,7 @@ namespace LlamaLibrary.Helpers
                         Log($"GardenManager.GetCrop returned null {plant.ObjectId:X}");
                     }
                 }
-            var plants = GardenManager.Plants.Where(r => r.Distance2D(Core.Player) < 5).ToArray();
+            var plants = GardenManager.Plants.Where(r => r.Distance2D(gardenLoc) < 10).ToArray();
             foreach (var plant in plants)
             {
                 var result = GardenManager.GetCrop(plant);
