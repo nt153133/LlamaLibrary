@@ -25,6 +25,10 @@ namespace LlamaLibrary.OrderbotTags
         [DefaultValue(false)]
         public bool Trial { get; set; }
 		
+        [XmlAttribute("Raid")] 
+        [DefaultValue(false)]
+        public bool Raid { get; set; }		
+		
         [XmlAttribute("Undersized")] 
         [DefaultValue(true)]
         public bool Undersized { get; set; }		
@@ -48,14 +52,14 @@ namespace LlamaLibrary.OrderbotTags
 
         protected override Composite CreateBehavior()
         {
-            return new ActionRunCoroutine(r => JoinDutyTask(DutyId, Trial));
+            return new ActionRunCoroutine(r => JoinDutyTask(DutyId, Undersized, Trial, Raid));
         }
 
-        private async Task JoinDutyTask(int DutyId, bool Trial)
+        private async Task JoinDutyTask(int DutyId, bool Undersized, bool Trial, bool Raid)
         {
            if (Undersized)
             {
-				Logging.WriteDiagnostic("Joining Duty as Undersized group.");
+				Logging.WriteDiagnostic("Joining Duty as Undersized party.");
 				GameSettingsManager.JoinWithUndersizedParty = true;
             }
             else
@@ -64,69 +68,104 @@ namespace LlamaLibrary.OrderbotTags
 				GameSettingsManager.JoinWithUndersizedParty = false;
             }			
 			
-		   Logging.WriteDiagnostic("Queuing for Dungeon");
+		   Logging.WriteDiagnostic("Queuing for "+ DataManager.InstanceContentResults[(uint) DutyId].CurrentLocaleName);
            DutyManager.Queue(DataManager.InstanceContentResults[(uint) DutyId]);
-           await Coroutine.Wait(5000, () => (DutyManager.QueueState == QueueState.InQueue || DutyManager.QueueState == QueueState.JoiningInstance));
-
+           
+           await Coroutine.Wait(5000, () => (DutyManager.QueueState == QueueState.CommenceAvailable || DutyManager.QueueState == QueueState.JoiningInstance));
            Logging.WriteDiagnostic("Queued for Dungeon");
 
-           await Coroutine.Wait(10000, () => (DutyManager.QueueState == QueueState.JoiningInstance));
-			
-           await Coroutine.Wait(10000, () => (RaptureAtkUnitManager.GetWindowByName("ContentsFinderConfirm") != null));
-
-           Logging.WriteDiagnostic("Commencing");
-           DutyManager.Commence();
-           Logging.WriteDiagnostic("Waiting for Loading");
-           await Coroutine.Wait(10000, () => CommonBehaviors.IsLoading || QuestLogManager.InCutscene);
-			
-           if (CommonBehaviors.IsLoading)
+           while (DutyManager.QueueState != QueueState.None || DutyManager.QueueState != QueueState.InDungeon || CommonBehaviors.IsLoading)
            {
-               await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+	           if (DutyManager.QueueState == QueueState.CommenceAvailable)
+	           {
+		           Logging.WriteDiagnostic("Waiting for queue pop.");
+		           await Coroutine.Wait(-1,
+			           () => (DutyManager.QueueState == QueueState.JoiningInstance ||
+			                  DutyManager.QueueState == QueueState.None));
+	           }
+
+	           if (DutyManager.QueueState == QueueState.JoiningInstance)
+	           {
+		           Logging.WriteDiagnostic("Dungeon popped, commencing in 3.");
+		           await Coroutine.Sleep(3000);
+		           DutyManager.Commence();
+		           await Coroutine.Wait(-1,
+			           () => (DutyManager.QueueState == QueueState.LoadingContent ||
+			                  DutyManager.QueueState == QueueState.CommenceAvailable));
+	           }
+
+	           if (DutyManager.QueueState == QueueState.LoadingContent)
+	           {
+		           Logging.WriteDiagnostic("Waiting for everyone to accept");
+		           await Coroutine.Wait(-1, () => (CommonBehaviors.IsLoading || DutyManager.QueueState == QueueState.CommenceAvailable));
+	           }
+
+	           if (CommonBehaviors.IsLoading)
+	           {
+		           break;
+	           }
+	           await Coroutine.Sleep(500);
            }
+           
+           if (DutyManager.QueueState == QueueState.None) return;
+           
+           await Coroutine.Sleep(500);
+			   if (CommonBehaviors.IsLoading)
+			   {
+				   await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
+			   }
 
-           if (QuestLogManager.InCutscene)
-           {
-               TreeRoot.StatusText = "InCutscene";
-               if (ff14bot.RemoteAgents.AgentCutScene.Instance != null)
-               {
-                   ff14bot.RemoteAgents.AgentCutScene.Instance.PromptSkip();
-                   await Coroutine.Wait(250, () => SelectString.IsOpen);
-                   if (SelectString.IsOpen)
-                       SelectString.ClickSlot(0);
-               }
-           }
+			   if (QuestLogManager.InCutscene)
+			   {
+				   TreeRoot.StatusText = "InCutscene";
+				   if (ff14bot.RemoteAgents.AgentCutScene.Instance != null)
+				   {
+					   ff14bot.RemoteAgents.AgentCutScene.Instance.PromptSkip();
+					   await Coroutine.Wait(250, () => SelectString.IsOpen);
+					   if (SelectString.IsOpen)
+						   SelectString.ClickSlot(0);
+				   }
+			   }
 
-           Logging.WriteDiagnostic("Should be in duty");
-		   
-           var director = ((ff14bot.Directors.InstanceContentDirector) DirectorManager.ActiveDirector);
-           if (director !=null)
-		   {
-               if (Trial)
-               {
-                   if (director.TimeLeftInDungeon >= new TimeSpan(0,60,0))
-                   {
-                       Logging.WriteDiagnostic("Barrier up");
-                       await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(0,59,58));
-                   }
-               }
-               else
-               {
-                   if (director.TimeLeftInDungeon >= new TimeSpan(1,30,0))
-                   {
-                       Logging.WriteDiagnostic("Barrier up");
-                       await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(1,29,58));
-                   } 
-               }
-
-		   }
-		   else
-		   {
-			Logging.WriteDiagnostic("Director is null");
-		   }
+			   Logging.WriteDiagnostic("Should be in duty");
 			   
-	      Logging.WriteDiagnostic("Should be ready");
+			   var director = ((ff14bot.Directors.InstanceContentDirector) DirectorManager.ActiveDirector);
+			   if (director !=null)
+			   {
+				   if (Trial)
+				   {
+					   if (director.TimeLeftInDungeon >= new TimeSpan(0,60,0))
+					   {
+						   Logging.WriteDiagnostic("Barrier up");
+						   await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(0,59,58));
+					   }
+				   }
+				   if (Raid)
+				   {
+					   if (director.TimeLeftInDungeon >= new TimeSpan(2,0,0))
+					   {
+						   Logging.WriteDiagnostic("Barrier up");
+						   await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(1,59,58));
+					   }
+				   }				   
+				   else
+				   {
+					   if (director.TimeLeftInDungeon >= new TimeSpan(1,30,0))
+					   {
+						   Logging.WriteDiagnostic("Barrier up");
+						   await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(1,29,58));
+					   } 
+				   }
 
-            _isDone = true;
+			   }
+			   else
+			   {
+				Logging.WriteDiagnostic("Director is null");
+			   }
+				   
+			  Logging.WriteDiagnostic("Should be ready");
+
+				_isDone = true;
         }
     }
 }
