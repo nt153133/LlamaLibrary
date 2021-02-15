@@ -12,6 +12,7 @@ using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
+using ff14bot.Objects;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using Generate;
@@ -77,7 +78,8 @@ namespace LlamaLibrary
             {4, new List<ItemUiCategory>{ItemUiCategory.Demimateria,ItemUiCategory.Gardening, ItemUiCategory.Body, ItemUiCategory.Bracelets,ItemUiCategory.Earrings,ItemUiCategory.Feet,ItemUiCategory.Hands,ItemUiCategory.Head,ItemUiCategory.Legs,ItemUiCategory.Necklace,ItemUiCategory.Ring,ItemUiCategory.Shield}}, //Paige
             {5, new List<ItemUiCategory>{ItemUiCategory.Ingredient, ItemUiCategory.Meal, ItemUiCategory.Seafood, ItemUiCategory.Furnishing}}, //Verit-y
         };
-        
+
+        private static uint[] npcids = new uint[] {2005236, 2005238, 2005240, 2007821};
         private bool _init;
         private Composite _root;
 
@@ -649,13 +651,13 @@ namespace LlamaLibrary
 
         public static async Task<bool> OpenFCCraftingStation()
         {
-            if (GameObjectManager.GetObjectByNPCId(2005238) == null)
+            if (GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).Any())
             {
                 Logging.Write("Can't find Fabrication Station");
                 return false;
             }
 
-            var station = GameObjectManager.GetObjectByNPCId(2005238);
+            var station = GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).First();
 
             if (!station.IsWithinInteractRange)
             {
