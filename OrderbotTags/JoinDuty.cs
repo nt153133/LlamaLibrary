@@ -98,6 +98,7 @@ namespace LlamaLibrary.OrderbotTags
 	           {
 		           Logging.WriteDiagnostic("Waiting for everyone to accept");
 		           await Coroutine.Wait(-1, () => (CommonBehaviors.IsLoading || DutyManager.QueueState == QueueState.CommenceAvailable));
+		           await Coroutine.Sleep(1000);
 	           }
 
 	           if (CommonBehaviors.IsLoading)
@@ -137,7 +138,7 @@ namespace LlamaLibrary.OrderbotTags
 					   if (director.TimeLeftInDungeon >= new TimeSpan(0,60,0))
 					   {
 						   Logging.WriteDiagnostic("Barrier up");
-						   await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(0,59,58));
+						   await Coroutine.Wait(-1, () => director.TimeLeftInDungeon < new TimeSpan(0,59,58));
 					   }
 				   }
 				   if (Raid)
@@ -145,7 +146,7 @@ namespace LlamaLibrary.OrderbotTags
 					   if (director.TimeLeftInDungeon >= new TimeSpan(2,0,0))
 					   {
 						   Logging.WriteDiagnostic("Barrier up");
-						   await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(1,59,58));
+						   await Coroutine.Wait(-1, () => director.TimeLeftInDungeon < new TimeSpan(1,59,58));
 					   }
 				   }				   
 				   else
@@ -153,7 +154,7 @@ namespace LlamaLibrary.OrderbotTags
 					   if (director.TimeLeftInDungeon >= new TimeSpan(1,30,0))
 					   {
 						   Logging.WriteDiagnostic("Barrier up");
-						   await Coroutine.Wait(30000, () => director.TimeLeftInDungeon < new TimeSpan(1,29,58));
+						   await Coroutine.Wait(-1, () => director.TimeLeftInDungeon < new TimeSpan(1,29,58));
 					   } 
 				   }
 
