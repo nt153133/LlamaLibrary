@@ -20,9 +20,11 @@ using ff14bot.NeoProfiles;
 using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
+using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using ff14bot.RemoteWindows.GoldSaucer;
 using GreyMagic;
+using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
@@ -35,6 +37,7 @@ using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
+using Action = System.Action;
 
 namespace LlamaLibrary
 {
@@ -270,8 +273,57 @@ namespace LlamaLibrary
         {
             //hooks = TreeHooks.Instance.Hooks;
             // TreeHooks.Instance.ClearAll();
+            
+/*List<(int gardenIndex, int plantIndex, string plant)> plants = new List<(int gardenIndex, int plantIndex, string plant)>();
+foreach (var plant in GardenManager.Plants.Where(i=> i.Distance(Core.Me.Location)< 10))
+{
+   var GardenIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningIndex();");
+   var Plant = DataManager.GetItem(Lua.GetReturnVal<uint>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantCrop();"));
+   var PlantIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantIndex();");
+   plants.Add((GardenIndex,PlantIndex,Plant.CurrentLocaleName));
+   
+}
 
-            _root = new ActionRunCoroutine(r => Run());
+foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
+{
+    foreach (var plant in plantgroup.OrderBy(j=> j.plantIndex))
+    {
+        Log($"Garden {plant.gardenIndex} Plant {plant.plantIndex}, {plant.plant}");
+    }
+}*/
+            
+            _root = new ActionRunCoroutine(r => Plant());
+        }
+
+        private static async Task Plant()
+        {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            BagSlot soil = ff14bot.Managers.InventoryManager.FilledInventoryAndArmory.First(x => x.RawItemId == 16026);
+            BagSlot seeds = ff14bot.Managers.InventoryManager.FilledInventoryAndArmory.First(x => x.RawItemId == 13765);
+
+            //EventObject plant = null;
+            List<(int gardenIndex, int plantIndex, string plant, EventObject obj)> plants = new List<(int gardenIndex, int plantIndex, string plant, EventObject obj)>();
+            foreach (var plant in GardenManager.Plants.Where(i=> i.Distance(Core.Me.Location)< 10))
+            {
+                var GardenIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningIndex();");
+                var Plant = DataManager.GetItem(Lua.GetReturnVal<uint>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantCrop();"));
+                var PlantIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantIndex();");
+                plants.Add((GardenIndex,PlantIndex,Plant.CurrentLocaleName, plant));
+   
+            }
+
+            foreach (var plant in plants.Where(i=> i.gardenIndex == 0))
+            {
+                if (plant.gardenIndex == 0 && plant.plant == "")
+                {
+                    Log($"Garden {plant.gardenIndex} Plant {plant.plantIndex}, {plant.plant}");
+                    await GardenHelper.Plant(plant.obj, seeds, soil);
+                    await Coroutine.Sleep(5000);
+                }
+            }
+
+            TreeRoot.Stop("Stop Requested");
         }
 
         public override void Stop()
@@ -419,611 +471,117 @@ namespace LlamaLibrary
 
         private async Task<bool> Run()
         {
+
+            Navigator.PlayerMover.MoveStop();
+            foreach (var plant in GardenManager.Plants)
+            {
+                Log(plant.LuaString);
+            }
+            
+            Log($"Calling GoGarden");
+            await Helpers.GardenHelper.GoGarden(56, new Vector3 (-699.5466f, 14.06503f, -755.4941f));
+            return true;
+        }
+        
+        
+
+        
+        public static async Task<bool> GoGarden(uint AE)
+        {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-            /*await testKupoTickets();
+            var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
+    
+            Log($"Teleporting to housing: (ZID: {house.ZoneId}, AID: {house.AetheryteId}) {house.Name}");
+            await CommonTasks.Teleport(house.AetheryteId);
 
-            
-            foreach (var item in InventoryManager.FilledSlots.Where(i=> i.EnglishName.ToLowerInvariant().Contains("magicked prism")))
+            Log("Waiting for zone to change");
+            await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId);
+
+            Log("Getting closest gardening plot");
+
+            var gardenPlot = GardenManager.Plants.FirstOrDefault();
+            if (gardenPlot != null)
             {
-                Log($"Discarding {item.Name}");
-                item.Discard();
-                await Coroutine.Sleep(2000);
-            }*/
-            var patternFinder = new GreyMagic.PatternFinder(Core.Memory);
-            var DohLastAction = patternFinder.Find("4C 8D 0D ?? ?? ?? ?? 4D 8B 13 49 8B CB Add 3 TraceRelative");
-            
-            var Stage = Core.Memory.Read<byte>(DohLastAction);
-
-            Log($"Stage: {Stage}");
-            var status = Core.Memory.Read<CraftingStatus>(DohLastAction);
-            
-            Log(status.DynamicString());
-
-            
-
-            //await Helpers.Lisbeth.SelfRepair();
-            //await Helpers.Lisbeth.SelfRepairWithMenderFallback();
-            //ActionHelper.Test();
-            //await testKupoTickets();
-
-            /*var windows = new Dictionary<string, int>();
-            if (File.Exists("windows.json"))
-            {
-                using (var file = new StreamReader("windows.json"))
-                    windows = JsonConvert.DeserializeObject<Dictionary<string, int>>(file.ReadToEnd());
+                Log("Found nearby gardening plot, approaching");
+                await Navigation.FlightorMove(gardenPlot.Location);
+                //await GardenHelper.Main(); 
             }
-
-
-            foreach (var control in RaptureAtkUnitManager.Controls)
+            return true;
+        }
+        
+        public static async Task HandInExpert()
+        {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            
+            if (!GrandCompanySupplyList.Instance.IsOpen)
             {
-                if (!windows.ContainsKey(control.Name))
+                await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
+                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                if (!SelectString.IsOpen)
                 {
-                    AgentInterface agentInterface = null;
+                    Log("Window is not open...maybe it didn't get to npc?");
                     
-                    try
-                    {
-                        agentInterface = control.TryFindAgentInterface();
-                    }
-                    catch
-                    {
-                        
-                    }
-                    int agentid = agentInterface?.Id ?? -1;
-                    windows.Add(control.Name, agentid);
-                    if (agentid != -1)
-                        Log($"{control.Name} - Agent {agentid}");
+                }
+
+                SelectString.ClickSlot(0);
+                await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
+                if (!GrandCompanySupplyList.Instance.IsOpen)
+                {
+                    Log("Window is not open...maybe it didn't get to npc?");
+                    
                 }
             }
-            
-            using (var outputFile = new StreamWriter($"agents.csv", false))
+
+            if (GrandCompanySupplyList.Instance.IsOpen)
             {
-                foreach (var window in windows.Where(i=> i.Value >0))
-                {
-                    outputFile.WriteLine($"{window.Key},{window.Value},{new IntPtr(AgentModule.AgentVtables[window.Value].ToInt64() - Core.Memory.ImageBase.ToInt64()).ToString("X")}");
-                }
+                await GrandCompanySupplyList.Instance.SwitchToExpertDelivery();
+                await Coroutine.Sleep(3000);
+                //await HandleCurrentGCWindow();
                 
-            }
-            
-            using (var outputFile = new StreamWriter($"windows.json", false))
-            {
-                outputFile.Write(JsonConvert.SerializeObject(windows));
-            }
-
-            DumpOffsets();
-
-            Lua.DoString("return _G['EventHandler'].NpcRepair();");*/
-
-            
-            /*
-            InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
-            {
-                InventoryBagId.Bag1,
-                InventoryBagId.Bag2,
-                InventoryBagId.Bag3,
-                InventoryBagId.Bag4,
-                InventoryBagId.Crystals,
-                InventoryBagId.Currency
-            };
-
-            var targetPlayer = GameObjectManager.Target as BattleCharacter;
-
-            var result = targetPlayer.OpenTradeWindow();
-
-            uint itemid = 2;
-            uint qty = 5;
-            Log($"{result}");
-            if (result == 0)
-            {
-                await Coroutine.Wait(5000, () => Trade.IsOpen);
-                if (Trade.IsOpen)
-                {
-                    var item = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).SelectMany(i => i.FilledSlots).FirstOrDefault(i => i.RawItemId == itemid);
-                    if (item != null)
+                /*
+                var bools = GrandCompanySupplyList.Instance.GetTurninBools();
+                var windowItemIds = GrandCompanySupplyList.Instance.GetTurninItemsIds();
+                var required = GrandCompanySupplyList.Instance.GetTurninRequired();
+                var maxSeals = Core.Me.MaxGCSeals();*/
+                //var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
+                int i = 0;
+                int count = ConditionParser.ItemCount(2049);
+                if (count > 0)
+                    for (var index = 0; index < count; index++)
                     {
-                        item.TradeItem();
-                        await Coroutine.Wait(5000, () => InputNumeric.IsOpen);
-                        if (InputNumeric.IsOpen)
-                        {
-                            InputNumeric.Ok(qty); //pass nothing for full stack
-                        }
-
-                        RaptureAtkUnitManager.GetWindowByName("Trade").SendAction(1, 3uL, 0);
-                        await Coroutine.Wait(-1, () => Trade.TradeStage == 5);
+                        //var item = windowItemIds[index];
+                        Log($"{index}");
+                        GrandCompanySupplyList.Instance.ClickItem(0);
                         await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
                         if (SelectYesno.IsOpen)
+                        {
                             SelectYesno.Yes();
-                    }
-                }
-            }
-            */
-
-            //await TurninSkySteelGathering();
-            //await TurninSkySteelCrafting();
-
-
-            //await BuyHouse();
-            //TreeRoot.Stop("Stop Requested");
-            //await LeveWindow(1018997);
-            //await HousingWards();
-            //await testVentures();
-
-            //DutyManager.AvailableContent
-            // RoutineManager.Current.PullBehavior.Start();
-
-            /*
-            Log($"{await GrandCompanyShop.BuyKnownItem(6141, 5)}"); //Cordial
-            await Coroutine.Sleep(1000);
-            Log($"{await GrandCompanyShop.BuyKnownItem(21072, 2)}"); //ventures
-            await Coroutine.Sleep(1000);
-            Log($"{await GrandCompanyShop.BuyKnownItem(21072, 3)}"); //ventures
-            await Coroutine.Sleep(1000);
-            
-            TreeRoot.Stop("Stop Requested");
-            return true;
-            */
-
-            //      var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
-            //    foreach (var nodeData in newList)
-            //    {
-            //        Log($"\n{nodeData}");
-            //     }
-            /*
-                        byte lastChecked = Core.Me.GatheringStatus();
-                        while (_root != null)
-                        {
-                            if (lastChecked != Core.Me.GatheringStatus())
-                            {
-                                Log(FishingState.ContainsKey(Core.Me.GatheringStatus()) ? $"{FishingState[Core.Me.GatheringStatus()]}" : $"{Core.Me.GatheringStatus()} - {Core.Me.CastingSpellId} {ActionManager.LastSpell}");
-                                lastChecked = Core.Me.GatheringStatus();
-                            }
-            196630
-                            await Coroutine.Sleep(200);
                         }
-            */
 
-            //await GoToSummoningBell();
-            //string fun3 = $"return _G['CmnDefRetainerBell']:GetVentureFinishedRetainerName();";
-
-
-            //Log($"{await VerifiedRowenaData()}");
-            // var resultBool = WorldManager.Raycast(Core.Me.Location, GameObjectManager.Target.Location, out var result);
-            // HuntHelper.Test();
-
-            // await Navigation.GetTo(155, new Vector3(-279.682159f, 256.4128f, 339.207031f));
-
-            //var composite_0 = BrainBehavior.CreateBrain();
-
-            //DumpLuaFunctions();
-            /*
-            if (mob.Distance() > (RoutineManager.Current.PullRange - 1))
-            {
-                Log($"Moving");
-                await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
-            }
-
-            if (Core.Me.IsMounted)
-                await CommonTasks.StopAndDismount();
-           
-            mob.Target();
-            await Coroutine.Sleep(300);
-            await RoutineManager.Current.PreCombatBuffBehavior.ExecuteCoroutine();
-            if (Core.Me.HasTarget && Core.Me.CurrentTarget.Distance() > RoutineManager.Current.PullRange - 1)
-                await Navigation.OffMeshMove(Core.Me.CurrentTarget.Location);
-            await RoutineManager.Current.PullBehavior.ExecuteCoroutine();
-            await Coroutine.Sleep(300);
-            while (Core.Me.InCombat && Core.Me.HasTarget && mob.IsAlive)
-            {
-                if (Core.Me.CurrentTarget.Distance() > RoutineManager.Current.PullRange - 1)
-                    await Navigation.OffMeshMove(Core.Me.CurrentTarget.Location);
-                await RoutineManager.Current.CombatBehavior.ExecuteCoroutine();
-                Log($"is it alive ? {mob.IsAlive}");
-                await Coroutine.Yield();
-            }
-            */
-
-            //   await FindAndKillMob(8609);
-            //  Log("Current Daily Hunts");
-            //  HuntHelper.Test();
-
-
-            //  Log("\nAccepted Hunts");
-            // HuntHelper.PrintAcceptedHunts();
-
-            // Log("\nKill Counts");
-            //Log($"is it alive ? {mob.IsAlive}");
-            // HuntHelper.PrintKillCounts();
-            //305 374
-            /*       
-                   int[] badLocations = new[] {457};
-                   List<int> cantGetTo = new List<int>();
-                   foreach (var huntLocation1 in badLocations)
-                   {
-                       var huntLocation = HuntHelper.DailyHunts[huntLocation1];
-                       // LogCritical($"Can't get to {huntLocation1} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location} {DataManager.ZoneNameResults[huntLocation.Map].CurrentLocaleName}");
-                       LogSucess($"Going to {huntLocation1}");
-       
-                       if (huntLocation1 == 107 || huntLocation1 == 247)
-                           await Navigation.GetToIslesOfUmbra();
-       
-       
-                       var path = await Navigation.GetTo(huntLocation.Map, huntLocation.Location);
-       
-                       if (MovementManager.IsFlying)
-                       {
-                           await CommonTasks.Land();
-                       }
-       
-                       if (Core.Me.Location.DistanceSqr(huntLocation.Location) > 40 && GameObjectManager.GameObjects.All(i => i.NpcId != huntLocation.BNpcNameKey))
-                       {
-                           cantGetTo.Add(huntLocation1);
-                           LogCritical($"Can't get to {huntLocation} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location}");
-                       }
-                       else
-                       {
-                           while (true)
-                           {
-                               if (await FindAndKillMob((uint) huntLocation.BNpcNameKey))
-                               {
-                                   Log("Killed one");
-                                   await Coroutine.Sleep(1000);
-                                   if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
-                               }
-                               else
-                               {
-                                   Log("None found, sleeping 10 sec.");
-                                   await Coroutine.Sleep(10000);
-                               }
-                           }
-                           LogSucess($"Can get to {huntLocation1}");
-                       }
-       
-                       //await Coroutine.Sleep(2000);
-                   }
-       
-                   LogCritical($"\n {string.Join(",", cantGetTo)}\n");
-       
-       */
-
-
-            //ActionRunCoroutine test = new ActionRunCoroutine(() => composite_0);
-            /*
-                        if (await GoToSummoningBell()) 
-                            LogSucess("\n****************\n MADE IT BELL\n****************");
-                        else 
-                        {
-                            LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
-                        }
-            */
-            //await DoGCDailyTurnins();
-
-            //    bool AgentCharacter = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentCharacter), typeof(AgentCharacter));
-
-
-            //   Log($"Added Venture Agent: {retaineragent}");
-
-            /* Rowena
-            var ItemList = Core.Memory.ReadArray<RowenaItem>(Offsets.RowenaItemList, Offsets.RowenaItemCount);
-            StringBuilder sb = new StringBuilder();
-            foreach (var itemGroup in ItemList.GroupBy(i=> i.ClassJob))
-            {
-                foreach (var item in itemGroup)
-                {
-                    sb.AppendLine(item.ToString().Trim().TrimEnd(','));
-                    Log(item.ToString());
-                }
-
-            }
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(@"h:\", $"rowena.csv"), false))
-            {
-                outputFile.Write(sb.ToString());
-            }
-            
-            */
-            //var pat = "48 89 0D ? ? ? ? 0F B7 89 ? ? ? ? Add 3 TraceRelative";
-
-
-            /*
-            var hunts = HuntHelper.DailyHunts;
-            var newHunts = new SortedDictionary<int, StoredHuntLocationLisbeth>();
-            newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
-            foreach (var hunt in hunts.Where(i => !newHunts.ContainsKey(i.Key)))
-            {
-                if (hunt.Key == 399)
-                {
-                    await Navigation.GetToMap399();
-                    await Navigation.GetTo(hunt.Value.Map, hunt.Value.Location);
-                }
-                else
-                {
-                    await Navigation.GetTo(hunt.Value.Map, hunt.Value.Location);
-                }
-
-                newHunts.Add(hunt.Key, new StoredHuntLocationLisbeth(hunt.Value.BNpcNameKey, Lisbeth.GetCurrentAreaName, hunt.Value.Location));
-                Log($"{hunt.Key}");
-                using (var outputFile = new StreamWriter($"hunts.json", false))
-                {
-                    outputFile.Write(JsonConvert.SerializeObject(newHunts));
-                }
-            }
-            
-
-            using (var outputFile = new StreamWriter($"hunts1.json", false))
-            {
-                outputFile.Write(JsonConvert.SerializeObject(newHunts));
-            }
-            */
-
-
-            //Log($"{Lisbeth.GetCurrentAreaName}");
-
-            //  DumpLuaFunctions();
-
-
-            //var line = LlamaLibrary.RemoteWindows.ContentsInfo.Instance.GetElementString(50);
-            //int.Parse(line.Split(':')[1].Trim());
-            //Log($"START:\n{sb.ToString()}");
-
-            /*var row = FoodBuff.GetRow(420);
-
-            for (int i = 0; i < 3; i++)
-            {
-                Log($"Stat: {(ItemAttribute)row.BaseParam[i]} Max: {row.Max[i]}({row.MaxHQ[i]}) Value: {row.Value[i]}%({row.ValueHQ[i]}%) IsRelative: {(row.IsRelative[i]==1 ? "True":"False")}");
-            }*/
-            /*IntPtr[] array = Core.Memory.ReadArray<IntPtr>(SpecialShopManager.ActiveShopPtr + 0x178, 2);
-            ulong num = (ulong)((long)array[1] - (long)array[0]) / (ulong)(uint)0x1a0;
-
-            var list = Core.Memory.ReadArray<SpecialShopItemLL>(array[0], (int)num);
-
-            foreach (var item in list)
-            {try t
-                Log(item.ToString());
-            }*/
-
-            // Log(AgentWorldTravelSelect.Instance.CurrentWorld.ToString());
-
-
-            //Lisbeth.AddHook("Llama",LlamaLibrary.Retainers.RetainersPull.CheckVentureTask);
-
-            //Log($"{Achievements.HasAchievement(2199)}");
-            // Log($"{BlueMageSpellBook.SpellLocation.ToString("X")}");
-
-            //await Lisbeth.SelfRepair();
-            /*Lisbeth.AddHook("Llama",TestHook);
-            await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
-            Lisbeth.RemoveHook("Llama");
-*/
-           // var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
-           
-            
-            /*
-            var failed = new Dictionary<int, StoredHuntLocation>();
-            
-            if (File.Exists("hunts_failed.json"))
-                failed = JsonConvert.DeserializeObject<Dictionary<int, StoredHuntLocation>>((new StreamReader("hunts_failed.json")).ReadToEnd());
-            var start = 76; 
-            foreach (var hunt in HuntHelper.DailyHunts.Where(i=> i.Key >= start))
-            {
-                await Lisbeth.TravelToZones(hunt.Value.Map, hunt.Value.Location);
-                if (WorldManager.ZoneId != hunt.Value.Map || Core.Me.Location.DistanceSqr(hunt.Value.Location) > 30)
-                {
-                    Log($"Map: {WorldManager.ZoneId} ({hunt.Value.Map}) Dist: {Core.Me.Location.DistanceSqr(hunt.Value.Location)}");
-                    if (!failed.ContainsKey(hunt.Key))
-                    {
-                        failed.Add(hunt.Key, hunt.Value);
-                        using (var outputFile = new StreamWriter($"hunts_failed.json", false))
-                        {
-                            outputFile.Write(JsonConvert.SerializeObject(failed));
-                        }
-                    }
-                }
-                Log($"Finished {start}");
-                start++;
-            }
-            using (var outputFile = new StreamWriter($"hunts_failed.json", false))
-            {
-                outputFile.Write(JsonConvert.SerializeObject(failed));
-            }
-            */
-            
-    
-
-            //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
-
-            // Log($"\n {sb}");
-            //DumpLLOffsets();
-            //ActionManager.DoAction("Scour", Core.Me);
-            /*if (GatheringMasterpieceLL.Instance.IsOpen)
-            {
-                Log($"Collectability: {GatheringMasterpieceLL.Instance.Collectability}/{GatheringMasterpieceLL.Instance.MaxCollectability}");
-                Log($"Integrity: {GatheringMasterpieceLL.Instance.Integrity}/{GatheringMasterpieceLL.Instance.MaxIntegrity}");
-                Log($"IntuitionRate: {GatheringMasterpieceLL.Instance.IntuitionRate} Item: {DataManager.GetItem((uint) GatheringMasterpieceLL.Instance.ItemID).CurrentLocaleName}");
-            }*/
-
-            /*InventoryBagId[] FCChest = new InventoryBagId[] {InventoryBagId.GrandCompany_Page1, InventoryBagId.GrandCompany_Page2, InventoryBagId.GrandCompany_Page3, (InventoryBagId) 20003, (InventoryBagId) 20004};
-
-            var slots = InventoryManager.GetBagsByInventoryBagId(FCChest).SelectMany(x=> x.FilledSlots);
-            foreach (var slot in slots)
-            {
-               // Log(slot);
-            }*/
-
-            /*
-            var windowItemIds = LlamaLibrary.RemoteWindows.GrandCompanySupplyList.Instance.GetTurninItemsIds();
-
-            for (int i = 0; i < LlamaLibrary.RemoteWindows.GrandCompanySupplyList.Instance.GetNumberOfTurnins(); i++)
-            {
-                Log($"Can turn in {DataManager.GetItem(windowItemIds[i])}");
-                //bool shouldTurnin = 
-            }
-
-
-
-            uint[] privateHousing = new uint[] {59, 60, 61, 97};
-            uint[] FCHousing = new uint[] {56,57,58,96};
-
-            var AE = WorldManager.AvailableLocations;
-
-            var PrivateHouses = AE.Where(x => privateHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
-            var FCHouses = AE.Where(x => FCHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
-            
-            bool HavePrivateHousing = PrivateHouses.Any();
-            bool HaveFCHousing = FCHouses.Any();
-
-
-            Log($"Private House Access: {HavePrivateHousing} FC House Access: {HaveFCHousing}");
-            
-            //await GoToHousingBell(FCHouses.First());
-            
-            
-            if (HavePrivateHousing)
-            {
-                await GoToHousingBell(PrivateHouses.First());
-            }
-            else if (HaveFCHousing)
-            {
-                await GoToHousingBell(FCHouses.First());
-            }
-            */
-            /*if (Core.Me.GCSeals() > 200)
-            {
-                await GrandCompanyShop.BuyKnownItem(21072, (int) (Core.Me.GCSeals() / 200));
-            }*/
-            //DumpOffsets();
-            //await BuyHouse();
-           // await testKupoTickets();
-
-            /*var newHunts = HuntHelper.DailyHunts;
-            var failed = new Dictionary<int, StoredHuntLocation>();
-            var start = 0; 
-            foreach (var hunt in newHunts)
-            {
-                await Lisbeth.TravelToZones(hunt.Value.Map, hunt.Value.Location);
-                if ((Core.Me.Location.Distance2DSqr(hunt.Value.Location) > 10f))
-                {
-                    failed.Add(hunt.Key, hunt.Value);
-                    using (var outputFile = new StreamWriter($"hunts_failed.json", false))
-                    {
-                        outputFile.Write(JsonConvert.SerializeObject(failed));
-                    }
-                }
-                Log($"Finished {start}");
-                start++;
-            }
-            
-            using (var outputFile = new StreamWriter($"hunts_failed.json", false))
-            {
-                outputFile.Write(JsonConvert.SerializeObject(failed));
-            }*/
-            // await OutOnALimbBase.RunHomeMGP();
-
-
-            /*AgentFreeCompany.Instance.Toggle();
-            await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
-            
-            foreach (var buff in buffs)
-            {
-                Log($"Current Buffs: {buff.Name}");
-            }
-            
-            var FCActionListCur = await AgentFreeCompany.Instance.GetAvailableActions();
-            int cnt = 0;
-            foreach (var action in FCActionListCur)
-            {
-                Log($"{cnt} - {FreeCompanyExchange.FcShopActions.First(i=> i.ActionId == action.id).Name}");
-                cnt++;
-            }
-            
-            var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
-            Log($"# Currently Active Actions: {curActions.Length}");
-            if (curActions.Length < 2)
-            {
-                await FreeCompanyActions.ActivateBuffs(31, 41, GrandCompany.Maelstrom);
-            }
-            
-            if (FreeCompany.Instance.IsOpen)
-                FreeCompany.Instance.Close();*/
-            /*
-            await GrandCompanyHelper.InteractWithNpc(GCNpc.OIC_Quartermaster, GrandCompany.Maelstrom);
-
-            await Coroutine.Wait(5000, () => Talk.DialogOpen);
-            if (Talk.DialogOpen)
-            {
-                Talk.Next();
-                await Coroutine.Wait(5000, () => Conversation.IsOpen);
-                if (Conversation.IsOpen)
-                {
-                    Conversation.SelectLine(0);
-                    await Coroutine.Wait(10000, () => FreeCompanyExchange.Instance.IsOpen);
-                    if (FreeCompanyExchange.Instance.IsOpen)
-                    {
+                        await Coroutine.Wait(5000, () => GrandCompanySupplyReward.Instance.IsOpen);
+                        GrandCompanySupplyReward.Instance.Confirm();
+                        await Coroutine.Wait(5000, () => GrandCompanySupplyList.Instance.IsOpen);
+                        i += 1;
                         await Coroutine.Sleep(500);
-                        await FreeCompanyExchange.Instance.BuyAction(31);
-                        await FreeCompanyExchange.Instance.BuyAction(41);
-                        FreeCompanyExchange.Instance.Close();
+                    }
+
+                if (GrandCompanySupplyList.Instance.IsOpen)
+                {
+                    GrandCompanySupplyList.Instance.Close();
+                    await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                    if (SelectString.IsOpen)
+                    {
+                        SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
                     }
                 }
-            }
-            */
-
-            /*var address1 = new IntPtr(0x273E68848A0);
-            var count = Core.Memory.Read<int>(address1 + 4);
-            var shop = Core.Memory.ReadArray<FcActionShop>(address1 + 0x8, count);
-            int x = 0;
-            using (var outputFile = new StreamWriter(@"G:\ShopItems.csv", false))
-                foreach (var item in shop)
+                
+                if (Core.Me.GCSeals() > 200)
                 {
-                    var name = FcActionList[item.id];
-                    outputFile.WriteLine($"new FcActionShop({item.id}, {item.rank}, {item.cost}, {x}, \"{name}\"),");
-                    Log($"{x}, {item.rank}, {item.cost}, {name}");
-                    x++;
-                }*/
-
-
-            //Core.Me.Stats
-            /*
-            Log($"{AgentMinionNoteBook.Instance.MinionListAddress}");
-            var minions = AgentMinionNoteBook.Instance.GetCurrentMinions();
-            foreach (var minion in minions)
-            {
-                Log($"{minion.MinionId} - {AgentMinionNoteBook.GetMinionName(minion.MinionId)}");
+                    await GrandCompanyShop.BuyKnownItem(21072, (int) (Core.Me.GCSeals() / 200));
+                }
             }
-            */
-           
-
-            TreeRoot.Stop("Stop Requested");
-            //AtkAddonControl windowByName = RaptureAtkUnitManager.Update()
-            // await Coroutine.Sleep(100);
-
-            //Log(Core.Me.IsFate);
-
-            return false;
-
-
-            BeastTribeHelper.PrintDailies();
-            BeastTribeHelper.PrintBeastTribes();
-            Timers.PrintTimers();
-            AgentGoldSaucerInfo.Instance.Toggle();
-            await Coroutine.Wait(5000, () => GSInfoGeneral.IsOpen);
-            if (GSInfoGeneral.IsOpen)
-            {
-                await Coroutine.Sleep(500);
-                Log($"Mini Cactpot tickets left: {GSInfoGeneral.DailyAllowancesLeft}");
-                AgentGoldSaucerInfo.Instance.Toggle();
-            }
-
-            //TimersSettings testTimers = TimersSettings.Instance;
-
-
-            //            await Reduce.Reduce.Extract();
-
-            //InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems).Last().IsFilled
-            // await BuyHouse();
-            TreeRoot.Stop("Stop Requested");
-            return false;
-            //await BuyHouse();
-
-            // await Coroutine.Sleep(100);
         }
         
         public static async Task UpdateWebPage()
@@ -1294,7 +852,7 @@ namespace LlamaLibrary
         private async Task BuyHouse()
         {
             Random _rnd = new Random();
-            ;
+            
             var placard = GameObjectManager.GetObjectsByNPCId(2002736).OrderBy(i => i.Distance()).FirstOrDefault();
             if (placard != null)
             {
@@ -1892,6 +1450,568 @@ namespace LlamaLibrary
             Logger.Info(output);
 
             return true;
+        }
+
+        public static void OldRun()
+        {
+                     /*await testKupoTickets();
+
+            
+            foreach (var item in InventoryManager.FilledSlots.Where(i=> i.EnglishName.ToLowerInvariant().Contains("magicked prism")))
+            {
+                Log($"Discarding {item.Name}");
+                item.Discard();
+                await Coroutine.Sleep(2000);
+            }*/
+            
+
+            //await Helpers.Lisbeth.SelfRepair();
+            //await Helpers.Lisbeth.SelfRepairWithMenderFallback();
+            //ActionHelper.Test();
+            //await testKupoTickets();
+
+            /*var windows = new Dictionary<string, int>();
+            if (File.Exists("windows.json"))
+            {
+                using (var file = new StreamReader("windows.json"))
+                    windows = JsonConvert.DeserializeObject<Dictionary<string, int>>(file.ReadToEnd());
+            }
+
+
+            foreach (var control in RaptureAtkUnitManager.Controls)
+            {
+                if (!windows.ContainsKey(control.Name))
+                {
+                    AgentInterface agentInterface = null;
+                    
+                    try
+                    {
+                        agentInterface = control.TryFindAgentInterface();
+                    }
+                    catch
+                    {
+                        
+                    }
+                    int agentid = agentInterface?.Id ?? -1;
+                    windows.Add(control.Name, agentid);
+                    if (agentid != -1)
+                        Log($"{control.Name} - Agent {agentid}");
+                }
+            }
+            
+            using (var outputFile = new StreamWriter($"agents.csv", false))
+            {
+                foreach (var window in windows.Where(i=> i.Value >0))
+                {
+                    outputFile.WriteLine($"{window.Key},{window.Value},{new IntPtr(AgentModule.AgentVtables[window.Value].ToInt64() - Core.Memory.ImageBase.ToInt64()).ToString("X")}");
+                }
+                
+            }
+            
+            using (var outputFile = new StreamWriter($"windows.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(windows));
+            }
+
+            DumpOffsets();
+
+            Lua.DoString("return _G['EventHandler'].NpcRepair();");*/
+
+            
+            /*
+            InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
+            {
+                InventoryBagId.Bag1,
+                InventoryBagId.Bag2,
+                InventoryBagId.Bag3,
+                InventoryBagId.Bag4,
+                InventoryBagId.Crystals,
+                InventoryBagId.Currency
+            };
+
+            var targetPlayer = GameObjectManager.Target as BattleCharacter;
+
+            var result = targetPlayer.OpenTradeWindow();
+
+            uint itemid = 2;
+            uint qty = 5;
+            Log($"{result}");
+            if (result == 0)
+            {
+                await Coroutine.Wait(5000, () => Trade.IsOpen);
+                if (Trade.IsOpen)
+                {
+                    var item = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).SelectMany(i => i.FilledSlots).FirstOrDefault(i => i.RawItemId == itemid);
+                    if (item != null)
+                    {
+                        item.TradeItem();
+                        await Coroutine.Wait(5000, () => InputNumeric.IsOpen);
+                        if (InputNumeric.IsOpen)
+                        {
+                            InputNumeric.Ok(qty); //pass nothing for full stack
+                        }
+
+                        RaptureAtkUnitManager.GetWindowByName("Trade").SendAction(1, 3uL, 0);
+                        await Coroutine.Wait(-1, () => Trade.TradeStage == 5);
+                        await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                        if (SelectYesno.IsOpen)
+                            SelectYesno.Yes();
+                    }
+                }
+            }
+            */
+
+            //await TurninSkySteelGathering();
+            //await TurninSkySteelCrafting();
+
+
+            //await BuyHouse();
+            //TreeRoot.Stop("Stop Requested");
+            //await LeveWindow(1018997);
+            //await HousingWards();
+            //await testVentures();
+
+            //DutyManager.AvailableContent
+            // RoutineManager.Current.PullBehavior.Start();
+
+            /*
+            Log($"{await GrandCompanyShop.BuyKnownItem(6141, 5)}"); //Cordial
+            await Coroutine.Sleep(1000);
+            Log($"{await GrandCompanyShop.BuyKnownItem(21072, 2)}"); //ventures
+            await Coroutine.Sleep(1000);
+            Log($"{await GrandCompanyShop.BuyKnownItem(21072, 3)}"); //ventures
+            await Coroutine.Sleep(1000);
+            
+            TreeRoot.Stop("Stop Requested");
+            return true;
+            */
+
+            //      var newList = JsonConvert.DeserializeObject<List<GatheringNodeData>>(File.ReadAllText(Path.Combine("H:\\", $"TimedNodes.json")));
+            //    foreach (var nodeData in newList)
+            //    {
+            //        Log($"\n{nodeData}");
+            //     }
+            /*
+                        byte lastChecked = Core.Me.GatheringStatus();
+                        while (_root != null)
+                        {
+                            if (lastChecked != Core.Me.GatheringStatus())
+                            {
+                                Log(FishingState.ContainsKey(Core.Me.GatheringStatus()) ? $"{FishingState[Core.Me.GatheringStatus()]}" : $"{Core.Me.GatheringStatus()} - {Core.Me.CastingSpellId} {ActionManager.LastSpell}");
+                                lastChecked = Core.Me.GatheringStatus();
+                            }
+            196630
+                            await Coroutine.Sleep(200);
+                        }
+            */
+
+            //await GoToSummoningBell();
+            //string fun3 = $"return _G['CmnDefRetainerBell']:GetVentureFinishedRetainerName();";
+
+
+            //Log($"{await VerifiedRowenaData()}");
+            // var resultBool = WorldManager.Raycast(Core.Me.Location, GameObjectManager.Target.Location, out var result);
+            // HuntHelper.Test();
+
+            // await Navigation.GetTo(155, new Vector3(-279.682159f, 256.4128f, 339.207031f));
+
+            //var composite_0 = BrainBehavior.CreateBrain();
+
+            //DumpLuaFunctions();
+            /*
+            if (mob.Distance() > (RoutineManager.Current.PullRange - 1))
+            {
+                Log($"Moving");
+                await Navigation.GetTo(WorldManager.ZoneId, mob.Location);
+            }
+
+            if (Core.Me.IsMounted)
+                await CommonTasks.StopAndDismount();
+           
+            mob.Target();
+            await Coroutine.Sleep(300);
+            await RoutineManager.Current.PreCombatBuffBehavior.ExecuteCoroutine();
+            if (Core.Me.HasTarget && Core.Me.CurrentTarget.Distance() > RoutineManager.Current.PullRange - 1)
+                await Navigation.OffMeshMove(Core.Me.CurrentTarget.Location);
+            await RoutineManager.Current.PullBehavior.ExecuteCoroutine();
+            await Coroutine.Sleep(300);
+            while (Core.Me.InCombat && Core.Me.HasTarget && mob.IsAlive)
+            {
+                if (Core.Me.CurrentTarget.Distance() > RoutineManager.Current.PullRange - 1)
+                    await Navigation.OffMeshMove(Core.Me.CurrentTarget.Location);
+                await RoutineManager.Current.CombatBehavior.ExecuteCoroutine();
+                Log($"is it alive ? {mob.IsAlive}");
+                await Coroutine.Yield();
+            }
+            */
+
+            //   await FindAndKillMob(8609);
+            //  Log("Current Daily Hunts");
+            //  HuntHelper.Test();
+
+
+            //  Log("\nAccepted Hunts");
+            // HuntHelper.PrintAcceptedHunts();
+
+            // Log("\nKill Counts");
+            //Log($"is it alive ? {mob.IsAlive}");
+            // HuntHelper.PrintKillCounts();
+            //305 374
+            /*       
+                   int[] badLocations = new[] {457};
+                   List<int> cantGetTo = new List<int>();
+                   foreach (var huntLocation1 in badLocations)
+                   {
+                       var huntLocation = HuntHelper.DailyHunts[huntLocation1];
+                       // LogCritical($"Can't get to {huntLocation1} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location} {DataManager.ZoneNameResults[huntLocation.Map].CurrentLocaleName}");
+                       LogSucess($"Going to {huntLocation1}");
+       
+                       if (huntLocation1 == 107 || huntLocation1 == 247)
+                           await Navigation.GetToIslesOfUmbra();
+       
+       
+                       var path = await Navigation.GetTo(huntLocation.Map, huntLocation.Location);
+       
+                       if (MovementManager.IsFlying)
+                       {
+                           await CommonTasks.Land();
+                       }
+       
+                       if (Core.Me.Location.DistanceSqr(huntLocation.Location) > 40 && GameObjectManager.GameObjects.All(i => i.NpcId != huntLocation.BNpcNameKey))
+                       {
+                           cantGetTo.Add(huntLocation1);
+                           LogCritical($"Can't get to {huntLocation} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location}");
+                       }
+                       else
+                       {
+                           while (true)
+                           {
+                               if (await FindAndKillMob((uint) huntLocation.BNpcNameKey))
+                               {
+                                   Log("Killed one");
+                                   await Coroutine.Sleep(1000);
+                                   if (!Core.Me.InCombat) await Coroutine.Sleep(3000);
+                               }
+                               else
+                               {
+                                   Log("None found, sleeping 10 sec.");
+                                   await Coroutine.Sleep(10000);
+                               }
+                           }
+                           LogSucess($"Can get to {huntLocation1}");
+                       }
+       
+                       //await Coroutine.Sleep(2000);
+                   }
+       
+                   LogCritical($"\n {string.Join(",", cantGetTo)}\n");
+       
+       */
+
+
+            //ActionRunCoroutine test = new ActionRunCoroutine(() => composite_0);
+            /*
+                        if (await GoToSummoningBell()) 
+                            LogSucess("\n****************\n MADE IT BELL\n****************");
+                        else 
+                        {
+                            LogCritical("\n****************\n FAILED TO MAKE IT TO BELL \n****************");
+                        }
+            */
+            //await DoGCDailyTurnins();
+
+            //    bool AgentCharacter = AgentModule.TryAddAgent(AgentModule.FindAgentIdByVtable(Offsets.AgentCharacter), typeof(AgentCharacter));
+
+
+            //   Log($"Added Venture Agent: {retaineragent}");
+
+            /* Rowena
+            var ItemList = Core.Memory.ReadArray<RowenaItem>(Offsets.RowenaItemList, Offsets.RowenaItemCount);
+            StringBuilder sb = new StringBuilder();
+            foreach (var itemGroup in ItemList.GroupBy(i=> i.ClassJob))
+            {
+                foreach (var item in itemGroup)
+                {
+                    sb.AppendLine(item.ToString().Trim().TrimEnd(','));
+                    Log(item.ToString());
+                }
+
+            }
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(@"h:\", $"rowena.csv"), false))
+            {
+                outputFile.Write(sb.ToString());
+            }
+            
+            */
+            //var pat = "48 89 0D ? ? ? ? 0F B7 89 ? ? ? ? Add 3 TraceRelative";
+
+
+            /*
+            var hunts = HuntHelper.DailyHunts;
+            var newHunts = new SortedDictionary<int, StoredHuntLocationLisbeth>();
+            newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
+            foreach (var hunt in hunts.Where(i => !newHunts.ContainsKey(i.Key)))
+            {
+                if (hunt.Key == 399)
+                {
+                    await Navigation.GetToMap399();
+                    await Navigation.GetTo(hunt.Value.Map, hunt.Value.Location);
+                }
+                else
+                {
+                    await Navigation.GetTo(hunt.Value.Map, hunt.Value.Location);
+                }
+
+                newHunts.Add(hunt.Key, new StoredHuntLocationLisbeth(hunt.Value.BNpcNameKey, Lisbeth.GetCurrentAreaName, hunt.Value.Location));
+                Log($"{hunt.Key}");
+                using (var outputFile = new StreamWriter($"hunts.json", false))
+                {
+                    outputFile.Write(JsonConvert.SerializeObject(newHunts));
+                }
+            }
+            
+
+            using (var outputFile = new StreamWriter($"hunts1.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(newHunts));
+            }
+            */
+
+
+            //Log($"{Lisbeth.GetCurrentAreaName}");
+
+            //  DumpLuaFunctions();
+
+
+            //var line = LlamaLibrary.RemoteWindows.ContentsInfo.Instance.GetElementString(50);
+            //int.Parse(line.Split(':')[1].Trim());
+            //Log($"START:\n{sb.ToString()}");
+
+            /*var row = FoodBuff.GetRow(420);
+
+            for (int i = 0; i < 3; i++)
+            {
+                Log($"Stat: {(ItemAttribute)row.BaseParam[i]} Max: {row.Max[i]}({row.MaxHQ[i]}) Value: {row.Value[i]}%({row.ValueHQ[i]}%) IsRelative: {(row.IsRelative[i]==1 ? "True":"False")}");
+            }*/
+            /*IntPtr[] array = Core.Memory.ReadArray<IntPtr>(SpecialShopManager.ActiveShopPtr + 0x178, 2);
+            ulong num = (ulong)((long)array[1] - (long)array[0]) / (ulong)(uint)0x1a0;
+
+            var list = Core.Memory.ReadArray<SpecialShopItemLL>(array[0], (int)num);
+
+            foreach (var item in list)
+            {try t
+                Log(item.ToString());
+            }*/
+
+            // Log(AgentWorldTravelSelect.Instance.CurrentWorld.ToString());
+
+
+            //Lisbeth.AddHook("Llama",LlamaLibrary.Retainers.RetainersPull.CheckVentureTask);
+
+            //Log($"{Achievements.HasAchievement(2199)}");
+            // Log($"{BlueMageSpellBook.SpellLocation.ToString("X")}");
+
+            //await Lisbeth.SelfRepair();
+            /*Lisbeth.AddHook("Llama",TestHook);
+            await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
+            Lisbeth.RemoveHook("Llama");
+*/
+           // var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
+           
+            
+            /*
+            var failed = new Dictionary<int, StoredHuntLocation>();
+            
+            if (File.Exists("hunts_failed.json"))
+                failed = JsonConvert.DeserializeObject<Dictionary<int, StoredHuntLocation>>((new StreamReader("hunts_failed.json")).ReadToEnd());
+            var start = 76; 
+            foreach (var hunt in HuntHelper.DailyHunts.Where(i=> i.Key >= start))
+            {
+                await Lisbeth.TravelToZones(hunt.Value.Map, hunt.Value.Location);
+                if (WorldManager.ZoneId != hunt.Value.Map || Core.Me.Location.DistanceSqr(hunt.Value.Location) > 30)
+                {
+                    Log($"Map: {WorldManager.ZoneId} ({hunt.Value.Map}) Dist: {Core.Me.Location.DistanceSqr(hunt.Value.Location)}");
+                    if (!failed.ContainsKey(hunt.Key))
+                    {
+                        failed.Add(hunt.Key, hunt.Value);
+                        using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+                        {
+                            outputFile.Write(JsonConvert.SerializeObject(failed));
+                        }
+                    }
+                }
+                Log($"Finished {start}");
+                start++;
+            }
+            using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(failed));
+            }
+            */
+            
+    
+
+            //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
+
+            // Log($"\n {sb}");
+            //DumpLLOffsets();
+            //ActionManager.DoAction("Scour", Core.Me);
+            /*if (GatheringMasterpieceLL.Instance.IsOpen)
+            {
+                Log($"Collectability: {GatheringMasterpieceLL.Instance.Collectability}/{GatheringMasterpieceLL.Instance.MaxCollectability}");
+                Log($"Integrity: {GatheringMasterpieceLL.Instance.Integrity}/{GatheringMasterpieceLL.Instance.MaxIntegrity}");
+                Log($"IntuitionRate: {GatheringMasterpieceLL.Instance.IntuitionRate} Item: {DataManager.GetItem((uint) GatheringMasterpieceLL.Instance.ItemID).CurrentLocaleName}");
+            }*/
+
+            /*InventoryBagId[] FCChest = new InventoryBagId[] {InventoryBagId.GrandCompany_Page1, InventoryBagId.GrandCompany_Page2, InventoryBagId.GrandCompany_Page3, (InventoryBagId) 20003, (InventoryBagId) 20004};
+
+            var slots = InventoryManager.GetBagsByInventoryBagId(FCChest).SelectMany(x=> x.FilledSlots);
+            foreach (var slot in slots)
+            {
+               // Log(slot);
+            }*/
+
+            /*
+            var windowItemIds = LlamaLibrary.RemoteWindows.GrandCompanySupplyList.Instance.GetTurninItemsIds();
+
+            for (int i = 0; i < LlamaLibrary.RemoteWindows.GrandCompanySupplyList.Instance.GetNumberOfTurnins(); i++)
+            {
+                Log($"Can turn in {DataManager.GetItem(windowItemIds[i])}");
+                //bool shouldTurnin = 
+            }
+
+
+
+            uint[] privateHousing = new uint[] {59, 60, 61, 97};
+            uint[] FCHousing = new uint[] {56,57,58,96};
+
+            var AE = WorldManager.AvailableLocations;
+
+            var PrivateHouses = AE.Where(x => privateHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
+            var FCHouses = AE.Where(x => FCHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
+            
+            bool HavePrivateHousing = PrivateHouses.Any();
+            bool HaveFCHousing = FCHouses.Any();
+
+
+            Log($"Private House Access: {HavePrivateHousing} FC House Access: {HaveFCHousing}");
+            
+            //await GoToHousingBell(FCHouses.First());
+            
+            
+            if (HavePrivateHousing)
+            {
+                await GoToHousingBell(PrivateHouses.First());
+            }
+            else if (HaveFCHousing)
+            {
+                await GoToHousingBell(FCHouses.First());
+            }
+            */
+            /*if (Core.Me.GCSeals() > 200)
+            {
+                await GrandCompanyShop.BuyKnownItem(21072, (int) (Core.Me.GCSeals() / 200));
+            }*/
+            //DumpOffsets();
+            //await BuyHouse();
+           // await testKupoTickets();
+
+            /*var newHunts = HuntHelper.DailyHunts;
+            var failed = new Dictionary<int, StoredHuntLocation>();
+            var start = 0; 
+            foreach (var hunt in newHunts)
+            {
+                await Lisbeth.TravelToZones(hunt.Value.Map, hunt.Value.Location);
+                if ((Core.Me.Location.Distance2DSqr(hunt.Value.Location) > 10f))
+                {
+                    failed.Add(hunt.Key, hunt.Value);
+                    using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+                    {
+                        outputFile.Write(JsonConvert.SerializeObject(failed));
+                    }
+                }
+                Log($"Finished {start}");
+                start++;
+            }
+            
+            using (var outputFile = new StreamWriter($"hunts_failed.json", false))
+            {
+                outputFile.Write(JsonConvert.SerializeObject(failed));
+            }*/
+            // await OutOnALimbBase.RunHomeMGP();
+
+
+            /*AgentFreeCompany.Instance.Toggle();
+            await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
+            
+            foreach (var buff in buffs)
+            {
+                Log($"Current Buffs: {buff.Name}");
+            }
+            
+            var FCActionListCur = await AgentFreeCompany.Instance.GetAvailableActions();
+            int cnt = 0;
+            foreach (var action in FCActionListCur)
+            {
+                Log($"{cnt} - {FreeCompanyExchange.FcShopActions.First(i=> i.ActionId == action.id).Name}");
+                cnt++;
+            }
+            
+            var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
+            Log($"# Currently Active Actions: {curActions.Length}");
+            if (curActions.Length < 2)
+            {
+                await FreeCompanyActions.ActivateBuffs(31, 41, GrandCompany.Maelstrom);
+            }
+            
+            if (FreeCompany.Instance.IsOpen)
+                FreeCompany.Instance.Close();*/
+            /*
+            await GrandCompanyHelper.InteractWithNpc(GCNpc.OIC_Quartermaster, GrandCompany.Maelstrom);
+
+            await Coroutine.Wait(5000, () => Talk.DialogOpen);
+            if (Talk.DialogOpen)
+            {
+                Talk.Next();
+                await Coroutine.Wait(5000, () => Conversation.IsOpen);
+                if (Conversation.IsOpen)
+                {
+                    Conversation.SelectLine(0);
+                    await Coroutine.Wait(10000, () => FreeCompanyExchange.Instance.IsOpen);
+                    if (FreeCompanyExchange.Instance.IsOpen)
+                    {
+                        await Coroutine.Sleep(500);
+                        await FreeCompanyExchange.Instance.BuyAction(31);
+                        await FreeCompanyExchange.Instance.BuyAction(41);
+                        FreeCompanyExchange.Instance.Close();
+                    }
+                }
+            }
+            */
+
+            /*var address1 = new IntPtr(0x273E68848A0);
+            var count = Core.Memory.Read<int>(address1 + 4);
+            var shop = Core.Memory.ReadArray<FcActionShop>(address1 + 0x8, count);
+            int x = 0;
+            using (var outputFile = new StreamWriter(@"G:\ShopItems.csv", false))
+                foreach (var item in shop)
+                {
+                    var name = FcActionList[item.id];
+                    outputFile.WriteLine($"new FcActionShop({item.id}, {item.rank}, {item.cost}, {x}, \"{name}\"),");
+                    Log($"{x}, {item.rank}, {item.cost}, {name}");
+                    x++;
+                }*/
+
+
+            //Core.Me.Stats
+            /*
+            Log($"{AgentMinionNoteBook.Instance.MinionListAddress}");
+            var minions = AgentMinionNoteBook.Instance.GetCurrentMinions();
+            foreach (var minion in minions)
+            {
+                Log($"{minion.MinionId} - {AgentMinionNoteBook.GetMinionName(minion.MinionId)}");
+            }
+            */ 
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0xB0)]
