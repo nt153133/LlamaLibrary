@@ -53,6 +53,17 @@ namespace LlamaLibrary.ScriptConditions
         public static int DailyQuestAllowance()
         {
             return (int) BeastTribeHelper.DailyQuestAllowance();
-        }		
+        }
+
+		public static bool LisbethPresent()
+        {
+            var loader = BotManager.Bots
+                .FirstOrDefault(c => c.Name == "Lisbeth");
+
+            if (loader == null) return false;
+			return true;
+
+        }
+		
     }
 }
