@@ -186,6 +186,7 @@
     <Compile Include="RemoteAgents\AgentRetainerInventory.cs" />
     <Compile Include="RemoteAgents\AgentRetainerList.cs" />
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
+    <Compile Include="RemoteAgents\AgentSatisfactionSupply.cs" />
     <Compile Include="RemoteAgents\IAgent.cs" />
     <Compile Include="RemoteWindows\Character.cs" />
     <Compile Include="RemoteWindows\CollectablesShop.cs" />
@@ -222,8 +223,9 @@
     <Compile Include="RemoteWindows\RecommendEquip.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />
-    <Compile Include="RemoteWindows\RetainerTaskList.cs" />
     <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
+    <Compile Include="RemoteWindows\RetainerTaskList.cs" />
+    <Compile Include="RemoteWindows\SatisfactionSupply.cs" />
     <Compile Include="RemoteWindows\ShopExchangeItem.cs" />
     <Compile Include="RemoteWindows\SubmarinePartsMenu.cs" />
     <Compile Include="Repair.cs" />
