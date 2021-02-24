@@ -370,6 +370,7 @@ namespace LlamaLibrary.Helpers
 
         public static MobHuntOrder GetMobHuntOrder(uint typeKey, uint mobIndex)
         {
+            Core.Memory.ClearCallCache();
             return Core.Memory.Read<MobHuntOrder>(Core.Memory.CallInjected64<IntPtr>(Offsets.Client__ExdData__getMobHuntOrder, typeKey, mobIndex));
         }
 
