@@ -64,7 +64,7 @@ namespace LlamaLibrary.Helpers
 			Navigator.NavigationProvider = new ServiceNavigationProvider();
 			var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
 			
-            Log($"Teleporting to housing: (ZID: {DataManager.ZoneNameResults[house.ZoneId]}, AID: {house.AetheryteId}) {house.Name}");
+            Log($"Teleporting to housing: {house.Name} (Zone: {DataManager.ZoneNameResults[house.ZoneId]}, Aetheryte: {house.AetheryteId})");
 			await CommonTasks.Teleport(house.AetheryteId);
 
 			Log("Waiting for zone to change.");
@@ -109,6 +109,7 @@ namespace LlamaLibrary.Helpers
                         {
                             Log("Plant is ready to be harvested");
                             SelectString.ClickSlot(1);
+							await Coroutine.Sleep(1000);
                         }
                     }
                     else
@@ -146,6 +147,7 @@ namespace LlamaLibrary.Helpers
                 {
                     Log("Plant is ready to be harvested");
                     SelectString.ClickSlot(1);
+					await Coroutine.Sleep(1000);
                 }
             }
             return true;
