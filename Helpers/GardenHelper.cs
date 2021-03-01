@@ -58,26 +58,51 @@ namespace LlamaLibrary.Helpers
         public static HousingPlantSelectedItemStruct SoilStruct => Core.Memory.Read<HousingPlantSelectedItemStruct>(AgentHousingPlant.Instance.Pointer + Offsets.StructOffset );
         public static HousingPlantSelectedItemStruct SeedStruct => Core.Memory.Read<HousingPlantSelectedItemStruct>(AgentHousingPlant.Instance.Pointer + Offsets.StructOffset  + GreyMagic.MarshalCache<HousingPlantSelectedItemStruct>.Size);
 
-		public static async Task GoGarden(uint AE, Vector3 gardenLoc)
-		{
-			Navigator.PlayerMover = new SlideMover();
-			Navigator.NavigationProvider = new ServiceNavigationProvider();
-			var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
+        
+        public static async Task GoGarden(uint AE, Vector3 gardenLoc)
+        {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
 			
             Log($"Teleporting to housing: (ZID: {DataManager.ZoneNameResults[house.ZoneId]}, AID: {house.AetheryteId}) {house.Name}");
-			await CommonTasks.Teleport(house.AetheryteId);
+            await CommonTasks.Teleport(house.AetheryteId);
 
-			Log("Waiting for zone to change.");
-			await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId);
+            Log("Waiting for zone to change.");
+            await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId);
 
-			Log("Moving to selected garden plot.");
+            Log("Moving to selected garden plot.");
 
-			if (gardenLoc != null)
-			{
-				await Navigation.FlightorMove(gardenLoc);
-				await GardenHelper.Main(gardenLoc); 
-			}
-		}		
+            if (gardenLoc != null)
+            {
+                await Navigation.FlightorMove(gardenLoc);
+                await GardenHelper.Main(gardenLoc); 
+            }
+        }
+        
+        public static async Task GoGarden(uint AE, Vector3 gardenLoc, Dictionary<uint, uint> plantPlan)
+        {
+            if (gardenLoc != default(Vector3))
+            {
+                Navigator.PlayerMover = new SlideMover();
+                Navigator.NavigationProvider = new ServiceNavigationProvider();
+                var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
+
+                Log($"Teleporting to housing: {house.Name} (Zone: {DataManager.ZoneNameResults[house.ZoneId]}, Aetheryte: {house.AetheryteId})");
+                await CommonTasks.Teleport(house.AetheryteId);
+
+                Log("Waiting for zone to change.");
+                await Coroutine.Wait(20000, () => WorldManager.ZoneId == house.ZoneId);
+
+                Log("Moving to selected garden plot.");
+                await Navigation.FlightorMove(gardenLoc);
+                await Main(gardenLoc);
+            }
+            else
+            {
+                Log("No Garden Location set. Exiting Task.");
+            }
+        }		
 		
          public static bool AlwaysWater { get; set; }
 
@@ -109,6 +134,7 @@ namespace LlamaLibrary.Helpers
                         {
                             Log("Plant is ready to be harvested");
                             SelectString.ClickSlot(1);
+							await Coroutine.Sleep(1000);
                         }
                     }
                     else
@@ -146,6 +172,7 @@ namespace LlamaLibrary.Helpers
                 {
                     Log("Plant is ready to be harvested");
                     SelectString.ClickSlot(1);
+					await Coroutine.Sleep(1000);
                 }
             }
             return true;
