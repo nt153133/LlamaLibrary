@@ -484,17 +484,29 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
             foreach (var npc in DeliveryNpcs.Where(i=> ConditionParser.IsQuestCompleted(i.Value.requiredQuest)))
             {
                 await AgentSatisfactionSupply.Instance.LoadWindow(npc.Value.index);
+                List<uint> items = new List<uint>();
                 Log($"{DeliveryNpcs[AgentSatisfactionSupply.Instance.NpcId].name}");
                 Log($"\tHeartLevel:{AgentSatisfactionSupply.Instance.HeartLevel}");
                 Log($"\tRep:{AgentSatisfactionSupply.Instance.CurrentRep}/{AgentSatisfactionSupply.Instance.MaxRep}");
                 Log($"\tDeliveries Remaining:{AgentSatisfactionSupply.Instance.DeliveriesRemaining}");
                 Log($"\tDoH: {DataManager.GetItem(AgentSatisfactionSupply.Instance.DoHItemId)}");
+                items.Add(AgentSatisfactionSupply.Instance.DoHItemId);
                 Log($"\tDoL: {DataManager.GetItem(AgentSatisfactionSupply.Instance.DoLItemId)}");
+                items.Add(AgentSatisfactionSupply.Instance.DoLItemId);
                 Log($"\tFsh: {DataManager.GetItem(AgentSatisfactionSupply.Instance.FshItemId)}");
+                items.Add(AgentSatisfactionSupply.Instance.FshItemId);
+
+                if (InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
+                {
+                    Log("Have items to turn in");
+                }
             }
 
+            
             TreeRoot.Stop("Stop Requested");
             return true;
+            
+            
             
         }
         
@@ -1325,7 +1337,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
         public async Task<bool> testExtract()
         {
             // var item = InventoryManager.FilledInventoryAndArmory.Where(i => i.Item.EngName.Contains("Voeburtite Ring of Slaying")).FirstOrDefault();
-
+            
 
             //  if (item != null)
             //      item.ExtractMateria();
