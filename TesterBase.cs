@@ -220,7 +220,7 @@ namespace LlamaLibrary
         {
             Task.Factory.StartNew(() =>
             {
-                 init();
+                init();
                 _init = true;
                 Log("INIT DONE");
             });
@@ -273,25 +273,25 @@ namespace LlamaLibrary
         {
             //hooks = TreeHooks.Instance.Hooks;
             // TreeHooks.Instance.ClearAll();
-            
-/*List<(int gardenIndex, int plantIndex, string plant)> plants = new List<(int gardenIndex, int plantIndex, string plant)>();
-foreach (var plant in GardenManager.Plants.Where(i=> i.Distance(Core.Me.Location)< 10))
-{
-   var GardenIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningIndex();");
-   var Plant = DataManager.GetItem(Lua.GetReturnVal<uint>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantCrop();"));
-   var PlantIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantIndex();");
-   plants.Add((GardenIndex,PlantIndex,Plant.CurrentLocaleName));
-   
-}
 
-foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
-{
-    foreach (var plant in plantgroup.OrderBy(j=> j.plantIndex))
-    {
-        Log($"Garden {plant.gardenIndex} Plant {plant.plantIndex}, {plant.plant}");
-    }
-}*/
+            /*List<(int gardenIndex, int plantIndex, string plant)> plants = new List<(int gardenIndex, int plantIndex, string plant)>();
+            foreach (var plant in GardenManager.Plants.Where(i=> i.Distance(Core.Me.Location)< 10))
+            {
+               var GardenIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningIndex();");
+               var Plant = DataManager.GetItem(Lua.GetReturnVal<uint>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantCrop();"));
+               var PlantIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantIndex();");
+               plants.Add((GardenIndex,PlantIndex,Plant.CurrentLocaleName));
+               
+            }
             
+            foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
+            {
+                foreach (var plant in plantgroup.OrderBy(j=> j.plantIndex))
+                {
+                    Log($"Garden {plant.gardenIndex} Plant {plant.plantIndex}, {plant.plant}");
+                }
+            }*/
+
             _root = new ActionRunCoroutine(r => Run());
         }
 
@@ -304,16 +304,15 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
 
             //EventObject plant = null;
             List<(int gardenIndex, int plantIndex, string plant, EventObject obj)> plants = new List<(int gardenIndex, int plantIndex, string plant, EventObject obj)>();
-            foreach (var plant in GardenManager.Plants.Where(i=> i.Distance(Core.Me.Location)< 10))
+            foreach (var plant in GardenManager.Plants.Where(i => i.Distance(Core.Me.Location) < 10))
             {
                 var GardenIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningIndex();");
                 var Plant = DataManager.GetItem(Lua.GetReturnVal<uint>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantCrop();"));
                 var PlantIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantIndex();");
-                plants.Add((GardenIndex,PlantIndex,Plant.CurrentLocaleName, plant));
-   
+                plants.Add((GardenIndex, PlantIndex, Plant.CurrentLocaleName, plant));
             }
 
-            foreach (var plant in plants.Where(i=> i.gardenIndex == 0))
+            foreach (var plant in plants.Where(i => i.gardenIndex == 0))
             {
                 if (plant.gardenIndex == 0 && plant.plant == "")
                 {
@@ -473,15 +472,15 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
         {
             var DeliveryNpcs = new Dictionary<uint, (uint Zone, Vector3 location, string name, int requiredQuest, uint index)>
             {
-                {1019615, (478, new Vector3(-71.763245f, 206.500214f, 32.638916f), "Zhloe Aliapoh",67087,1)}, //(Zhloe Aliapoh) Idyllshire(Dravania) 
-                {1020337, (635, new Vector3(171.312988f, 13.02367f, -89.951965f), "M'naago", 68541,2)}, //(M'naago) Rhalgr's Reach(Gyr Abania) 
-                {1025878, (613, new Vector3(343.984009f, -120.329468f, -306.019714f), "Kurenai", 68675,3)}, //(Kurenai) The Ruby Sea(Othard) 
-                {1018393, (478, new Vector3(-60.380005f, 206.500214f, 26.169189f), "Adkiragh", 68713,4)}, //(Adkiragh) Idyllshire(Dravania) 
-                {1031801, (820, new Vector3(52.811401f, 82.993774f, -65.384949f), "Kai-Shirr", 69265,5)}, //(Kai-Shirr) Eulmore(Eulmore) 
-                {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou",69425,6)} //(Ehll Tou) The Firmament(Ishgard) 
+                {1019615, (478, new Vector3(-71.763245f, 206.500214f, 32.638916f), "Zhloe Aliapoh", 67087, 1)}, //(Zhloe Aliapoh) Idyllshire(Dravania) 
+                {1020337, (635, new Vector3(171.312988f, 13.02367f, -89.951965f), "M'naago", 68541, 2)}, //(M'naago) Rhalgr's Reach(Gyr Abania) 
+                {1025878, (613, new Vector3(343.984009f, -120.329468f, -306.019714f), "Kurenai", 68675, 3)}, //(Kurenai) The Ruby Sea(Othard) 
+                {1018393, (478, new Vector3(-60.380005f, 206.500214f, 26.169189f), "Adkiragh", 68713, 4)}, //(Adkiragh) Idyllshire(Dravania) 
+                {1031801, (820, new Vector3(52.811401f, 82.993774f, -65.384949f), "Kai-Shirr", 69265, 5)}, //(Kai-Shirr) Eulmore(Eulmore) 
+                {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou", 69425, 6)} //(Ehll Tou) The Firmament(Ishgard) 
             };
-            
-            foreach (var npc in DeliveryNpcs.Where(i=> ConditionParser.IsQuestCompleted(i.Value.requiredQuest)))
+
+            foreach (var npc in DeliveryNpcs.Where(i => ConditionParser.IsQuestCompleted(i.Value.requiredQuest)))
             {
                 await AgentSatisfactionSupply.Instance.LoadWindow(npc.Value.index);
                 List<uint> items = new List<uint>();
@@ -499,26 +498,117 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 if (InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
                 {
                     Log("Have items to turn in");
+                    await HandInCustomNpc(npc.Key, (npc.Value.Zone, npc.Value.location));
                 }
             }
 
-            
+
             TreeRoot.Stop("Stop Requested");
             return true;
-            
-            
-            
         }
-        
-        
 
-        
+        private async Task<bool> HandInCustomNpc(uint npcID, (uint Zone, Vector3 location) npcLocation)
+        {
+            var npcId = GameObjectManager.GetObjectByNPCId(npcID);
+
+            if (!npcId.IsWithinInteractRange)
+            {
+                await Navigation.GetTo(npcLocation.Zone, npcLocation.location);
+                npcId = GameObjectManager.GetObjectByNPCId(npcID);
+            }
+
+            if (npcId == default(GameObject)) return false;
+
+            npcId.Interact();
+
+            await Coroutine.Wait(10000, () => Talk.DialogOpen);
+
+            if (!Talk.DialogOpen)
+            {
+                npcId.Interact();
+
+                await Coroutine.Wait(10000, () => Talk.DialogOpen);
+            }
+
+            while (Talk.DialogOpen)
+            {
+                Talk.Next();
+                await Coroutine.Wait(1000, () => !Talk.DialogOpen);
+                await Coroutine.Wait(500, () => Talk.DialogOpen);
+                await Buddy.Coroutines.Coroutine.Sleep(200);
+                await Coroutine.Yield();
+            }
+
+            await Coroutine.Wait(10000, () => Conversation.IsOpen);
+            await Buddy.Coroutines.Coroutine.Sleep(500);
+
+            Logging.WriteDiagnostic("Choosing 'Make a delivery.'");
+            Conversation.SelectLine(0);
+            await Buddy.Coroutines.Coroutine.Wait(1000, () => Talk.DialogOpen);
+
+            if (Talk.DialogOpen)
+                while (Talk.DialogOpen)
+                {
+                    Talk.Next();
+                    await Coroutine.Wait(1000, () => !Talk.DialogOpen);
+                    await Coroutine.Wait(500, () => Talk.DialogOpen);
+                    await Buddy.Coroutines.Coroutine.Sleep(200);
+                    await Coroutine.Yield();
+                }
+
+            await Coroutine.Wait(10000, () => SatisfactionSupply.Instance.IsOpen);
+
+            if (SatisfactionSupply.Instance.IsOpen)
+            {
+                do
+                {
+                    Logging.WriteDiagnostic("Turning in items");
+
+                    if (AgentSatisfactionSupply.Instance.DeliveriesRemaining < 1) break;
+
+                    if (AgentSatisfactionSupply.Instance.HasDoHTurnin)
+                        SatisfactionSupply.Instance.ClickItem(0);
+                    else if (AgentSatisfactionSupply.Instance.HasDoLTurnin)
+                        SatisfactionSupply.Instance.ClickItem(1);
+                    else if (AgentSatisfactionSupply.Instance.HasFshTurnin)
+                        SatisfactionSupply.Instance.ClickItem(2);
+
+                    await Coroutine.Wait(10000, () => Request.IsOpen);
+
+                    Logging.WriteDiagnostic("Selecting items.");
+                    await CommonTasks.HandOverRequestedItems();
+
+                    await Coroutine.Wait(10000, () => Talk.DialogOpen);
+                    while (Talk.DialogOpen)
+                    {
+                        Talk.Next();
+                        await Coroutine.Wait(1000, () => !Talk.DialogOpen);
+                        await Coroutine.Wait(500, () => Talk.DialogOpen);
+                        await Buddy.Coroutines.Coroutine.Sleep(200);
+                        await Coroutine.Yield();
+                    }
+
+                    await Coroutine.Wait(10000, () => SatisfactionSupply.Instance.IsOpen);
+                    if (!SatisfactionSupply.Instance.IsOpen) break;
+                }
+                while (AgentSatisfactionSupply.Instance.DeliveriesRemaining > 1 && AgentSatisfactionSupply.Instance.HasAnyTurnin);
+            }
+
+            if (SatisfactionSupply.Instance.IsOpen)
+            {
+                SatisfactionSupply.Instance.Close();
+                await Coroutine.Wait(10000, () => !SatisfactionSupply.Instance.IsOpen);
+            }
+            return true;
+        }
+
+
         public static async Task<bool> GoGarden(uint AE)
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
-    
+
             Log($"Teleporting to housing: (ZID: {house.ZoneId}, AID: {house.AetheryteId}) {house.Name}");
             await CommonTasks.Teleport(house.AetheryteId);
 
@@ -534,14 +624,15 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 await Navigation.FlightorMove(gardenPlot.Location);
                 //await GardenHelper.Main(); 
             }
+
             return true;
         }
-        
+
         public static async Task HandInExpert()
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-            
+
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
                 await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
@@ -549,7 +640,6 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 if (!SelectString.IsOpen)
                 {
                     Log("Window is not open...maybe it didn't get to npc?");
-                    
                 }
 
                 SelectString.ClickSlot(0);
@@ -557,7 +647,6 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 if (!GrandCompanySupplyList.Instance.IsOpen)
                 {
                     Log("Window is not open...maybe it didn't get to npc?");
-                    
                 }
             }
 
@@ -566,7 +655,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 await GrandCompanySupplyList.Instance.SwitchToExpertDelivery();
                 await Coroutine.Sleep(3000);
                 //await HandleCurrentGCWindow();
-                
+
                 /*
                 var bools = GrandCompanySupplyList.Instance.GetTurninBools();
                 var windowItemIds = GrandCompanySupplyList.Instance.GetTurninItemsIds();
@@ -603,19 +692,19 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                         SelectString.ClickSlot((uint) (SelectString.LineCount - 1));
                     }
                 }
-                
+
                 if (Core.Me.GCSeals() > 200)
                 {
                     await GrandCompanyShop.BuyKnownItem(21072, (int) (Core.Me.GCSeals() / 200));
                 }
             }
         }
-        
+
         public static async Task UpdateWebPage()
         {
             string path = @"U:\www\template.php";
             string path1 = @"U:\www\index.html";
-            
+
             // Open the file to read from.
             string readText = File.ReadAllText(path);
             //Console.WriteLine(readText);
@@ -623,7 +712,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
             int tomes = (int) InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).First(i => i.RawItemId == 40).Count;
             var zone = WorldManager.CurrentZoneName;
             readText = readText.Replace("{Gil}", $"{gil:N0}");
-            readText = readText.Replace("{Character_Name}",  Core.Player.Name);
+            readText = readText.Replace("{Character_Name}", Core.Player.Name);
             readText = readText.Replace("{class}", Core.Player.CurrentJob.ToString());
             readText = readText.Replace("{Zone}", zone);
             readText = readText.Replace("{Tomes}", tomes.ToString("N0"));
@@ -632,7 +721,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 <td style=""width: 40.7417%; text-align: center;""><span style=""font-size: 24px;"">item</span></td>
                 <td style=""width: 41.525%;""><span style=""font-size: 24px;"">time</span></td>
                 </tr>";
-            
+
             string ventureTr1 = @"				<tr>
 				<td>Ret</td>
                 <td>item</td>
@@ -656,19 +745,19 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                     }
                     else
                     {
-                        Log( $"{ret.Name}\n");
+                        Log($"{ret.Name}\n");
                     }
                 }
                 else
                 {
-                    Log( $"{ret.Name} - {ventureName} - {(ret.VentureEndTimestamp - UnixTimestamp)/60} minutes\n");
-                    retainerTable += ventureTr.Replace("Ret", ret.Name).Replace("item", ventureName).Replace("time", $"{(ret.VentureEndTimestamp - UnixTimestamp)/60} minutes") + "\n";
+                    Log($"{ret.Name} - {ventureName} - {(ret.VentureEndTimestamp - UnixTimestamp) / 60} minutes\n");
+                    retainerTable += ventureTr.Replace("Ret", ret.Name).Replace("item", ventureName).Replace("time", $"{(ret.VentureEndTimestamp - UnixTimestamp) / 60} minutes") + "\n";
                 }
             }
+
             readText = readText.Replace("{Retainers}", retainerTable);
             //ActorController.Player
             File.WriteAllText(path1, readText);
-
         }
 
         private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
@@ -879,7 +968,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
         private async Task BuyHouse()
         {
             Random _rnd = new Random();
-            
+
             var placard = GameObjectManager.GetObjectsByNPCId(2002736).OrderBy(i => i.Distance()).FirstOrDefault();
             if (placard != null)
             {
@@ -1337,7 +1426,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
         public async Task<bool> testExtract()
         {
             // var item = InventoryManager.FilledInventoryAndArmory.Where(i => i.Item.EngName.Contains("Voeburtite Ring of Slaying")).FirstOrDefault();
-            
+
 
             //  if (item != null)
             //      item.ExtractMateria();
@@ -1481,16 +1570,16 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
 
         public static void OldRun()
         {
-                     /*await testKupoTickets();
+            /*await testKupoTickets();
 
-            
-            foreach (var item in InventoryManager.FilledSlots.Where(i=> i.EnglishName.ToLowerInvariant().Contains("magicked prism")))
-            {
-                Log($"Discarding {item.Name}");
-                item.Discard();
-                await Coroutine.Sleep(2000);
-            }*/
-            
+   
+   foreach (var item in InventoryManager.FilledSlots.Where(i=> i.EnglishName.ToLowerInvariant().Contains("magicked prism")))
+   {
+       Log($"Discarding {item.Name}");
+       item.Discard();
+       await Coroutine.Sleep(2000);
+   }*/
+
 
             //await Helpers.Lisbeth.SelfRepair();
             //await Helpers.Lisbeth.SelfRepairWithMenderFallback();
@@ -1544,7 +1633,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
 
             Lua.DoString("return _G['EventHandler'].NpcRepair();");*/
 
-            
+
             /*
             InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
             {
@@ -1843,9 +1932,9 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
             await Lisbeth.ExecuteOrders((new StreamReader("HookTest.json")).ReadToEnd());
             Lisbeth.RemoveHook("Llama");
 */
-           // var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
-           
-            
+            // var newHunts = JsonConvert.DeserializeObject<SortedDictionary<int, StoredHuntLocationLisbeth>>((new StreamReader("hunts.json")).ReadToEnd());
+
+
             /*
             var failed = new Dictionary<int, StoredHuntLocation>();
             
@@ -1875,8 +1964,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
                 outputFile.Write(JsonConvert.SerializeObject(failed));
             }
             */
-            
-    
+
 
             //Log($"{Application.ProductVersion} - {Assembly.GetEntryAssembly().GetName().Version.Revision} - {Assembly.GetEntryAssembly().GetName().Version.MinorRevision} - {Assembly.GetEntryAssembly().GetName().Version.Build}");
 
@@ -1941,7 +2029,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
             }*/
             //DumpOffsets();
             //await BuyHouse();
-           // await testKupoTickets();
+            // await testKupoTickets();
 
             /*var newHunts = HuntHelper.DailyHunts;
             var failed = new Dictionary<int, StoredHuntLocation>();
@@ -2038,7 +2126,7 @@ foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
             {
                 Log($"{minion.MinionId} - {AgentMinionNoteBook.GetMinionName(minion.MinionId)}");
             }
-            */ 
+            */
         }
 
         [StructLayout(LayoutKind.Explicit, Size = 0xB0)]
