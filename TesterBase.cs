@@ -470,6 +470,8 @@ namespace LlamaLibrary
 
         private async Task<bool> Run()
         {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
             var DeliveryNpcs = new Dictionary<uint, (uint Zone, Vector3 location, string name, int requiredQuest, uint index)>
             {
                 {1019615, (478, new Vector3(-71.763245f, 206.500214f, 32.638916f), "Zhloe Aliapoh", 67087, 1)}, //(Zhloe Aliapoh) Idyllshire(Dravania) 
@@ -509,23 +511,23 @@ namespace LlamaLibrary
 
         private async Task<bool> HandInCustomNpc(uint npcID, (uint Zone, Vector3 location) npcLocation)
         {
-            var npcId = GameObjectManager.GetObjectByNPCId(npcID);
+            var npc = GameObjectManager.GetObjectByNPCId(npcID);
 
-            if (!npcId.IsWithinInteractRange)
+            if (npc == default(GameObject) || !npc.IsWithinInteractRange)
             {
                 await Navigation.GetTo(npcLocation.Zone, npcLocation.location);
-                npcId = GameObjectManager.GetObjectByNPCId(npcID);
+                npc = GameObjectManager.GetObjectByNPCId(npcID);
             }
 
-            if (npcId == default(GameObject)) return false;
+            if (npc == default(GameObject)) return false;
 
-            npcId.Interact();
+            npc.Interact();
 
             await Coroutine.Wait(10000, () => Talk.DialogOpen);
 
             if (!Talk.DialogOpen)
             {
-                npcId.Interact();
+                npc.Interact();
 
                 await Coroutine.Wait(10000, () => Talk.DialogOpen);
             }
