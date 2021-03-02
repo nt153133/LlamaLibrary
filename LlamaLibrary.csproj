@@ -37,7 +37,7 @@
       <HintPath>Ext\GreyMagic.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="RebornBuddy, Version=1.0.409.0, Culture=neutral, PublicKeyToken=48d7174f8a943034">
+    <Reference Include="RebornBuddy">
       <HintPath>..\..\rebornbuddy.exe</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -226,6 +226,7 @@
     <Compile Include="RemoteWindows\SalvageAutoDialog.cs" />
     <Compile Include="RemoteWindows\RetainerTaskList.cs" />
     <Compile Include="RemoteWindows\SatisfactionSupply.cs" />
+    <Compile Include="RemoteWindows\SatisfactionSupplyResult.cs" />
     <Compile Include="RemoteWindows\ShopExchangeItem.cs" />
     <Compile Include="RemoteWindows\SubmarinePartsMenu.cs" />
     <Compile Include="Repair.cs" />
