@@ -607,7 +607,14 @@ namespace LlamaLibrary
 
                     Logging.WriteDiagnostic("Selecting items.");
                     await CommonTasks.HandOverRequestedItems();
-                    
+                    await Buddy.Coroutines.Coroutine.Sleep(500);
+
+                    if (SelectYesno.IsOpen)
+                    {
+                        SelectYesno.Yes();
+                        await Coroutine.Wait(5000, () => !SelectYesno.IsOpen);
+                        
+                    }
                     while (!SatisfactionSupply.Instance.IsOpen && !QuestLogManager.InCutscene)
                     {
                         if (Talk.DialogOpen)
