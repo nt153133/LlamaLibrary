@@ -519,6 +519,7 @@ namespace LlamaLibrary
 
                 if (order != "")
                 {
+                    await GeneralFunctions.StopBusy();
                     Log($"Calling Lisbeth with {order}");
                     await Lisbeth.ExecuteOrdersIgnoreHome(order);
                 }
@@ -642,7 +643,7 @@ namespace LlamaLibrary
                             SatisfactionSupplyResult.Instance.Confirm();
                         }
 
-                        await Coroutine.Wait(3000, () => Talk.DialogOpen);
+                        await Coroutine.Wait(5000, () => Talk.DialogOpen);
                         while (Talk.DialogOpen)
                         {
                             Talk.Next();
@@ -652,7 +653,7 @@ namespace LlamaLibrary
                             await Coroutine.Yield();
                         } 
                         await Buddy.Coroutines.Coroutine.Sleep(500);
-                        await Coroutine.Wait(3000, () => Talk.DialogOpen);
+                        await Coroutine.Wait(5000, () => Talk.DialogOpen);
                         while (Talk.DialogOpen)
                         {
                             Talk.Next();
@@ -662,7 +663,7 @@ namespace LlamaLibrary
                             await Coroutine.Yield();
                         }
                         await Buddy.Coroutines.Coroutine.Sleep(500);
-                        await Coroutine.Wait(3000, () => Talk.DialogOpen);
+                        await Coroutine.Wait(5000, () => Talk.DialogOpen);
                         while (Talk.DialogOpen)
                         {
                             Talk.Next();
