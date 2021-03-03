@@ -11,7 +11,7 @@
 
         public void Confirm()
         {
-            SendAction(1,3,0);
+            SendAction(1,3,1);
         }
     }
 }

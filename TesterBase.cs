@@ -474,10 +474,10 @@ namespace LlamaLibrary
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             var DeliveryNpcs = new Dictionary<uint, (uint Zone, Vector3 location, string name, int requiredQuest, uint index)>
             {
-                {1019615, (478, new Vector3(-71.763245f, 206.500214f, 32.638916f), "Zhloe Aliapoh", 67087, 1)}, //(Zhloe Aliapoh) Idyllshire(Dravania) 
+                {1019615, (478, new Vector3(-71.68203f, 206.5714f, 29.38501f), "Zhloe Aliapoh", 67087, 1)}, //(Zhloe Aliapoh) Idyllshire(Dravania) 
                 {1020337, (635, new Vector3(171.312988f, 13.02367f, -89.951965f), "M'naago", 68541, 2)}, //(M'naago) Rhalgr's Reach(Gyr Abania) 
                 {1025878, (613, new Vector3(343.984009f, -120.329468f, -306.019714f), "Kurenai", 68675, 3)}, //(Kurenai) The Ruby Sea(Othard) 
-                {1018393, (478, new Vector3(-60.380005f, 206.500214f, 26.169189f), "Adkiragh", 68713, 4)}, //(Adkiragh) Idyllshire(Dravania) 
+                {1018393, (478, new Vector3(-62.3016f, 206.6002f, 23.893f), "Adkiragh", 68713, 4)}, //(Adkiragh) Idyllshire(Dravania) 
                 {1031801, (820, new Vector3(52.811401f, 82.993774f, -65.384949f), "Kai-Shirr", 69265, 5)}, //(Kai-Shirr) Eulmore(Eulmore) 
                 {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou", 69425, 6)} //(Ehll Tou) The Firmament(Ishgard) 
             };
@@ -504,12 +504,11 @@ namespace LlamaLibrary
                 }
             }
 
-
             TreeRoot.Stop("Stop Requested");
             return true;
         }
 
-        private async Task<bool> HandInCustomNpc(uint npcID, (uint Zone, Vector3 location) npcLocation)
+       private async Task<bool> HandInCustomNpc(uint npcID, (uint Zone, Vector3 location) npcLocation)
         {
             var npc = GameObjectManager.GetObjectByNPCId(npcID);
 
@@ -535,8 +534,6 @@ namespace LlamaLibrary
             while (Talk.DialogOpen)
             {
                 Talk.Next();
-                await Coroutine.Wait(1000, () => !Talk.DialogOpen);
-                await Coroutine.Wait(500, () => Talk.DialogOpen);
                 await Buddy.Coroutines.Coroutine.Sleep(200);
                 await Coroutine.Yield();
             }
@@ -552,8 +549,6 @@ namespace LlamaLibrary
                 while (Talk.DialogOpen)
                 {
                     Talk.Next();
-                    await Coroutine.Wait(1000, () => !Talk.DialogOpen);
-                    await Coroutine.Wait(500, () => Talk.DialogOpen);
                     await Buddy.Coroutines.Coroutine.Sleep(200);
                     await Coroutine.Yield();
                 }
@@ -579,21 +574,78 @@ namespace LlamaLibrary
 
                     Logging.WriteDiagnostic("Selecting items.");
                     await CommonTasks.HandOverRequestedItems();
-
-                    await Coroutine.Wait(10000, () => Talk.DialogOpen);
-                    while (Talk.DialogOpen)
+                    
+                    while (!SatisfactionSupply.Instance.IsOpen && !QuestLogManager.InCutscene)
                     {
-                        Talk.Next();
-                        await Coroutine.Wait(1000, () => !Talk.DialogOpen);
-                        await Coroutine.Wait(500, () => Talk.DialogOpen);
-                        await Buddy.Coroutines.Coroutine.Sleep(200);
-                        await Coroutine.Yield();
+                        if (Talk.DialogOpen)
+                        {
+                            Talk.Next();
+                            await Buddy.Coroutines.Coroutine.Sleep(200);
+                        }
+                        await Buddy.Coroutines.Coroutine.Sleep(500);
                     }
 
+                    if (QuestLogManager.InCutscene)
+                    {
+                        while (!SatisfactionSupplyResult.Instance.IsOpen)
+                        {
+                            Logging.WriteDiagnostic("Dealing with cutscene.");
+                            if (QuestLogManager.InCutscene && AgentCutScene.Instance.CanSkip)
+                            {
+                                AgentCutScene.Instance.PromptSkip();
+                                await Coroutine.Wait(5000, () => SelectString.IsOpen);
+                                if (SelectString.IsOpen) SelectString.ClickSlot(0);
+                            }
+                            if (Talk.DialogOpen)
+                            {
+                                Talk.Next();
+                                await Buddy.Coroutines.Coroutine.Sleep(200);
+                            }
+                            await Buddy.Coroutines.Coroutine.Sleep(500);
+                        }
+                        
+                        await Coroutine.Wait(10000, () => SatisfactionSupplyResult.Instance.IsOpen);
+                        await Buddy.Coroutines.Coroutine.Sleep(500);
+                        Logging.WriteDiagnostic("Clicking Accept.");
+                        SatisfactionSupplyResult.Instance.Confirm();
+                        
+                        await Coroutine.Wait(10000, () => Talk.DialogOpen);
+                        while (Talk.DialogOpen)
+                        {
+                            Talk.Next();
+                            await Coroutine.Wait(200, () => !Talk.DialogOpen);
+                            await Coroutine.Wait(500, () => Talk.DialogOpen);
+                            await Buddy.Coroutines.Coroutine.Sleep(200);
+                            await Coroutine.Yield();
+                        } 
+                        await Buddy.Coroutines.Coroutine.Sleep(500);
+                        await Coroutine.Wait(10000, () => Talk.DialogOpen);
+                        while (Talk.DialogOpen)
+                        {
+                            Talk.Next();
+                            await Coroutine.Wait(200, () => !Talk.DialogOpen);
+                            await Coroutine.Wait(500, () => Talk.DialogOpen);
+                            await Buddy.Coroutines.Coroutine.Sleep(200);
+                            await Coroutine.Yield();
+                        }
+                        await Buddy.Coroutines.Coroutine.Sleep(500);
+                        await Coroutine.Wait(10000, () => Talk.DialogOpen);
+                        while (Talk.DialogOpen)
+                        {
+                            Talk.Next();
+                            await Coroutine.Wait(200, () => !Talk.DialogOpen);
+                            await Coroutine.Wait(500, () => Talk.DialogOpen);
+                            await Buddy.Coroutines.Coroutine.Sleep(200);
+                            await Coroutine.Yield();
+                        }
+
+                        break;
+                    }
+                    
                     await Coroutine.Wait(10000, () => SatisfactionSupply.Instance.IsOpen);
                     if (!SatisfactionSupply.Instance.IsOpen) break;
                 }
-                while (AgentSatisfactionSupply.Instance.DeliveriesRemaining > 1 && AgentSatisfactionSupply.Instance.HasAnyTurnin);
+                while (AgentSatisfactionSupply.Instance.DeliveriesRemaining > 0 && AgentSatisfactionSupply.Instance.HasAnyTurnin);
             }
 
             if (SatisfactionSupply.Instance.IsOpen)
