@@ -482,7 +482,7 @@ namespace LlamaLibrary
                 {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou", 69425, 6)} //(Ehll Tou) The Firmament(Ishgard) 
             };
 
-            foreach (var npc in DeliveryNpcs.Where(i => ConditionParser.IsQuestCompleted(i.Value.requiredQuest)))
+            foreach (var npc in DeliveryNpcs.Where(i => ConditionParser.IsQuestCompleted(i.Value.requiredQuest)).OrderByDescending(i=> i.Value.index))
             {
                 await AgentSatisfactionSupply.Instance.LoadWindow(npc.Value.index);
                 List<uint> items = new List<uint>();
@@ -497,7 +497,8 @@ namespace LlamaLibrary
                 Log($"\tFsh: {DataManager.GetItem(AgentSatisfactionSupply.Instance.FshItemId)}");
                 items.Add(AgentSatisfactionSupply.Instance.FshItemId);
 
-                if (InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
+                
+                if (InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)) && AgentSatisfactionSupply.Instance.DeliveriesRemaining > 0)
                 {
                     Log("Have items to turn in");
                     await HandInCustomNpc(npc.Key, (npc.Value.Zone, npc.Value.location));
