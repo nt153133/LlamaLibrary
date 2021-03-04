@@ -58,7 +58,7 @@ namespace LlamaLibrary.Helpers
         public static HousingPlantSelectedItemStruct SoilStruct => Core.Memory.Read<HousingPlantSelectedItemStruct>(AgentHousingPlant.Instance.Pointer + Offsets.StructOffset );
         public static HousingPlantSelectedItemStruct SeedStruct => Core.Memory.Read<HousingPlantSelectedItemStruct>(AgentHousingPlant.Instance.Pointer + Offsets.StructOffset  + GreyMagic.MarshalCache<HousingPlantSelectedItemStruct>.Size);
 
-        
+        /*
         public static async Task GoGarden(uint AE, Vector3 gardenLoc)
         {
             Navigator.PlayerMover = new SlideMover();
@@ -79,8 +79,9 @@ namespace LlamaLibrary.Helpers
                 await GardenHelper.Main(gardenLoc); 
             }
         }
+				*/
         
-        public static async Task GoGarden(uint AE, Vector3 gardenLoc, Dictionary<uint, uint> plantPlan)
+				public static async Task GoGarden(uint AE, Vector3 gardenLoc, List<Tuple<uint, uint>> plantPlan)
         {
             if (gardenLoc != default(Vector3))
             {
@@ -89,6 +90,7 @@ namespace LlamaLibrary.Helpers
                 var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
 
                 Log($"Teleporting to housing: {house.Name} (Zone: {DataManager.ZoneNameResults[house.ZoneId]}, Aetheryte: {house.AetheryteId})");
+								await GeneralFunctions.StopBusy(dismount: false);
                 await CommonTasks.Teleport(house.AetheryteId);
 
                 Log("Waiting for zone to change.");
