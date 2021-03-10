@@ -56,7 +56,13 @@
     <Compile Include="AutoFollow\AutoFollowSettingsFrm.Designer.cs">
       <DependentUpon>AutoFollowSettingsFrm.cs</DependentUpon>
     </Compile>
-    <Compile Include="AutoTradeAccept.cs" />
+    <Compile Include="AutoTrade\AutoTrade.cs" />
+    <Compile Include="AutoTrade\AutoTradeSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoTrade\AutoTradeSettings.Designer.cs">
+      <DependentUpon>AutoTradeSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Class1.cs" />
     <Compile Include="Enums\ClassJobCategory.cs" />
     <Compile Include="Enums\GCNpc.cs" />
