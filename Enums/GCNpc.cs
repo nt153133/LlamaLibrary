@@ -14,5 +14,6 @@
         Entrance_to_the_Barracks,
         Commander,
         Hunt_Billmaster,
+        Squadron_Sergeant,
     }
 }
