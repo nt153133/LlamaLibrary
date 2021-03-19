@@ -53,7 +53,7 @@ namespace LlamaLibrary.OrderbotTags
             
             //Inside Barracks
 
-            await Navigation.OffMeshMoveInteract(GameObjectManager.GetObjectByNPCId(GrandCompanyHelper.GetNpcByType(GCNpc.Squadron_Sergeant)));
+            //await Navigation.OffMeshMoveInteract(GameObjectManager.GetObjectByNPCId(GrandCompanyHelper.GetNpcByType(GCNpc.Squadron_Sergeant)));
                 
             GameObjectManager.GetObjectByNPCId(GrandCompanyHelper.GetNpcByType(GCNpc.Squadron_Sergeant)).Interact();
             
