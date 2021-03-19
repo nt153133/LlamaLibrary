@@ -33,6 +33,7 @@ namespace LlamaLibrary.Helpers
             {GCNpc.Hunt_Board, 2004438},
             {GCNpc.Entrance_to_the_Barracks, 2007527},
             {GCNpc.Commander, 1003281},
+            {GCNpc.Squadron_Sergeant, 1016986},
             {GCNpc.Hunt_Billmaster, 1009552}
         };
 
@@ -49,6 +50,7 @@ namespace LlamaLibrary.Helpers
             {GCNpc.Commander, 1004576},
             {GCNpc.Entrance_to_the_Barracks, 2007529},
             {GCNpc.Hunt_Board, 2004440},
+            {GCNpc.Squadron_Sergeant, 1016987},
             {GCNpc.Hunt_Billmaster, 1001379}
         };
 
@@ -65,6 +67,7 @@ namespace LlamaLibrary.Helpers
             {GCNpc.Company_Chest, 2000470},
             {GCNpc.Hunt_Board, 2004439},
             {GCNpc.OIC_Officer_of_Arms, 1004401},
+            {GCNpc.Squadron_Sergeant, 1016924},
             {GCNpc.Entrance_to_the_Barracks, 2006962}
         };
 
