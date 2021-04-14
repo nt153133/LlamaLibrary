@@ -1,4 +1,5 @@
-﻿﻿/*
+﻿//!CompilerOption:optimize
+/*
 DeepDungeon is licensed under a
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 
@@ -211,12 +212,12 @@ using LlamaLibrary.RemoteAgents;
                 if (field.DeclaringType != null && field.DeclaringType.IsNested && field.FieldType != typeof(int))
                 {
                     sb.AppendLine($"{field.DeclaringType.DeclaringType.Name}_{field.Name}, {offset.Pattern}");
-                    //patterns.Add($"{field.DeclaringType.DeclaringType.Name}_{field.Name}", offset.Pattern);
+                    patterns.Add($"{field.DeclaringType.DeclaringType.Name}_{field.Name}", offset.Pattern);
                 }
                 else if (field.FieldType != typeof(int))
                 {
                     sb.AppendLine($"{field.Name}, {offset.Pattern}");
-                    //patterns.Add($"{field.Name}", offset.Pattern);
+                    patterns.Add($"{field.Name}", offset.Pattern);
                 }
 
             if (valna != null)

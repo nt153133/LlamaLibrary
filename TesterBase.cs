@@ -394,6 +394,8 @@ namespace LlamaLibrary
 
         public static async Task TurninSkySteelCrafting()
         {
+            
+            
             Dictionary<uint, CraftingRelicTurnin> TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
             {
                 {31101, new CraftingRelicTurnin(31101, 0, 1, 2000, 30315)},
@@ -480,7 +482,8 @@ namespace LlamaLibrary
                 {1025878, (613, new Vector3(343.984009f, -120.329468f, -306.019714f), "Kurenai", 68675, 3)}, //(Kurenai) The Ruby Sea(Othard) 
                 {1018393, (478, new Vector3(-62.3016f, 206.6002f, 23.893f), "Adkiragh", 68713, 4)}, //(Adkiragh) Idyllshire(Dravania) 
                 {1031801, (820, new Vector3(52.811401f, 82.993774f, -65.384949f), "Kai-Shirr", 69265, 5)}, //(Kai-Shirr) Eulmore(Eulmore) 
-                {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou", 69425, 6)} //(Ehll Tou) The Firmament(Ishgard) 
+                {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou", 69425, 6)}, //(Ehll Tou) The Firmament(Ishgard) 
+                {1035211, (886, new Vector3(-115.1127f, 0f, -134.8367f), "Charlemend", 69615, 7)}
             };
 
             foreach (var npc in DeliveryNpcs.Where(i => ConditionParser.IsQuestCompleted(i.Value.requiredQuest)).OrderByDescending(i=> i.Value.index))
@@ -517,7 +520,7 @@ namespace LlamaLibrary
 
                 var order = JsonConvert.SerializeObject(outList, Formatting.None).Replace("Hq","Collectable");
 
-                if (order != "")
+                if (order != "" && !InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
                 {
                     await GeneralFunctions.StopBusy();
                     Log($"Calling Lisbeth with {order}");
@@ -733,7 +736,7 @@ namespace LlamaLibrary
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-
+            
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
                 await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
@@ -756,6 +759,12 @@ namespace LlamaLibrary
                 await GrandCompanySupplyList.Instance.SwitchToExpertDelivery();
                 await Coroutine.Sleep(3000);
                 //await HandleCurrentGCWindow();
+                AtkAddonControl windowByName = RaptureAtkUnitManager.GetWindowByName("Talk");
+                if (windowByName != null)
+                {
+                    var test = windowByName.TryFindAgentInterface();
+                    //Log(test);
+                }
 
                 /*
                 var bools = GrandCompanySupplyList.Instance.GetTurninBools();
@@ -1109,6 +1118,8 @@ namespace LlamaLibrary
                 HousingSignBoard.Instance.Close();
                 await Coroutine.Wait(3000, () => !HousingSignBoard.Instance.IsOpen);
                 Lua.DoString("return _G['EventHandler']:Shutdown();");
+                
+                
             }
         }
 

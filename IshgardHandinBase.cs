@@ -27,7 +27,7 @@ namespace LlamaLibrary
         public override PulseFlags PulseFlags => PulseFlags.All;
         public override bool IsAutonomous => true;
         public override bool RequiresProfile => false;
-        public static bool DiscardCollectable = false;
+        public static bool DiscardCollectable = true;
         public override Composite Root => _root;
 
         public override bool WantButton { get; } = false;
