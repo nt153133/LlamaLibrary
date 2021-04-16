@@ -87,7 +87,7 @@ namespace ff14bot.NeoProfiles.Tags
 
         public override string StatusText => "Talking to " + _questGiver;
 
-        public GameObject NPC => GameObjectManager.GetObjectByNPCId((uint) NpcId);
+        public GameObject NPC => GameObjectManager.GameObjects.FirstOrDefault(i=> i.NpcId == (uint) NpcId && i.IsVisible && i.IsTargetable);
 
         protected override void OnStart()
         {

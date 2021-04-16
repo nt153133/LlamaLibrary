@@ -65,5 +65,10 @@ namespace LlamaLibrary.ScriptConditions
 
         }
 		
+        public static bool IsTargetableNPC(int npcID)
+        {
+            return GameObjectManager.GameObjects.Any(i => i.NpcId == (uint) npcID && i.IsVisible && i.IsTargetable);
+        }		
+		
     }
 }
