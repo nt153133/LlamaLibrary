@@ -544,6 +544,116 @@ namespace LlamaLibrary
             return true;
         }
 
+        public static async Task TurninResplendentCrafting()
+        {
+            
+            
+            Dictionary<uint, CraftingRelicTurnin> TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
+            {
+                {33162, new CraftingRelicTurnin(33162, 0, 2, 6300, 33194)},
+                {33163, new CraftingRelicTurnin(33163, 1, 2, 6300, 33195)},
+                {33164, new CraftingRelicTurnin(33164, 2, 2, 6300, 33196)},
+                {33165, new CraftingRelicTurnin(33165, 3, 2, 6300, 33197)},
+                {33166, new CraftingRelicTurnin(33166, 4, 2, 6300, 33198)},
+                {33167, new CraftingRelicTurnin(33167, 5, 2, 6300, 33199)},
+                {33168, new CraftingRelicTurnin(33168, 6, 2, 6300, 33200)},
+                {33169, new CraftingRelicTurnin(33169, 7, 2, 6300, 33201)},
+				
+                {33170, new CraftingRelicTurnin(33170, 0, 1, 6500, 33202)},
+                {33171, new CraftingRelicTurnin(33171, 1, 1, 6500, 33203)},
+                {33172, new CraftingRelicTurnin(33172, 2, 1, 6500, 33204)},
+                {33173, new CraftingRelicTurnin(33173, 3, 1, 6500, 33205)},
+                {33174, new CraftingRelicTurnin(33174, 4, 1, 6500, 33206)},
+                {33175, new CraftingRelicTurnin(33175, 5, 1, 6500, 33207)},
+                {33176, new CraftingRelicTurnin(33176, 6, 1, 6500, 33208)},
+                {33177, new CraftingRelicTurnin(33177, 7, 1, 6500, 33209)},
+				
+                {33178, new CraftingRelicTurnin(33178, 0, 0, 7000, 33210)},
+                {33179, new CraftingRelicTurnin(33178, 1, 0, 7000, 33211)},
+                {33180, new CraftingRelicTurnin(33180, 2, 0, 7000, 33212)},
+                {33181, new CraftingRelicTurnin(33181, 3, 0, 7000, 33213)},
+                {33182, new CraftingRelicTurnin(33182, 4, 0, 7000, 33214)},
+                {33183, new CraftingRelicTurnin(33183, 5, 0, 7000, 33215)},
+                {33184, new CraftingRelicTurnin(33184, 6, 0, 7000, 33216)},
+                {33185, new CraftingRelicTurnin(33185, 7, 0, 7000, 33217)}
+            };
+
+            var collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x => x.RawItemId).Distinct();
+            var collectablesAll = InventoryManager.FilledSlots.Where(i => i.IsCollectable);
+
+            if (collectables.Any(i => TurnItemList.Keys.Contains(i)))
+            {
+                Log("Have collectables");
+                foreach (var collectable in collectablesAll)
+                {
+                    if (TurnItemList.Keys.Contains(collectable.RawItemId))
+                    {
+                        var turnin = TurnItemList[collectable.RawItemId];
+                        if (collectable.Collectability < turnin.MinCollectability)
+                        {
+                            Log($"Discarding {collectable.Name} is at {collectable.Collectability} which is under {turnin.MinCollectability}");
+                            collectable.Discard();
+                        }
+                    }
+                }
+
+                collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x => x.RawItemId).Distinct();
+
+                var npc = GameObjectManager.GetObjectByNPCId(1027566);
+				if (npc == null)
+				{
+					await Navigation.GetTo(820, new Vector3(21.06303f, 82.05f, -14.24131f));
+					npc = GameObjectManager.GetObjectByNPCId(1027566);
+				}
+
+				if (npc != null && !npc.IsWithinInteractRange)
+				{
+					await Navigation.GetTo(820, new Vector3(21.06303f, 82.05f, -14.24131f));
+				}
+
+				if (npc != null && npc.IsWithinInteractRange)
+				{
+					npc.Interact();
+					await Coroutine.Wait(10000, () => Conversation.IsOpen);
+					if (Conversation.IsOpen)
+					{
+						Conversation.SelectLine((uint) 0);
+					}
+				}
+                await Coroutine.Wait(10000, () => CollectablesShop.Instance.IsOpen);
+
+
+                if (CollectablesShop.Instance.IsOpen)
+                {
+                    // Log("Window open");
+                    foreach (var item in collectables)
+                    {
+                        Log($"Turning in {DataManager.GetItem(item).CurrentLocaleName}");
+                        var turnin = TurnItemList[item];
+
+                        // Log($"Pressing job {turnin.Job}");
+                        CollectablesShop.Instance.SelectJob(turnin.Job);
+                        await Coroutine.Sleep(500);
+                        //  Log($"Pressing position {turnin.Position}");
+                        CollectablesShop.Instance.SelectItem(turnin.Position);
+                        await Coroutine.Sleep(1000);
+                        int i = 0;
+                        while (CollectablesShop.Instance.TurninCount > 0)
+                        {
+                            // Log($"Pressing trade {i}");
+                            i++;
+                            CollectablesShop.Instance.Trade();
+                            await Coroutine.Sleep(100);
+                        }
+                    }
+
+                    CollectablesShop.Instance.Close();
+                    await Coroutine.Wait(10000, () => !CollectablesShop.Instance.IsOpen);
+                }
+            }
+        }
+        
+        
        private async Task<bool> HandInCustomNpc(uint npcID, (uint Zone, Vector3 location) npcLocation)
         {
             var npc = GameObjectManager.GetObjectByNPCId(npcID);
