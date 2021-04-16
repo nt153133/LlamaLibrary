@@ -719,7 +719,7 @@ namespace LlamaLibrary.Helpers
                 { 33177, new CraftingRelicTurnin(33177, 7, 1, 6500, 33209) },
 
                 { 33178, new CraftingRelicTurnin(33178, 0, 0, 7000, 33210) },
-                { 33179, new CraftingRelicTurnin(33178, 1, 0, 7000, 33211) },
+                { 33179, new CraftingRelicTurnin(33179, 1, 0, 7000, 33211) },
                 { 33180, new CraftingRelicTurnin(33180, 2, 0, 7000, 33212) },
                 { 33181, new CraftingRelicTurnin(33181, 3, 0, 7000, 33213) },
                 { 33182, new CraftingRelicTurnin(33182, 4, 0, 7000, 33214) },
