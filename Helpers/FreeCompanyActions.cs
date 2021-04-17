@@ -53,7 +53,9 @@ namespace LlamaLibrary.Helpers
                 }
                 
             }
-            
+            await Coroutine.Sleep(500);
+            fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
+            buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
             if (buffs2 == null && !curActions.Any(i=> i.id == buff2))
             {
                 if (FreeCompany.Instance.IsOpen)
@@ -95,7 +97,8 @@ namespace LlamaLibrary.Helpers
                     }
 
                     await Coroutine.Sleep(500);
-                    
+                    fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
+                    buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
                     if (buffs2 != null)
                     {
                         await FreeCompanyAction.Instance.EnableAction(buffs2.Index);

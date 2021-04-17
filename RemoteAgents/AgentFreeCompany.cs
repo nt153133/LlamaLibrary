@@ -33,7 +33,7 @@ namespace LlamaLibrary.RemoteAgents
             internal static int off3;
             [Offset("Search 49 8B 40 ? 48 63 D1 0F B7 1C 90 Add 3 Read8")]
             internal static int off4;
-            [Offset("Search 8B 70 ? 85 F6 75 ? Add 2 Read8")]
+            [Offset("Search 8B 70 ? 85 F6 75 ? 8B 91 ? ? ? ? Add 2 Read8")]
             internal static int CurrentCount;
             [Offset("Search 8B 78 ? 85 FF 75 ? 8B 93 ? ? ? ? Add 2 Read8")]
             internal static int ActionCount;
