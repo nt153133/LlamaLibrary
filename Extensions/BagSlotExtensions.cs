@@ -54,15 +54,13 @@ namespace LlamaLibrary.Extensions
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
-                using (Core.Memory.TemporaryCacheState(false))
-                {
+
                     Core.Memory.CallInjected64<uint>(Offsets.ItemDiscardFunc, new object[3]
                     {
                         Offsets.ItemFuncParam,
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
                     });
-                }
             }
         }
 
@@ -70,16 +68,13 @@ namespace LlamaLibrary.Extensions
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
-                using (Core.Memory.TemporaryCacheState(false))
+                Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
                 {
-                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
-                    {
-                        Offsets.EventHandler,
-                        0x390000,
-                        (uint) bagSlot.BagId,
-                        bagSlot.Slot,
-                    });
-                }
+                    Offsets.EventHandler,
+                    0x390000,
+                    (uint) bagSlot.BagId,
+                    bagSlot.Slot,
+                });
             }
         }
 
@@ -165,8 +160,7 @@ namespace LlamaLibrary.Extensions
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
-                using (Core.Memory.TemporaryCacheState(false))
-                {
+
                     Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
                     {
                         Offsets.EventHandler,
@@ -174,7 +168,7 @@ namespace LlamaLibrary.Extensions
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
                     });
-                }
+
             }
         }
         
@@ -182,8 +176,7 @@ namespace LlamaLibrary.Extensions
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
-                using (Core.Memory.TemporaryCacheState(false))
-                {
+
                     Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
                     {
                         Offsets.EventHandler,
@@ -191,7 +184,7 @@ namespace LlamaLibrary.Extensions
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
                     });
-                }
+
             }
         }
         

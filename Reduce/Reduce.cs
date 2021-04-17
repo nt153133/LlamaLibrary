@@ -194,6 +194,8 @@ namespace LlamaLibrary.Reduce
                 if (Translator.Language != Language.Chn)
                     await Extract();
 
+                if (InventoryManager.EquippedItems.Any(i => i.Condition < 30))
+                    await LlamaLibrary.Helpers.Lisbeth.SelfRepair();
                 //ReduceSettings.Instance.Save();
             }
 
@@ -213,24 +215,23 @@ namespace LlamaLibrary.Reduce
                 await Coroutine.Sleep(5000);
             }
 
-            if (MovementManager.IsOccupied) return false;
+            await GeneralFunctions.StopBusy(false, true, true);
 
-            if (Core.Me.IsMounted)
+            while (InventoryManager.FilledSlots.Any(x => inventoryBagIds.Contains(x.BagId) && x.IsReducable)) //&& WorldManager.ZoneId == (ushort) ReduceSettings.Instance.AEZone )
             {
-                ActionManager.Dismount();
-            }
-
-            await Coroutine.Wait(5000, () => !MovementManager.IsOccupied && !Core.Me.IsMounted);
-
-            Console.WriteLine("{" + string.Join($"", Core.Me.Name) + "}");
-
-            while (InventoryManager.FilledSlots.Any(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce)) //&& WorldManager.ZoneId == (ushort) ReduceSettings.Instance.AEZone )
-            {
-                var item = InventoryManager.FilledSlots.FirstOrDefault(x => inventoryBagIds.Contains(x.BagId) && x.CanReduce);
+                var item = InventoryManager.FilledSlots.FirstOrDefault(x => inventoryBagIds.Contains(x.BagId) && x.IsReducable);
 
                 if (item == null) break;
                 Log($"Reducing - Name: {item.Item.CurrentLocaleName}");
-                await CommonTasks.AetherialReduction(item);
+                item.Reduce();
+                await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
+                await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
+            }
+            
+            AtkAddonControl windowByName = RaptureAtkUnitManager.GetWindowByName("PurifyResult");
+            if (windowByName != null)
+            {
+                windowByName.SendAction(1, 3uL, 4294967295uL);
             }
 
             return true;
@@ -259,7 +260,13 @@ namespace LlamaLibrary.Reduce
             Log($"# of slots to Desynth: {toDesynthList.Count()}");
             foreach (var bagSlot in toDesynthList)
             {
-                await DesynthItem(bagSlot);
+                var itemId = bagSlot.RawItemId;
+                while (bagSlot.IsValid && bagSlot.IsFilled && bagSlot.RawItemId == itemId)
+                {
+                    bagSlot.Desynth();
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
+                }
             }
 
             if (SalvageResult.IsOpen)
@@ -313,7 +320,13 @@ namespace LlamaLibrary.Reduce
 
             foreach (var bagSlot in toDesynthList)
             {
-                await DesynthItem(bagSlot);
+                var itemId = bagSlot.RawItemId;
+                while (bagSlot.IsValid && bagSlot.IsFilled && bagSlot.RawItemId == itemId)
+                {
+                    bagSlot.Desynth();
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
+                }
             }
 
             if (SalvageResult.IsOpen)
@@ -406,7 +419,7 @@ namespace LlamaLibrary.Reduce
 
         private static bool ExtraCheck(BagSlot bs)
         {
-            //return ReduceSettings.Instance.IncludeDE10000 && (bs.Item.RequiredLevel < 70 && bs.Item.DesynthesisIndex < 10000);
+            //return (bs.Item.EquipmentCatagory == ItemUiCategory.Seafood && bs.CanDesynthesize);
             return false;
         }
 
