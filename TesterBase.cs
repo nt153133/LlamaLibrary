@@ -471,241 +471,57 @@ namespace LlamaLibrary
             }
         }
 
+
         private async Task<bool> Run()
         {
-            Navigator.PlayerMover = new SlideMover();
-            Navigator.NavigationProvider = new ServiceNavigationProvider();
-            var DeliveryNpcs = new Dictionary<uint, (uint Zone, Vector3 location, string name, int requiredQuest, uint index)>
+
+            var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
+            var fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
+
+            for (var index = 0; index < fcActions.Length; index++)
             {
-                {1019615, (478, new Vector3(-71.68203f, 206.5714f, 29.38501f), "Zhloe Aliapoh", 67087, 1)}, //(Zhloe Aliapoh) Idyllshire(Dravania) 
-                {1020337, (635, new Vector3(171.312988f, 13.02367f, -89.951965f), "M'naago", 68541, 2)}, //(M'naago) Rhalgr's Reach(Gyr Abania) 
-                {1025878, (613, new Vector3(343.984009f, -120.329468f, -306.019714f), "Kurenai", 68675, 3)}, //(Kurenai) The Ruby Sea(Othard) 
-                {1018393, (478, new Vector3(-62.3016f, 206.6002f, 23.893f), "Adkiragh", 68713, 4)}, //(Adkiragh) Idyllshire(Dravania) 
-                {1031801, (820, new Vector3(52.811401f, 82.993774f, -65.384949f), "Kai-Shirr", 69265, 5)}, //(Kai-Shirr) Eulmore(Eulmore) 
-                {1033543, (886, new Vector3(113.389771f, -20.004639f, -0.961365f), "Ehll Tou", 69425, 6)}, //(Ehll Tou) The Firmament(Ishgard) 
-                {1035211, (886, new Vector3(-115.1127f, 0f, -134.8367f), "Charlemend", 69615, 7)}
-            };
-
-            foreach (var npc in DeliveryNpcs.Where(i => ConditionParser.IsQuestCompleted(i.Value.requiredQuest)).OrderByDescending(i=> i.Value.index))
+                var action = fcActions[index];
+                Log($"{index} - {FcActionList[action.id]}");
+            }
+            Log($"Current Actions {curActions.Length}");
+            for (var index = 0; index < curActions.Length; index++)
             {
-                await AgentSatisfactionSupply.Instance.LoadWindow(npc.Value.index);
-                List<uint> items = new List<uint>();
-                Log($"{DeliveryNpcs[AgentSatisfactionSupply.Instance.NpcId].name}");
-                Log($"\tHeartLevel:{AgentSatisfactionSupply.Instance.HeartLevel}");
-                Log($"\tRep:{AgentSatisfactionSupply.Instance.CurrentRep}/{AgentSatisfactionSupply.Instance.MaxRep}");
-                Log($"\tDeliveries Remaining:{AgentSatisfactionSupply.Instance.DeliveriesRemaining}");
-                Log($"\tDoH: {DataManager.GetItem(AgentSatisfactionSupply.Instance.DoHItemId)}");
-                items.Add(AgentSatisfactionSupply.Instance.DoHItemId);
-                Log($"\tDoL: {DataManager.GetItem(AgentSatisfactionSupply.Instance.DoLItemId)}");
-                items.Add(AgentSatisfactionSupply.Instance.DoLItemId);
-                Log($"\tFsh: {DataManager.GetItem(AgentSatisfactionSupply.Instance.FshItemId)}");
-                items.Add(AgentSatisfactionSupply.Instance.FshItemId);
-
-                if (AgentSatisfactionSupply.Instance.HeartLevel == 5 || AgentSatisfactionSupply.Instance.DeliveriesRemaining == 0)
-                {
-                    Log($"{DeliveryNpcs[AgentSatisfactionSupply.Instance.NpcId].name} Satisfaction Level is Maxed or out of deliveries, skipping");
-                    continue;
-                }
-
-                List<LisbethOrder> outList = new List<LisbethOrder>();
-
-                if (npc.Key == 1025878)
-                {
-                    outList.Add(new LisbethOrder(0,1,(int) AgentSatisfactionSupply.Instance.DoLItemId, Math.Min(3,(int)AgentSatisfactionSupply.Instance.DeliveriesRemaining),"Gather", true));
-                }
-                else
-                {
-                    outList.Add(new LisbethOrder(0,1,(int) AgentSatisfactionSupply.Instance.DoHItemId,Math.Min(3,(int)AgentSatisfactionSupply.Instance.DeliveriesRemaining),"Carpenter", true));
-                }
-
-                var order = JsonConvert.SerializeObject(outList, Formatting.None).Replace("Hq","Collectable");
-
-                if (order != "" && !InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
-                {
-                    await GeneralFunctions.StopBusy();
-                    Log($"Calling Lisbeth with {order}");
-                    await Lisbeth.ExecuteOrdersIgnoreHome(order);
-                }
-                
-                if (InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)) && AgentSatisfactionSupply.Instance.DeliveriesRemaining > 0)
-                {
-                    Log("Have items to turn in");
-                    await HandInCustomNpc(npc.Key, (npc.Value.Zone, npc.Value.location));
-                }
-
-                /*if (AgentSatisfactionSupply.Instance.DeliveriesRemaining == 0)
-                {
-                    Log("Out of delivery allowances");
-                    break;
-                }*/
+                var action = curActions[index];
+                Log($"{index} - {FcActionList[action.id]}");
             }
 
+            Log($"{AgentFreeCompany.Instance.ActionAddress}");
             TreeRoot.Stop("Stop Requested");
             return true;
         }
-        
-       private async Task<bool> HandInCustomNpc(uint npcID, (uint Zone, Vector3 location) npcLocation)
+
+        private async Task AEReduce()
         {
-            var npc = GameObjectManager.GetObjectByNPCId(npcID);
-
-            if (npc == default(GameObject) || !npc.IsWithinInteractRange)
+            if (InventoryManager.FilledSlots.Any(x => x.IsReducable))
             {
-                await Navigation.GetTo(npcLocation.Zone, npcLocation.location);
-                npc = GameObjectManager.GetObjectByNPCId(npcID);
-            }
-
-            if (npc == default(GameObject)) return false;
-
-            npc.Interact();
-
-            await Coroutine.Wait(10000, () => Talk.DialogOpen);
-
-            if (!Talk.DialogOpen)
-            {
-                npc.Interact();
-
-                await Coroutine.Wait(10000, () => Talk.DialogOpen);
-            }
-
-            while (Talk.DialogOpen)
-            {
-                Talk.Next();
-                await Buddy.Coroutines.Coroutine.Sleep(200);
-                await Coroutine.Yield();
-            }
-
-            await Coroutine.Wait(10000, () => Conversation.IsOpen);
-            await Buddy.Coroutines.Coroutine.Sleep(500);
-
-            Logging.WriteDiagnostic("Choosing 'Make a delivery.'");
-            Conversation.SelectLine(0);
-            await Buddy.Coroutines.Coroutine.Wait(1000, () => Talk.DialogOpen);
-
-            if (Talk.DialogOpen)
-                while (Talk.DialogOpen)
+                Log($"Reducing remaining collectables");
+                while (InventoryManager.FilledSlots.Any(x => x.IsReducable))
                 {
-                    Talk.Next();
-                    await Buddy.Coroutines.Coroutine.Sleep(200);
-                    await Coroutine.Yield();
+                    var item = InventoryManager.FilledSlots.FirstOrDefault(x => x.IsReducable);
+
+                    if (item == null) break;
+
+                    item.Reduce();
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x27) != 0);
+                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x27) == 0);
+                }
+                
+                AtkAddonControl windowByName = RaptureAtkUnitManager.GetWindowByName("PurifyResult");
+                if (windowByName != null)
+                {
+                    windowByName.SendAction(1, 3uL, 4294967295uL);
                 }
 
-            await Coroutine.Wait(10000, () => SatisfactionSupply.Instance.IsOpen);
-
-            if (SatisfactionSupply.Instance.IsOpen)
-            {
-                do
-                {
-                    Logging.WriteDiagnostic("Turning in items");
-
-                    if (AgentSatisfactionSupply.Instance.DeliveriesRemaining < 1) break;
-
-                    if (AgentSatisfactionSupply.Instance.HasDoHTurnin)
-                        SatisfactionSupply.Instance.ClickItem(0);
-                    else if (AgentSatisfactionSupply.Instance.HasDoLTurnin)
-                        SatisfactionSupply.Instance.ClickItem(1);
-                    else if (AgentSatisfactionSupply.Instance.HasFshTurnin)
-                        SatisfactionSupply.Instance.ClickItem(2);
-
-                    await Coroutine.Wait(10000, () => Request.IsOpen);
-
-                    Logging.WriteDiagnostic("Selecting items.");
-                    await CommonTasks.HandOverRequestedItems();
-                    await Buddy.Coroutines.Coroutine.Sleep(500);
-
-                    if (SelectYesno.IsOpen)
-                    {
-                        SelectYesno.Yes();
-                        await Coroutine.Wait(5000, () => !SelectYesno.IsOpen);
-                        
-                    }
-                    while (!SatisfactionSupply.Instance.IsOpen && !QuestLogManager.InCutscene)
-                    {
-                        if (Talk.DialogOpen)
-                        {
-                            Talk.Next();
-                            await Buddy.Coroutines.Coroutine.Sleep(200);
-                        }
-                        await Buddy.Coroutines.Coroutine.Sleep(500);
-                    }
-
-                    if (QuestLogManager.InCutscene)
-                    {
-                        while (!SatisfactionSupplyResult.Instance.IsOpen && QuestLogManager.InCutscene)
-                        {
-                            Logging.WriteDiagnostic("Dealing with cutscene.");
-                            if (QuestLogManager.InCutscene && AgentCutScene.Instance.CanSkip)
-                            {
-                                AgentCutScene.Instance.PromptSkip();
-                                await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                                if (SelectString.IsOpen) SelectString.ClickSlot(0);
-                            }
-                            if (Talk.DialogOpen)
-                            {
-                                Talk.Next();
-                                await Buddy.Coroutines.Coroutine.Sleep(200);
-                            }
-                            await Buddy.Coroutines.Coroutine.Sleep(500);
-                        }
-
-                        if (SatisfactionSupplyResult.Instance.IsOpen)
-                        {
-                            Logging.WriteDiagnostic("Clicking Accept.");
-                            SatisfactionSupplyResult.Instance.Confirm();
-                        }
-
-                        await Coroutine.Wait(5000, () => Talk.DialogOpen);
-                        while (Talk.DialogOpen)
-                        {
-                            Talk.Next();
-                            await Coroutine.Wait(200, () => !Talk.DialogOpen);
-                            await Coroutine.Wait(500, () => Talk.DialogOpen);
-                            await Buddy.Coroutines.Coroutine.Sleep(200);
-                            await Coroutine.Yield();
-                        } 
-                        await Buddy.Coroutines.Coroutine.Sleep(500);
-                        await Coroutine.Wait(5000, () => Talk.DialogOpen);
-                        while (Talk.DialogOpen)
-                        {
-                            Talk.Next();
-                            await Coroutine.Wait(200, () => !Talk.DialogOpen);
-                            await Coroutine.Wait(500, () => Talk.DialogOpen);
-                            await Buddy.Coroutines.Coroutine.Sleep(200);
-                            await Coroutine.Yield();
-                        }
-                        await Buddy.Coroutines.Coroutine.Sleep(500);
-                        await Coroutine.Wait(5000, () => Talk.DialogOpen);
-                        while (Talk.DialogOpen)
-                        {
-                            Talk.Next();
-                            await Coroutine.Wait(200, () => !Talk.DialogOpen);
-                            await Coroutine.Wait(500, () => Talk.DialogOpen);
-                            await Buddy.Coroutines.Coroutine.Sleep(200);
-                            await Coroutine.Yield();
-                        }
-
-                        break;
-                    }
-                    
-                    await Coroutine.Wait(5000, () => SatisfactionSupply.Instance.IsOpen);
-                    if (!SatisfactionSupply.Instance.IsOpen) break;
-                }
-                while (AgentSatisfactionSupply.Instance.DeliveriesRemaining > 0 && AgentSatisfactionSupply.Instance.HasAnyTurnin);
+                Log($"Done reducing collectables");
             }
-
-            if (SatisfactionSupply.Instance.IsOpen)
-            {
-                SatisfactionSupply.Instance.Close();
-                await Coroutine.Wait(10000, () => !SatisfactionSupply.Instance.IsOpen);
-            }
-            await Coroutine.Wait(1000, () => Conversation.IsOpen);
-            if (Conversation.IsOpen)
-            {
-                Conversation.SelectLine((uint) (Conversation.GetConversationList.Count -1));
-            }
-            
-            return true;
         }
-
+        
+        
 
         public static async Task<bool> GoGarden(uint AE)
         {
@@ -809,67 +625,7 @@ namespace LlamaLibrary
                 }
             }
         }
-
-        public static async Task UpdateWebPage()
-        {
-            string path = @"U:\www\template.php";
-            string path1 = @"U:\www\index.html";
-
-            // Open the file to read from.
-            string readText = File.ReadAllText(path);
-            //Console.WriteLine(readText);
-            int gil = (int) InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).FilledSlots.First(i => i.RawItemId == 1).Count;
-            int tomes = (int) InventoryManager.GetBagByInventoryBagId(InventoryBagId.Currency).First(i => i.RawItemId == 40).Count;
-            var zone = WorldManager.CurrentZoneName;
-            readText = readText.Replace("{Gil}", $"{gil:N0}");
-            readText = readText.Replace("{Character_Name}", Core.Player.Name);
-            readText = readText.Replace("{class}", Core.Player.CurrentJob.ToString());
-            readText = readText.Replace("{Zone}", zone);
-            readText = readText.Replace("{Tomes}", tomes.ToString("N0"));
-            string ventureTr = @"				<tr>
-					<td style=""width: 17.2083%;""><span style=""font-size: 24px;"">Ret</span></td>
-                <td style=""width: 40.7417%; text-align: center;""><span style=""font-size: 24px;"">item</span></td>
-                <td style=""width: 41.525%;""><span style=""font-size: 24px;"">time</span></td>
-                </tr>";
-
-            string ventureTr1 = @"				<tr>
-				<td>Ret</td>
-                <td>item</td>
-                <td>time</td>
-                </tr>";
-            string retainerTable = "";
-            var count = await GetNumberOfRetainers();
-            var retainers = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-            var now = (int) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            foreach (var ret in retainers)
-            {
-                var ventureTimeLeft = ret.VentureEndTimestamp - now;
-                var ventureDone = ventureTimeLeft <= 0;
-                var ventureName = VentureData.First(i => i.Id == ret.VentureTask).Name;
-                if (ventureDone)
-                {
-                    if (ret.VentureTask != 0)
-                    {
-                        Log($"{ret.Name} - {ventureName} - Finished\n");
-                        retainerTable += ventureTr.Replace("Ret", ret.Name).Replace("item", ventureName).Replace("time", "Finished") + "\n";
-                    }
-                    else
-                    {
-                        Log($"{ret.Name}\n");
-                    }
-                }
-                else
-                {
-                    Log($"{ret.Name} - {ventureName} - {(ret.VentureEndTimestamp - UnixTimestamp) / 60} minutes\n");
-                    retainerTable += ventureTr.Replace("Ret", ret.Name).Replace("item", ventureName).Replace("time", $"{(ret.VentureEndTimestamp - UnixTimestamp) / 60} minutes") + "\n";
-                }
-            }
-
-            readText = readText.Replace("{Retainers}", retainerTable);
-            //ActorController.Player
-            File.WriteAllText(path1, readText);
-        }
-
+        
         private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
         {
             Log($"Teleporting to housing: (ZID: {house.ZoneId}, AID: {house.AetheryteId}) {house.Name}");
@@ -954,7 +710,6 @@ namespace LlamaLibrary
             Log("LL hook");
             //await Navigation.GetToMap399();
         }
-
 
         private void DumpLLOffsets()
         {
