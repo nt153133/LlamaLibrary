@@ -72,9 +72,10 @@ namespace LlamaLibrary.Extensions
             {
                 using (Core.Memory.TemporaryCacheState(false))
                 {
-                    Core.Memory.CallInjected64<uint>(Offsets.DesynthNoWindow, new object[3]
+                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
                     {
-                        Offsets.ItemFuncParam,
+                        Offsets.EventHandler,
+                        0x390000,
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
                     });
@@ -170,6 +171,23 @@ namespace LlamaLibrary.Extensions
                     {
                         Offsets.EventHandler,
                         0x390001,
+                        (uint) bagSlot.BagId,
+                        bagSlot.Slot,
+                    });
+                }
+            }
+        }
+        
+        public static void Reduce(this BagSlot bagSlot)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
+                    {
+                        Offsets.EventHandler,
+                        0x390002,
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
                     });
