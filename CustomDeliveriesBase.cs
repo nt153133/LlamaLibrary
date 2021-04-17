@@ -108,11 +108,21 @@ namespace LlamaLibrary
 
                 var order = JsonConvert.SerializeObject(outList, Formatting.None).Replace("Hq", "Collectable");
 
-                if (order != "" && !InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
+                if (!InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
                 {
-                    await GeneralFunctions.StopBusy();
-                    Log($"Calling Lisbeth with {order}");
-                    await Lisbeth.ExecuteOrdersIgnoreHome(order);
+                    if (order != "" && !InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)))
+                    {
+                        await GeneralFunctions.StopBusy();
+                        Log($"Calling Lisbeth with {order}");
+                        try
+                        {
+                            await Lisbeth.ExecuteOrdersIgnoreHome(order);
+                        }
+                        catch (Exception e)
+                        {
+                            continue;
+                        }
+                    }
                 }
 
                 if (InventoryManager.FilledSlots.Any(i => items.Contains(i.RawItemId)) && AgentSatisfactionSupply.Instance.DeliveriesRemaining > 0)
