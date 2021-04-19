@@ -260,13 +260,9 @@ namespace LlamaLibrary.Reduce
             Log($"# of slots to Desynth: {toDesynthList.Count()}");
             foreach (var bagSlot in toDesynthList)
             {
-                var itemId = bagSlot.RawItemId;
-                while (bagSlot.IsValid && bagSlot.IsFilled && bagSlot.RawItemId == itemId)
-                {
                     bagSlot.Desynth();
                     await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
                     await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
-                }
             }
 
             if (SalvageResult.IsOpen)

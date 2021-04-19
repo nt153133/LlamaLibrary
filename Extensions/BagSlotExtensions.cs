@@ -68,12 +68,13 @@ namespace LlamaLibrary.Extensions
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
-                Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
+                Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[5]
                 {
                     Offsets.EventHandler,
                     0x390000,
                     (uint) bagSlot.BagId,
                     bagSlot.Slot,
+                    2
                 });
             }
         }
@@ -161,12 +162,13 @@ namespace LlamaLibrary.Extensions
             lock (Core.Memory.Executor.AssemblyLock)
             {
 
-                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
+                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[5]
                     {
                         Offsets.EventHandler,
                         0x390001,
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
+                        0
                     });
 
             }
@@ -177,12 +179,13 @@ namespace LlamaLibrary.Extensions
             lock (Core.Memory.Executor.AssemblyLock)
             {
 
-                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[4]
+                    Core.Memory.CallInjected64<uint>(Offsets.RemoveMateriaFunc, new object[5]
                     {
                         Offsets.EventHandler,
                         0x390002,
                         (uint) bagSlot.BagId,
                         bagSlot.Slot,
+                        0
                     });
 
             }
