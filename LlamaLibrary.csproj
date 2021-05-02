@@ -107,6 +107,7 @@
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
     <Compile Include="GCSupplyBase.cs" />
+    <Compile Include="ResplendentTools.cs" />
     <Compile Include="maps.cs" />
     <Compile Include="Materia\Materia.cs" />
     <Compile Include="Materia\MateriaItem.cs" />
