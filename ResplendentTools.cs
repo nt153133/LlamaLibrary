@@ -106,35 +106,35 @@ namespace ResplendentTools
         public async static Task<String> GetLisbethResplendentOrder()
         {
 
-            if (Carpenter && ConditionParser.HasAtLeast(33210, 60) == false)
+            if (Carpenter && ConditionParser.HasAtLeast(33210, 60) == false && ConditionParser.HasAtLeast(33154, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Carpenter", 33210, 33202, 33194, 33178, 33170, 33162);
             }
-            if (Blacksmith && ConditionParser.HasAtLeast(33211, 60) == false)
+            if (Blacksmith && ConditionParser.HasAtLeast(33211, 60) == false && ConditionParser.HasAtLeast(33155, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Blacksmith", 33211, 33203, 33195, 33179, 33171, 33163);
             }
-            if (Armorer && ConditionParser.HasAtLeast(33212, 60) == false)
+            if (Armorer && ConditionParser.HasAtLeast(33212, 60) == false && ConditionParser.HasAtLeast(33156, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Armorer", 33212, 33204, 33196, 33180, 33172, 33164);
             }
-            if (Goldsmith && ConditionParser.HasAtLeast(33213, 60) == false)
+            if (Goldsmith && ConditionParser.HasAtLeast(33213, 60) == false && ConditionParser.HasAtLeast(33157, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Goldsmith", 33213, 33205, 33197, 33181, 33173, 33165);
             }
-            if (Leatherworker && ConditionParser.HasAtLeast(33214, 60) == false)
+            if (Leatherworker && ConditionParser.HasAtLeast(33214, 60) == false && ConditionParser.HasAtLeast(33158, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Leatherworker", 33214, 33206, 33198, 33182, 33174, 33166);
             }
-            if (Weaver && ConditionParser.HasAtLeast(33215, 60) == false)
+            if (Weaver && ConditionParser.HasAtLeast(33215, 60) == false && ConditionParser.HasAtLeast(33159, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Weaver", 33215, 33207, 33199, 33183, 33175, 33167);
             }
-            if (Alchemist && ConditionParser.HasAtLeast(33216, 60) == false)
+            if (Alchemist && ConditionParser.HasAtLeast(33216, 60) == false && ConditionParser.HasAtLeast(33160, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Alchemist", 33216, 33208, 33200, 33184, 33176, 33168);
             }
-            if (Culinarian && ConditionParser.HasAtLeast(33217, 60) == false)
+            if (Culinarian && ConditionParser.HasAtLeast(33217, 60) == false && ConditionParser.HasAtLeast(33161, 1) == false)
             {
                 return await CalculateLisbethResplendentOrder("Culinarian", 33217, 33209, 33201, 33185, 33177, 33169);
             }
