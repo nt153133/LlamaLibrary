@@ -4,7 +4,9 @@ using LlamaLibrary.Memory.Attributes;
 
 namespace LlamaLibrary.RemoteAgents
 {
-    public class AgentMasterPieceSupply : AgentInterface<AgentMasterPieceSupply>, IAgent
+    //Class no longer needed due to rowena supply not rotating any more
+    
+    /*public class AgentMasterPieceSupply : AgentInterface<AgentMasterPieceSupply>, IAgent
     {
         public IntPtr RegisteredVtable => Offsets.VTable;
 
@@ -17,5 +19,5 @@ namespace LlamaLibrary.RemoteAgents
         protected AgentMasterPieceSupply(IntPtr pointer) : base(pointer)
         {
         }
-    }
+    }*/
 }

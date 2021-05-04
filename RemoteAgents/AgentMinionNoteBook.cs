@@ -18,7 +18,7 @@ namespace LlamaLibrary.RemoteAgents
             internal static IntPtr VTable;
             [Offset("Search 48 8B 43 ? 44 0F B7 0C 90 41 3B F1 Add 3 Read8")]
             internal static int AgentOffset;
-            [Offset("Search 89 15 ? ? ? ? 41 8D 49 ? ? ? ? 48 C1 E9 ? 46 84 84 29 ? ? ? ? 74 ? FF C2 89 15 ? ? ? ? 41 8B C1 Add 2 TraceRelative")]
+            [Offset("Search 83 3D ? ? ? ? ? 7D ? 32 C0 Add 2 TraceRelative")]
             internal static IntPtr MinionCount;
             [Offset("Search E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 0F B7 58 ? 48 8D 4C 24 ? TraceCall")]
             internal static IntPtr GetCompanion;

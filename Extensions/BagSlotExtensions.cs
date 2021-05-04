@@ -34,7 +34,7 @@ namespace LlamaLibrary.Extensions
             return false;
         }
 
-        public static bool ConvertToMateria(this BagSlot bagSlot)
+        /*public static bool ConvertToMateria(this BagSlot bagSlot)
         {
             lock (Core.Memory.Executor.AssemblyLock)
             {
@@ -48,7 +48,7 @@ namespace LlamaLibrary.Extensions
                     }) == 0;
                 }
             }
-        }
+        }*/
 
         public static void Discard(this BagSlot bagSlot)
         {

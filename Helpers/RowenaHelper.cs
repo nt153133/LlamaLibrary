@@ -10,6 +10,8 @@ using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.Helpers
 {
+    //Class no longer needed due to rowena supply not rotating any more
+    /*
     public static class RowenaHelper
     {
         public static DateTime LastUpdate;
@@ -53,5 +55,5 @@ namespace LlamaLibrary.Helpers
         {
             return VerifyRowenaData().Result ? Core.Memory.ReadArray<RowenaItem>(Offsets.RowenaItemList, Offsets.RowenaItemCount) : new RowenaItem[0];
         }
-    }
+    }*/
 }

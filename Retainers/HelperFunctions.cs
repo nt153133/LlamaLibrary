@@ -426,7 +426,7 @@ namespace LlamaLibrary.Retainers
         public static void RequestRetainerData()
         {
             lock (Core.Memory.Executor.AssemblyLock)
-                Core.Memory.CallInjected64<IntPtr>(Offsets.RequestRetainerData,
+                Core.Memory.CallInjected64<IntPtr>(Offsets.ExecuteCommand,
                                                    (uint)Offsets.RetainerNetworkPacket,
                                                    (uint)0,
                                                    (uint)0,
