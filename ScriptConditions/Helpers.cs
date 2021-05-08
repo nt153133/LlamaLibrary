@@ -116,6 +116,11 @@ namespace LlamaLibrary.ScriptConditions
             return -1;
         }
 
+        public static bool IsPartyInCombat()
+        {
+            return PartyManager.VisibleMembers.Any(x => !x.IsMe && x.BattleCharacter.IsAlive && x.BattleCharacter.InCombat);
+        }
+
 
         public static int CurrentGCSeals()
         {
