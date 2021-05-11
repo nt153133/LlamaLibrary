@@ -16,19 +16,21 @@ namespace LlamaLibrary.Memory.Attributes
     internal class OffsetAttribute : Attribute
     {
         public bool Numeric;
-        public string Pattern;
-        public string PatternCN;
+        public string Pattern = "";
+        public string PatternCN = "";
 
         public OffsetAttribute(string pattern, bool numeric = false, int expectedValue = 0)
         {
             Pattern = pattern;
-            PatternCN = pattern;
+            if (PatternCN == "")
+                PatternCN = pattern;
             Numeric = numeric;
         }
 
         public OffsetAttribute(string pattern, string cnpattern, bool numeric = false, int expectedValue = 0)
         {
-            Pattern = pattern;
+            /*if (pattern != "")
+                Pattern = pattern;*/
             PatternCN = cnpattern;
             Numeric = numeric;
         }

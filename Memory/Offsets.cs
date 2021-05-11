@@ -151,7 +151,9 @@ namespace LlamaLibrary.Memory
         [Offset("Search 8B 78 ? E8 ? ? ? ? 3B F8 Add 2 Read8")]
         internal static int VentureFinishTime;
 
+        //B9 ? ? ? ? E8 ? ? ? ? 48 8B 5C 24 ? C6 85 ? ? ? ? ? Add 1 Read32
         [Offset("Search B9 ? ? ? ? E8 ? ? ? ? 40 88 BD ? ? ? ? Add 1 Read32")]
+        [OffsetCN("B9 ? ? ? ? E8 ? ? ? ? 48 8B 5C 24 ? C6 85 ? ? ? ? ? Add 1 Read32")]
         internal static int RetainerNetworkPacket;
 
         [Offset("Search 40 57 41 54 41 55 41 56 41 57 48 83 EC ? 45 0F B7 F1")]

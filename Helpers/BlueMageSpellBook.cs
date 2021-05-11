@@ -20,9 +20,11 @@ namespace LlamaLibrary.Helpers
             internal static IntPtr SetSpell;
 
             [Offset("Search 83 FA ? 77 ? 48 63 C2 8B 84 81 ? ? ? ? C3 33 C0 C3 ? ? ? ? ? ? ? ? ? ? ? ? ? 48 89 6C 24 ? Add 2 Read8")]
+            [OffsetCN("Search 83 FE ? 0F 87 ? ? ? ? 48 89 58 ?")]
             internal static int MaxActive;
 
             [Offset("Search 8B 84 81 ? ? ? ? C3 33 C0 C3 ? ? ? ? ? ? ? ? ? ? ? ? ? 48 89 6C 24 ? Add 3 Read32")]
+            [OffsetCN("Search 8B 94 B5 ? ? ? ? 48 8B CD Add 3 Read32")]
             internal static int BluSpellActiveOffset ;
         }
         

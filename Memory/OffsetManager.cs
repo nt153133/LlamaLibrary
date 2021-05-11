@@ -151,6 +151,8 @@ using LlamaLibrary.RemoteAgents;
         {
             var offset = (OffsetAttribute) Attribute.GetCustomAttributes(field, typeof(OffsetAttribute))
                 .FirstOrDefault();
+            var offsetCN = (OffsetCNAttribute) Attribute.GetCustomAttributes(field, typeof(OffsetCNAttribute))
+                .FirstOrDefault();
             var valcn = (OffsetValueCN) Attribute.GetCustomAttributes(field, typeof(OffsetValueCN))
                 .FirstOrDefault();
             var valna = (OffsetValueNA) Attribute.GetCustomAttributes(field, typeof(OffsetValueNA))
@@ -169,11 +171,16 @@ using LlamaLibrary.RemoteAgents;
                 //var b1 = true;
                 try
                 {
-                    result = pf.Find(offset.PatternCN);
+                    result = pf.Find(offsetCN != null ? offsetCN.PatternCN : offset.Pattern);
                 }
                 catch (Exception e)
                 {
-
+                    if(field.DeclaringType != null && field.DeclaringType.IsNested)
+                        Log($"[{field.DeclaringType.DeclaringType.Name}:{field.Name:,27}] Not Found");
+                    else
+                    {
+                        Log($"[{field.DeclaringType.Name}:{field.Name:,27}] Not Found");
+                    }
                 }
                 
             }
@@ -185,14 +192,20 @@ using LlamaLibrary.RemoteAgents;
 
                 try
                 {
-                    result = pf.Find(offset.PatternCN);
+                    result = pf.Find(offset.Pattern);
                 }
                 catch (Exception e)
                 {
-
+                    if(field.DeclaringType != null && field.DeclaringType.IsNested)
+                        LogError($"[{field.DeclaringType.DeclaringType.Name}:{field.Name:,27}] Not Found");
+                    else
+                    {
+                        LogError($"[{field.DeclaringType.Name}:{field.Name:,27}] Not Found");
+                    }
                 }
             }
 
+            /*
             if (result == IntPtr.Zero)
             {
                 if(field.DeclaringType != null && field.DeclaringType.IsNested)
@@ -202,6 +215,7 @@ using LlamaLibrary.RemoteAgents;
                     Log($"[{field.DeclaringType.Name}:{field.Name:,27}] Not Found");
                 }
             }
+            */
 
             if (!_debug)
             {
@@ -211,13 +225,17 @@ using LlamaLibrary.RemoteAgents;
             if (offset!=null)
                 if (field.DeclaringType != null && field.DeclaringType.IsNested && field.FieldType != typeof(int))
                 {
-                    sb.AppendLine($"{field.DeclaringType.DeclaringType.Name}_{field.Name}, {offset.Pattern}");
+                    sb.AppendLine($"{field.DeclaringType.DeclaringType.Name}_{field.Name}, {offset.Pattern} - {offset.PatternCN}");
                     patterns.Add($"{field.DeclaringType.DeclaringType.Name}_{field.Name}", offset.Pattern);
                 }
                 else if (field.FieldType != typeof(int))
                 {
-                    sb.AppendLine($"{field.Name}, {offset.Pattern}");
+                    sb.AppendLine($"{field.Name}, {offset.Pattern} - {offset.PatternCN}");
                     patterns.Add($"{field.Name}", offset.Pattern);
+                }
+                else
+                {
+                    sb.AppendLine($"{field.Name}, {offset.Pattern} - {offsetCN?.PatternCN}");
                 }
 
             if (valna != null)
@@ -237,6 +255,11 @@ using LlamaLibrary.RemoteAgents;
         private static void Log(string text)
         {
             Logger.External(Name, text, Colors.RosyBrown);
+        }
+        
+        private static void LogError(string text)
+        {
+            Logger.External(Name, text, Colors.Red);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace LlamaLibrary.RemoteAgents
             internal static int CurrentRep;
             [Offset("Search 0F B7 73 ? BA ? ? ? ? E8 ? ? ? ? Add 3 Read8")]
             internal static int MaxRep;
-            [Offset("8B 53 ? 4C 8D 43 ? 48 8B CB Add 2 Read8")]
+            [Offset("Search 8B 53 ? 4C 8D 43 ? 48 8B CB Add 2 Read8")]
             [OffsetCN("Search 8B 53 ? 48 8B CB E8 ? ? ? ? BA ? ? ? ? Add 2 Read8")]
             internal static int Npc;
             [Offset("Search 89 43 ? E8 ? ? ? ? 48 8B D0 48 8D 4D ? E8 ? ? ? ? Add 2 Read8")]
