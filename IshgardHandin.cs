@@ -219,7 +219,7 @@ namespace LlamaLibrary
                     else
                     {
                         await Coroutine.Wait(5000, () => !Request.IsOpen);
-                        await Coroutine.Sleep(100);
+                        await Coroutine.Sleep(300);
                     }
 
                     if (Translator.Language != Language.Chn)
@@ -271,6 +271,21 @@ namespace LlamaLibrary
                     }
                     
                     await Coroutine.Sleep(1000);
+                    if (!InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
+                    {
+                        if (Request.IsOpen)
+                        {
+                            Request.Cancel();
+                            await Coroutine.Sleep(500);
+                        }
+
+                        if (HWDSupply.Instance.IsOpen)
+                        {
+                            HWDSupply.Instance.Close();
+                            await Coroutine.Wait(2000, () => !HWDSupply.Instance.IsOpen);
+                        }
+                        break;
+                    }
                 }
             }
 
