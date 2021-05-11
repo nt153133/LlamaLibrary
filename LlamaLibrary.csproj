@@ -64,6 +64,7 @@
       <DependentUpon>AutoTradeSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Class1.cs" />
+    <Compile Include="CustomDeliveriesBase.cs" />
     <Compile Include="Enums\ClassJobCategory.cs" />
     <Compile Include="Enums\GCNpc.cs" />
     <Compile Include="Enums\MiniGameResult.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="OrderbotTags\LLUseSpell.cs" />
     <Compile Include="OrderbotTags\LLSendChat.cs" />
     <Compile Include="OrderbotTags\LowerCollectable.cs" />
+    <Compile Include="OrderbotTags\PassOnLoot.cs" />
     <Compile Include="OrderbotTags\SetBluSpells.cs" />
     <Compile Include="OutOnALimbBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
