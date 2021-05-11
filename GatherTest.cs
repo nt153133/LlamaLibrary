@@ -118,7 +118,7 @@ namespace LlamaLibrary
         {
             if (Translator.Language == Language.Chn)
             {
-                TimerOffset = 0x650;
+                TimerOffset = 0x6F0;//0x650
             }
             else
             {
@@ -207,13 +207,24 @@ namespace LlamaLibrary
                         standBy = afkSpots[time.Next(0, afkSpots.Length)];
                         await StandBy();
                         break;
-                    default: await Coroutine.Sleep(1000);
+                    default: await Coroutine.Sleep(3000);
                         if (lastChange.IsFinished)
                         {
                             lastChange.Reset();
                             lastWeather = 0;
                         }
 
+                        /*Log($"New instance: {TimeLeftInDiadem:hh\\:mm\\:ss} Left");
+                        DutyManager.LeaveActiveDuty();
+
+                        if (await Coroutine.Wait(30000, () => CommonBehaviors.IsLoading))
+                        {
+                            await Coroutine.Yield();
+                            await Coroutine.Wait(Timeout.Infinite, () => !CommonBehaviors.IsLoading);
+                            await Coroutine.Sleep(30000);
+                            return;
+                        } break;
+                        //*/
                         await StandBy(); break;
                 } 
                 
