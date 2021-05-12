@@ -78,7 +78,7 @@ using LlamaLibrary.RemoteAgents;
                                              }
                                              catch (Exception e)
                                              {
-                                                 LogError($"Error on {type.FieldType.FullName}");
+                                                 LogError($"Error on {type.Name}");
                                              }
                                              
                                          }
