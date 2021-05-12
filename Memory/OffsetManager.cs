@@ -71,7 +71,17 @@ using LlamaLibrary.RemoteAgents;
                                          if (type.FieldType == typeof(IntPtr))
                                              type.SetValue(null, res);
                                          else
-                                             type.SetValue(null, res.ToInt32());
+                                         {
+                                             try
+                                             {
+                                                 type.SetValue(null, res.ToInt32());
+                                             }
+                                             catch (Exception e)
+                                             {
+                                                 LogError($"Error on {type.FieldType.FullName}");
+                                             }
+                                             
+                                         }
                                      }
                                  }
                                 );
