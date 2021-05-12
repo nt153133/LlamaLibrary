@@ -76,16 +76,16 @@ namespace LlamaLibrary
         public static async Task<bool> Handin()
         {
             await GeneralFunctions.StopBusy(dismount: false);
-            if (Translator.Language == Language.Chn)
+            /*if (Translator.Language == Language.Chn)
             {
                 await HandinOld();
                 await GatheringHandin();
             }
             else
-            {
+            {*/
                 await HandinNew();
                 await GatheringHandin();
-            }
+  //          }
 
             return true;
         }
