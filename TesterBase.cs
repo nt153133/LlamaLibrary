@@ -254,6 +254,8 @@ namespace LlamaLibrary
             }
 
             Log($"\n {sb1}");
+            DumpOffsets();
+            DumpLLOffsets();
         }
 
         internal void init()
@@ -475,56 +477,60 @@ namespace LlamaLibrary
         private async Task<bool> Run()
         {
 
-            var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
-            var fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
-
-            for (var index = 0; index < fcActions.Length; index++)
+            if (ScriptConditions.Helpers.HasIshgardItem() > 0)
             {
-                var action = fcActions[index];
-                Log($"{index} - {FcActionList[action.id]}");
+                Log("HasIshgardItem");
             }
-            Log($"Current Actions {curActions.Length}");
-            for (var index = 0; index < curActions.Length; index++)
+            
+            if (ScriptConditions.Helpers.HasIshgardGatheringBotanist())
             {
-                var action = curActions[index];
-                Log($"{index} - {FcActionList[action.id]}");
+                Log("HasIshgardGatheringBotanist");
             }
-
-            Log($"{AgentFreeCompany.Instance.ActionAddress}");
+            
+            if (ScriptConditions.Helpers.HasIshgardGatheringFisher())
+            {
+                Log("HasIshgardGatheringFisher");
+            }
+            
+            if (ScriptConditions.Helpers.HasIshgardGatheringMining())
+            {
+                Log("HasIshgardGatheringMining");
+            }
+            
             TreeRoot.Stop("Stop Requested");
             return true;
         }
-
-        private async Task AEReduce()
+        
+        public async Task PassLoot()
         {
-            if (InventoryManager.FilledSlots.Any(x => x.IsReducable))
+            //if (!NeedGreed.Instance.IsOpen)
+            var window = RaptureAtkUnitManager.GetWindowByName("_Notification");
+
+            if (!NeedGreed.Instance.IsOpen && window != null)
             {
-                Log($"Reducing remaining collectables");
-                while (InventoryManager.FilledSlots.Any(x => x.IsReducable))
-                {
-                    var item = InventoryManager.FilledSlots.FirstOrDefault(x => x.IsReducable);
-
-                    if (item == null) break;
-
-                    item.Reduce();
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x27) != 0);
-                    await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + 0x27) == 0);
-                }
-                
-                AtkAddonControl windowByName = RaptureAtkUnitManager.GetWindowByName("PurifyResult");
-                if (windowByName != null)
-                {
-                    windowByName.SendAction(1, 3uL, 4294967295uL);
-                }
-
-                Log($"Done reducing collectables");
+                window.SendAction(3, 3, 0, 3, 2, 6, 0x375B30E7);
+                await Coroutine.Wait(5000, () => NeedGreed.Instance.IsOpen);
             }
+
+            if (NeedGreed.Instance.IsOpen)
+            {
+                for (int i = 0; i < NeedGreed.Instance.NumberOfItems; i++)
+                {
+                    NeedGreed.Instance.PassItem(i);
+                    await Coroutine.Sleep(500);
+                    await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                    if (SelectYesno.IsOpen)
+                        SelectYesno.Yes();
+                }
+            }
+            
+            if (NeedGreed.Instance.IsOpen)
+                NeedGreed.Instance.Close();
         }
         
-        
-
         public static async Task<bool> GoGarden(uint AE)
         {
+            
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
