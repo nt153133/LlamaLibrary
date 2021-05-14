@@ -671,6 +671,7 @@ namespace LlamaLibrary.Helpers
                     // Log("Window open");
                     foreach (var item in collectables)
                     {
+                        if (!TurnItemList.Keys.Contains(item)) continue;
                         Log($"Turning in {DataManager.GetItem(item).CurrentLocaleName}");
                         var turnin = TurnItemList[item];
 
