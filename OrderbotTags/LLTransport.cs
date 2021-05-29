@@ -61,6 +61,10 @@ namespace ff14bot.NeoProfiles.Tags
         [XmlAttribute("BlacklistAfter")]
         [DefaultValue(false)]
         public bool BlacklistAfter { get; set; }
+        
+        [DefaultValue(-1)]
+        [XmlAttribute("DialogOption")]
+        public int DialogOption { get; set; }
 
         public GameObject NPC
         {
@@ -99,6 +103,20 @@ namespace ff14bot.NeoProfiles.Tags
                 obj.Face();
 
                 obj.Interact();
+                
+                await Coroutine.Wait(2000, () => SelectString.IsOpen);
+                if (SelectString.IsOpen)
+                {
+                    if (DialogOption != -1)
+                    {
+                        var option = ((uint)DialogOption);
+                        ff14bot.RemoteWindows.SelectString.ClickSlot(option);
+                    }
+                    else
+                    {
+                        ff14bot.RemoteWindows.SelectString.ClickSlot(0);
+                    }
+                }
 
                 if (BlacklistAfter)
                 {
