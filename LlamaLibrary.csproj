@@ -82,6 +82,14 @@
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
     <Compile Include="GatherTest.cs" />
+    <Compile Include="GCExpertTurnin\GCExpertGrindBase.cs" />
+    <Compile Include="GCExpertTurnin\GCExpertSettings.cs" />
+    <Compile Include="GCExpertTurnin\GCExpertSettingsFrm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GCExpertTurnin\GCExpertSettingsFrm.Designer.cs">
+      <DependentUpon>GCExpertSettingsFrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\Achievements.cs" />
     <Compile Include="Helpers\ActionHelper.cs" />
     <Compile Include="Helpers\BeastTribeHelper.cs" />
