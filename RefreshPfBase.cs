@@ -20,11 +20,11 @@ namespace LlamaLibrary
         private const int Offset0 = 0x1CA;
         private const int Offset2 = 0x160;
         private Composite _root;
-        private readonly int AgentId = 0;
+        private int AgentId = 0;
 
         public RefreshPfBase()
         {
-            AgentId = getAgent();
+            
         }
 
         public override string Name => "PF Refresh";
@@ -42,6 +42,7 @@ namespace LlamaLibrary
 
         public override void Start()
         {
+            AgentId = getAgent();
             _root = new ActionRunCoroutine(r => Run());
         }
 
@@ -111,7 +112,7 @@ namespace LlamaLibrary
         private int getAgent()
         {
             var patternFinder = new PatternFinder(Core.Memory);
-            IntPtr agentVtable = patternFinder.Find("48 8D 05 ?? ?? ?? ?? 48 8B F1 48 89 01 48 8D 05 ?? ?? ?? ?? 48 89 41 ?? E8 ?? ?? ?? ?? Add 3 TraceRelative");
+            IntPtr agentVtable = patternFinder.Find("48 8D 05 ? ? ? ? 48 89 51 ? 48 89 01 48 8B F9 48 8D 05 ? ? ? ? 4C 89 79 ? Add 3 TraceRelative");
 
             return AgentModule.FindAgentIdByVtable(agentVtable);
         }
