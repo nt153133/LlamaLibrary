@@ -164,7 +164,7 @@ namespace LlamaLibrary.GCExpertTurnin
                         //var item = windowItemIds[index];
                         //Log($"{index}");
                         GrandCompanySupplyList.Instance.ClickItem(0);
-                        await Coroutine.Wait(1500, () => SelectYesno.IsOpen);
+                        await Coroutine.Wait(1000, () => SelectYesno.IsOpen);
                         if (SelectYesno.IsOpen)
                         {
                             SelectYesno.Yes();
