@@ -156,7 +156,7 @@ namespace LlamaLibrary.GCExpertTurnin
                 var maxSeals = Core.Me.MaxGCSeals();*/
                 //var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
                 int i = 0;
-                int count = ConditionParser.ItemCount((uint) GCExpertSettings.Instance.ItemId);
+                int count = GrandCompanySupplyList.Instance.GetNumberOfTurnins();//ConditionParser.ItemCount((uint) GCExpertSettings.Instance.ItemId);
 
                 if (count > 0)
                     for (var index = 0; index < count; index++)
@@ -164,7 +164,7 @@ namespace LlamaLibrary.GCExpertTurnin
                         //var item = windowItemIds[index];
                         //Log($"{index}");
                         GrandCompanySupplyList.Instance.ClickItem(0);
-                        await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                        await Coroutine.Wait(1500, () => SelectYesno.IsOpen);
                         if (SelectYesno.IsOpen)
                         {
                             SelectYesno.Yes();
