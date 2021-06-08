@@ -229,7 +229,12 @@ namespace LlamaLibrary.Retainers
             }
 
             bell.Interact();
-            await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+            if (!RetainerList.Instance.IsOpen)
+            {
+                bell.Interact();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
             return true;
         }
 
