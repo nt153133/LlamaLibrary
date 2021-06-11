@@ -3,12 +3,13 @@ using Clio.Utilities;
 using Clio.XmlEngine;
 using ff14bot.Behavior;
 using ff14bot.Managers;
-using ff14bot.Navigation;
+using LlamaLibrary.Helpers;
 using ff14bot.Objects;
 using ff14bot.RemoteWindows;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using LlamaLibrary.RemoteWindows;
 using TreeSharp;
 
 namespace ff14bot.NeoProfiles.Tags
@@ -31,11 +32,6 @@ namespace ff14bot.NeoProfiles.Tags
         {
             get
             {
-                if (IsStepComplete)
-                {
-                    return true;
-                }
-
                 return _done;
             }
         }
@@ -70,6 +66,7 @@ namespace ff14bot.NeoProfiles.Tags
         {
             get
             {
+				if (_done) return null;
                 var npc = GameObjectManager.GetObjectsByNPCId((uint)NpcId).FirstOrDefault(r => r.IsVisible && r.IsTargetable);
                 return npc;
             }
@@ -77,80 +74,42 @@ namespace ff14bot.NeoProfiles.Tags
 
         protected override Composite CreateBehavior()
         {
-            return
-                new PrioritySelector(ctx => NPC,
-                    new ActionRunCoroutine(r => MoveAndStop(XYZ, InteractDistance, false, StatusText)),
-                    new ActionRunCoroutine(r => CreateInteract(((GameObject)r)))
-               );
+            return new ActionRunCoroutine(r => LLTransportTask());
         }
 
-        private async Task<bool> MoveAndStop(Vector3 location, float distance, bool stopInRange = false, string destinationName = null)
+        private  async Task LLTransportTask()
         {
-            return await CommonTasks.MoveAndStop(new Pathing.MoveToParameters(location, destinationName), distance, stopInRange);
-        }
+            var gameobj = GameObjectManager.GetObjectByNPCId((uint) NpcId);
 
-        private async Task<bool> CreateInteract(GameObject obj)
-        {
-            if (ShortCircuit(obj))
+            if (gameobj == default(GameObject)) {_done = true; return;}
+            
+            await LlamaLibrary.Helpers.Navigation.OffMeshMoveInteract(gameobj);
+
+            if (gameobj.IsWithinInteractRange)
             {
-                return true;
-            }
+                gameobj.Interact();
 
-            if (obj.IsTargetable && obj.IsVisible)
-            {
-                Navigator.PlayerMover.MoveStop();
-
-                obj.Face();
-
-                obj.Interact();
-                
-                await Coroutine.Wait(2000, () => SelectString.IsOpen);
-                if (SelectString.IsOpen)
+                await Coroutine.Wait(20000, () => !gameobj.IsVisible || Conversation.IsOpen);
+                if (Conversation.IsOpen)
                 {
                     if (DialogOption != -1)
                     {
                         var option = ((uint)DialogOption);
-                        ff14bot.RemoteWindows.SelectString.ClickSlot(option);
+                        Conversation.SelectLine(option);
                     }
                     else
                     {
-                        ff14bot.RemoteWindows.SelectString.ClickSlot(0);
+                        Conversation.SelectLine(0);
                     }
-                }
-
-                if (BlacklistAfter)
-                {
-                    _done = true;
-                }
-                else
-                {
-                    await Coroutine.Wait(5000, () => ShortCircuit(obj));
+                    
+                    await Coroutine.Wait(20000, () => !Conversation.IsOpen || CommonBehaviors.IsLoading);
+                    
                 }
             }
 
-            return false;
+            _done = true;
         }
-
-        protected bool ShortCircuit(GameObject obj)
-        {
-            if (!obj.IsValid || !obj.IsTargetable || !obj.IsVisible)
-            {
-                return true;
-            }
-
-            if (Core.Player.InCombat && !InCombat)
-            {
-                return true;
-            }
-
-            if (Talk.DialogOpen)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
+        
         protected override void OnStart()
         {
 
@@ -158,12 +117,12 @@ namespace ff14bot.NeoProfiles.Tags
 
         protected override void OnDone()
         {
-            BlacklistAfter = false;
+            
         }
 
         protected override void OnResetCachedDone()
         {
-            BlacklistAfter = false;
+            
         }
     }
 }

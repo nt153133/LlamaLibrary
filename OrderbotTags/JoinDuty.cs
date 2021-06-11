@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Configuration;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.XmlEngine;
@@ -66,13 +67,35 @@ namespace LlamaLibrary.OrderbotTags
             {
 				Logging.WriteDiagnostic("Joining Duty as normal group.");
 				GameSettingsManager.JoinWithUndersizedParty = false;
-            }			
-			
-		   Logging.WriteDiagnostic("Queuing for "+ DataManager.InstanceContentResults[(uint) DutyId].CurrentLocaleName);
-           DutyManager.Queue(DataManager.InstanceContentResults[(uint) DutyId]);
-           
-           await Coroutine.Wait(5000, () => (DutyManager.QueueState == QueueState.CommenceAvailable || DutyManager.QueueState == QueueState.JoiningInstance));
-           Logging.WriteDiagnostic("Queued for Dungeon");
+            }
+
+           if (!PartyManager.IsInParty || PartyManager.IsInParty && PartyManager.IsPartyLeader)
+           {
+	           while (DutyManager.QueueState == QueueState.None)
+	           {
+		           Logging.WriteDiagnostic("Queuing for " + DataManager.InstanceContentResults[(uint) DutyId].CurrentLocaleName);
+		           DutyManager.Queue(DataManager.InstanceContentResults[(uint) DutyId]);
+		           await Coroutine.Wait(10000, () => (DutyManager.QueueState == QueueState.CommenceAvailable || DutyManager.QueueState == QueueState.JoiningInstance));
+		           if (DutyManager.QueueState != QueueState.None)
+		           {
+			           Logging.WriteDiagnostic("Queued for Dungeon");
+		           }
+
+		           if (DutyManager.QueueState == QueueState.None)
+		           {
+			           Logging.WriteDiagnostic("Something went wrong, queueing again...");
+			           Logging.WriteDiagnostic("Queuing for " + DataManager.InstanceContentResults[(uint) DutyId].CurrentLocaleName);
+			           DutyManager.Queue(DataManager.InstanceContentResults[(uint) DutyId]);
+		           }
+	           }
+           }
+           else
+           {
+			   Logging.WriteDiagnostic("Waiting for dungeon queue.");
+	           await Coroutine.Wait(-1, () => (DutyManager.QueueState == QueueState.CommenceAvailable || DutyManager.QueueState == QueueState.JoiningInstance));
+	           Logging.WriteDiagnostic("Queued for Dungeon");
+           }
+
 
            while (DutyManager.QueueState != QueueState.None || DutyManager.QueueState != QueueState.InDungeon || CommonBehaviors.IsLoading)
            {

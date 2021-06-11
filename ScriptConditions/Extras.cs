@@ -68,6 +68,17 @@ namespace LlamaLibrary.ScriptConditions
         public static bool IsTargetableNPC(int npcID)
         {
             return GameObjectManager.GameObjects.Any(i => i.NpcId == (uint) npcID && i.IsVisible && i.IsTargetable);
+        }	
+
+        public static bool IsDutyEnded()
+        {
+			if (DirectorManager.ActiveDirector != null)
+			{
+				var instanceDirector = (ff14bot.Directors.InstanceContentDirector) DirectorManager.ActiveDirector;
+				return instanceDirector.InstanceEnded;
+			}
+
+			return true;
         }		
 		
     }
