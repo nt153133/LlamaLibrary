@@ -1,3 +1,5 @@
+<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/soACz8y"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px;font-size:28px !important;">Buy me a coffee</span></a>
+
 # LlamaLibrary
 
 This is a collection of botbases and general code which fills in some of the functionality missing from RB.
@@ -54,4 +56,4 @@ This is really a main botbase but down here because I'm not happy with it. It wi
 
 https://discord.gg/bmgCq39
 
-<a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/soACz8y"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px;font-size:28px !important;">Buy me a coffee</span></a>
+
