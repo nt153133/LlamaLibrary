@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Managers;
 using ff14bot.RemoteWindows;
@@ -21,12 +23,6 @@ namespace LlamaLibrary.RemoteWindows
         internal string _name;
         private const int Offset0 = 0x1CA;
         private const int Offset2 = 0x160;
-        /*      Can Also do this: Will pull the same offsets Mastahg stores in RB
-                var off = typeof(Core).GetProperty("Offsets", BindingFlags.NonPublic | BindingFlags.Static);
-                var struct158 = off.PropertyType.GetFields()[72];
-                var offset0 = (int)struct158.FieldType.GetFields()[0].GetValue(struct158.GetValue(off.GetValue(null)));
-                var offset2 = (int)struct158.FieldType.GetFields()[2].GetValue(struct158.GetValue(off.GetValue(null)));
-        */
 
         public virtual bool IsOpen => WindowByName != null;
 
@@ -44,7 +40,7 @@ namespace LlamaLibrary.RemoteWindows
         public virtual void Close()
         {
             if (IsOpen)
-                SendAction(1, 3uL, 4294967295uL);
+                SendAction(1, 3uL, 0xFFFFFFFFuL);
         }
 
         public int GetAgentInterfaceId()
@@ -55,6 +51,12 @@ namespace LlamaLibrary.RemoteWindows
             var test = WindowByName.TryFindAgentInterface();
 
             return test == null ? 0 : test.Id;
+        }
+
+        public async Task<bool> WaitTillWindowOpen(int maxTimeOut = 5000)
+        {
+            await Coroutine.Wait(maxTimeOut, () => IsOpen);
+            return IsOpen;
         }
 
         protected TwoInt[] ___Elements()
