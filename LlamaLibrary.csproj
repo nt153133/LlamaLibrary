@@ -107,6 +107,7 @@
     <Compile Include="Helpers\Navigation.cs" />
     <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="Helpers\RowenaHelper.cs" />
+    <Compile Include="Helpers\SyncRoutines.cs" />
     <Compile Include="Helpers\Timers.cs" />
     <Compile Include="Helpers\TimersSettings.cs" />
     <Compile Include="Helpers\Translator.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="RemoteAgents\AgentHandIn.cs" />
     <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
     <Compile Include="RemoteAgents\AgentHWDScore.cs" />
+    <Compile Include="RemoteAgents\AgentInventoryBuddy.cs" />
     <Compile Include="RemoteAgents\AgentItemAppraisal.cs" />
     <Compile Include="RemoteAgents\AgentMasterPieceSupply.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />
@@ -231,12 +233,14 @@
     <Compile Include="RemoteWindows\HWDLottery.cs" />
     <Compile Include="RemoteWindows\HWDScore.cs" />
     <Compile Include="RemoteWindows\HWDSupply.cs" />
+    <Compile Include="RemoteWindows\InventoryBuddy.cs" />
     <Compile Include="RemoteWindows\MasterPieceSupply.cs" />
     <Compile Include="RemoteWindows\MateriaAttach.cs" />
     <Compile Include="RemoteWindows\MateriaAttachDialog.cs" />
     <Compile Include="RemoteWindows\MiniGameAimg.cs" />
     <Compile Include="RemoteWindows\MiniGameBotanist.cs" />
     <Compile Include="RemoteWindows\Mobhunt.cs" />
+    <Compile Include="RemoteWindows\NeedGreed.cs" />
     <Compile Include="RemoteWindows\RecommendEquip.cs" />
     <Compile Include="RemoteWindows\RemoteWindow.cs" />
     <Compile Include="RemoteWindows\RetainerList.cs" />

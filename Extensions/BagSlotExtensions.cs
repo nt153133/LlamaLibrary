@@ -293,5 +293,65 @@ namespace LlamaLibrary.Extensions
         {
             return !slot.Item.Untradeable && !slot.IsCollectable && !(slot.SpiritBond > 0);
         }
+
+        public static bool AddToSaddlebagQuantity(this BagSlot bagSlot, uint amount)
+        { 
+            return AddToSaddleCall(Offsets.ItemFuncParam, (uint) bagSlot.BagId, bagSlot.Slot, (uint) amount) == IntPtr.Zero;
+        }
+        
+        public static bool RemoveFromSaddlebagQuantity(this BagSlot bagSlot, uint amount)
+        {
+            return RemoveFromSaddleCall(Offsets.ItemFuncParam, (uint) bagSlot.BagId, bagSlot.Slot, (uint) amount) == IntPtr.Zero;
+        }
+
+        public static void UseItemRaw(this BagSlot bagSlot)
+        {
+            BagSlotUseItemCall(Offsets.ItemFuncParam, bagSlot.TrueItemId, (uint) bagSlot.BagId, bagSlot.Slot);
+        }
+
+        internal static byte BagSlotUseItemCall(IntPtr InventoryManager, uint TrueItemId, uint inventoryContainer, int inventorySlot)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    return Core.Memory.CallInjected64<byte>(Offsets.BagSlotUseItem,
+                                                            InventoryManager,
+                                                            TrueItemId,
+                                                            inventoryContainer,
+                                                            inventorySlot);
+                }
+            }
+        }
+        
+        internal static IntPtr RemoveFromSaddleCall(IntPtr InventoryManager, uint inventoryContainer, ushort inventorySlot, uint count)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    return Core.Memory.CallInjected64<IntPtr>(Offsets.RemoveFromSaddle,
+                                                              InventoryManager,
+                                                              inventoryContainer,
+                                                              inventorySlot,
+                                                              count);
+                }
+            }
+        }
+        
+        internal static IntPtr AddToSaddleCall(IntPtr InventoryManager, uint inventoryContainer, ushort inventorySlot, uint count)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    return Core.Memory.CallInjected64<IntPtr>(Offsets.AddToSaddle,
+                                                              InventoryManager,
+                                                              inventoryContainer,
+                                                              inventorySlot,
+                                                              count);
+                }
+            }
+        }
     }
 }

@@ -120,6 +120,16 @@ namespace LlamaLibrary.Memory
         
         [Offset("Search 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 83 B9 ? ? ? ? ? 41 8B F0 8B EA 48 8B F9 0F 85 ? ? ? ?")]
         internal static IntPtr TradeBagSlot;
+        
+        [Offset("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? 8B CA 41 8B F1")]
+        internal static IntPtr BagSlotUseItem;
+        
+        [Offset("48 89 6C 24 ? 56 41 56 41 57 48 83 EC ? 45 8B F9 45 0F B7 F0")]
+        internal static IntPtr RemoveFromSaddle;
+        
+        [Offset("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 41 56 48 83 EC ? 45 8B F1")]
+        internal static IntPtr AddToSaddle;
+
 
       //  [Offset("Search 66 83 78 ? ? 74 ? 8B 78 ? E8 ? ? ? ? Add 3 Read8")]
       //  internal static int VentureTask;

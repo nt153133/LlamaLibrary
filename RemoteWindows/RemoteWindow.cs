@@ -4,6 +4,7 @@ using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Managers;
 using ff14bot.RemoteWindows;
+using LlamaLibrary.Helpers;
 
 namespace LlamaLibrary.RemoteWindows
 {
@@ -16,17 +17,25 @@ namespace LlamaLibrary.RemoteWindows
         {
             // _instance = new T();
         }
+        
+        protected RemoteWindow(string name, AgentInterface agent) : base(name, agent)
+        {
+            // _instance = new T();
+        }
     }
 
     public abstract class RemoteWindow
     {
         internal string _name;
+        internal AgentInterface _agent;
         private const int Offset0 = 0x1CA;
         private const int Offset2 = 0x160;
 
         public virtual bool IsOpen => WindowByName != null;
 
         public virtual string Name => _name;
+        
+        public virtual AgentInterface Agent => _agent;
 
         public virtual AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(Name);
 
@@ -34,6 +43,12 @@ namespace LlamaLibrary.RemoteWindows
 
         protected RemoteWindow(string name)
         {
+            _name = name;
+        }
+
+        protected RemoteWindow(string name, AgentInterface agent)
+        {
+            _agent = agent;
             _name = name;
         }
 
@@ -76,6 +91,15 @@ namespace LlamaLibrary.RemoteWindows
         {
             if (IsOpen)
                 WindowByName.SendAction(pairCount, param);
+        }
+        
+        public virtual async Task<bool> Open()
+        {
+            if (IsOpen) return true;
+            
+            Agent.Toggle();
+            return await WaitTillWindowOpen(5000);
+            //return SyncRoutines.WaitUntil(() => IsOpen, 50, 5000, true);
         }
     }
 }
