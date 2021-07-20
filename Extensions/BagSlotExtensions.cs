@@ -128,7 +128,7 @@ namespace LlamaLibrary.Extensions
             {
                 using (Core.Memory.TemporaryCacheState(false))
                 {
-                    Core.Memory.CallInjected64<uint>(Offsets.EntrustRetainerFunc, new object[5]
+                    var result = Core.Memory.CallInjected64<uint>(Offsets.EntrustRetainerFunc, new object[5]
                     {
                         AgentRetainerInventory.Instance.Pointer,
                         0,
@@ -352,6 +352,11 @@ namespace LlamaLibrary.Extensions
                                                               count);
                 }
             }
+        }
+
+        public static void RetainerEntrustQuantity(this BagSlot bagslot, uint amount)
+        {
+            bagslot.RetainerEntrustQuantity((int)amount);
         }
     }
 }

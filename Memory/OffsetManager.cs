@@ -33,6 +33,7 @@ using LlamaLibrary.RemoteAgents;
         private static bool initDone = false;
         private static StringBuilder sb= new StringBuilder();
         public static Dictionary<string, string> patterns = new Dictionary<string, string>();
+        public static Dictionary<string, string> constants = new Dictionary<string, string>();
 
         private static readonly bool _debug = false;
         internal static void Init()
@@ -238,6 +239,11 @@ using LlamaLibrary.RemoteAgents;
                     sb.AppendLine($"{field.DeclaringType.DeclaringType.Name}_{field.Name}, {offset.Pattern} - {offset.PatternCN}");
                     patterns.Add($"{field.DeclaringType.DeclaringType.Name}_{field.Name}", offset.Pattern);
                 }
+                else if (field.DeclaringType != null && field.DeclaringType.IsNested && field.FieldType == typeof(int))
+                {
+                    //sb.AppendLine($"{field.DeclaringType.DeclaringType.Name}_{field.Name}, {offset.Pattern} - {offset.PatternCN}");
+                    constants.Add($"{field.DeclaringType.DeclaringType.Name}_{field.Name}", offset.Pattern);
+                }
                 else if (field.FieldType != typeof(int))
                 {
                     sb.AppendLine($"{field.Name}, {offset.Pattern} - {offset.PatternCN}");
@@ -246,6 +252,7 @@ using LlamaLibrary.RemoteAgents;
                 else
                 {
                     sb.AppendLine($"{field.Name}, {offset.Pattern} - {offsetCN?.PatternCN}");
+                    constants.Add($"{field.Name}", offset.Pattern);
                 }
 
             if (valna != null)
