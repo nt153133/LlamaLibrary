@@ -8,44 +8,60 @@ namespace LlamaLibrary.Structs
     [StructLayout(LayoutKind.Sequential, Size = 0x48)]
     public struct RetainerInfo
     {
+        //0x0
         public ulong Unique;
         
+        //0x8
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
         public string Name;
 
+        //0x28
         public byte enabled;
 
+        //0x29
         public ClassJobType Job;
 
+        //0x2A
         public byte Level;
 
+        //0x2B
         public byte FilledInventorySlots;
 
+        //0x2C
         public int Gil;
 
+        //0x30
         public RetainerCity MarketZone;
         
+        //0x31
         public byte NumberOfMbItems;
         
+        //0x32
         private byte Unknown1;
         
+        //0x33
         private byte Unknown2;
         
+        //0x34
         public int MBTimeOutTimestamp;
         
+        //0x38
         public int VentureTask;
         
+        //0x3C
         public int VentureEndTimestamp;
         
+        //0x40
         private int Unknown3;
         
+        //0x44
         private int Unknown4;
 
         public bool Active => enabled == 1;
 
         public override string ToString()
         {
-            return $"{Name} ({(enabled == 1 ? "enabled" : "disabled")}) - {Job} ({Level}) Gil: {Gil} Selling: {NumberOfMbItems} Venture: {VentureTask} VentureEnd: {UnixTimeStampToDateTime(VentureEndTimestamp)}";
+            return $"{Name} ({(enabled == 1 ? "enabled" : "disabled")}) - {Job} ({Level}) Gil: {Gil} Selling: {NumberOfMbItems} Venture: {VentureTask} VentureEnd: {UnixTimeStampToDateTime(VentureEndTimestamp)} {Unique}";
         }
         
         public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )

@@ -9,6 +9,7 @@ using ff14bot.Helpers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
 using LlamaLibrary.Helpers;
+using LlamaLibrary.Retainers;
 using LlamaLibrary.Structs;
 using static ff14bot.RemoteWindows.Talk;
 
@@ -51,23 +52,7 @@ namespace LlamaLibrary.RemoteWindows
 
         public RetainerInfo[] OrderedRetainerList(RetainerInfo[] retainers)
         {
-            if (Translator.Language == Language.Chn)
-                return retainers;
-            
-            int count = retainers.Length;
-            var result = new RetainerInfo[count];
-            //Logging.Write($"Retainer length {retainers.Length}");
-            int index = 0;
-
-            for (int i = 0; i < count; i++)
-            {
-                //Logging.Write($"Retainer name:{RetainerName(i)}");
-                result[index] = retainers.First(j => j.Name.Trim().Contains(RetainerName(i).Trim()));
-                Logging.Write($"{i} {result[index].Name}");
-                index++;
-            }
-
-            return result;
+            return HelperFunctions.GetOrderedRetainerArray(retainers);
         }
 
         public async Task<bool> SelectRetainer(int index)

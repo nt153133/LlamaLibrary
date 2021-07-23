@@ -18,6 +18,7 @@ using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.Retainers
 {
@@ -356,20 +357,72 @@ namespace LlamaLibrary.Retainers
                 return true;
             }
 
-            RequestRetainerData();
-            await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
+            await ForceGetRetainerData();
             return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
         }
 
+        public static async Task ForceGetRetainerData()
+        {
+            RequestRetainerData();
+            await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
+            await Coroutine.Wait(3000, () => Core.Memory.Read<byte>(Offsets.RetainerData + Offsets.RetainerDataLoaded) != 0);
+        }
+
+        public static async Task<RetainerInfo[]> GetRetainerArray()
+        {
+            if (await VerifiedRetainerData())
+            {
+                
+                return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
+            }
+
+            return new RetainerInfo[0];
+        }
+
+        public static async Task<RetainerInfo[]> GetOrderedRetainerArray()
+        {
+            var retainers = await GetRetainerArray();
+            if (retainers.Length == 0) return retainers;
+            
+            return GetOrderedRetainerArray(retainers);
+        }
+        
+        public static RetainerInfo[] GetOrderedRetainerArray(RetainerInfo[] retainers)
+        {
+            if (retainers.Length == 0) return retainers;
+            
+            int count = retainers.Length;
+            var result = new RetainerInfo[count];
+
+            var order = Core.Memory.ReadArray<byte>(Offsets.RetainerData + Offsets.RetainerDataOrder, 0xA);
+            
+            if (order[0] == 255) return retainers;
+
+            int index = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                result[index] = retainers[order[i]];
+                index++;
+            }
+            
+            return result;
+        }
+
+        public static int FuncNumberOfRetainers()
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+                return Core.Memory.CallInjected64<int>(Offsets.GetNumberOfRetainers,
+                                                   Offsets.RetainerData);
+        }
+        
         public static async Task<int> GetNumberOfRetainers()
         {
             var verified = await VerifiedRetainerData();
             if (!verified)
                 return 0;
 
-            lock (Core.Memory.Executor.AssemblyLock)
-                return Core.Memory.CallInjected64<int>(Offsets.GetNumberOfRetainers,
-                                                       Offsets.RetainerData);
+            return FuncNumberOfRetainers();
         }
 
         public static string GetRetainerName(int index)
