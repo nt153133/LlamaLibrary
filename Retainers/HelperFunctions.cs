@@ -368,8 +368,16 @@ namespace LlamaLibrary.Retainers
             await Coroutine.Wait(3000, () => Core.Memory.Read<byte>(Offsets.RetainerData + Offsets.RetainerDataLoaded) != 0);
         }
 
-        public static async Task<RetainerInfo[]> GetRetainerArray()
+        public static async Task<RetainerInfo[]> GetRetainerArray(bool force = false)
         {
+            if (force)
+            {
+                await ForceGetRetainerData();
+
+                return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
+
+            }
+            
             if (await VerifiedRetainerData())
             {
                 
@@ -379,9 +387,9 @@ namespace LlamaLibrary.Retainers
             return new RetainerInfo[0];
         }
 
-        public static async Task<RetainerInfo[]> GetOrderedRetainerArray()
+        public static async Task<RetainerInfo[]> GetOrderedRetainerArray(bool force = false)
         {
-            var retainers = await GetRetainerArray();
+            var retainers = await GetRetainerArray(force);
             if (retainers.Length == 0) return retainers;
             
             return GetOrderedRetainerArray(retainers);
