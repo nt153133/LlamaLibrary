@@ -244,7 +244,7 @@ namespace LlamaLibrary.Retainers
                 }
             }
 
-            if (RetainerSettings.Instance.DepositFromPlayer) await RetainerRoutine.DumpItems();
+            if (RetainerSettings.Instance.DepositFromPlayer) await RetainerRoutine.DumpItems(RetainerSettings.Instance.DepositFromSaddleBags);
 
             if (RetainerSettings.Instance.GetGil)
                 GetRetainerGil();

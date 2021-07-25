@@ -11,6 +11,8 @@ namespace LlamaLibrary.Retainers
         private static RetainerSettings _settings;
 
         private bool _deposit;
+        
+        private bool _depositSaddle;
 
         private bool _debug;
 
@@ -43,6 +45,21 @@ namespace LlamaLibrary.Retainers
                 if (_deposit != value)
                 {
                     _deposit = value;
+                    Save();
+                }
+            }
+        }
+        
+        [Description("Entrust same items from saddle bags")]
+        [DefaultValue(false)] //shift +x
+        public bool DepositFromSaddleBags
+        {
+            get => _depositSaddle;
+            set
+            {
+                if (_depositSaddle != value)
+                {
+                    _depositSaddle = value;
                     Save();
                 }
             }

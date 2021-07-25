@@ -24,6 +24,11 @@ namespace LlamaLibrary
     public static class RetainerRoutine
     {
         public static string Name = "RetainerRoutine";
+        
+        private static readonly InventoryBagId[] SaddlebagIds =
+        {
+            (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
+        };
 
         internal static async Task<bool> ReadRetainers(Task retainerTask)
         {
@@ -345,7 +350,7 @@ namespace LlamaLibrary
             return true;
         }
 
-        internal static async Task DumpItems()
+        internal static async Task DumpItems(bool includeSaddle = false)
         {
             var playerItems = InventoryManager.GetBagsByInventoryBagId(PlayerInventoryBagIds).Select(i => i.FilledSlots).SelectMany(x => x).AsParallel()
                 .Where(FilterStackable);
@@ -359,6 +364,42 @@ namespace LlamaLibrary
                 LogLoud($"Want to move {slot}");
                 slot.RetainerEntrustQuantity((int) slot.Count);
                 await Coroutine.Sleep(100);
+            }
+
+            if (includeSaddle)
+            {
+                await RetrieveFromSaddleBagsRetainer();
+            }
+        }
+
+        internal static async Task RetrieveFromSaddleBagsRetainer()
+        {
+            if (await InventoryBuddy.Instance.Open())
+            {
+                Log("Saddlebags window open");
+
+                var saddleInventory = InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i => i.FilledSlots);
+
+                var overlap = saddleInventory.Where(i => InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).SelectMany(k => k.FilledSlots).Any(j => j.TrueItemId == i.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize));
+                if (overlap.Any())
+                {
+                    foreach (var slot in overlap)
+                    {
+                        var haveSlot = InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).SelectMany(k => k.FilledSlots).FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
+
+                        if (haveSlot == default(BagSlot)) break;
+
+                        slot.RetainerEntrustQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
+
+                        Log($"(Saddlebag) Entrust {slot.Item.CurrentLocaleName}");
+
+                        await Coroutine.Sleep(500);
+                    }
+                }
+
+                InventoryBuddy.Instance.Close();
+                await Coroutine.Wait(5000, () => !InventoryBuddy.Instance.IsOpen);
+                Log("Saddlebags window closed");
             }
         }
 

@@ -377,7 +377,7 @@ namespace LlamaLibrary
             }
             await Coroutine.Sleep(1000);
             
-            await RetainerRoutine.ReadRetainers(RetainerRoutine.DumpItems);
+            await RetainerRoutine.ReadRetainers(RetainerRoutine.DumpItems());
         }
         
         public async Task DumpItemsByCategoryMain(int index)
