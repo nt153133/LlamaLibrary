@@ -1,10 +1,12 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -12,7 +14,9 @@ using Clio.Utilities;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
+using ff14bot.Directors;
 using ff14bot.Enums;
+using ff14bot.Forms.ugh;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
@@ -44,52 +48,7 @@ namespace LlamaLibrary
 {
     public class TesterBase : BotBase
     {
-        private static Dictionary<byte, string> FishingState = new Dictionary<byte, string>
-        {
-            {0, "Unknown"},
-            {1, "In Craft"},
-            {2, "Not Fishing"},
-            {26, "In Craft - Using synthesis (element) action"},
-            {30, "In Craft - Using touch action"},
-            {29, "In Craft - Using synthesis action"},
-            {35, "Fishing Stance"},
-            {37, "Packing Up"},
-            {38, "Casting"},
-            {39, "Mooch Casting"},
-            {40, "Casting"},
-            {41, "Fishing"},
-            {42, "Fishing"},
-            {43, "Fishing"},
-            {44, "Fishing"},
-            {45, "Fishing"},
-            {46, "Fishing"},
-            {47, "Unsuccessful"},
-            {48, "Successful"},
-            {49, "Light Reeling"},
-            {50, "Light HQ Reeling"},
-            {51, "Medium Reeling"},
-            {52, "Medium HQ Reeling"},
-            {53, "Big Reeling"},
-            {54, "Big HQ Reeling"},
-            {56, "Light Bite"},
-            {57, "Medium Bite"},
-            {58, "Heavy Bite"}
-        };
-
-        private static Dictionary<byte, string> CraftingState = new Dictionary<byte, string>
-        {
-            {0, "Unknown"},
-            {1, "In Craft"},
-            {2, "Not Crafting"},
-            {5, "Synthesizing"},
-            {26, "In Craft - Using synthesis (element) action"},
-            {30, "In Craft - Using touch action"},
-            {29, "In Craft - Using synthesis action"}
-        };
-
-
         internal static List<RetainerTaskData> VentureData;
-
 
         private static readonly List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
         {
@@ -117,97 +76,6 @@ namespace LlamaLibrary
             (820, new Vector3(7.186951f, 83.17688f, 31.448853f)) //Eulmore(Eulmore) 
         };
 
-        private static List<FcActionShopItem> FcShopActions = new List<FcActionShopItem>()
-        {
-            new FcActionShopItem(1, 5, 3010, 0, "The Heat of Battle"),
-            new FcActionShopItem(2, 5, 3010, 1, "Earth and Water"),
-            new FcActionShopItem(3, 5, 3010, 2, "Helping Hand"),
-            new FcActionShopItem(4, 5, 2408, 3, "A Man's Best Friend"),
-            new FcActionShopItem(5, 5, 2408, 4, "Mark Up"),
-            new FcActionShopItem(6, 5, 2408, 5, "Seal Sweetener"),
-            new FcActionShopItem(17, 5, 2408, 6, "Jackpot"),
-            new FcActionShopItem(7, 5, 1505, 7, "Brave New World"),
-            new FcActionShopItem(8, 5, 2408, 8, "Live off the Land"),
-            new FcActionShopItem(9, 5, 2408, 9, "What You See"),
-            new FcActionShopItem(10, 5, 2408, 10, "Eat from the Hand"),
-            new FcActionShopItem(11, 5, 2408, 11, "In Control"),
-            new FcActionShopItem(12, 5, 3010, 12, "That Which Binds Us"),
-            new FcActionShopItem(13, 5, 2408, 13, "Meat and Mead"),
-            new FcActionShopItem(14, 5, 3010, 14, "Proper Care"),
-            new FcActionShopItem(15, 5, 2408, 15, "Back on Your Feet"),
-            new FcActionShopItem(16, 5, 3010, 16, "Reduced Rates"),
-            new FcActionShopItem(31, 8, 6020, 17, "The Heat of Battle II"),
-            new FcActionShopItem(32, 8, 6020, 18, "Earth and Water II"),
-            new FcActionShopItem(33, 8, 6020, 19, "Helping Hand II"),
-            new FcActionShopItem(34, 8, 6020, 20, "A Man's Best Friend II"),
-            new FcActionShopItem(35, 8, 6020, 21, "Mark Up II"),
-            new FcActionShopItem(36, 8, 6020, 22, "Seal Sweetener II"),
-            new FcActionShopItem(47, 8, 6020, 23, "Jackpot II"),
-            new FcActionShopItem(37, 8, 3010, 24, "Brave New World II"),
-            new FcActionShopItem(38, 8, 6020, 25, "Live off the Land II"),
-            new FcActionShopItem(39, 8, 6020, 26, "What You See II"),
-            new FcActionShopItem(40, 8, 6020, 27, "Eat from the Hand II"),
-            new FcActionShopItem(41, 8, 6020, 28, "In Control II"),
-            new FcActionShopItem(42, 8, 6020, 29, "That Which Binds Us II"),
-            new FcActionShopItem(43, 8, 6020, 30, "Meat and Mead II"),
-            new FcActionShopItem(44, 8, 6020, 31, "Proper Care II"),
-            new FcActionShopItem(45, 8, 4816, 32, "Back on Your Feet II"),
-            new FcActionShopItem(46, 8, 6020, 33, "Reduced Rates II")
-        };
-
-        private static Dictionary<uint, string> FcActionList = new Dictionary<uint, string>()
-        {
-            {1, "The Heat of Battle"},
-            {2, "Earth and Water"},
-            {3, "Helping Hand"},
-            {4, "A Man's Best Friend"},
-            {5, "Mark Up"},
-            {6, "Seal Sweetener"},
-            {7, "Brave New World"},
-            {8, "Live off the Land"},
-            {9, "What You See"},
-            {10, "Eat from the Hand"},
-            {11, "In Control"},
-            {12, "That Which Binds Us"},
-            {13, "Meat and Mead"},
-            {14, "Proper Care"},
-            {15, "Back on Your Feet"},
-            {16, "Reduced Rates"},
-            {17, "Jackpot"},
-            {31, "The Heat of Battle II"},
-            {32, "Earth and Water II"},
-            {33, "Helping Hand II"},
-            {34, "A Man's Best Friend II"},
-            {35, "Mark Up II"},
-            {36, "Seal Sweetener II"},
-            {37, "Brave New World II"},
-            {38, "Live off the Land II"},
-            {39, "What You See II"},
-            {40, "Eat from the Hand II"},
-            {41, "In Control II"},
-            {42, "That Which Binds Us II"},
-            {43, "Meat and Mead II"},
-            {44, "Proper Care II"},
-            {45, "Back on Your Feet II"},
-            {46, "Reduced Rates II"},
-            {47, "Jackpot II"},
-            {61, "The Heat of Battle III"},
-            {62, "Earth and Water III"},
-            {63, "Helping Hand III"},
-            {64, "A Man's Best Friend III"},
-            {65, "Mark Up III"},
-            {66, "Seal Sweetener III"},
-            {68, "Live off the Land III"},
-            {69, "What You See III"},
-            {70, "Eat from the Hand III"},
-            {71, "In Control III"},
-            {72, "That Which Binds Us III"},
-            {73, "Meat and Mead III"},
-            {74, "Proper Care III"},
-            {76, "Reduced Rates III"},
-            {77, "Jackpot III"},
-        };
-
         private readonly SortedDictionary<string, List<string>> luaFunctions = new SortedDictionary<string, List<string>>();
 
 
@@ -215,6 +83,20 @@ namespace LlamaLibrary
         private Composite _root;
 
         public Dictionary<string, List<Composite>> hooks;
+        
+        private static readonly InventoryBagId[] RetainerBagIds =
+        {
+            InventoryBagId.Retainer_Page1, InventoryBagId.Retainer_Page2, InventoryBagId.Retainer_Page3,
+            InventoryBagId.Retainer_Page4, InventoryBagId.Retainer_Page5, InventoryBagId.Retainer_Page6,
+            InventoryBagId.Retainer_Page7
+        };
+        
+        private static readonly InventoryBagId[] SaddlebagIds =
+        {
+            (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
+        };
+        
+        private static uint[] npcids = new uint[] {196818, 196833, 196834, 196835, 196836, 196837, 197084};
 
 
         public TesterBase()
@@ -238,11 +120,14 @@ namespace LlamaLibrary
         public override Composite Root => _root;
 
         public override bool WantButton { get; } = true;
+        
+        private static Random _rand = new Random();
 
 
         public override void OnButtonPress()
         {
-            DumpLuaFunctions();
+            /*
+             DumpLuaFunctions();
             StringBuilder sb1 = new StringBuilder();
             foreach (var obj in luaFunctions.Keys.Where(obj => luaFunctions[obj].Count >= 1))
             {
@@ -254,6 +139,7 @@ namespace LlamaLibrary
             }
 
             Log($"\n {sb1}");
+            */
             DumpOffsets();
             DumpLLOffsets();
         }
@@ -330,6 +216,7 @@ namespace LlamaLibrary
 
         public override void Stop()
         {
+            
             _root = null;
         }
 
@@ -362,12 +249,12 @@ namespace LlamaLibrary
         {
             var GatheringItems = new Dictionary<uint, (uint Reward, uint Cost)>
             {
-                {31125, (30331, 10)},
-                {31130, (30333, 10)},
-                {31127, (30335, 10)},
-                {31132, (30337, 10)},
-                {31129, (30339, 10)},
-                {31134, (30340, 10)}
+                { 31125, (30331, 10) },
+                { 31130, (30333, 10) },
+                { 31127, (30335, 10) },
+                { 31132, (30337, 10) },
+                { 31129, (30339, 10) },
+                { 31134, (30340, 10) }
             };
 
             var turninItems = InventoryManager.FilledSlots.Where(i => i.IsHighQuality && GatheringItems.Keys.Contains(i.RawItemId));
@@ -396,26 +283,24 @@ namespace LlamaLibrary
 
         public static async Task TurninSkySteelCrafting()
         {
-            
-            
             Dictionary<uint, CraftingRelicTurnin> TurnItemList = new Dictionary<uint, CraftingRelicTurnin>
             {
-                {31101, new CraftingRelicTurnin(31101, 0, 1, 2000, 30315)},
-                {31109, new CraftingRelicTurnin(31109, 0, 0, 3000, 30316)},
-                {31102, new CraftingRelicTurnin(31102, 1, 1, 2000, 30317)},
-                {31110, new CraftingRelicTurnin(31110, 1, 0, 3000, 30318)},
-                {31103, new CraftingRelicTurnin(31103, 2, 1, 2000, 30319)},
-                {31111, new CraftingRelicTurnin(31111, 2, 0, 3000, 30320)},
-                {31104, new CraftingRelicTurnin(31104, 3, 1, 2000, 30321)},
-                {31112, new CraftingRelicTurnin(31112, 3, 0, 3000, 30322)},
-                {31105, new CraftingRelicTurnin(31105, 4, 1, 2000, 30323)},
-                {31113, new CraftingRelicTurnin(31113, 4, 0, 3000, 30324)},
-                {31106, new CraftingRelicTurnin(31106, 5, 1, 2000, 30325)},
-                {31114, new CraftingRelicTurnin(31114, 5, 0, 3000, 30326)},
-                {31107, new CraftingRelicTurnin(31107, 6, 1, 2000, 30327)},
-                {31115, new CraftingRelicTurnin(31115, 6, 0, 3000, 30328)},
-                {31108, new CraftingRelicTurnin(31108, 7, 1, 2000, 30329)},
-                {31116, new CraftingRelicTurnin(31116, 7, 0, 3000, 30330)}
+                { 31101, new CraftingRelicTurnin(31101, 0, 1, 2000, 30315) },
+                { 31109, new CraftingRelicTurnin(31109, 0, 0, 3000, 30316) },
+                { 31102, new CraftingRelicTurnin(31102, 1, 1, 2000, 30317) },
+                { 31110, new CraftingRelicTurnin(31110, 1, 0, 3000, 30318) },
+                { 31103, new CraftingRelicTurnin(31103, 2, 1, 2000, 30319) },
+                { 31111, new CraftingRelicTurnin(31111, 2, 0, 3000, 30320) },
+                { 31104, new CraftingRelicTurnin(31104, 3, 1, 2000, 30321) },
+                { 31112, new CraftingRelicTurnin(31112, 3, 0, 3000, 30322) },
+                { 31105, new CraftingRelicTurnin(31105, 4, 1, 2000, 30323) },
+                { 31113, new CraftingRelicTurnin(31113, 4, 0, 3000, 30324) },
+                { 31106, new CraftingRelicTurnin(31106, 5, 1, 2000, 30325) },
+                { 31114, new CraftingRelicTurnin(31114, 5, 0, 3000, 30326) },
+                { 31107, new CraftingRelicTurnin(31107, 6, 1, 2000, 30327) },
+                { 31115, new CraftingRelicTurnin(31115, 6, 0, 3000, 30328) },
+                { 31108, new CraftingRelicTurnin(31108, 7, 1, 2000, 30329) },
+                { 31116, new CraftingRelicTurnin(31116, 7, 0, 3000, 30330) }
             };
 
             var collectables = InventoryManager.FilledSlots.Where(i => i.IsCollectable).Select(x => x.RawItemId).Distinct();
@@ -472,35 +357,243 @@ namespace LlamaLibrary
                 }
             }
         }
+        
+        internal async Task RetrieveFromSaddleBagsRetainer()
+        {
+            if (await InventoryBuddy.Instance.Open())
+            {
+                Log("Saddlebags window open");
 
+                var saddleInventory = InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i => i.FilledSlots);
+                
+                var overlap = saddleInventory.Where(i => InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).SelectMany(k => k.FilledSlots).Any(j => j.TrueItemId == i.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize));
+                if (overlap.Any())
+                {
+                    foreach (var slot in overlap)
+                    {
+                        var haveSlot = InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).SelectMany(k => k.FilledSlots).FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
+                        
+                        if (haveSlot == default(BagSlot)) break;
+                        
+                        slot.RetainerEntrustQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
+                        
+                        Log($"(Saddlebag) Entrust {slot.Item.CurrentLocaleName}");
+
+                        await Coroutine.Sleep(500);
+                    }
+                }
+
+                InventoryBuddy.Instance.Close();
+                await Coroutine.Wait(5000, () => !InventoryBuddy.Instance.IsOpen);
+                Log("Saddlebags window closed");
+            }
+        }
+
+        internal async Task RetrieveFromSaddleBags()
+        {
+            if (await InventoryBuddy.Instance.Open())
+            {
+                Log("Saddlebags window open");
+
+                var saddleInventory = InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i => i.FilledSlots);
+
+                //Don't have enough room for all of it so pull for stackable items first
+                if (saddleInventory.Count() > InventoryManager.FreeSlots)
+                {
+                    var overlap = saddleInventory.Where(i => InventoryManager.FilledSlots.Any(j => j.TrueItemId == i.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize));
+                    if (overlap.Any())
+                    {
+                        foreach (var slot in overlap)
+                        {
+                            var haveSlot = InventoryManager.FilledSlots.FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
+                            
+                            if (haveSlot == default(BagSlot)) break;
+                            
+                            var result = slot.RemoveFromSaddlebagQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
+                            
+                            Log($"Retrieve {slot.Name} {result}");
+                            if (!result)
+                                break;
+                            await Coroutine.Sleep(500);
+                        }
+                    }
+                }
+
+                foreach (var slot in InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i=> i.FilledSlots))
+                {
+                    if (InventoryManager.FreeSlots < 1) break;
+                    
+                    var result = slot.RemoveFromSaddlebagQuantity(slot.Count);
+                    Log($"Retrieve {slot.Name} {result}");
+                    if (!result)
+                        break;
+                    await Coroutine.Sleep(500);
+                }
+                
+                InventoryBuddy.Instance.Close();
+                await Coroutine.Wait(5000, () => !InventoryBuddy.Instance.IsOpen);
+                Log("Saddlebags window closed");
+            }
+        }
+        
+        internal async Task AddToSaddleBags()
+        {
+            if (await InventoryBuddy.Instance.Open())
+            {
+                Log("Saddlebags window open");
+
+                var saddleInventory = InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i => i.FilledSlots);
+
+                //Don't have enough room for all of it so pull for stackable items first
+                if (saddleInventory.Count() > InventoryManager.FreeSlots)
+                {
+                    var overlap = saddleInventory.Where(i => InventoryManager.FilledSlots.Any(j => j.TrueItemId == i.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize));
+                    if (overlap.Any())
+                    {
+                        foreach (var slot in overlap)
+                        {
+                            var haveSlot = InventoryManager.FilledSlots.FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
+                            
+                            if (haveSlot == default(BagSlot)) break;
+                            
+                            var result = slot.RemoveFromSaddlebagQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
+                            
+                            Log($"Retrieve {slot.Name} {result}");
+                            if (!result)
+                                break;
+                            await Coroutine.Sleep(500);
+                        }
+                    }
+                }
+
+                foreach (var slot in InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i=> i.FilledSlots))
+                {
+                    if (InventoryManager.FreeSlots < 1) break;
+                    var result = slot.AddToSaddlebagQuantity(slot.Count);
+                    Log($"Move {slot.Name}");
+                    if (!result)
+                        break;
+                    await Coroutine.Sleep(_rand.Next(300,400));
+                }
+                
+                InventoryBuddy.Instance.Close();
+                await Coroutine.Wait(5000, () => !InventoryBuddy.Instance.IsOpen);
+                Log("Saddlebags window closed");
+            }
+        }
 
         private async Task<bool> Run()
         {
+            Navigator.PlayerMover = new SlideMover();
+            Navigator.NavigationProvider = new ServiceNavigationProvider();
+            //InventoryManager.GetBagByInventoryBagId(InventoryBagId.Bag1).Pointer
+            //         Log(Core.Memory.GetRelative(func));
+            Log("Started");
 
-            if (ScriptConditions.Helpers.HasIshgardItem() > 0)
+
+            if (!AetherialWheel.Instance.IsOpen)
             {
-                Log("HasIshgardItem");
+                await OpenWheelStand();
+            }
+
+
+            if (AetherialWheel.Instance.IsOpen)
+            {
+                foreach (var slot in AgentAetherWheel.Instance.GetWheelSlots())
+                {
+                    Log(slot.ToString());
+                }
+            }
+            //Need to check for stacks first, also need to toggle saddle bags window 
+            
+            /*
+            var _rand = new Random();
+            
+            foreach (var slot in InventoryManager.FilledSlots)
+            {
+                Log($"Move {slot.Name}");
+                if (!slot.AddToSaddlebagQuantity(slot.Count))
+                    break;
+                await Coroutine.Sleep(_rand.Next(300,400));
             }
             
-            if (ScriptConditions.Helpers.HasIshgardGatheringBotanist())
-            {
-                Log("HasIshgardGatheringBotanist");
-            }
+            Log("Getting items back");
+            await Coroutine.Sleep(500);
+            */
             
-            if (ScriptConditions.Helpers.HasIshgardGatheringFisher())
-            {
-                Log("HasIshgardGatheringFisher");
-            }
             
-            if (ScriptConditions.Helpers.HasIshgardGatheringMining())
+            
+            /*
+            foreach (var slot in InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i=> i.FilledSlots))
             {
-                Log("HasIshgardGatheringMining");
+                //Log($"Retrieve {slot.Name} x {Math.Max(slot.Count - 1,1)}");
+                var result = slot.RemoveFromSaddlebagQuantity(slot.Count);
+                Log($"Retrieve {slot.Name} {result}");
+                if (!result)
+                    break;
+                await Coroutine.Sleep(500);
             }
+            */
+            
+            
             
             TreeRoot.Stop("Stop Requested");
             return true;
+
+            return true;
         }
         
+        public static async Task<bool> OpenWheelStand()
+        {
+            if (!GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).Any())
+            {
+                Logging.Write("Can't find Fabrication Station");
+                return false;
+            }
+
+            var station = GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).First();
+
+            if (!station.IsWithinInteractRange)
+            {
+                await Navigation.FlightorMove(station.Location);
+            }
+
+            station.Interact();
+
+            await Coroutine.Wait(5000, () => Conversation.IsOpen);
+
+            Conversation.SelectLine(0);
+
+            await Coroutine.Wait(5000, () => AetherialWheel.Instance.IsOpen);
+
+            return AetherialWheel.Instance.IsOpen;
+        }
+
+        /*
+        internal static bool FlightorMove(Vector3 loc)
+        {
+            var moving = MoveResult.GeneratingPath;
+            var target = new FlyToParameters(loc);
+            while (!(moving == MoveResult.Done ||
+                     moving == MoveResult.ReachedDestination ||
+                     moving == MoveResult.Failed ||
+                     moving == MoveResult.Failure ||
+                     moving == MoveResult.PathGenerationFailed))
+            {
+                moving = Flightor.MoveTo(target);
+
+                MovementManager.Pulse();
+                GameObjectManager.Update();
+                Navigator.NavigationProvider?.OnPulse();
+                Thread.Sleep(25);
+                Thread.Yield();
+                
+            }
+            Navigator.PlayerMover.MoveStop();
+            return moving == MoveResult.ReachedDestination;
+        }
+        */
+
         public async Task PassLoot()
         {
             //if (!NeedGreed.Instance.IsOpen)
@@ -523,14 +616,13 @@ namespace LlamaLibrary
                         SelectYesno.Yes();
                 }
             }
-            
+
             if (NeedGreed.Instance.IsOpen)
                 NeedGreed.Instance.Close();
         }
-        
+
         public static async Task<bool> GoGarden(uint AE)
         {
-            
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
@@ -558,7 +650,7 @@ namespace LlamaLibrary
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-            
+
             if (!GrandCompanySupplyList.Instance.IsOpen)
             {
                 await GrandCompanyHelper.InteractWithNpc(GCNpc.Personnel_Officer);
@@ -631,7 +723,7 @@ namespace LlamaLibrary
                 }
             }
         }
-        
+
         private async Task<bool> GoToHousingBell(WorldManager.TeleportLocation house)
         {
             Log($"Teleporting to housing: (ZID: {house.ZoneId}, AID: {house.AetheryteId}) {house.Name}");
@@ -644,7 +736,7 @@ namespace LlamaLibrary
             uint houseEntranceId = 2002737;
             uint aptEntranceId = 2007402;
 
-            var entranceIds = new uint[] {houseEntranceId, aptEntranceId};
+            var entranceIds = new uint[] { houseEntranceId, aptEntranceId };
 
             var entrance = GameObjectManager.GetObjectsByNPCIds<GameObject>(entranceIds).OrderBy(x => x.Distance2D()).FirstOrDefault();
             if (entrance != null)
@@ -721,6 +813,7 @@ namespace LlamaLibrary
         {
             var sb = new StringBuilder();
             var sb1 = new StringBuilder();
+            var sb2 = new StringBuilder();
             foreach (var patternItem in OffsetManager.patterns)
             {
                 var name = patternItem.Key;
@@ -738,6 +831,14 @@ namespace LlamaLibrary
                 }
             }
 
+            foreach (var patternItem in OffsetManager.constants)
+            {
+                var name = patternItem.Key;
+                var pattern = patternItem.Value.Replace("Search ", "");
+                sb2.AppendLine($"{name}, {pattern}");
+            }
+
+
             using (var outputFile = new StreamWriter(@"G:\AgentLL.csv", false))
             {
                 outputFile.Write(sb1.ToString());
@@ -746,6 +847,11 @@ namespace LlamaLibrary
             using (var outputFile = new StreamWriter(@"G:\LL.csv", false))
             {
                 outputFile.Write(sb.ToString());
+            }
+
+            using (var outputFile = new StreamWriter(@"G:\Constants.csv", false))
+            {
+                outputFile.Write(sb2.ToString());
             }
 
             sb = new StringBuilder();
@@ -879,8 +985,6 @@ namespace LlamaLibrary
                 HousingSignBoard.Instance.Close();
                 await Coroutine.Wait(3000, () => !HousingSignBoard.Instance.IsOpen);
                 Lua.DoString("return _G['EventHandler']:Shutdown();");
-                
-                
             }
         }
 
@@ -976,6 +1080,8 @@ namespace LlamaLibrary
         {
             Logging.Write(Colors.Green, text);
         }
+
+        
 
         private async Task<bool> MoveSummoningBell(Vector3 loc)
         {
@@ -1076,7 +1182,7 @@ namespace LlamaLibrary
         //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
         public GameObject FindSummoningBell()
         {
-            uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284};
+            uint[] bellIds = { 2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284 };
             var units = GameObjectManager.GameObjects;
 
             foreach (var unit in units.Where(i => i.IsVisible).OrderBy(r => r.DistanceSqr()))
@@ -1251,7 +1357,7 @@ namespace LlamaLibrary
 
             var result = patternFinder.Find("44 89 BF ?? ?? ?? ?? 83 BF ?? ?? ?? ?? ?? Add 3 Read32").ToInt32();
             //Log(result);
-            uint[] npcs = {1029028, 1033777};
+            uint[] npcs = { 1029028, 1033777 };
 
             var units = GameObjectManager.GameObjects;
             foreach (var unit in units.Where(i => i.Type == GameObjectType.EventNpc))

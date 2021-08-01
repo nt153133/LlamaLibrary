@@ -185,6 +185,7 @@
       <DependentUpon>ReduceSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="RefreshPfBase.cs" />
+    <Compile Include="RemoteAgents\AgentAetherWheel.cs" />
     <Compile Include="RemoteAgents\AgentCharacter.cs" />
     <Compile Include="RemoteAgents\AgentContentsInfo.cs" />
     <Compile Include="RemoteAgents\AgentDawn.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="RemoteAgents\AgentRetainerVenture.cs" />
     <Compile Include="RemoteAgents\AgentSatisfactionSupply.cs" />
     <Compile Include="RemoteAgents\IAgent.cs" />
+    <Compile Include="RemoteWindows\AetherialWheel.cs" />
     <Compile Include="RemoteWindows\Character.cs" />
     <Compile Include="RemoteWindows\CollectablesShop.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
@@ -269,6 +271,7 @@
     </Compile>
     <Compile Include="ScriptConditions\Extras.cs" />
     <Compile Include="ScriptConditions\Helpers.cs" />
+    <Compile Include="Structs\AetherWheelSlot.cs" />
     <Compile Include="Structs\CraftingRelicTurnin.cs" />
     <Compile Include="Structs\CraftingStatus.cs" />
     <Compile Include="Structs\FcActionShopItem.cs" />

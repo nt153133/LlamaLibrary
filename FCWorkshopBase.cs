@@ -651,7 +651,7 @@ namespace LlamaLibrary
 
         public static async Task<bool> OpenFCCraftingStation()
         {
-            if (GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).Any())
+            if (!GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).Any())
             {
                 Logging.Write("Can't find Fabrication Station");
                 return false;
