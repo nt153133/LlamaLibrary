@@ -2,11 +2,10 @@
 
 namespace LlamaLibrary.RemoteWindows
 {
-    public class AetherialWheel: RemoteWindow<AetherialWheel>
+    public class AetherialWheel : RemoteWindow<AetherialWheel>
     {
-
         private const string WindowName = "AetherialWheel";
-        
+
         public static readonly Dictionary<string, int> Properties = new Dictionary<string, int>
         {
             {
@@ -14,12 +13,17 @@ namespace LlamaLibrary.RemoteWindows
                 0
             }
         };
-        
+
         public AetherialWheel() : base(WindowName)
         {
             _name = WindowName;
         }
-        
+
         public int MaxSlots => ___Elements()[Properties["MaxSlots"]].TrimmedData;
+
+        public void RemoveWheel(uint slotIndex)
+        {
+            SendAction(2, 3, 2, 4, slotIndex);
+        }
     }
 }

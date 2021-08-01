@@ -547,7 +547,7 @@ namespace LlamaLibrary
         {
             if (!GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).Any())
             {
-                Logging.Write("Can't find Fabrication Station");
+                Logging.Write("Can't find Aetherial Wheel Stand");
                 return false;
             }
 
