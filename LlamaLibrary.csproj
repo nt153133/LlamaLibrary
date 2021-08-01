@@ -211,6 +211,7 @@
     <Compile Include="RemoteWindows\AetherialWheel.cs" />
     <Compile Include="RemoteWindows\Character.cs" />
     <Compile Include="RemoteWindows\CollectablesShop.cs" />
+    <Compile Include="RemoteWindows\CompanyCraftRecipeNoteBook.cs" />
     <Compile Include="RemoteWindows\ContentsInfo.cs" />
     <Compile Include="RemoteWindows\ContentsInfoDetail.cs" />
     <Compile Include="RemoteWindows\Conversation.cs" />

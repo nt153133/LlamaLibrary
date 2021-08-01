@@ -490,7 +490,8 @@ namespace LlamaLibrary
             //         Log(Core.Memory.GetRelative(func));
             Log("Started");
 
-
+            //Chargering Wheels
+            /*
             if (!AetherialWheel.Instance.IsOpen)
             {
                 await OpenWheelStand();
@@ -504,6 +505,22 @@ namespace LlamaLibrary
                     Log(slot.ToString());
                 }
             }
+            */
+
+            if (CompanyCraftRecipeNoteBook.Instance.IsOpen)
+            {
+                CompanyCraftRecipeNoteBook.Instance.SelectWheelsCategory();
+                await Coroutine.Sleep(300);
+                CompanyCraftRecipeNoteBook.Instance.SelectWheel(9655);
+                await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                if (SelectYesno.IsOpen)
+                {
+                    await Coroutine.Sleep(2000); //Pause just to see if it's the right one
+                    SelectYesno.No(); //Yes to craft
+                }
+            }
+            
+            
             //Need to check for stacks first, also need to toggle saddle bags window 
             
             /*
