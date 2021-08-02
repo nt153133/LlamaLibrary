@@ -196,6 +196,7 @@
     <Compile Include="RemoteAgents\AgentHousingSelectBlock.cs" />
     <Compile Include="RemoteAgents\AgentHWDScore.cs" />
     <Compile Include="RemoteAgents\AgentInventoryBuddy.cs" />
+    <Compile Include="RemoteAgents\AgentBagSlot.cs" />
     <Compile Include="RemoteAgents\AgentItemAppraisal.cs" />
     <Compile Include="RemoteAgents\AgentMasterPieceSupply.cs" />
     <Compile Include="RemoteAgents\AgentMeld.cs" />

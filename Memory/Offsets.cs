@@ -129,6 +129,9 @@ namespace LlamaLibrary.Memory
         
         [Offset("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 41 56 48 83 EC ? 45 8B F1")]
         internal static IntPtr AddToSaddle;
+        
+        [Offset("48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 63 F2 48 8B F9")]
+        internal static IntPtr PlaceAetherWheel;
 
 
       //  [Offset("Search 66 83 78 ? ? 74 ? 8B 78 ? E8 ? ? ? ? Add 3 Read8")]

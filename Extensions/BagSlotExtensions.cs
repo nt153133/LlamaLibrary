@@ -293,6 +293,11 @@ namespace LlamaLibrary.Extensions
         {
             return !slot.Item.Untradeable && !slot.IsCollectable && !(slot.SpiritBond > 0);
         }
+        
+        public static void PlaceAetherWheel(this BagSlot bagSlot)
+        {
+            PlaceAetherWheel((uint) bagSlot.BagId, bagSlot.Slot);
+        }
 
         public static bool AddToSaddlebagQuantity(this BagSlot bagSlot, uint amount)
         { 
@@ -350,6 +355,22 @@ namespace LlamaLibrary.Extensions
                                                               inventoryContainer,
                                                               inventorySlot,
                                                               count);
+                }
+            }
+        }
+        
+        internal static IntPtr PlaceAetherWheel(uint inventoryContainer, ushort inventorySlot)
+        {
+            lock (Core.Memory.Executor.AssemblyLock)
+            {
+                using (Core.Memory.TemporaryCacheState(false))
+                {
+                    return Core.Memory.CallInjected64<IntPtr>(Offsets.PlaceAetherWheel, new object[3]
+                    {
+                        AgentBagSlot.Instance.PointerForAether,
+                        (int) inventorySlot,
+                        inventoryContainer,
+                    });
                 }
             }
         }
