@@ -491,22 +491,37 @@ namespace LlamaLibrary
             Log("Started");
 
             //Chargering Wheels
-            /*
+            
             if (!AetherialWheel.Instance.IsOpen)
             {
                 await OpenWheelStand();
+                await Coroutine.Sleep(500);
             }
 
-
+            Log(AgentAetherWheel.Instance.Pointer + 0x4a);
             if (AetherialWheel.Instance.IsOpen)
             {
                 foreach (var slot in AgentAetherWheel.Instance.GetWheelSlots())
                 {
                     Log(slot.ToString());
+                    if (slot.Primed)
+                    {
+                        AetherialWheel.Instance.RemoveWheel(slot.SlotIndex);
+                        await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                        if (SelectYesno.IsOpen)
+                        {
+                            SelectYesno.Yes();
+                            await Coroutine.Wait(5000, () => !SelectYesno.IsOpen);
+                            await Coroutine.Sleep(1000);
+                        }
+
+                        if (!AetherialWheel.Instance.IsOpen) break;
+                    }
                 }
             }
-            */
+            
 
+            /*
             if (CompanyCraftRecipeNoteBook.Instance.IsOpen)
             {
                 CompanyCraftRecipeNoteBook.Instance.SelectWheelsCategory();
@@ -519,6 +534,7 @@ namespace LlamaLibrary
                     SelectYesno.No(); //Yes to craft
                 }
             }
+            */
             
             
             //Need to check for stacks first, also need to toggle saddle bags window 
@@ -559,7 +575,12 @@ namespace LlamaLibrary
 
             return true;
         }
-        
+
+        private void Log(IntPtr instancePointer)
+        {
+            Log($"{instancePointer.ToString("X")}");
+        }
+
         public static async Task<bool> OpenWheelStand()
         {
             if (!GameObjectManager.GetObjectsByNPCIds<GameObject>(npcids).Any())

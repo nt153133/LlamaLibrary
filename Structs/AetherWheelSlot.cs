@@ -10,15 +10,15 @@ namespace LlamaLibrary.Structs
         public ushort Grade;
         
         [FieldOffset(0x2)]
-        public bool InUse;
+        public byte InUse;
         
         [FieldOffset(0x6)]
-        public uint MinutesLeft;
+        public int MinutesLeft;
         
         [FieldOffset(0x8E)]
         public uint ItemId;
         
-        [FieldOffset(0x8E)]
+        [FieldOffset(0xA6)]
         public uint StartingItemId;
         
         [FieldOffset(0xAA)]
