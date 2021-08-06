@@ -13,7 +13,7 @@ using System;
 namespace LlamaLibrary.Memory.Attributes
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    internal class OffsetAttribute : Attribute
+    public class OffsetAttribute : Attribute
     {
         public bool Numeric;
         public string Pattern = "";
