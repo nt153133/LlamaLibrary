@@ -50,7 +50,7 @@ namespace LlamaLibrary.Extensions
             return Core.Memory.Read<int>(rankRow);
         }
         
-        internal static ulong PlayerId(this LocalPlayer player)
+        public static ulong PlayerId(this LocalPlayer player)
         {
             return Core.Memory.Read<ulong>(Offsets.PlayerID);
         }
