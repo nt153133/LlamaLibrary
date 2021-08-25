@@ -416,6 +416,8 @@ namespace LlamaLibrary.Retainers
             
             return result;
         }
+        
+        public static ulong CurrentRetainer => Core.Memory.NoCacheRead<ulong>(Offsets.RetainerData + Offsets.CurrentRetainer);
 
         public static int FuncNumberOfRetainers()
         {
