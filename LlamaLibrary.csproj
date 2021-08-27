@@ -117,6 +117,9 @@
     <Compile Include="HuntBase.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
+    <Compile Include="ItemFinder\ItemFinder.cs" />
+    <Compile Include="ItemFinder\ItemFinderPtrNode.cs" />
+    <Compile Include="ItemFinder\StoredRetainerInventory.cs" />
     <Compile Include="GCSupplyBase.cs" />
     <Compile Include="ResplendentTools.cs" />
     <Compile Include="maps.cs" />
