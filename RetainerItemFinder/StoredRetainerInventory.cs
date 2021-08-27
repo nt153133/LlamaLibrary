@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ff14bot;
 
-namespace LlamaLibrary.ItemFinder
+namespace LlamaLibrary.RetainerItemFinder
 {
     public class StoredRetainerInventory
     {
