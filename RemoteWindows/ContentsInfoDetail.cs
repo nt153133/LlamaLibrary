@@ -24,7 +24,7 @@ namespace LlamaLibrary.RemoteWindows
         public ContentsInfoDetail() : base(WindowName)
         {
             _name = WindowName;
-            if (Translator.Language == Language.Chn)
+            /*if (Translator.Language == Language.Chn)
             {
                 eleNumCrafting = 55;
                 eleNumGathering = 56;
@@ -34,7 +34,7 @@ namespace LlamaLibrary.RemoteWindows
                 eleGatheringItem = 268;
                 eleGatheringJob = 271;
                 eleGatheringQty = 274;
-            }
+            }*/
         }
 
         public int GetNumberOfCraftingTurnins()
