@@ -27,7 +27,7 @@ namespace LlamaLibrary.RemoteAgents
             [Offset("Search 0F B7 73 ? BA ? ? ? ? E8 ? ? ? ? Add 3 Read8")]
             internal static int MaxRep;
             [Offset("Search 8B 53 ? 4C 8D 43 ? 48 8B CB Add 2 Read8")]
-            [OffsetCN("Search 8B 53 ? 48 8B CB E8 ? ? ? ? BA ? ? ? ? Add 2 Read8")]
+            //[OffsetCN("Search 8B 53 ? 48 8B CB E8 ? ? ? ? BA ? ? ? ? Add 2 Read8")]
             internal static int Npc;
             [Offset("Search 89 43 ? E8 ? ? ? ? 48 8B D0 48 8D 4D ? E8 ? ? ? ? Add 2 Read8")]
             internal static int HeartLevel;
@@ -36,7 +36,7 @@ namespace LlamaLibrary.RemoteAgents
             [Offset("Search 48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B 01 41 0F B6 E9 41 8B F8")]
             internal static IntPtr OpenWindow;
             [Offset("Search 4C 8D 43 ? 48 8B CB E8 ? ? ? ? BA ? ? ? ? Add 3 Read8")]
-            [OffsetCN("Search 4C 8D 43 ? 8B 53 ? 48 8B CB Add 3 Read8")]
+            //[OffsetCN("Search 4C 8D 43 ? 8B 53 ? 48 8B CB Add 3 Read8")]
             internal static int NpcId;
                 
         }
