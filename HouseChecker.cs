@@ -275,7 +275,7 @@ namespace LlamaLibrary
             return list;
         }
 
-        private static async Task GetToResidential(uint aetheryteId)
+        public static async Task GetToResidential(uint aetheryteId)
         {
             if (!ConditionParser.HasAetheryte(aetheryteId)) return;
 
