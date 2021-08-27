@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace LlamaLibrary.ItemFinder
+namespace LlamaLibrary.RetainerItemFinder
 {
     [StructLayout(LayoutKind.Explicit, Size = 0x40)]
     public struct ItemFinderPtrNode

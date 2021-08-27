@@ -12,6 +12,7 @@ namespace LlamaLibrary.RemoteWindows
         public InventoryBuddy() : base(WindowName, AgentInventoryBuddy.Instance)
         {
             _name = WindowName;
+            //_agent = AgentInventoryBuddy.Instance;
         }
 
     }

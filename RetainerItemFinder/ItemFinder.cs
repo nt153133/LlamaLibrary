@@ -8,7 +8,7 @@ using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.Retainers;
 
 #pragma warning disable 649
-namespace LlamaLibrary.ItemFinder
+namespace LlamaLibrary.RetainerItemFinder
 {
     public static class ItemFinder
     {
