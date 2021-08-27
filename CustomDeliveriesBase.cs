@@ -78,6 +78,11 @@ namespace LlamaLibrary
             {
                 await AgentSatisfactionSupply.Instance.LoadWindow(npc.Value.index);
                 List<uint> items = new List<uint>();
+                if (!DeliveryNpcs.ContainsKey(AgentSatisfactionSupply.Instance.NpcId))
+                {
+                    Log($"Bad Npc ID: {AgentSatisfactionSupply.Instance.NpcId}");
+                    break;
+                }
                 Log($"{DeliveryNpcs[AgentSatisfactionSupply.Instance.NpcId].name}");
                 Log($"\tHeartLevel:{AgentSatisfactionSupply.Instance.HeartLevel}");
                 Log($"\tRep:{AgentSatisfactionSupply.Instance.CurrentRep}/{AgentSatisfactionSupply.Instance.MaxRep}");
