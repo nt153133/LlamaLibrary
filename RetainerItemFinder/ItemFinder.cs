@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Helpers;
 using LlamaLibrary.Memory.Attributes;
+using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Retainers;
 
 #pragma warning disable 649
@@ -21,6 +24,8 @@ namespace LlamaLibrary.RetainerItemFinder
         private static readonly List<IntPtr> VisitedNodes = new List<IntPtr>();
 
         private static readonly Dictionary<ulong, StoredRetainerInventory> RetainerInventoryPointers = new Dictionary<ulong, StoredRetainerInventory>();
+
+        private static bool firstTimeSaddleRead = true;
 
         static ItemFinder()
         {
@@ -56,6 +61,45 @@ namespace LlamaLibrary.RetainerItemFinder
             Visit(TreeStart);
 
             return RetainerInventoryPointers;
+        }
+        
+        public static async Task<Dictionary<uint, ushort>> GetCachedSaddlebagInventories()
+        {
+            var result = new Dictionary<uint, ushort>();
+
+            var ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
+            var qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
+
+            if (firstTimeSaddleRead && ids.All(i => i == 0))
+            {
+                if (await InventoryBuddy.Instance.Open())
+                {
+                    await Coroutine.Sleep(200);
+                    InventoryBuddy.Instance.Close();
+                    await Coroutine.Wait(2000, () => !InventoryBuddy.Instance.IsOpen);
+                    await Coroutine.Sleep(300);
+                    ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
+                    qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
+                }
+
+                firstTimeSaddleRead = false;
+            }
+
+            for (int i = 0; i < 140; i++)
+            {
+                if (ids[i] == 0) continue;
+                
+                if (result.ContainsKey(ids[i]))
+                {
+                    result[ids[i]] += qtys[i];
+                }
+                else
+                {
+                    result.Add(ids[i],qtys[i]);
+                }
+            }
+            
+            return result;
         }
 
         private static void Visit(IntPtr nodePtr)
@@ -107,6 +151,12 @@ namespace LlamaLibrary.RetainerItemFinder
 
             [Offset("Search 4C 8B 85 ? ? ? ? 48 89 B4 24 ? ? ? ? Add 3 Read32")]
             internal static int TreeStartOff;
+            
+            [Offset("Search 48 8D 83 ? ? ? ? 48 89 74 24 ? 48 8D 8B ? ? ? ? Add 3 Read32")]
+            internal static int SaddleBagItemIds;
+
+            [Offset("Search 48 8D 8B ? ? ? ? 48 89 7C 24 ? 4C 89 64 24 ? Add 3 Read32")]
+            internal static int SaddleBagItemQtys;
         }
     }
 }
