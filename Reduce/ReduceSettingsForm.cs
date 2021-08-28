@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using ff14bot.Managers;
-using LlamaLibrary.Reduce;
 
 namespace LlamaLibrary.Reduce
 {

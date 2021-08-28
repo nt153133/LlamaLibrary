@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using ff14bot.Managers;
-using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;

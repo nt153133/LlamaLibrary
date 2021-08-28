@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
-using ff14bot.Managers;
 using LlamaLibrary.Memory.Attributes;
 
 namespace LlamaLibrary.Helpers

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Activation;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
-using ff14bot.Managers;
 using ff14bot.Navigation;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
-using LlamaLibrary.Memory;
 using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Structs;

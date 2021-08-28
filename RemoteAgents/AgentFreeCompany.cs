@@ -4,12 +4,9 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
-using ff14bot.Enums;
 using ff14bot.Managers;
-using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.RemoteWindows;
-using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.RemoteAgents
 {

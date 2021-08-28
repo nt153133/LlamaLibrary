@@ -1,4 +1,4 @@
-﻿﻿using ff14bot.Managers;
+﻿using ff14bot.Managers;
 using LlamaLibrary.Enums;
 
 namespace LlamaLibrary.Extensions

@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 namespace Generate
 {
     public class LisbethOrder

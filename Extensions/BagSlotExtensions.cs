@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Clio.Utilities;
 using ff14bot;
 using ff14bot.Managers;
-using LlamaLibrary.Materia;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteAgents;
 
@@ -375,9 +371,14 @@ namespace LlamaLibrary.Extensions
             }
         }
 
-        public static void RetainerEntrustQuantity(this BagSlot bagslot, uint amount)
+        public static void RetainerEntrustQuantity(this BagSlot bagSlot, uint amount)
         {
-            bagslot.RetainerEntrustQuantity((int)amount);
+            bagSlot.RetainerEntrustQuantity((int)amount);
+        }
+        
+        public static void RetainerRetrieveQuantity(this BagSlot bagSlot, uint amount)
+        {
+            bagSlot.RetainerRetrieveQuantity((int)amount);
         }
     }
 }

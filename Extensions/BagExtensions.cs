@@ -1,4 +1,4 @@
-﻿﻿using System.Linq;
+﻿using System.Linq;
 using ff14bot.Managers;
 
 namespace LlamaLibrary.Extensions

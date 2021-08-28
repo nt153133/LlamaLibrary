@@ -1,5 +1,4 @@
-﻿﻿using ff14bot.Managers;
-using ff14bot.RemoteWindows;
+﻿using ff14bot.Managers;
 
 namespace LlamaLibrary.Extensions
 {

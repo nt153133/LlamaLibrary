@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using Clio.Utilities.Helpers;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
-using ff14bot.Directors;
 using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
@@ -20,12 +18,10 @@ using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
-using GreyMagic;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
 using TreeSharp;
-using Action = System.Action;
 
 namespace LlamaLibrary
 {

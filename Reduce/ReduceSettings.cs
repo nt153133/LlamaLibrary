@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Configuration;
 using System.IO;
-using ff14bot;
 using ff14bot.Helpers;
 using Newtonsoft.Json;
 

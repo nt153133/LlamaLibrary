@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using ff14bot.Managers;
-using ff14bot.RemoteWindows;
-using LlamaLibrary.Helpers;
 
 namespace LlamaLibrary.RemoteWindows
 {

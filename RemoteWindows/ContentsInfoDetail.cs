@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
-using LlamaLibrary.Helpers;
 
 namespace LlamaLibrary.RemoteWindows
 {

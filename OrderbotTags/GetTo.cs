@@ -1,4 +1,4 @@
-﻿﻿//
+﻿//
 // LICENSE:
 // This work is licensed under the
 //     Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -7,36 +7,14 @@
 // or send a letter to
 //      Creative Commons // 171 Second Street, Suite 300 // San Francisco, California, 94105, USA.
 //
-using System;
-using System.Collections;
+
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Automation;
-using System.Windows.Media;
-using Buddy.Coroutines;
 using Clio.Utilities;
 using Clio.XmlEngine;
 using ff14bot.Behavior;
-using ff14bot.Enums;
-using ff14bot.Helpers;
-using ff14bot.Managers;
 using ff14bot.Navigation;
-using ff14bot.Objects;
-using ff14bot.RemoteWindows;
-using NeoGaia.ConnectionHandler;
-using QuickGraph;
-using QuickGraph.Algorithms;
-using QuickGraph.Algorithms.Observers;
-using QuickGraph.Algorithms.ShortestPath;
-using SQLite;
 using TreeSharp;
-using Action = TreeSharp.Action;
 using LlamaLibrary.Helpers;
 
 namespace ff14bot.NeoProfiles.Tags

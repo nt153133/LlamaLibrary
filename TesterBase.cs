@@ -1,12 +1,10 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -14,9 +12,7 @@ using Clio.Utilities;
 using ff14bot;
 using ff14bot.AClasses;
 using ff14bot.Behavior;
-using ff14bot.Directors;
 using ff14bot.Enums;
-using ff14bot.Forms.ugh;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.Navigation;
@@ -24,10 +20,7 @@ using ff14bot.NeoProfiles;
 using ff14bot.Objects;
 using ff14bot.Pathing;
 using ff14bot.Pathing.Service_Navigation;
-using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
-using ff14bot.RemoteWindows.GoldSaucer;
-using Generate;
 using GreyMagic;
 using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
@@ -42,7 +35,6 @@ using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
-using Action = System.Action;
 
 namespace LlamaLibrary
 {

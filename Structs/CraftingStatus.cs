@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using ff14bot.Enums;
 
 namespace LlamaLibrary.Structs
 {

@@ -1,6 +1,4 @@
-﻿using ff14bot.Managers;
-using LlamaLibrary.RemoteAgents;
-using LlamaLibrary.Helpers;
+﻿using LlamaLibrary.RemoteAgents;
 
 namespace LlamaLibrary.RemoteWindows
 {

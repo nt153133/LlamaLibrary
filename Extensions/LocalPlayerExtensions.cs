@@ -4,7 +4,6 @@ using ff14bot;
 using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Objects;
-using LlamaLibrary.Memory;
 using LlamaLibrary.Memory.Attributes;
 
 namespace LlamaLibrary.Extensions

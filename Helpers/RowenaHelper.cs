@@ -1,14 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Buddy.Coroutines;
-using ff14bot;
-using LlamaLibrary.Memory;
-using LlamaLibrary.Memory.Attributes;
-using LlamaLibrary.RemoteAgents;
-using LlamaLibrary.RemoteWindows;
-using LlamaLibrary.Structs;
-
-namespace LlamaLibrary.Helpers
+﻿namespace LlamaLibrary.Helpers
 {
     //Class no longer needed due to rowena supply not rotating any more
     /*

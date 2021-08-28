@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
-using Buddy.Coroutines;
 using Clio.XmlEngine;
 using ff14bot.NeoProfiles;
 using TreeSharp;

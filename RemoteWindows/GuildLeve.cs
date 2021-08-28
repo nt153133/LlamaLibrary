@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using ff14bot;
-using LlamaLibrary.Helpers;
 
 namespace LlamaLibrary.RemoteWindows
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using ff14bot.Managers;
-using LlamaLibrary.Memory.Attributes;
-
-namespace LlamaLibrary.RemoteAgents
+﻿namespace LlamaLibrary.RemoteAgents
 {
     //Class no longer needed due to rowena supply not rotating any more
     

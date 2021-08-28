@@ -13,7 +13,6 @@ using ff14bot.BotBases;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.NeoProfile;
-using ff14bot.NeoProfiles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TreeSharp;

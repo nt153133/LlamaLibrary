@@ -10,7 +10,6 @@ using ff14bot.RemoteWindows;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;
-using Character = ff14bot.Objects.Character;
 
 namespace LlamaLibrary.OrderbotTags
 {

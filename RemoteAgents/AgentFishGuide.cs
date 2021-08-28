@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using ff14bot;
-using ff14bot.Helpers;
 using ff14bot.Managers;
-using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory.Attributes;
 
 namespace LlamaLibrary.RemoteAgents
