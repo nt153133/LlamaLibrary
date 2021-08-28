@@ -36,6 +36,7 @@ using LlamaLibrary.Memory;
 using LlamaLibrary.Properties;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.RetainerItemFinder;
 using LlamaLibrary.Retainers;
 using LlamaLibrary.Structs;
 using Newtonsoft.Json;
@@ -43,6 +44,7 @@ using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
 using Action = System.Action;
+using AgentInventoryContext = ff14bot.RemoteAgents.AgentInventoryContext;
 
 namespace LlamaLibrary
 {
@@ -216,7 +218,6 @@ namespace LlamaLibrary
 
         public override void Stop()
         {
-            
             _root = null;
         }
 
@@ -488,9 +489,49 @@ namespace LlamaLibrary
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             //InventoryManager.GetBagByInventoryBagId(InventoryBagId.Bag1).Pointer
             //         Log(Core.Memory.GetRelative(func));
-            Log("Started");
+            
+            var retData = await HelperFunctions.GetOrderedRetainerArray(true);
 
+            //Log($"Current {HelperFunctions.CurrentRetainer}");
+
+            //Log($"Selected retainer {retData.First(i => i.Unique == HelperFunctions.CurrentRetainer).Name}");
+
+            foreach (var ret in retData)
+            {
+                Log($"{ret.Name} - {ret.Unique:X} ({ret.Unique})");
+            }
+
+            var retainerInventoryPointers = ItemFinder.GetCachedRetainerInventories();
+            
+            Log($"retainerInventoryPointers: {retainerInventoryPointers.Count}");
+            
+            Log($"Pointer: {ItemFinder.Pointer.ToString("X")}");
+            Log($"ParentStart: {ItemFinder.ParentStart.ToString("X")}");
+
+            var testRet = retainerInventoryPointers.First();
+        
+            Log($"{retData.First(i => i.Unique == testRet.Key).Name}");
+
+            foreach (var pair in testRet.Value.Inventory)
+            {
+                Log($"{BagSlotExtensions.GetItemName(pair.Key)} x {pair.Value}");
+            }
+            
+            Log("SaddleBags");
+
+            var saddlebags = await ItemFinder.GetCachedSaddlebagInventories();
+
+            foreach (var pair in saddlebags)
+            {
+                Log($"{BagSlotExtensions.GetItemName(pair.Key)} x {pair.Value}");
+            }
+
+
+            /*
+            Log(AgentBagSlot.Instance.Pointer);
+            Log(AgentBagSlot.Instance.PointerForAether);
             //Chargering Wheels
+
             
             if (!AetherialWheel.Instance.IsOpen)
             {
@@ -517,9 +558,21 @@ namespace LlamaLibrary
 
                         if (!AetherialWheel.Instance.IsOpen) break;
                     }
+                    //Place a Wheel of Confrontation if there's an empty grade 1 slot
+                    if (slot.InUse == 0 && slot.Grade == 1 && InventoryManager.FilledSlots.Any(i=> i.RawItemId == 8844))
+                    {
+                        InventoryManager.FilledSlots.First(i=> i.RawItemId == 8844).PlaceAetherWheel();
+                        await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
+                        if (SelectYesno.IsOpen)
+                        {
+                            SelectYesno.Yes();
+                            await Coroutine.Wait(5000, () => !SelectYesno.IsOpen);
+                            await Coroutine.Sleep(1000);
+                        }
+                    }
                 }
             }
-            
+            */
 
             /*
             if (CompanyCraftRecipeNoteBook.Instance.IsOpen)
@@ -575,6 +628,7 @@ namespace LlamaLibrary
 
             return true;
         }
+        
 
         private void Log(IntPtr instancePointer)
         {
@@ -1276,7 +1330,7 @@ namespace LlamaLibrary
                 Log($"{i} {RetainerList.Instance.RetainerName(i)}");
             }
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
+            var ordered = RetainerList.Instance.OrderedRetainerList.Where(i => i.Active).ToArray();
 
 
             foreach (var ret in ordered)

@@ -189,8 +189,8 @@ namespace LlamaLibrary.Retainers
             {
                 await RetainerRoutine.DeSelectRetainer();
             }
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i=> i.Active).ToArray();
-            var numRetainers = ordered.Count(); //GetNumberOfRetainers();
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
+            var numRetainers = ordered.Where(i=> i.Active).Count(); //GetNumberOfRetainers();
 
             var retList = new List<RetainerInventory>();
             var moveToOrder = new List<KeyValuePair<uint, int>>();
@@ -217,8 +217,9 @@ namespace LlamaLibrary.Retainers
 
             ventures = RetainerList.Instance.NumberOfVentures;
             
-            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
+            for (var retainerIndex = 0; retainerIndex < ordered.Length; retainerIndex++)
             {
+                if (!ordered[retainerIndex].Active) continue;
                 if (!retainerNames.ContainsKey(retainerIndex)) retainerNames.Add(retainerIndex, RetainerList.Instance.RetainerName(retainerIndex));
                 bool hasJob = RetainerList.Instance.RetainerHasJob(retainerIndex);
                 Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");

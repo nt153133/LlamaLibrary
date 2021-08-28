@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -12,11 +11,8 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using ff14bot.NeoProfiles;
 using ff14bot.Objects;
-using ff14bot.Pathing;
-using ff14bot.RemoteWindows;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
-using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Structs;
 
@@ -24,6 +20,10 @@ namespace LlamaLibrary.Retainers
 {
     public static class HelperFunctions
     {
+        public const InventoryBagId RetainerGilId = InventoryBagId.Retainer_Gil;
+
+        public const InventoryBagId PlayerGilId = InventoryBagId.Currency;
+
         public static readonly InventoryBagId[] PlayerInventoryBagIds = new InventoryBagId[6]
         {
             InventoryBagId.Bag1,
@@ -34,7 +34,6 @@ namespace LlamaLibrary.Retainers
             InventoryBagId.Bag6
         };
 
-
         public static readonly InventoryBagId[] RetainerBagIds =
         {
             InventoryBagId.Retainer_Page1, InventoryBagId.Retainer_Page2, InventoryBagId.Retainer_Page3,
@@ -42,11 +41,7 @@ namespace LlamaLibrary.Retainers
             InventoryBagId.Retainer_Page7
         };
 
-        public const InventoryBagId RetainerGilId = InventoryBagId.Retainer_Gil;
-
-        public const InventoryBagId PlayerGilId = InventoryBagId.Currency;
-
-        static List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
+        private static readonly List<(uint, Vector3)> SummoningBells = new List<(uint, Vector3)>
         {
             (129, new Vector3(-223.743042f, 16.006714f, 41.306152f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
             (129, new Vector3(-266.376831f, 16.006714f, 41.275635f)), //Limsa Lominsa Lower Decks(Limsa Lominsa) 
@@ -74,88 +69,38 @@ namespace LlamaLibrary.Retainers
 
         internal static readonly uint GilItemId = DataManager.GetItem("Gil").Id; // 1;
 
-        public static int UnixTimestamp => (Int32) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+        public static int UnixTimestamp => (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
+        public static ulong CurrentRetainer => Core.Memory.NoCacheRead<ulong>(Offsets.RetainerData + Offsets.CurrentRetainer);
 
         public static bool FilterStackable(BagSlot item)
         {
             if (item.IsCollectable)
+            {
                 return false;
+            }
 
             if (item.Item.StackSize < 2)
+            {
                 return false;
+            }
 
-            if (item.Count == item.Item.StackSize)
-                return false;
-
-            return true;
+            return item.Count != item.Item.StackSize;
         }
 
         public static uint NormalRawId(uint trueItemId)
         {
-            if (trueItemId > 1000000U)
-                return trueItemId - 1000000U;
-
-            return trueItemId;
-        }
-
-        public static bool MoveItem(BagSlot fromBagSlot, BagSlot toBagSlot)
-        {
-            return fromBagSlot.Count + toBagSlot.Count <= toBagSlot.Item.StackSize && fromBagSlot.Move(toBagSlot);
-        }
-
-        public static int GetNumberOfRetainersLua()
-        {
-            var bell = GetBellLuaString();
-            var numOfRetainers = 0;
-
-            if (bell.Length > 0)
-                numOfRetainers = Lua.GetReturnVal<int>($"return _G['{bell}']:GetRetainerEmployedCount();");
-
-            return numOfRetainers;
-        }
-
-        public static string GetRetainerName()
-        {
-            if (GetBellLuaString().Length > 0 && CanGetName())
-                return Lua.GetReturnVal<string>($"return _G['{GetBellLuaString()}']:GetRetainerName();");
-
-            return "";
-        }
-
-        public static string GetBellLuaString()
-        {
-            var func = "local values = '' for key,value in pairs(_G) do if string.match(key, '{0}:') then return key;   end end return values;";
-            var searchString = "CmnDefRetainerBell";
-            var bell = Lua.GetReturnVal<string>(string.Format(func, searchString)).Trim();
-
-            return bell;
-        }
-
-        private static bool CanGetName()
-        {
-            return RaptureAtkUnitManager.GetWindowByName("InventoryRetainer") != null ||
-                   RaptureAtkUnitManager.GetWindowByName("InventoryRetainerLarge") != null || SelectString.IsOpen;
-        }
-
-        public static GameObject NearestSummoningBell()
-        {
-            var list = GameObjectManager.GameObjects
-                .Where(r => r.Name == Translator.SummoningBell)
-                .OrderBy(j => j.DistanceSqr())
-                .ToList();
-
-            if (list.Count <= 0)
+            if (trueItemId > 5000000U)
             {
-                LogCritical("No Summoning Bell Found");
-                return null;
+                return trueItemId - 5000000U;
             }
 
-            var bell = list[0];
+            if (trueItemId > 1000000U)
+            {
+                return trueItemId - 1000000U;
+            }
 
-            LogCritical($"Found nearest bell: {bell} Distance: {bell.Distance2D(Core.Me.Location)}");
-
-            return bell;
+            return trueItemId;
         }
 
         private static void LogCritical(string text, params object[] args)
@@ -170,52 +115,19 @@ namespace LlamaLibrary.Retainers
             Logging.Write(Colors.OrangeRed, msg);
         }
 
-        public static IEnumerable<BagSlot> GetPlayerStackableBagSlots()
-        {
-            return InventoryManager.FilledSlots.Where(x => x.BagId == InventoryBagId.Bag1 || x.BagId == InventoryBagId.Bag2 || x.BagId == InventoryBagId.Bag3 || x.BagId == InventoryBagId.Bag4).Where(FilterStackable);
-        }
-
         public static bool GetRetainerGil()
         {
             var playerGilSlot = InventoryManager.GetBagByInventoryBagId(PlayerGilId).Where(r => r.IsFilled).FirstOrDefault(item => item.RawItemId == GilItemId);
             var retainerGilSlot = InventoryManager.GetBagByInventoryBagId(RetainerGilId).Where(r => r.IsFilled).FirstOrDefault(item => item.RawItemId == GilItemId);
 
-            if (retainerGilSlot == null || playerGilSlot == null || retainerGilSlot.Count <= 0) return false;
+            if (retainerGilSlot == null || playerGilSlot == null || retainerGilSlot.Count <= 0)
+            {
+                return false;
+            }
 
             LogCritical($"Retainer: {retainerGilSlot.Count:n0}  Player: {playerGilSlot.Count:n0}");
 
             return retainerGilSlot.Move(playerGilSlot);
-        }
-
-        public static List<BagSlot> GetItemsByCategory()
-        {
-            var result = new List<BagSlot>();
-            foreach (var item in InventoryManager.FilledSlots.Where(x =>
-                                                                        x.BagId == InventoryBagId.Bag1 || x.BagId == InventoryBagId.Bag2 ||
-                                                                        x.BagId == InventoryBagId.Bag3 || x.BagId == InventoryBagId.Bag4))
-            {
-                string test = $"Name: {item.Item.CurrentLocaleName}\tCategory {item.Item.EquipmentCatagory}";
-                //Log(test);
-            }
-
-            foreach (var item in InventoryManager.FilledArmorySlots.Where(i => i.BagId == InventoryBagId.Armory_MainHand))
-            {
-                string test = $"Name: {item.Item.CurrentLocaleName}\tCategory {item.Item.EquipmentCatagory}";
-                //Log(test);
-            }
-
-            foreach (var action in ActionManager.CurrentActions)
-            {
-                // Log(string.Format("{0} - {1}",action.Key, action.Value.Name));
-            }
-
-            //ActionManager.CurrentActions
-            return result;
-        }
-
-        public static bool FilterByCategory(BagSlot item, ItemUiCategory category)
-        {
-            return (item.Item.EquipmentCatagory == category);
         }
 
         internal static async Task<bool> UseSummoningBell()
@@ -236,7 +148,8 @@ namespace LlamaLibrary.Retainers
                 bell.Interact();
                 await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
             }
-            return true;
+
+            return RetainerList.Instance.IsOpen;
         }
 
         public static async Task<bool> GoToSummoningBell()
@@ -246,29 +159,31 @@ namespace LlamaLibrary.Retainers
             {
                 if (searchBell.IsWithinInteractRange)
                 {
-                    Log($"Found bell in Interact Range");
+                    Log("Found bell in Interact Range");
                     return true;
                 }
 
                 if (await Navigation.GetTo(WorldManager.ZoneId, searchBell.Location))
                 {
-                    Log($"Used Navgraph/Flightor to get there");
+                    Log("Used Navgraph/Flightor to get there");
                     if (searchBell.IsWithinInteractRange)
+                    {
                         return true;
+                    }
                 }
             }
 
             (uint, Vector3) bellLocation;
-            int tries = 0;
+            var tries = 0;
             if (SummoningBells.Any(i => i.Item1 == WorldManager.ZoneId))
             {
-                Log($"Found a bell in our zone");
+                Log("Found a bell in our zone");
                 bellLocation = SummoningBells.Where(i => i.Item1 == WorldManager.ZoneId).OrderBy(r => Core.Me.Location.DistanceSqr(r.Item2)).First();
             }
             else
             {
-                bool foundBell = false;
-                Random rand = new Random();
+                var foundBell = false;
+                var rand = new Random();
                 do
                 {
                     tries++;
@@ -315,16 +230,13 @@ namespace LlamaLibrary.Retainers
                 Log(bell != null ? $"{bell.Name} {bell.Location} {WorldManager.CurrentZoneName} {bell.IsWithinInteractRange}" : $"Couldn't find bell at {bellLocation.Item2} {bellLocation.Item1}");
                 return bell != null;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
-        //Log("Name:{0}, Location:{1} {2}", unit, unit.Location,WorldManager.CurrentZoneName);
         public static GameObject FindSummoningBell()
         {
-            uint[] bellIds = {2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284, 196630};
+            uint[] bellIds = { 2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284, 196630 };
             return GameObjectManager.GameObjects.Where(i => i.IsVisible && bellIds.Contains(i.NpcId)).OrderBy(r => r.DistanceSqr()).FirstOrDefault();
         }
 
@@ -332,22 +244,6 @@ namespace LlamaLibrary.Retainers
         {
             var msg = string.Format("[Helper] " + test);
             Logging.Write(Colors.Pink, msg);
-        }
-
-        internal static async Task<bool> VerifiedRetainerData2()
-        {
-            if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
-            {
-                return true;
-            }
-
-            AgentContentsInfo.Instance.Toggle();
-            await Coroutine.Wait(5000, () => RaptureAtkUnitManager.GetWindowByName("ContentsInfo") != null);
-            await Coroutine.Sleep(500);
-            await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
-            //AgentContentsInfo.Instance.Toggle();
-            RaptureAtkUnitManager.GetWindowByName("ContentsInfo").SendAction(1, 3uL, 4294967295uL);
-            return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
         }
 
         internal static async Task<bool> VerifiedRetainerData()
@@ -368,20 +264,23 @@ namespace LlamaLibrary.Retainers
             await Coroutine.Wait(3000, () => Core.Memory.Read<byte>(Offsets.RetainerData + Offsets.RetainerDataLoaded) != 0);
         }
 
+        public static RetainerInfo[] ReadRetainerArray()
+        {
+            return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
+        }
+
         public static async Task<RetainerInfo[]> GetRetainerArray(bool force = false)
         {
             if (force)
             {
                 await ForceGetRetainerData();
 
-                return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
-
+                return ReadRetainerArray();
             }
-            
+
             if (await VerifiedRetainerData())
             {
-                
-                return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
+                return ReadRetainerArray();
             }
 
             return new RetainerInfo[0];
@@ -390,116 +289,68 @@ namespace LlamaLibrary.Retainers
         public static async Task<RetainerInfo[]> GetOrderedRetainerArray(bool force = false)
         {
             var retainers = await GetRetainerArray(force);
-            if (retainers.Length == 0) return retainers;
-            
-            return GetOrderedRetainerArray(retainers);
+            return retainers.Length == 0 ? retainers : GetOrderedRetainerArray(retainers);
         }
-        
+
         public static RetainerInfo[] GetOrderedRetainerArray(RetainerInfo[] retainers)
         {
-            if (retainers.Length == 0) return retainers;
-            
-            int count = retainers.Length;
+            if (retainers.Length == 0)
+            {
+                return retainers;
+            }
+
+            var count = retainers.Length;
             var result = new RetainerInfo[count];
 
             var order = Core.Memory.ReadArray<byte>(Offsets.RetainerData + Offsets.RetainerDataOrder, 0xA);
-            
-            if (order[0] == 255) return retainers;
 
-            int index = 0;
+            if (order[0] == 255)
+            {
+                return retainers;
+            }
 
-            for (int i = 0; i < count; i++)
+            var index = 0;
+
+            for (var i = 0; i < count; i++)
             {
                 result[index] = retainers[order[i]];
                 index++;
             }
-            
+
             return result;
         }
-        
-        public static ulong CurrentRetainer => Core.Memory.NoCacheRead<ulong>(Offsets.RetainerData + Offsets.CurrentRetainer);
 
         public static int FuncNumberOfRetainers()
         {
             lock (Core.Memory.Executor.AssemblyLock)
+            {
                 return Core.Memory.CallInjected64<int>(Offsets.GetNumberOfRetainers,
-                                                   Offsets.RetainerData);
+                                                       Offsets.RetainerData);
+            }
         }
-        
+
         public static async Task<int> GetNumberOfRetainers()
         {
             var verified = await VerifiedRetainerData();
             if (!verified)
-                return 0;
-
-            return FuncNumberOfRetainers();
-        }
-
-        public static string GetRetainerName(int index)
-        {
-            IntPtr retainerPtr;
-            lock (Core.Memory.Executor.AssemblyLock)
-                retainerPtr = Core.Memory.CallInjected64<IntPtr>(Offsets.GetRetainerPointer,
-                                                                 Offsets.RetainerData,
-                                                                 index);
-            if (Core.Memory.Read<uint>(retainerPtr) == 0)
-                return "";
-
-            return Core.Memory.ReadString(retainerPtr + Offsets.RetainerName, Encoding.UTF8);
-        }
-
-        public static async Task<List<KeyValuePair<int, uint>>> GetVentureFinishTimes()
-        {
-            IntPtr retainerPtr;
-            List<KeyValuePair<int, uint>> results = new List<KeyValuePair<int, uint>>();
-            var verified = await VerifiedRetainerData();
-            if (!verified)
-                return results;
-
-            var numRetainers = await GetNumberOfRetainers();
-            for (int i = 0; i < numRetainers; i++)
             {
-                lock (Core.Memory.Executor.AssemblyLock)
-                    retainerPtr = Core.Memory.CallInjected64<IntPtr>(Offsets.GetRetainerPointer,
-                                                                     Offsets.RetainerData,
-                                                                     i);
-                if (Core.Memory.Read<uint>(retainerPtr) == 0)
-                    break;
-
-                var task = Core.Memory.Read<uint>(retainerPtr + Offsets.VentureTask);
-
-                if (task == 0)
-                {
-                    continue;
-                }
-
-                var finish = Core.Memory.Read<uint>(retainerPtr + Offsets.VentureFinishTime);
-                results.Add(new KeyValuePair<int, uint>(i, finish));
-
-                /*var timeLeft = finish - unixTimestamp;
-    
-                if (timeLeft < 0)
-                {
-                    Log("\tVenture Complete");
-                }
-                else
-                {
-                    Log("\t" + timeLeft/60 + " Minutes Left");
-                }*/
+                return 0;
             }
 
-            return results;
+            return FuncNumberOfRetainers();
         }
 
         public static void RequestRetainerData()
         {
             lock (Core.Memory.Executor.AssemblyLock)
+            {
                 Core.Memory.CallInjected64<IntPtr>(Offsets.ExecuteCommand,
                                                    (uint)Offsets.RetainerNetworkPacket,
                                                    (uint)0,
                                                    (uint)0,
                                                    (uint)0,
                                                    (uint)0);
+            }
         }
     }
 }

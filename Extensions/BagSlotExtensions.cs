@@ -379,5 +379,20 @@ namespace LlamaLibrary.Extensions
         {
             bagslot.RetainerEntrustQuantity((int)amount);
         }
+
+        public static string ItemName(this BagSlot bagSlot)
+        {
+            return GetItemName(bagSlot.TrueItemId);
+        }
+        
+        public static string GetItemName(uint ItemId)
+        {
+            if (ItemId >= 1000000)
+            {
+                return $"{DataManager.GetItem(ItemId - 1000000).CurrentLocaleName} (HQ)";
+            }
+
+            return DataManager.GetItem(ItemId).CurrentLocaleName;
+        }
     }
 }

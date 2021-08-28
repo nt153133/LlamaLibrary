@@ -87,8 +87,8 @@ namespace LlamaLibrary
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
-            var numRetainers = ordered.Length;
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
+            var numRetainers = count;
 
             if (numRetainers <= 0)
             {
@@ -100,6 +100,7 @@ namespace LlamaLibrary
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
+                if (!ordered[retainerIndex].Active) continue;
                 Log($"Selecting {ordered[retainerIndex]}");
                 await SelectRetainer(retainerIndex);
 
@@ -131,8 +132,8 @@ namespace LlamaLibrary
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
-            var numRetainers = ordered.Length;
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
+            var numRetainers = count;
 
             if (numRetainers <= 0)
             {
@@ -144,6 +145,7 @@ namespace LlamaLibrary
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
+                if (!ordered[retainerIndex].Active) continue;
                 Log($"Selecting {ordered[retainerIndex]}");
                 await SelectRetainer(retainerIndex);
 
@@ -175,8 +177,8 @@ namespace LlamaLibrary
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
-            var numRetainers = ordered.Length;
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
+            var numRetainers = count;
 
             if (numRetainers <= 0)
             {
@@ -188,6 +190,7 @@ namespace LlamaLibrary
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
+                if (!ordered[retainerIndex].Active) continue;
                 Log($"Selecting {ordered[retainerIndex]}");
                 await SelectRetainer(retainerIndex);
 
@@ -220,8 +223,8 @@ namespace LlamaLibrary
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
-            var numRetainers = ordered.Length;
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
+            var numRetainers = count;
 
             if (numRetainers <= 0)
             {
@@ -233,6 +236,7 @@ namespace LlamaLibrary
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
+                if (!ordered[retainerIndex].Active) continue;
                 Log($"Selecting {ordered[retainerIndex].Name}");
                 await SelectRetainer(retainerIndex);
 
@@ -292,7 +296,7 @@ namespace LlamaLibrary
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
             return ordered;
         }
 
@@ -322,8 +326,8 @@ namespace LlamaLibrary
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList(rets).Where(i => i.Active).ToArray();
-            var numRetainers = ordered.Length;
+            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
+            var numRetainers = count;
             //LogCritical($"Ordered length {numRetainers}");
 
             if (numRetainers <= 0)
@@ -336,6 +340,7 @@ namespace LlamaLibrary
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
+                if (!ordered[retainerIndex].Active) continue;
                 Log($"Selecting {ordered[retainerIndex].Name}");
                 await SelectRetainer(retainerIndex);
 

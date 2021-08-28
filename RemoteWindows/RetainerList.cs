@@ -26,23 +26,25 @@ namespace LlamaLibrary.RemoteWindows
             _name = WindowName;
         }
 
-        public int NumberOfRetainers => ___Elements()[2].TrimmedData;
+        public RetainerInfo[] OrderedRetainerList => HelperFunctions.GetOrderedRetainerArray(HelperFunctions.ReadRetainerArray());
+
+        public int NumberOfRetainers => OrderedRetainerList.Length;
 
         public int NumberOfVentures => ___Elements()[1].TrimmedData;
 
         public string RetainerName(int index)
         {
-            return Core.Memory.ReadString((IntPtr) ___Elements()[(index * 9) + 3].Data, Encoding.UTF8);
+            return OrderedRetainerList[index].Name;
         }
 
         public int GetRetainerJobLevel(int index)
         {
-            return ___Elements()[(index * 9) + 5].TrimmedData;
+            return OrderedRetainerList[index].Level;
         }
 
         public bool RetainerHasJob(int index)
         {
-            return ___Elements()[(index * 9) + 4].TrimmedData != 0;
+            return OrderedRetainerList[index].Job != (ClassJobType) 0;
         }
 
         public RetainerRole RetainerRole(int index)
@@ -50,10 +52,10 @@ namespace LlamaLibrary.RemoteWindows
             return (RetainerRole) (___Elements()[(index * 9) + 4].TrimmedData);
         }
 
-        public RetainerInfo[] OrderedRetainerList(RetainerInfo[] retainers)
+        /*public RetainerInfo[] OrderedRetainerList(RetainerInfo[] retainers)
         {
             return HelperFunctions.GetOrderedRetainerArray(retainers);
-        }
+        }*/
 
         public async Task<bool> SelectRetainer(int index)
         {
