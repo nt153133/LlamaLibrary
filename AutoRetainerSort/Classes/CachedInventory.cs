@@ -52,12 +52,12 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         public bool IsSorted() => ItemSlotCounts
             .Where(x => x.Value > 0)
             .Select(x => ItemSortStatus.GetSortInfo(x.Key))
-            .All(x => x.BelongsInIndex(Index));
+            .All(x => x.IndexStatus(Index) == ItemSortInfo.ItemIndexStatus.DontMove);
 
         public int UnsortedCount() => ItemSlotCounts
             .Where(x => x.Value > 0)
             .Select(x => ItemSortStatus.GetSortInfo(x.Key))
-            .Count(x => !x.BelongsInIndex(Index));
+            .Count(x => (x.IndexStatus(Index) & ItemSortInfo.ItemIndexStatus.DontMove) != 0);
 
         public Dictionary<int, int> SortStatusCounts()
         {

@@ -122,8 +122,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             foreach (ItemSortInfo sortInfo in ItemSortStatus.GetByIndex(index).ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
             {
-                if (sortInfo.BelongsInIndex(index)) continue;
-                if (sortInfo.MatchingIndex == int.MinValue) continue;
+                if ((sortInfo.IndexStatus(index) & ItemSortInfo.ItemIndexStatus.DontMove) != 0) continue;
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
@@ -241,7 +240,7 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
             {
                 if (BagsFreeSlotCount(index) == 0) break;
-                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).BelongsInIndex(index))
+                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).IndexStatus(index) == ItemSortInfo.ItemIndexStatus.BelongsElsewhere)
                 {
                     LogSuccess($"Moving {bagSlot.Name} to {name}.");
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
@@ -272,9 +271,10 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots))
             {
                 if (InventoryManager.FreeSlots == 0) break;
-                if (!ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).BelongsInIndex(index))
+                var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
+                if (sortInfo.IndexStatus(index) == ItemSortInfo.ItemIndexStatus.BelongsElsewhere)
                 {
-                    LogSuccess($"Pulling {bagSlot.Name} as it belongs in {name}.");
+                    LogSuccess($"Pulling {bagSlot.Name} as it belongs in {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}.");
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
                         bagSlot.RemoveFromSaddlebagQuantity(bagSlot.Count);

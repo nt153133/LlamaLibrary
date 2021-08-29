@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using ff14bot.Managers;
 
 namespace LlamaLibrary.AutoRetainerSort.Classes
@@ -129,13 +130,27 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             }
         }
 
-        public bool BelongsInIndex(int index)
+        public ItemIndexStatus IndexStatus(int index)
         {
-            if (MatchingIndex == int.MinValue) return false;
+            if (MatchingIndex == int.MinValue) return ItemIndexStatus.Unknown;
 
-            if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return false;
+            if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return ItemIndexStatus.CantMove;
 
-            return MatchingIndex == index;
+            if (MatchingIndex == index) return ItemIndexStatus.BelongsInCurrentIndex;
+
+            if (MatchingIndex != index) return ItemIndexStatus.BelongsElsewhere;
+
+            return ItemIndexStatus.Unknown;
+        }
+
+        [Flags]
+        public enum ItemIndexStatus
+        {
+            BelongsElsewhere = 1 << 0,
+            BelongsInCurrentIndex = 1 << 1,
+            CantMove = 1 << 2,
+            Unknown = 1 << 3,
+            DontMove = BelongsInCurrentIndex | CantMove | Unknown
         }
 
         public ItemSortInfo(uint trueItemId)
