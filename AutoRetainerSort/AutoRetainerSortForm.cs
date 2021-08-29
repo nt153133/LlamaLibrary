@@ -125,7 +125,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
             AutoRetainerSortSettings.Instance.InventoryOptions = newInventorySetup;
 
-            ItemSortStatus.UpdateFromCache(orderedRetainerList).GetAwaiter().GetResult();
+            ItemSortStatus.UpdateFromCache(orderedRetainerList);
 
             var sortTypeCounts = new Dictionary<SortType, Dictionary<int, int>>();
 

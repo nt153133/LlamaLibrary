@@ -84,17 +84,17 @@ namespace LlamaLibrary.AutoRetainerSort
             if (cachedInventory.AllBelong() && cachedInventory.FreeSlots == 0) FilledAndSortedInventories.Add(index);
         }
 
-        public static async Task UpdateFromCache(RetainerInfo[] retData)
+        public static void UpdateFromCache(RetainerInfo[] retData)
         {
             ClearAll();
 
             var mainBagsArray = InventoryManager.GetBagsByInventoryBagId(GeneralFunctions.MainBags).ToArray();
             PlayerInventory.Update(mainBagsArray);
 
-            StoredSaddleBagInventory storedSaddlebagInventory = await ItemFinder.GetCachedSaddlebagInventoryComplete();
+            StoredSaddleBagInventory storedSaddlebagInventory = ItemFinder.GetCachedSaddlebagInventoryComplete();
             SaddlebagInventory.Update(storedSaddlebagInventory);
             
-            var cachedRetInventories = await ItemFinder.SafelyGetCachedRetainerInventories();
+            var cachedRetInventories = ItemFinder.GetCachedRetainerInventories();
 
             for (var i = 0; i < retData.Length; i++)
             {

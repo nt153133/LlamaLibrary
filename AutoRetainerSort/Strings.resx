@@ -20,7 +20,7 @@
     </resheader>
     <data name="AutoSetup_ConflictQuestion" xml:space="preserve">
         <value>If two different inventories have similar items, should that item type be unsorted, or should it belong to the inventory with the most of those types?
-            Yes for unsorted, No for most types.</value>
+Yes for unsorted, No for most types.</value>
     </data>
     <data name="AutoSetup_OverwriteWarning" xml:space="preserve">
         <value>This will overwrite all your current settings! Are you sure?</value>

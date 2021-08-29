@@ -16,6 +16,7 @@ using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.RetainerItemFinder;
 using LlamaLibrary.Retainers;
 using TreeSharp;
 
@@ -60,6 +61,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private async Task<bool> Run()
         {
+            LogCritical($"The journey begins! {Strings.AutoSetup_CacheAdvice}");
             await GeneralFunctions.StopBusy(true, true, false);
 
             var retData = await HelperFunctions.GetOrderedRetainerArray(true);
@@ -89,7 +91,9 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
             }
 
-            await ItemSortStatus.UpdateFromCache(retData);
+            await ItemFinder.FlashSaddlebags();
+
+            ItemSortStatus.UpdateFromCache(retData);
             
             while (ItemSortStatus.AnyUnsorted())
             {
@@ -103,7 +107,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 await RetrieveFromInventories();
 
                 await Coroutine.Sleep(250);
-                await ItemSortStatus.UpdateFromCache(retData);
+                ItemSortStatus.UpdateFromCache(retData);
                 await Coroutine.Sleep(250);
             }
 

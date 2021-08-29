@@ -62,20 +62,24 @@ namespace LlamaLibrary.RetainerItemFinder
 
             return RetainerInventoryPointers;
         }
+        
+        public static StoredSaddleBagInventory GetCachedSaddlebagInventoryComplete()
+        {
+            var ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
+            var qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
 
-        public static async Task<StoredSaddleBagInventory> GetCachedSaddlebagInventoryComplete()
+            return new StoredSaddleBagInventory(ids, qtys);
+        }
+
+        public static async Task<StoredSaddleBagInventory> SafelyGetCachedSaddlebagInventoryComplete()
         {
             var ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
             var qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
 
             if (firstTimeSaddleRead && ids.All(i => i == 0))
             {
-                if (await InventoryBuddy.Instance.Open())
+                if (await FlashSaddlebags())
                 {
-                    await Coroutine.Sleep(200);
-                    InventoryBuddy.Instance.Close();
-                    await Coroutine.Wait(2000, () => !InventoryBuddy.Instance.IsOpen);
-                    await Coroutine.Sleep(300);
                     ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
                     qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
                 }
@@ -84,6 +88,20 @@ namespace LlamaLibrary.RetainerItemFinder
             }
 
             return new StoredSaddleBagInventory(ids, qtys);
+        }
+
+        public static async Task<bool> FlashSaddlebags()
+        {
+            bool couldOpen = await InventoryBuddy.Instance.Open();
+            if (couldOpen)
+            {
+                await Coroutine.Sleep(200);
+                InventoryBuddy.Instance.Close();
+                await Coroutine.Wait(2000, () => !InventoryBuddy.Instance.IsOpen);
+                await Coroutine.Sleep(300);
+            }
+
+            return couldOpen;
         }
 
         public static async Task<Dictionary<uint, int>> GetCachedSaddlebagInventories()

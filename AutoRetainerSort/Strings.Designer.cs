@@ -71,7 +71,7 @@ namespace LlamaLibrary.AutoRetainerSort {
         
         /// <summary>
         ///   Looks up a localized string similar to If two different inventories have similar items, should that item type be unsorted, or should it belong to the inventory with the most of those types?
-        ///            Yes for unsorted, No for most types..
+        ///Yes for unsorted, No for most types..
         /// </summary>
         internal static string AutoSetup_ConflictQuestion {
             get {
