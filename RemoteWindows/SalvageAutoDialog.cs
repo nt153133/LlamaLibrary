@@ -1,9 +1,4 @@
-﻿using System;
-using System.Text;
-using ff14bot;
-using ff14bot.Managers;
-
-namespace LlamaLibrary.RemoteWindows
+﻿namespace LlamaLibrary.RemoteWindows
 {
     public class SalvageAutoDialog: RemoteWindow<SalvageAutoDialog>
     {

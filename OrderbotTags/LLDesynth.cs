@@ -8,7 +8,6 @@ using ff14bot.Managers;
 using ff14bot.NeoProfiles;
 using ff14bot.RemoteAgents;
 using ff14bot.RemoteWindows;
-using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
 using TreeSharp;
 

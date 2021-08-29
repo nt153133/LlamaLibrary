@@ -1,15 +1,6 @@
-﻿using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Buddy.Coroutines;
+﻿using System.Threading.Tasks;
 using Clio.XmlEngine;
-using ff14bot;
-using ff14bot.Behavior;
-using ff14bot.Helpers;
-using ff14bot.Managers;
-using ff14bot.Navigation;
 using ff14bot.NeoProfiles;
-using ff14bot.Objects;
 using TreeSharp;
 
 namespace LlamaLibrary.OrderbotTags

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using ff14bot;
@@ -16,7 +15,6 @@ using ff14bot.Objects;
 using ff14bot.Pathing.Service_Navigation;
 using ff14bot.RemoteWindows;
 using Generate;
-using GreyMagic;
 using LlamaLibrary.Enums;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
@@ -25,7 +23,6 @@ using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Structs;
 using Newtonsoft.Json;
 using TreeSharp;
-using Newtonsoft.Json.Linq;
 
 namespace LlamaLibrary
 {

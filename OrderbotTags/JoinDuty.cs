@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Configuration;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.XmlEngine;

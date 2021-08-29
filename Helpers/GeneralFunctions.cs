@@ -26,6 +26,15 @@ namespace LlamaLibrary.Helpers
 {
     public static class GeneralFunctions
     {
+        public static readonly InventoryBagId[] MainBags = { InventoryBagId.Bag1, InventoryBagId.Bag2, InventoryBagId.Bag3, InventoryBagId.Bag4 };
+        
+        public static readonly InventoryBagId[] SaddlebagIds =
+        {
+            (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
+        };
+
+        public static IEnumerable<BagSlot> MainBagsFilledSlots() => InventoryManager.GetBagsByInventoryBagId(MainBags).SelectMany(x => x.FilledSlots);
+
         static bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
 
         #region StopBusy
@@ -345,20 +354,38 @@ namespace LlamaLibrary.Helpers
 
         private static List<ItemUiCategory> GetEquipUiCategory(ushort slotId)
         {
-            if (slotId == 0) return ItemWeight.MainHands;
-            if (slotId == 1) return ItemWeight.OffHands;
-            if (slotId == 2) return new List<ItemUiCategory> { ItemUiCategory.Head };
-            if (slotId == 3) return new List<ItemUiCategory> { ItemUiCategory.Body };
-            if (slotId == 4) return new List<ItemUiCategory> { ItemUiCategory.Hands };
-            if (slotId == 5) return new List<ItemUiCategory> { ItemUiCategory.Waist };
-            if (slotId == 6) return new List<ItemUiCategory> { ItemUiCategory.Legs };
-            if (slotId == 7) return new List<ItemUiCategory> { ItemUiCategory.Feet };
-            if (slotId == 8) return new List<ItemUiCategory> { ItemUiCategory.Earrings };
-            if (slotId == 9) return new List<ItemUiCategory> { ItemUiCategory.Necklace };
-            if (slotId == 10) return new List<ItemUiCategory> { ItemUiCategory.Bracelets };
-            if (slotId == 11 || slotId == 12) return new List<ItemUiCategory> { ItemUiCategory.Ring };
-            if (slotId == 13) return new List<ItemUiCategory> { ItemUiCategory.Soul_Crystal };
-            return null;
+            switch (slotId)
+            {
+                case 0:
+                    return ItemWeight.MainHands;
+                case 1:
+                    return ItemWeight.OffHands;
+                case 2:
+                    return new List<ItemUiCategory> { ItemUiCategory.Head };
+                case 3:
+                    return new List<ItemUiCategory> { ItemUiCategory.Body };
+                case 4:
+                    return new List<ItemUiCategory> { ItemUiCategory.Hands };
+                case 5:
+                    return new List<ItemUiCategory> { ItemUiCategory.Waist };
+                case 6:
+                    return new List<ItemUiCategory> { ItemUiCategory.Legs };
+                case 7:
+                    return new List<ItemUiCategory> { ItemUiCategory.Feet };
+                case 8:
+                    return new List<ItemUiCategory> { ItemUiCategory.Earrings };
+                case 9:
+                    return new List<ItemUiCategory> { ItemUiCategory.Necklace };
+                case 10:
+                    return new List<ItemUiCategory> { ItemUiCategory.Bracelets };
+                case 11:
+                case 12:
+                    return new List<ItemUiCategory> { ItemUiCategory.Ring };
+                case 13:
+                    return new List<ItemUiCategory> { ItemUiCategory.Soul_Crystal };
+                default:
+                    return null;
+            }
         }
 
         #endregion InventoryEquip
@@ -440,6 +467,35 @@ namespace LlamaLibrary.Helpers
             if (Talk.DialogOpen) Talk.Next();
             await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
             await RetainerRoutine.CloseRetainers();
+        }
+
+        public static async Task<bool> ExitRetainer(bool exitList = false)
+        {
+            if (RetainerTasks.IsInventoryOpen())
+            {
+                RetainerTasks.CloseInventory();
+
+                await Coroutine.Wait(3000, () => RetainerTasks.IsOpen);
+            }
+            if (RetainerTasks.IsOpen)
+            {
+                RetainerTasks.CloseTasks();
+
+                await Coroutine.Wait(3000, () => Talk.DialogOpen);
+            }
+            if (Talk.DialogOpen)
+            {
+                Talk.Next();
+                await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!exitList) return RetainerList.Instance.IsOpen;
+
+            if (!RetainerList.Instance.IsOpen) return true;
+            
+            await RetainerRoutine.CloseRetainers();
+            await Coroutine.Wait(3000, () => !RetainerList.Instance.IsOpen);
+            return !RetainerList.Instance.IsOpen;
         }
 
         public static async Task RepairAll()

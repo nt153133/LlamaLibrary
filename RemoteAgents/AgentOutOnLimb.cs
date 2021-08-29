@@ -1,10 +1,7 @@
 ﻿using System;
 using ff14bot;
 using ff14bot.Managers;
-using LlamaLibrary.Helpers;
-using LlamaLibrary.Memory;
 using LlamaLibrary.Memory.Attributes;
-using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.RemoteAgents
 {

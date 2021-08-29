@@ -63,9 +63,9 @@ namespace LlamaLibrary.RetainerItemFinder
             return RetainerInventoryPointers;
         }
         
-        public static async Task<Dictionary<uint, ushort>> GetCachedSaddlebagInventories()
+        public static async Task<Dictionary<uint, int>> GetCachedSaddlebagInventories()
         {
-            var result = new Dictionary<uint, ushort>();
+            var result = new Dictionary<uint, int>();
 
             var ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
             var qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);

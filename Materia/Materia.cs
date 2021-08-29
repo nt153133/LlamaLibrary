@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -12,7 +11,6 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Memory;
-using LlamaLibrary.Memory.Attributes;
 using LlamaLibrary.Properties;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;

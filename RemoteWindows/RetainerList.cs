@@ -1,8 +1,12 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
 using Clio.Utilities;
+using System.Text;
+using System.Threading.Tasks;
+using Buddy.Coroutines;
+using ff14bot;
 using ff14bot.Helpers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;

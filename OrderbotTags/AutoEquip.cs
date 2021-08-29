@@ -1,10 +1,6 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using Buddy.Coroutines;
+﻿using System.ComponentModel;
 using Clio.XmlEngine;
 using ff14bot.NeoProfiles;
-using ff14bot.RemoteWindows;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using TreeSharp;

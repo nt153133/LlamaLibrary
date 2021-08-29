@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -57,6 +57,30 @@
     <Compile Include="AutoFollow\AutoFollowSettingsFrm.Designer.cs">
       <DependentUpon>AutoFollowSettingsFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AutoRetainerSort\AddNewInventoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoRetainerSort\AddNewInventoryForm.Designer.cs">
+      <DependentUpon>AddNewInventoryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AutoRetainerSort\AutoRetainerSortForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoRetainerSort\AutoRetainerSortForm.Designer.cs">
+      <DependentUpon>AutoRetainerSortForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AutoRetainerSort\AutoRetainerSortSettings.cs" />
+    <Compile Include="AutoRetainerSort\AutoRetainerSortBase.cs" />
+    <Compile Include="AutoRetainerSort\Classes\CachedInventory.cs" />
+    <Compile Include="AutoRetainerSort\Classes\ItemSortInfo.cs" />
+    <Compile Include="AutoRetainerSort\Classes\ItemSortStatus.cs" />
+    <Compile Include="AutoRetainerSort\EditInventoryOptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoRetainerSort\EditInventoryOptionsForm.Designer.cs">
+      <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AutoRetainerSort\SortType.cs" />
     <Compile Include="AutoTrade\AutoTrade.cs" />
     <Compile Include="AutoTrade\AutoTradeSettings.cs">
       <SubType>Form</SubType>
@@ -296,6 +320,15 @@
   <ItemGroup>
     <EmbeddedResource Include="AutoFollow\AutoFollowSettingsFrm.resx">
       <DependentUpon>AutoFollowSettingsFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AutoRetainerSort\AddNewInventoryForm.resx">
+      <DependentUpon>AddNewInventoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AutoRetainerSort\AutoRetainerSortForm.resx">
+      <DependentUpon>AutoRetainerSortForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AutoRetainerSort\EditInventoryOptionsForm.resx">
+      <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Materia\MateriaSettingsFrm.resx">
       <DependentUpon>MateriaSettingsFrm.cs</DependentUpon>

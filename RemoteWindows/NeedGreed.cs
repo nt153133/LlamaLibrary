@@ -1,6 +1,4 @@
-﻿using ff14bot.NeoProfiles.Tags;
-
-namespace LlamaLibrary.RemoteWindows
+﻿namespace LlamaLibrary.RemoteWindows
 {
     public class NeedGreed: RemoteWindow<NeedGreed>
     {

@@ -1,4 +1,4 @@
-﻿﻿namespace LlamaLibrary.Enums
+﻿namespace LlamaLibrary.Enums
 {
     public enum RetainerRole
     {
