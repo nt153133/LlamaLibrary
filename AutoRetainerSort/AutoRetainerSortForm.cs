@@ -111,19 +111,21 @@ namespace LlamaLibrary.AutoRetainerSort
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question) == DialogResult.Yes;
 
-            var newInventorySetup = new Dictionary<int, InventorySortInfo>
+            var newInventorySetup = AutoRetainerSortSettings.Instance.InventoryOptions;
+
+            foreach (InventorySortInfo inventorySortInfo in newInventorySetup.Values)
             {
-                { ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory") },
-                { ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag") }
-            };
+                inventorySortInfo.SortTypes.Clear();
+            }
 
             var orderedRetainerList = RetainerList.Instance.OrderedRetainerList;
 
             for (var i = 0; i < orderedRetainerList.Length; i++)
             {
+                if (newInventorySetup.ContainsKey(i)) continue;
                 RetainerInfo retInfo = orderedRetainerList[i];
                 if (!retInfo.Active) continue;
-                
+
                 newInventorySetup.Add(i, new InventorySortInfo(retInfo.Name));
             }
 

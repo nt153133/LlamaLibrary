@@ -80,7 +80,7 @@ namespace LlamaLibrary.AutoRetainerSort {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will overwrite all your current settings! Are you sure?.
+        ///   Looks up a localized string similar to This will overwrite all your current SortType settings! Are you sure?.
         /// </summary>
         internal static string AutoSetup_OverwriteWarning {
             get {

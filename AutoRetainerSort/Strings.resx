@@ -23,7 +23,7 @@
 Yes for unsorted, No for most types.</value>
     </data>
     <data name="AutoSetup_OverwriteWarning" xml:space="preserve">
-        <value>This will overwrite all your current settings! Are you sure?</value>
+        <value>This will overwrite all your current SortType settings! Are you sure?</value>
     </data>
     <data name="AutoSetup_CacheAdvice" xml:space="preserve">
         <value>Make sure you've looked at your saddlebag &amp; retainer inventories recently, and that you were the last one to do so if you're sharing your account!</value>
