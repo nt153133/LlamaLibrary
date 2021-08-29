@@ -72,8 +72,9 @@ namespace LlamaLibrary.RemoteWindows
 
             try
             {
+                Logging.Write("Sending Action");
                 SendAction(2, 3UL, 2UL, 3UL, (ulong)index);
-
+                Logging.Write("Waiting on Dialog");
                 await Coroutine.Wait(9000, () => DialogOpen || SelectString.IsOpen);
 
                 if (DialogOpen)
@@ -82,6 +83,7 @@ namespace LlamaLibrary.RemoteWindows
                     {
                         if (DialogOpen)
                         {
+                            Logging.Write("Sending Dialog next");
                             Next();
                             await Coroutine.Sleep(100);
                         }
