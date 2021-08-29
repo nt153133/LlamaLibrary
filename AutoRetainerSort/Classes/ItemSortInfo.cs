@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using ff14bot.Managers;
 
 namespace LlamaLibrary.AutoRetainerSort.Classes
@@ -133,29 +134,34 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         public ItemIndexStatus IndexStatus(int index)
         {
             if (MatchingIndex == int.MinValue) return ItemIndexStatus.Unknown;
-
-            if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return ItemIndexStatus.CantMove;
-
+            
             if (MatchingIndex == index) return ItemIndexStatus.BelongsInCurrentIndex;
+
+            if (ItemSortStatus.FilledAndSortedInventories.Contains(MatchingIndex)) return ItemIndexStatus.CantMove;
 
             if (MatchingIndex != index) return ItemIndexStatus.BelongsElsewhere;
 
             return ItemIndexStatus.Unknown;
         }
 
-        [Flags]
-        public enum ItemIndexStatus
-        {
-            BelongsElsewhere = 1 << 0,
-            BelongsInCurrentIndex = 1 << 1,
-            CantMove = 1 << 2,
-            Unknown = 1 << 3,
-            DontMove = BelongsInCurrentIndex | CantMove | Unknown
-        }
-
         public ItemSortInfo(uint trueItemId)
         {
             TrueItemId = trueItemId;
         }
+    }
+
+    [Flags]
+    public enum ItemIndexStatus
+    {
+        BelongsElsewhere = 1 << 0,
+        BelongsInCurrentIndex = 1 << 1,
+        CantMove = 1 << 2,
+        Unknown = 1 << 3,
+        DontMove = BelongsInCurrentIndex | CantMove | Unknown
+    }
+
+    public static class IndexExtensions
+    {
+        public static bool ShouldMove(this ItemIndexStatus indexStatus) => (indexStatus & ItemIndexStatus.DontMove) == 0;
     }
 }

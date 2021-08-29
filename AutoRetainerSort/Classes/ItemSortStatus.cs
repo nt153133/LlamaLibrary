@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Clio.Utilities;
 using ff14bot.Managers;
 using LlamaLibrary.AutoRetainerSort.Classes;
 using LlamaLibrary.Helpers;
@@ -59,11 +60,20 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static bool AnyUnsorted()
         {
-            if (!PlayerInventory.AllBelong() && !FilledAndSortedInventories.Contains(PlayerInventoryIndex)) return true;
-            if (!SaddlebagInventory.AllBelong() && !FilledAndSortedInventories.Contains(SaddlebagInventoryIndex)) return true;
-            return RetainerInventories
-                .Where(retInv => !FilledAndSortedInventories.Contains(retInv.Key))
-                .Any(retInv => !retInv.Value.AllBelong());
+            foreach (CachedInventory cachedInventory in GetAllInventories())
+            {
+                if (FilledAndSortedInventories.Contains(cachedInventory.Index))
+                {
+                    continue;
+                }
+
+                if (!cachedInventory.AllBelong())
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         public static void UpdateIndex(int index, IEnumerable<Bag> bags)
@@ -78,22 +88,11 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             ClearAll();
 
-            foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
-            {
-                uint trueId = bagSlot.TrueItemId;
-                var count = (int)bagSlot.Count;
+            var mainBagsArray = InventoryManager.GetBagsByInventoryBagId(GeneralFunctions.MainBags).ToArray();
+            PlayerInventory.Update(mainBagsArray);
 
-                if (PlayerInventory.ContainsKey(trueId))
-                {
-                    PlayerInventory[trueId] += count;
-                }
-                else
-                {
-                    PlayerInventory.Add(trueId, count);
-                }
-            }
-
-            SaddlebagInventory.Update(await ItemFinder.GetCachedSaddlebagInventoryComplete());
+            StoredSaddleBagInventory storedSaddlebagInventory = await ItemFinder.GetCachedSaddlebagInventoryComplete();
+            SaddlebagInventory.Update(storedSaddlebagInventory);
             
             var cachedRetInventories = await ItemFinder.SafelyGetCachedRetainerInventories();
 
@@ -116,30 +115,19 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
             }
 
-            if (PlayerInventory.AllBelong() && PlayerInventory.FreeSlots == 0)
+            foreach (CachedInventory cachedInventory in GetAllInventories())
             {
-                FilledAndSortedInventories.Add(PlayerInventoryIndex);
-            }
-
-            if (SaddlebagInventory.AllBelong() && SaddlebagInventory.FreeSlots == 0)
-            {
-                FilledAndSortedInventories.Add(SaddlebagInventoryIndex);
-            }
-
-            foreach (var indexInventoryPair in RetainerInventories.Where(indexInventoryPair => indexInventoryPair.Value.AllBelong() && indexInventoryPair.Value.FreeSlots == 0))
-            {
-                FilledAndSortedInventories.Add(indexInventoryPair.Key);
+                if (cachedInventory.AllBelong() && cachedInventory.FreeSlots == 0)
+                {
+                    FilledAndSortedInventories.Add(cachedInventory.Index);
+                }
             }
         }
 
         public static void ClearAll()
         {
-            PlayerInventory.Clear();
-            SaddlebagInventory.Clear();
-            foreach (CachedInventory retInv in RetainerInventories.Values)
-            {
-                retInv.Clear();
-            }
+            FilledAndSortedInventories.Clear();
+            GetAllInventories().ForEach(x => x.Clear());
         }
     }
 }

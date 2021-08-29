@@ -60,7 +60,6 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private async Task<bool> Run()
         {
-            LogCritical($"Not in a working state just yet!");
             await GeneralFunctions.StopBusy(true, true, false);
 
             var retData = await HelperFunctions.GetOrderedRetainerArray(true);
@@ -91,8 +90,7 @@ namespace LlamaLibrary.AutoRetainerSort
             }
 
             await ItemSortStatus.UpdateFromCache(retData);
-
-            var loopCount = 1;
+            
             while (ItemSortStatus.AnyUnsorted())
             {
                 if (ItemSortStatus.FilledAndSortedInventories.Contains(ItemSortStatus.PlayerInventoryIndex))
@@ -104,13 +102,20 @@ namespace LlamaLibrary.AutoRetainerSort
                 await DepositFromPlayer();
                 await RetrieveFromInventories();
 
-                await Coroutine.Sleep(500);
+                await Coroutine.Sleep(250);
                 await ItemSortStatus.UpdateFromCache(retData);
+                await Coroutine.Sleep(250);
+            }
 
-                if (ItemSortStatus.AnyUnsorted())
+            foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
+            {
+                foreach (var sortInfo in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
                 {
-                    LogSuccess($"Loop #{loopCount.ToString()} done but we still have more to sort.");
-                    loopCount++;
+                    if (sortInfo.MatchingIndex < ItemSortStatus.PlayerInventoryIndex) continue;
+                    if (sortInfo.IndexStatus(cachedInventory.Index) == ItemIndexStatus.CantMove)
+                    {
+                        LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name} but it's full and everything there belongs. Too bad!");
+                    }
                 }
             }
 
@@ -124,7 +129,8 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             foreach (ItemSortInfo sortInfo in ItemSortStatus.GetByIndex(index).ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
             {
-                if ((sortInfo.IndexStatus(index) & ItemSortInfo.ItemIndexStatus.DontMove) != 0) continue;
+                ItemIndexStatus indexStatus = sortInfo.IndexStatus(index);
+                if (indexStatus == ItemIndexStatus.BelongsInCurrentIndex || indexStatus == ItemIndexStatus.Unknown) continue;
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append($"We want to move {sortInfo.Name} from {ItemSortStatus.GetByIndex(index).Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
@@ -143,7 +149,10 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static async Task DepositFromPlayer()
         {
-            if (ItemSortStatus.PlayerInventory.AllBelong()) return;
+            if (ItemSortStatus.PlayerInventory.AllBelong())
+            {
+                return;
+            }
 
             foreach (var indexCountPair in ItemSortStatus.PlayerInventory.SortStatusCounts().OrderByDescending(x => x.Value))
             {
@@ -176,7 +185,10 @@ namespace LlamaLibrary.AutoRetainerSort
                 return;
             }
             
+            /*
             PrintMoves(index);
+            PrintMoves(ItemSortStatus.PlayerInventoryIndex);
+            */
 
             bool openingSaddlebag = index == ItemSortStatus.SaddlebagInventoryIndex;
             await GeneralFunctions.ExitRetainer(openingSaddlebag);
@@ -257,9 +269,10 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
             {
                 if (BagsFreeSlotCount(index) == 0) break;
-                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).IndexStatus(index) == ItemSortInfo.ItemIndexStatus.BelongsInCurrentIndex)
+                var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
+                if (sortInfo.IndexStatus(index) == ItemIndexStatus.BelongsInCurrentIndex)
                 {
-                    LogSuccess($"Moving {bagSlot.Name} to {name}.");
+                    LogSuccess($"Depositing {sortInfo.Name}.");
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
                         bagSlot.AddToSaddlebagQuantity(bagSlot.Count);
@@ -291,9 +304,9 @@ namespace LlamaLibrary.AutoRetainerSort
             {
                 if (InventoryManager.FreeSlots == 0) break;
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
-                if (sortInfo.IndexStatus(index) == ItemSortInfo.ItemIndexStatus.BelongsElsewhere)
+                if (sortInfo.IndexStatus(index) == ItemIndexStatus.BelongsElsewhere)
                 {
-                    LogSuccess($"Pulling {bagSlot.Name} as it belongs in {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}.");
+                    LogSuccess($"Retrieving {sortInfo.Name}. It belongs in {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}.");
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
                         bagSlot.RemoveFromSaddlebagQuantity(bagSlot.Count);
