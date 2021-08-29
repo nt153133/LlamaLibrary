@@ -11,7 +11,6 @@ using ff14bot.Managers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
-using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
 using LlamaLibrary.Retainers;
@@ -36,28 +35,17 @@ namespace LlamaLibrary
             {
                 return false;
             }
-
-            var numRetainers = RetainerList.Instance.NumberOfRetainers;
-
-            if (numRetainers <= 0)
+            
+            foreach (var retainer in RetainerList.Instance.OrderedRetainerList.Where(i=> i.Active))
             {
-                LogCritical("Can't find number of retainers either you have none or not near a bell");
-                RetainerList.Instance.Close();
-                TreeRoot.Stop("Failed: Find a bell or some retainers");
-                return true;
-            }
-
-            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
-            {
-                Log($"Selecting {RetainerList.Instance.RetainerName(retainerIndex)}");
-                await SelectRetainer(retainerIndex);
+                Log($"Selecting {retainer.Name}");
+                await SelectRetainer(retainer.Unique);
 
                 await retainerTask;
 
                 await DeSelectRetainer();
-                Log($"Done with {RetainerList.Instance.RetainerName(retainerIndex)}");
+                Log($"Done with {retainer.Name}");
             }
-
             if (!await CloseRetainerList())
             {
                 LogCritical("Could not close retainer list");
@@ -74,30 +62,15 @@ namespace LlamaLibrary
                 return false;
             }
 
-            var count = await GetNumberOfRetainers();
-            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-
-            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
-            var numRetainers = count;
-
-            if (numRetainers <= 0)
+            foreach (var retainer in RetainerList.Instance.OrderedRetainerList.Where(i=> i.Active))
             {
-                LogCritical("Can't find number of retainers either you have none or not near a bell");
-                RetainerList.Instance.Close();
-                TreeRoot.Stop("Failed: Find a bell or some retainers");
-                return true;
-            }
-
-            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
-            {
-                if (!ordered[retainerIndex].Active) continue;
-                Log($"Selecting {ordered[retainerIndex]}");
-                await SelectRetainer(retainerIndex);
+                Log($"Selecting {retainer.Name}");
+                await SelectRetainer(retainer.Unique);
 
                 await retainerTask();
 
                 await DeSelectRetainer();
-                Log($"Done with {ordered[retainerIndex]}");
+                Log($"Done with {retainer.Name}");
             }
 
             if (!await CloseRetainerList())
@@ -113,75 +86,23 @@ namespace LlamaLibrary
         {
             if (!await OpenRetainerList())
             {
+                TreeRoot.Stop("Failed: Find a bell or some retainers");
                 return false;
             }
 
-            var count = await GetNumberOfRetainers();
-            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-
             var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
-            var numRetainers = count;
-
-            if (numRetainers <= 0)
-            {
-                LogCritical("Can't find number of retainers either you have none or not near a bell");
-                RetainerList.Instance.Close();
-                TreeRoot.Stop("Failed: Find a bell or some retainers");
-                return true;
-            }
+            var numRetainers = await GetNumberOfRetainers();
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
             {
                 if (!ordered[retainerIndex].Active) continue;
-                Log($"Selecting {ordered[retainerIndex]}");
+                Log($"Selecting {ordered[retainerIndex].Name}");
                 await SelectRetainer(retainerIndex);
 
                 await retainerTask(retainerIndex);
 
                 await DeSelectRetainer();
-                Log($"Done with {ordered[retainerIndex]}");
-            }
-
-            if (!await CloseRetainerList())
-            {
-                LogCritical("Could not close retainer list");
-                return false;
-            }
-
-            return true;
-        }
-
-        internal static async Task<bool> ReadRetainers(Func<RetainerInfo, int, Task> retainerTask)
-        {
-            if (!await OpenRetainerList())
-            {
-                return false;
-            }
-
-            var count = await GetNumberOfRetainers();
-            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-
-            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
-            var numRetainers = count;
-
-            if (numRetainers <= 0)
-            {
-                LogCritical("Can't find number of retainers either you have none or not near a bell");
-                RetainerList.Instance.Close();
-                TreeRoot.Stop("Failed: Find a bell or some retainers");
-                return true;
-            }
-
-            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
-            {
-                if (!ordered[retainerIndex].Active) continue;
-                Log($"Selecting {ordered[retainerIndex]}");
-                await SelectRetainer(retainerIndex);
-
-                await retainerTask(ordered[retainerIndex], retainerIndex);
-
-                await DeSelectRetainer();
-                Log($"Done with {ordered[retainerIndex]}");
+                Log($"Done with {ordered[retainerIndex].Name}");
             }
 
             if (!await CloseRetainerList())
@@ -241,9 +162,6 @@ namespace LlamaLibrary
                 return null;
             }
 
-            var count = await GetNumberOfRetainers();
-            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-
             var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
             return ordered;
         }
@@ -257,38 +175,24 @@ namespace LlamaLibrary
             }
         }
 
-        internal static async Task<bool> ReadRetainers(Func<RetainerInfo, Task> retainerTask)
+        public static async Task<bool> ReadRetainers(Func<RetainerInfo, Task> retainerTask)
         {
             if (!await OpenRetainerList())
             {
+                //Move this to botbase based on return value
+                TreeRoot.Stop("Failed: Find a bell or some retainers");
                 return false;
             }
-            
-            var count = await GetNumberOfRetainers();
-            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
-            var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
-            var numRetainers = count;
-            //LogCritical($"Ordered length {numRetainers}");
-
-            if (numRetainers <= 0)
+            foreach (var retainer in RetainerList.Instance.OrderedRetainerList.Where(i=> i.Active))
             {
-                LogCritical("Can't find number of retainers either you have none or not near a bell");
-                RetainerList.Instance.Close();
-                TreeRoot.Stop("Failed: Find a bell or some retainers");
-                return true;
-            }
+                Log($"Selecting {retainer.Name}");
+                await SelectRetainer(retainer.Unique);
 
-            for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
-            {
-                if (!ordered[retainerIndex].Active) continue;
-                Log($"Selecting {ordered[retainerIndex].Name}");
-                await SelectRetainer(retainerIndex);
-
-                await retainerTask(ordered[retainerIndex]);
+                await retainerTask(retainer);
 
                 await DeSelectRetainer();
-                Log($"Done with {ordered[retainerIndex].Name}");
+                Log($"Done with {retainer.Name}");
             }
 
             if (!await CloseRetainerList())
@@ -353,14 +257,14 @@ namespace LlamaLibrary
             }
         }
 
-        internal static async Task<bool> SelectRetainer(int retainerIndex)
+        public static async Task<bool> SelectRetainer(int retainerIndex)
         {
             var list = await GetOrderedRetainerArray();
 
             return await SelectRetainer(list[retainerIndex].Unique);
         }
 
-        internal static async Task<bool> SelectRetainer(ulong retainerContentId)
+        public static async Task<bool> SelectRetainer(ulong retainerContentId)
         {
             if (RetainerList.Instance.IsOpen) return await RetainerList.Instance.SelectRetainer(retainerContentId);
             
@@ -382,7 +286,7 @@ namespace LlamaLibrary
             return false;
         }
 
-        internal static async Task<bool> DeSelectRetainer()
+        public static async Task<bool> DeSelectRetainer()
         {
             if (!RetainerTasks.IsOpen) return true;
             RetainerTasks.CloseTasks();

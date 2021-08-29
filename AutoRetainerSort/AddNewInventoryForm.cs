@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
+using Clio.Utilities;
+using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.Retainers;
+using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.AutoRetainerSort
 {
@@ -38,5 +42,24 @@ namespace LlamaLibrary.AutoRetainerSort
         public int Index => (int)numUpDownIndex.Value;
 
         public string RetainerName => txtBoxName.Text;
+
+        private void AddNewInventoryForm_Load(object sender, EventArgs e)
+        {
+            var retainers = RetainerList.Instance.OrderedRetainerList;
+
+            foreach (var retainer in retainers)
+            {
+                cmbRetainers.Items.Add(retainer);
+            }
+            cmbRetainers.SelectedIndex = 0;
+            cmbRetainers.DisplayMember = "DisplayName";
+            
+        }
+
+        private void cmbRetainers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            numUpDownIndex.Value = cmbRetainers.SelectedIndex;
+            txtBoxName.Text = cmbRetainers.Text;
+        }
     }
 }

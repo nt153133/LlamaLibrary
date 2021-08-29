@@ -59,6 +59,8 @@ namespace LlamaLibrary.Structs
 
         public bool Active => enabled == 1;
 
+        public string DisplayName => Name;
+
         public override string ToString()
         {
             return $"{Name} ({(enabled == 1 ? "enabled" : "disabled")}) - {Job} ({Level}) Gil: {Gil} Selling: {NumberOfMbItems} Venture: {VentureTask} VentureEnd: {UnixTimeStampToDateTime(VentureEndTimestamp)} {Unique}";
