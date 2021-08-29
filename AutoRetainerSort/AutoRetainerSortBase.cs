@@ -271,7 +271,7 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots))
             {
                 if (InventoryManager.FreeSlots == 0) break;
-                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).BelongsInIndex(index))
+                if (!ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).BelongsInIndex(index))
                 {
                     LogSuccess($"Pulling {bagSlot.Name} as it belongs in {name}.");
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
