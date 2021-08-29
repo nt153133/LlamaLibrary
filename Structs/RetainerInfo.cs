@@ -14,7 +14,7 @@ namespace LlamaLibrary.Structs
         
         //0x8
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
-        public byte[] nameBytes;
+        private byte[] nameBytes;
 
         //0x28
         public byte enabled;
