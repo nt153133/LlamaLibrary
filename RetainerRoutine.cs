@@ -32,15 +32,8 @@ namespace LlamaLibrary
 
         internal static async Task<bool> ReadRetainers(Task retainerTask)
         {
-            if (!RetainerList.Instance.IsOpen)
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
                 return false;
             }
 
@@ -65,22 +58,19 @@ namespace LlamaLibrary
                 Log($"Done with {RetainerList.Instance.RetainerName(retainerIndex)}");
             }
 
-            RetainerList.Instance.Close();
+            if (!await CloseRetainerList())
+            {
+                LogCritical("Could not close retainer list");
+                return false;
+            }
 
             return true;
         }
 
         internal static async Task<bool> ReadRetainers(Func<Task> retainerTask)
         {
-            if (!RetainerList.Instance.IsOpen)
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
                 return false;
             }
 
@@ -110,22 +100,19 @@ namespace LlamaLibrary
                 Log($"Done with {ordered[retainerIndex]}");
             }
 
-            RetainerList.Instance.Close();
+            if (!await CloseRetainerList())
+            {
+                LogCritical("Could not close retainer list");
+                return false;
+            }
 
             return true;
         }
 
         internal static async Task<bool> ReadRetainers(Func<int, Task> retainerTask)
         {
-            if (!RetainerList.Instance.IsOpen)
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
                 return false;
             }
 
@@ -155,22 +142,19 @@ namespace LlamaLibrary
                 Log($"Done with {ordered[retainerIndex]}");
             }
 
-            RetainerList.Instance.Close();
+            if (!await CloseRetainerList())
+            {
+                LogCritical("Could not close retainer list");
+                return false;
+            }
 
             return true;
         }
 
         internal static async Task<bool> ReadRetainers(Func<RetainerInfo, int, Task> retainerTask)
         {
-            if (!RetainerList.Instance.IsOpen)
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
                 return false;
             }
 
@@ -200,28 +184,24 @@ namespace LlamaLibrary
                 Log($"Done with {ordered[retainerIndex]}");
             }
 
-            RetainerList.Instance.Close();
+            if (!await CloseRetainerList())
+            {
+                LogCritical("Could not close retainer list");
+                return false;
+            }
 
             return true;
         }
 
         internal static async Task<List<CompleteRetainer>> ReadRetainers(Func<RetainerInfo, int, Task<CompleteRetainer>> retainerTask)
         {
-            List<CompleteRetainer> Retainers = new List<CompleteRetainer>();
-            if (!RetainerList.Instance.IsOpen)
+            List<CompleteRetainer> retainers = new List<CompleteRetainer>();
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
-                return Retainers;
+                return retainers;
             }
 
             var count = await GetNumberOfRetainers();
-            var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
             var ordered = RetainerList.Instance.OrderedRetainerList.ToArray();
             var numRetainers = count;
@@ -231,7 +211,7 @@ namespace LlamaLibrary
                 LogCritical("Can't find number of retainers either you have none or not near a bell");
                 RetainerList.Instance.Close();
                 TreeRoot.Stop("Failed: Find a bell or some retainers");
-                return Retainers;
+                return retainers;
             }
 
             for (var retainerIndex = 0; retainerIndex < numRetainers; retainerIndex++)
@@ -240,56 +220,24 @@ namespace LlamaLibrary
                 Log($"Selecting {ordered[retainerIndex].Name}");
                 await SelectRetainer(retainerIndex);
 
-                Retainers.Add(await retainerTask(ordered[retainerIndex], retainerIndex));
+                retainers.Add(await retainerTask(ordered[retainerIndex], retainerIndex));
 
                 await DeSelectRetainer();
                 Log($"Done with {ordered[retainerIndex].Name}");
             }
 
-            RetainerList.Instance.Close();
-            await Coroutine.Wait(5000, () => !RetainerList.Instance.IsOpen);
-            return Retainers;
-        }
-
-
-        public static async Task<CompleteRetainer> RetainerCheck(RetainerInfo retainer, int Index)
-        {
-            //Log($"Selected Retainer ({Index}): {retainer.Name}");
-            /*if (SelectString.IsOpen)
+            if (!await CloseRetainerList())
             {
-                SelectString.ClickLineContains(Translator.SellInventory);
-                await Coroutine.Wait(9000, () =>RaptureAtkUnitManager.GetWindowByName("RetainerSellList") != null);
-                await Coroutine.Sleep(2000);
-                RaptureAtkUnitManager.GetWindowByName("RetainerSellList").SendAction(1, 3uL, 4294967295uL);
-                await Coroutine.Wait(9000, () =>SelectString.IsOpen);
-                
-            }*/
-
-            var ItemsForSale = InventoryManager.GetBagByInventoryBagId(InventoryBagId.Retainer_Market).FilledSlots.ToList();
-
-            foreach (var item in ItemsForSale)
-            {
-                Log($"{item}");
+                LogCritical("Could not close retainer list");
             }
-            
-            var Inventory = InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).ToList();
 
-            var completeRetainer = new CompleteRetainer(retainer, Index, ItemsForSale, Inventory);
-
-            return completeRetainer;
+            return retainers;
         }
 
         internal static async Task<RetainerInfo[]> OpenAndCountRetainers()
         {
-            if (!RetainerList.Instance.IsOpen)
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
                 return null;
             }
 
@@ -300,7 +248,7 @@ namespace LlamaLibrary
             return ordered;
         }
 
-        internal static async Task CloseRetainers()
+        public static async Task CloseRetainers()
         {
             if (RetainerList.Instance.IsOpen)
             {
@@ -311,18 +259,11 @@ namespace LlamaLibrary
 
         internal static async Task<bool> ReadRetainers(Func<RetainerInfo, Task> retainerTask)
         {
-            if (!RetainerList.Instance.IsOpen)
+            if (!await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-            }
-
-            if (!RetainerList.Instance.IsOpen)
-            {
-                LogCritical("Can't find open bell either you have none or not near a bell");
                 return false;
             }
-
+            
             var count = await GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
 
@@ -350,7 +291,11 @@ namespace LlamaLibrary
                 Log($"Done with {ordered[retainerIndex].Name}");
             }
 
-            RetainerList.Instance.Close();
+            if (!await CloseRetainerList())
+            {
+                LogCritical("Could not close retainer list");
+                return false;
+            }
 
             return true;
         }
@@ -410,24 +355,28 @@ namespace LlamaLibrary
 
         internal static async Task<bool> SelectRetainer(int retainerIndex)
         {
-            if (RetainerList.Instance.IsOpen) return await RetainerList.Instance.SelectRetainer(retainerIndex);
+            var list = await GetOrderedRetainerArray();
 
+            return await SelectRetainer(list[retainerIndex].Unique);
+        }
+
+        internal static async Task<bool> SelectRetainer(ulong retainerContentId)
+        {
+            if (RetainerList.Instance.IsOpen) return await RetainerList.Instance.SelectRetainer(retainerContentId);
+            
             if (RetainerTasks.IsOpen)
             {
-                RetainerTasks.CloseTasks();
-                await Coroutine.Wait(1500, () => DialogOpen || RetainerList.Instance.IsOpen);
-                await Coroutine.Sleep(200);
-                if (DialogOpen) Next();
-                //await Coroutine.Sleep(200);
-                await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
-                return await RetainerList.Instance.SelectRetainer(retainerIndex);
+                if (CurrentRetainer == retainerContentId) return true;
+
+                if (await DeSelectRetainer())
+                {
+                    return await RetainerList.Instance.SelectRetainer(retainerContentId);
+                }
             }
 
-            if (!RetainerList.Instance.IsOpen && FindSummoningBell() != null)
+            if (await OpenRetainerList())
             {
-                await UseSummoningBell();
-                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
-                return await RetainerList.Instance.SelectRetainer(retainerIndex);
+                return await RetainerList.Instance.SelectRetainer(retainerContentId);                    
             }
 
             return false;
@@ -438,17 +387,25 @@ namespace LlamaLibrary
             if (!RetainerTasks.IsOpen) return true;
             RetainerTasks.CloseTasks();
 
-            await Coroutine.Wait(1500, () => DialogOpen || SelectYesno.IsOpen);
+            await Coroutine.Wait(3000, () => DialogOpen || SelectYesno.IsOpen);
+            
             if (SelectYesno.IsOpen)
             {
                 SelectYesno.Yes();
-                await Coroutine.Wait(1500, () => DialogOpen || RetainerList.Instance.IsOpen);
+                await Coroutine.Wait(3000, () => DialogOpen || RetainerList.Instance.IsOpen);
+            }
+            
+            while (!RetainerList.Instance.IsOpen)
+            {
+                if (DialogOpen)
+                {
+                    Next();
+                    await Coroutine.Sleep(100);
+                }
+                await Coroutine.Wait(3000, () => DialogOpen || RetainerList.Instance.IsOpen);
             }
 
-            await Coroutine.Sleep(200);
-            if (DialogOpen) Next();
-            //await Coroutine.Sleep(200);
-            return await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
+            return RetainerList.Instance.IsOpen;
         }
 
         public static async Task<bool> RetainerVentureCheck(RetainerInfo retainer)

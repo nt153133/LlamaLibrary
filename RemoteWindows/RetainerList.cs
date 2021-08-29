@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Buddy.Coroutines;
-using ff14bot;
-using ff14bot.Enums;
+using Clio.Utilities;
 using ff14bot.Helpers;
 using ff14bot.RemoteWindows;
 using LlamaLibrary.Enums;
-using LlamaLibrary.Helpers;
 using LlamaLibrary.Retainers;
 using LlamaLibrary.Structs;
 using static ff14bot.RemoteWindows.Talk;
@@ -18,8 +15,6 @@ namespace LlamaLibrary.RemoteWindows
     internal class RetainerList : RemoteWindow<RetainerList>
     {
         private const string WindowName = "RetainerList";
-
-        //public override bool IsOpen => IsOpen;
 
         public RetainerList() : base(WindowName)
         {
@@ -44,34 +39,36 @@ namespace LlamaLibrary.RemoteWindows
 
         public bool RetainerHasJob(int index)
         {
-            return OrderedRetainerList[index].Job != (ClassJobType) 0;
+            return OrderedRetainerList[index].Job != 0;
         }
 
         public RetainerRole RetainerRole(int index)
         {
-            return (RetainerRole) (___Elements()[(index * 9) + 4].TrimmedData);
+            return (RetainerRole)___Elements()[index * 9 + 4].TrimmedData;
         }
 
-        /*public RetainerInfo[] OrderedRetainerList(RetainerInfo[] retainers)
+        public async Task<bool> SelectRetainer(ulong retainerContentId)
         {
-            return HelperFunctions.GetOrderedRetainerArray(retainers);
-        }*/
+            var list = OrderedRetainerList;
+            if (!list.Any(i => i.Unique == retainerContentId))
+            {
+                return false;
+            }
+
+            return await SelectRetainer(OrderedRetainerList.IndexOf(list.First(i => i.Unique == retainerContentId)));
+        }
 
         public async Task<bool> SelectRetainer(int index)
         {
             if (!IsOpen)
             {
-                Logging.Write($"Retainer selection window not open");
+                Logging.Write("Retainer selection window not open");
                 return false;
             }
 
-            //Logging.Write($"Selecting {RetainerName(index)}: {index}");
-
             try
             {
-                SendAction(2, 3UL, 2UL, 3UL, (ulong) index);
-
-                //await Coroutine.Sleep(300);
+                SendAction(2, 3UL, 2UL, 3UL, (ulong)index);
 
                 await Coroutine.Wait(9000, () => DialogOpen || SelectString.IsOpen);
 
@@ -79,26 +76,23 @@ namespace LlamaLibrary.RemoteWindows
                 {
                     while (!SelectString.IsOpen)
                     {
-                        await Coroutine.Sleep(200);
-                        if (DialogOpen) Next();
+                        if (DialogOpen)
+                        {
+                            Next();
+                            await Coroutine.Sleep(100);
+                        }
                         await Coroutine.Wait(1500, () => DialogOpen || SelectString.IsOpen);
                     }
                 }
-                //if (DialogOpen) Next();
-
-                //await Coroutine.Sleep(300);
 
                 await Coroutine.Wait(9000, () => SelectString.IsOpen);
-
-                if (SelectString.IsOpen)
-                    return true;
             }
             catch (Exception ex)
             {
                 Logging.Write("Error selecting retainer: {0}", ex);
             }
 
-            return false;
+            return SelectString.IsOpen;
         }
     }
 }

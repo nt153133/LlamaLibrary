@@ -239,6 +239,33 @@ namespace LlamaLibrary.Retainers
             uint[] bellIds = { 2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284, 196630 };
             return GameObjectManager.GameObjects.Where(i => i.IsVisible && bellIds.Contains(i.NpcId)).OrderBy(r => r.DistanceSqr()).FirstOrDefault();
         }
+        
+        public static async Task<bool> OpenRetainerList()
+        {
+            if (!RetainerList.Instance.IsOpen)
+            {
+                await UseSummoningBell();
+                await Coroutine.Wait(5000, () => RetainerList.Instance.IsOpen);
+            }
+
+            if (!RetainerList.Instance.IsOpen)
+            {
+                LogCritical("Can't find open bell either you have none or not near a bell");
+            }
+
+            return RetainerList.Instance.IsOpen;
+        }
+        
+        public static async Task<bool> CloseRetainerList()
+        {
+            if (RetainerList.Instance.IsOpen)
+            {
+                RetainerList.Instance.Close();
+                await Coroutine.Wait(5000, () => !RetainerList.Instance.IsOpen);
+            }
+
+            return !RetainerList.Instance.IsOpen;
+        }
 
         private static void Log(string test)
         {
