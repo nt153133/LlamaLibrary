@@ -29,15 +29,13 @@ using LlamaLibrary.Memory;
 using LlamaLibrary.Properties;
 using LlamaLibrary.RemoteAgents;
 using LlamaLibrary.RemoteWindows;
-using RetainerItemFinder;
+using LlamaLibrary.RetainerItemFinder;
 using LlamaLibrary.Retainers;
 using LlamaLibrary.Structs;
 using Newtonsoft.Json;
 using TreeSharp;
 using static ff14bot.RemoteWindows.Talk;
 using static LlamaLibrary.Retainers.HelperFunctions;
-using Action = System.Action;
-using AgentInventoryContext = ff14bot.RemoteAgents.AgentInventoryContext;
 
 
 namespace LlamaLibrary
