@@ -22,7 +22,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private Dictionary<int, InventorySortInfo> _inventoryOptions;
 
-        private bool _autoGenLisbeth = true;
+        private bool _autoGenLisbeth;
 
         private Point _windowPosition = Point.Empty;
 
@@ -72,7 +72,7 @@ namespace LlamaLibrary.AutoRetainerSort
         [Setting]
         [DisplayName("Auto-Gen Lisbeth")]
         [Description("Auto-generate Lisbeth storage rules for the current setup?")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool AutoGenLisbeth
         {
             get => _autoGenLisbeth;
