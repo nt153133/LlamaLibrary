@@ -2,11 +2,11 @@
 
 namespace LlamaLibrary.RetainerItemFinder
 {
-    public class StoredSaddleBagInventory
+    public class StoredSaddleBagInventory : IStoredInventory
     {
-        public readonly Dictionary<uint, int> Inventory = new Dictionary<uint, int>();
+        public Dictionary<uint, int> Inventory { get; } = new Dictionary<uint, int>();
 
-        public int FreeSlots;
+        public int FreeSlots { get; }
 
         public StoredSaddleBagInventory(uint[] itemIds, ushort[] itemQuantities)
         {

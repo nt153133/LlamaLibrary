@@ -141,6 +141,7 @@
     <Compile Include="HuntBase.cs" />
     <Compile Include="IshgardHandin.cs" />
     <Compile Include="IshgardHandinBase.cs" />
+    <Compile Include="RetainerItemFinder\IStoredInventory.cs" />
     <Compile Include="RetainerItemFinder\ItemFinder.cs" />
     <Compile Include="RetainerItemFinder\ItemFinderPtrNode.cs" />
     <Compile Include="RetainerItemFinder\StoredRetainerInventory.cs" />

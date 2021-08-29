@@ -5,13 +5,13 @@ using ff14bot;
 
 namespace LlamaLibrary.RetainerItemFinder
 {
-    public class StoredRetainerInventory
+    public class StoredRetainerInventory : IStoredInventory
     {
         private static uint[] crystalIds = new uint[] { 2, 8, 14, 3, 9, 15, 4, 7, 13, 5, 11, 17, 6, 12, 18, 7, 13, 19 };
 
-        public Dictionary<uint, int> Inventory = new Dictionary<uint, int>();
+        public Dictionary<uint, int> Inventory { get; } = new Dictionary<uint, int>();
 
-        public int FreeSlots;
+        public int FreeSlots { get; }
 
         public List<uint> EquippedItems;
 
