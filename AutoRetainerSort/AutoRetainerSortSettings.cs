@@ -35,8 +35,8 @@ namespace LlamaLibrary.AutoRetainerSort
 
                 _inventoryOptions = new Dictionary<int, InventorySortInfo>
                 {
-                    {-2, new InventorySortInfo("Player Inventory")},
-                    {-1, new InventorySortInfo("Chocobo Saddlebag")},
+                    {ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory")},
+                    {ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag")},
                 };
 
                 return _inventoryOptions;
