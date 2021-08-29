@@ -131,7 +131,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
 
         public bool BelongsInIndex(int index)
         {
-            if (MatchingIndex == int.MinValue) return true;
+            if (MatchingIndex == int.MinValue) return false;
 
             if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return false;
 

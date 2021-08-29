@@ -123,6 +123,7 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (ItemSortInfo sortInfo in ItemSortStatus.GetByIndex(index).ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
             {
                 if (sortInfo.BelongsInIndex(index)) continue;
+                if (sortInfo.MatchingIndex == int.MinValue) continue;
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
