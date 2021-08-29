@@ -266,7 +266,7 @@ namespace LlamaLibrary
 
         public static async Task<bool> SelectRetainer(ulong retainerContentId)
         {
-            Log($"Selecting retainer {retainerContentId}");
+            //Log($"Selecting retainer {retainerContentId}");
             if (RetainerList.Instance.IsOpen) return await RetainerList.Instance.SelectRetainer(retainerContentId);
             
             if (RetainerTasks.IsOpen)
