@@ -106,7 +106,12 @@ namespace LlamaLibrary.RemoteWindows
     {
         internal static int IndexInList(this RetainerInfo[] list, ulong contentId)
         {
-            return list.IndexOf(list.First(i => i.Unique == contentId));
+            for (var index = 0; index < list.Length; index++)
+            {
+                if (list[index].Unique == contentId) return index;
+            }
+
+            return -1;
         }
     }
 }
