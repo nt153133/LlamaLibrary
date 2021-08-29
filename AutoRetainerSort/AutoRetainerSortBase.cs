@@ -317,7 +317,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 var bagSlotArray = slotGrouping.OrderByDescending(x => x.Count).ToArray();
                 int moveToIndex = Array.FindIndex(bagSlotArray, x => x.Count < x.Item.StackSize);
                 if (moveToIndex < 0) continue;
-                for (int i = bagSlotArray.Length; i > moveToIndex; i--)
+                for (int i = bagSlotArray.Length - 1; i > moveToIndex; i--)
                 {
                     var moveFromSlot = bagSlotArray[i];
                     if (moveFromSlot == null || !moveFromSlot.IsValid || !moveFromSlot.IsFilled)
