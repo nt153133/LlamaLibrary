@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Clio.Utilities;
 using ff14bot.Managers;
 using LlamaLibrary.AutoRetainerSort.Classes;

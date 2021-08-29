@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
-using Clio.Utilities;
 using LlamaLibrary.RemoteWindows;
-using LlamaLibrary.Retainers;
-using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.AutoRetainerSort
 {

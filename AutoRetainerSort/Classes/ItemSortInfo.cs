@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using System.Text.RegularExpressions;
 using ff14bot.Managers;
 
 namespace LlamaLibrary.AutoRetainerSort.Classes

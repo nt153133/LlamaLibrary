@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using Clio.Utilities;
 using ff14bot.Enums;
 using LlamaLibrary.PersonalTester;
