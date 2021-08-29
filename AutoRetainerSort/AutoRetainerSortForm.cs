@@ -53,11 +53,16 @@ namespace LlamaLibrary.AutoRetainerSort
                 if (dr == DialogResult.Cancel) return;
 
                 AutoRetainerSortSettings.Instance.InventoryOptions.Add(addNewForm.Index, new InventorySortInfo(addNewForm.RetainerName));
-                _bsInventories.ResetBindings(true);
-                listBoxInventoryOptions.ResetBindings();
-                listBoxInventoryOptions.Refresh();
+                ResetBindingSource();
             }
             AutoRetainerSortSettings.Instance.Save();
+        }
+
+        private void ResetBindingSource()
+        {
+            _bsInventories.ResetBindings(true);
+            listBoxInventoryOptions.ResetBindings();
+            listBoxInventoryOptions.Refresh();
         }
 
         private void Delete_Click(object sender, EventArgs e)
@@ -161,7 +166,7 @@ namespace LlamaLibrary.AutoRetainerSort
             }
             
             AutoRetainerSortSettings.Instance.Save();
-            
+            ResetBindingSource();
             AutoRetainerSort.LogSuccess("Auto-Setup done!");
         }
     }
