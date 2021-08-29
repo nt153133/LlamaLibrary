@@ -81,6 +81,11 @@
       <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="AutoRetainerSort\SortType.cs" />
+    <Compile Include="AutoRetainerSort\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="AutoTrade\AutoTrade.cs" />
     <Compile Include="AutoTrade\AutoTradeSettings.cs">
       <SubType>Form</SubType>
@@ -331,6 +336,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AutoRetainerSort\EditInventoryOptionsForm.resx">
       <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AutoRetainerSort\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Materia\MateriaSettingsFrm.resx">
       <DependentUpon>MateriaSettingsFrm.cs</DependentUpon>

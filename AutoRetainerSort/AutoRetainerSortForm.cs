@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Security.Policy;
 using System.Windows.Forms;
+using LlamaLibrary.AutoRetainerSort.Classes;
+using LlamaLibrary.RemoteWindows;
+using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.AutoRetainerSort
 {
@@ -73,8 +78,92 @@ namespace LlamaLibrary.AutoRetainerSort
             }
             else
             {
-                MessageBox.Show("Can't delete Player Inventory or Chocobo Saddlebag!", "Can't Do That", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(
+                    "Can't delete Player Inventory or Chocobo Saddlebag!",
+                    "Can't Do That",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
+        }
+
+        private void AutoSetup_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                Strings.AutoSetup_CacheAdvice,
+                "Careful!",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            
+            DialogResult warningResult = MessageBox.Show(
+                Strings.AutoSetup_OverwriteWarning,
+                "Warning!",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+            if (warningResult == DialogResult.No) return;
+
+            bool conflictUnsorted = MessageBox.Show(
+                Strings.AutoSetup_ConflictQuestion,
+                "Conflict?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) == DialogResult.Yes;
+
+            var newInventorySetup = new Dictionary<int, InventorySortInfo>
+            {
+                { ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory") },
+                { ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag") }
+            };
+
+            var orderedRetainerList = RetainerList.Instance.OrderedRetainerList;
+
+            for (var i = 0; i < orderedRetainerList.Length; i++)
+            {
+                RetainerInfo retInfo = orderedRetainerList[i];
+                if (!retInfo.Active) continue;
+                
+                newInventorySetup.Add(i, new InventorySortInfo(retInfo.Name));
+            }
+
+            AutoRetainerSortSettings.Instance.InventoryOptions = newInventorySetup;
+
+            ItemSortStatus.UpdateFromCache(orderedRetainerList).GetAwaiter().GetResult();
+
+            var sortTypeCounts = new Dictionary<SortType, Dictionary<int, int>>();
+
+            foreach (SortType sortType in Enum.GetValues(typeof(SortType)).Cast<SortType>())
+            {
+                sortTypeCounts[sortType] = new Dictionary<int, int>();
+            }
+
+            foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
+            {
+                foreach (SortType sortType in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key).SortType))
+                {
+                    var indexCountDic = sortTypeCounts[sortType];
+                    if (indexCountDic.ContainsKey(cachedInventory.Index))
+                    {
+                        indexCountDic[cachedInventory.Index]++;
+                    }
+                    else
+                    {
+                        indexCountDic.Add(cachedInventory.Index, 1);
+                    }
+                }
+            }
+
+            foreach (var typeDicPair in sortTypeCounts)
+            {
+                SortType sortType = typeDicPair.Key;
+                int indexCount = typeDicPair.Value.Keys.Count;
+                if (indexCount == 0) continue;
+                if (indexCount > 1 && conflictUnsorted) continue;
+
+                int desiredIndex = typeDicPair.Value.OrderByDescending(x => x.Value).First().Key;
+                AutoRetainerSortSettings.Instance.InventoryOptions[desiredIndex].SortTypes.Add(sortType);
+            }
+            
+            AutoRetainerSortSettings.Instance.Save();
+            
+            AutoRetainerSort.LogSuccess("Auto-Setup done!");
         }
     }
 }
