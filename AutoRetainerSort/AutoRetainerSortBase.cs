@@ -37,8 +37,9 @@ namespace LlamaLibrary.AutoRetainerSort
             OffsetManager.Init();
         }
         
-        public override void OnButtonPress()
+        public override async void OnButtonPress()
         {
+            HelperFunctions.ForceGetRetainerDataSync();
             if (_settingsForm == null || _settingsForm.IsDisposed)
                 _settingsForm = new AutoRetainerSortForm();
             try

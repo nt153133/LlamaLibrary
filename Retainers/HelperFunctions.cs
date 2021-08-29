@@ -283,6 +283,17 @@ namespace LlamaLibrary.Retainers
             await ForceGetRetainerData();
             return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
         }
+        
+        internal static bool VerifiedRetainerDataSync()
+        {
+            if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
+            {
+                return true;
+            }
+
+            ForceGetRetainerDataSync();
+            return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
+        }
 
         public static async Task ForceGetRetainerData()
         {
@@ -290,10 +301,34 @@ namespace LlamaLibrary.Retainers
             await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
             await Coroutine.Wait(3000, () => Core.Memory.Read<byte>(Offsets.RetainerData + Offsets.RetainerDataLoaded) != 0);
         }
+        
+        public static void ForceGetRetainerDataSync()
+        {
+            RequestRetainerData();
+            WaitUntil( () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0, timeout:3000);
+            WaitUntil( () => Core.Memory.Read<byte>(Offsets.RetainerData + Offsets.RetainerDataLoaded) != 0, timeout:3000);
+        }
 
         public static RetainerInfo[] ReadRetainerArray()
         {
             return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
+        }
+        
+        public static RetainerInfo[] GetRetainerArraySync(bool force = false)
+        {
+            if (force)
+            {
+                ForceGetRetainerDataSync();
+
+                return ReadRetainerArray();
+            }
+
+            if (VerifiedRetainerDataSync())
+            {
+                return ReadRetainerArray();
+            }
+
+            return new RetainerInfo[0];
         }
 
         public static async Task<RetainerInfo[]> GetRetainerArray(bool force = false)
@@ -316,6 +351,12 @@ namespace LlamaLibrary.Retainers
         public static async Task<RetainerInfo[]> GetOrderedRetainerArray(bool force = false)
         {
             var retainers = await GetRetainerArray(force);
+            return retainers.Length == 0 ? retainers : GetOrderedRetainerArray(retainers);
+        }
+        
+        public static RetainerInfo[] GetOrderedRetainerArraySync(bool force = false)
+        {
+            var retainers = GetRetainerArraySync(force);
             return retainers.Length == 0 ? retainers : GetOrderedRetainerArray(retainers);
         }
 
@@ -378,6 +419,42 @@ namespace LlamaLibrary.Retainers
                                                    (uint)0,
                                                    (uint)0);
             }
+        }
+        
+        private static bool WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1, bool checkWindows = false)
+        {
+            var t = Task.Run(async () =>
+            {
+                var waitTask = Task.Run(async () =>
+                {
+                    while (!condition())
+                    {
+                        if (checkWindows)
+                        {
+                            RaptureAtkUnitManager.Update();
+                        }
+
+                        await Task.Delay(frequency);
+                    }
+                });
+
+                if (waitTask != await Task.WhenAny(waitTask, Task.Delay(timeout)))
+                {
+                    throw new TimeoutException();
+                }
+
+                return condition();
+            });
+
+            try
+            {
+                t.Wait();
+            }
+            catch (AggregateException)
+            {
+            }
+
+            return condition();
         }
     }
 }
