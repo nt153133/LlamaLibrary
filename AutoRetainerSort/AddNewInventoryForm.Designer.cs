@@ -44,7 +44,11 @@ namespace LlamaLibrary.AutoRetainerSort
             // numUpDownIndex
             // 
             this.numUpDownIndex.Location = new System.Drawing.Point(52, 39);
-            this.numUpDownIndex.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            this.numUpDownIndex.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.numUpDownIndex.Name = "numUpDownIndex";
             this.numUpDownIndex.Size = new System.Drawing.Size(49, 20);
             this.numUpDownIndex.TabIndex = 0;
@@ -125,13 +129,14 @@ namespace LlamaLibrary.AutoRetainerSort
             this.MinimizeBox = false;
             this.Name = "AddNewInventoryForm";
             this.ShowIcon = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Add New Retainer";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.AddNewInventoryForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numUpDownIndex)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         private System.Windows.Forms.ComboBox cmbRetainers;

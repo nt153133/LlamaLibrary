@@ -181,7 +181,7 @@ namespace LlamaLibrary.AutoRetainerSort
             this.MinimizeBox = false;
             this.Name = "EditInventoryOptionsForm";
             this.ShowIcon = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Sort Options";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form_Load);

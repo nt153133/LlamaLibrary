@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LlamaLibrary.AutoRetainerSort
@@ -38,6 +39,13 @@ namespace LlamaLibrary.AutoRetainerSort
             listBoxItemIds.DataSource = _bsItemIds;
 
             comboBoxSortType.DataSource = Enum.GetValues(typeof(SortType));
+            
+            if (Owner != null)
+            {
+                int ownerCenterX = Owner.Location.X + (Owner.Width / 2) - (Width / 2);
+                int ownerCenterY = Owner.Location.Y + (Owner.Height / 2) - (Width / 2);
+                Location = new Point(ownerCenterX, ownerCenterY);
+            }
         }
 
         private BindingSource _bsSortTypes;

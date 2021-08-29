@@ -42,14 +42,14 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             var selectedItem = (KeyValuePair<int, InventorySortInfo>)listBoxInventoryOptions.SelectedItem;
             EditInventoryOptionsForm editForm = new EditInventoryOptionsForm(selectedItem.Value, selectedItem.Key);
-            editForm.Show();
+            editForm.Show(this);
         }
 
         private void AddNew_Click(object sender, EventArgs e)
         {
             using (AddNewInventoryForm addNewForm = new AddNewInventoryForm())
             {
-                DialogResult dr = addNewForm.ShowDialog();
+                DialogResult dr = addNewForm.ShowDialog(this);
                 if (dr == DialogResult.Cancel) return;
 
                 AutoRetainerSortSettings.Instance.InventoryOptions.Add(addNewForm.Index, new InventorySortInfo(addNewForm.RetainerName));
