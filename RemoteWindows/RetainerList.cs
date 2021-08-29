@@ -59,7 +59,7 @@ namespace LlamaLibrary.RemoteWindows
                 return false;
             }
 
-            return await SelectRetainer(OrderedRetainerList.IndexOf(list.First(i => i.Unique == retainerContentId)));
+            return await SelectRetainer(OrderedRetainerList.IndexInList(retainerContentId));
         }
 
         public async Task<bool> SelectRetainer(int index)
@@ -72,7 +72,7 @@ namespace LlamaLibrary.RemoteWindows
 
             try
             {
-                Logging.Write("Sending Action");
+                Logging.Write($"Sending Action 3UL, 2UL, 3UL, {(ulong)index}");
                 SendAction(2, 3UL, 2UL, 3UL, (ulong)index);
                 Logging.Write("Waiting on Dialog");
                 await Coroutine.Wait(9000, () => DialogOpen || SelectString.IsOpen);
@@ -99,6 +99,14 @@ namespace LlamaLibrary.RemoteWindows
             }
 
             return SelectString.IsOpen;
+        }
+    }
+
+    public static class Extensions
+    {
+        internal static int IndexInList(this RetainerInfo[] list, ulong contentId)
+        {
+            return list.IndexOf(list.First(i => i.Unique == contentId));
         }
     }
 }
