@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
+using Clio.Utilities;
 using ff14bot.Enums;
 using LlamaLibrary.PersonalTester;
 
@@ -12,8 +14,8 @@ namespace LlamaLibrary.Structs
         public ulong Unique;
         
         //0x8
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
-        public string Name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
+        public byte[] name_bytes;
 
         //0x28
         public byte enabled;
@@ -58,6 +60,8 @@ namespace LlamaLibrary.Structs
         private int Unknown4;
 
         public bool Active => enabled == 1;
+
+        public string Name => name_bytes.ToUTF8String();
 
         public string DisplayName => Name;
 
