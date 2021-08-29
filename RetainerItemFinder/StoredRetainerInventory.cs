@@ -11,6 +11,8 @@ namespace LlamaLibrary.RetainerItemFinder
 
         public Dictionary<uint, int> Inventory = new Dictionary<uint, int>();
 
+        public int FreeSlots;
+
         public List<uint> EquippedItems;
 
         public StoredRetainerInventory(IntPtr pointer)
@@ -38,6 +40,7 @@ namespace LlamaLibrary.RetainerItemFinder
             {
                 if (itemIds[i] == 0)
                 {
+                    FreeSlots++;
                     continue;
                 }
 

@@ -62,7 +62,30 @@ namespace LlamaLibrary.RetainerItemFinder
 
             return RetainerInventoryPointers;
         }
-        
+
+        public static async Task<StoredSaddleBagInventory> GetCachedSaddlebagInventoryComplete()
+        {
+            var ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
+            var qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
+
+            if (firstTimeSaddleRead && ids.All(i => i == 0))
+            {
+                if (await InventoryBuddy.Instance.Open())
+                {
+                    await Coroutine.Sleep(200);
+                    InventoryBuddy.Instance.Close();
+                    await Coroutine.Wait(2000, () => !InventoryBuddy.Instance.IsOpen);
+                    await Coroutine.Sleep(300);
+                    ids = Core.Memory.ReadArray<uint>(Pointer + Offsets.SaddleBagItemIds, 140);
+                    qtys = Core.Memory.ReadArray<ushort>(Pointer + Offsets.SaddleBagItemQtys, 140);
+                }
+
+                firstTimeSaddleRead = false;
+            }
+
+            return new StoredSaddleBagInventory(ids, qtys);
+        }
+
         public static async Task<Dictionary<uint, int>> GetCachedSaddlebagInventories()
         {
             var result = new Dictionary<uint, int>();
