@@ -60,6 +60,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private async Task<bool> Run()
         {
+            LogCritical($"Not in a working state just yet!");
             await GeneralFunctions.StopBusy(true, true, false);
 
             var retData = await HelperFunctions.GetOrderedRetainerArray(true);
@@ -126,7 +127,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 if ((sortInfo.IndexStatus(index) & ItemSortInfo.ItemIndexStatus.DontMove) != 0) continue;
 
                 StringBuilder sb = new StringBuilder();
-                sb.Append($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
+                sb.Append($"We want to move {sortInfo.Name} from {ItemSortStatus.GetByIndex(index).Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
                 bool isFull = ItemSortStatus.FilledAndSortedInventories.Contains(sortInfo.MatchingIndex);
                 sb.Append(isFull ? "... but it's full." : ".");
                 if (isFull)
@@ -142,11 +143,11 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static async Task DepositFromPlayer()
         {
-            if (ItemSortStatus.PlayerInventory.IsSorted()) return;
+            if (ItemSortStatus.PlayerInventory.AllBelong()) return;
 
             foreach (var indexCountPair in ItemSortStatus.PlayerInventory.SortStatusCounts().OrderByDescending(x => x.Value))
             {
-                if (ItemSortStatus.GetByIndex(indexCountPair.Key).FreeSlotCount() == 0) continue;
+                if (ItemSortStatus.GetByIndex(indexCountPair.Key).FreeSlots == 0) continue;
                 await SortLoop(indexCountPair.Key);
             }
         }
@@ -156,7 +157,7 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
             {
                 if (cachedInventory.Index <= ItemSortStatus.PlayerInventoryIndex) continue;
-                if (cachedInventory.IsSorted()) continue;
+                if (cachedInventory.AllBelong()) continue;
                 await SortLoop(cachedInventory.Index);
             }
         }
@@ -202,19 +203,25 @@ namespace LlamaLibrary.AutoRetainerSort
                     return;
                 }
             }
-            
-            while (!ItemSortStatus.GetByIndex(index).IsSorted() && !ItemSortStatus.FilledAndSortedInventories.Contains(index) && InventoryManager.FreeSlots > 0)
-            {
-                await CombineStacks(GeneralFunctions.MainBagsFilledSlots());
-                await CombineStacks(InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
-                
-                await DepositLoop(index);
-                await RetrieveLoop(index);
-                
-                ItemSortStatus.UpdateIndex(ItemSortStatus.PlayerInventoryIndex, GeneralFunctions.MainBagsFilledSlots());
-                ItemSortStatus.UpdateIndex(index, InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
-            }
 
+            await Coroutine.Sleep(200);
+
+            await CombineStacks(GeneralFunctions.MainBagsFilledSlots());
+            await CombineStacks(InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
+
+            while (ShouldSortLoop(index))
+            {
+                bool depositResult = await DepositLoop(index);
+                bool retrieveResult = await RetrieveLoop(index);
+
+                ItemSortStatus.UpdateIndex(ItemSortStatus.PlayerInventoryIndex, InventoryManager.GetBagsByInventoryBagId(GeneralFunctions.MainBags));
+                ItemSortStatus.UpdateIndex(index, InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)));
+
+                await Coroutine.Sleep(250);
+                
+                if (!depositResult || !retrieveResult) break;
+            }
+            
             if (openingSaddlebag)
             {
                 InventoryBuddy.Instance.Close();
@@ -227,21 +234,30 @@ namespace LlamaLibrary.AutoRetainerSort
             await Coroutine.Sleep(250);
         }
 
-        private static async Task DepositLoop(int index)
+        private static bool ShouldSortLoop(int index)
         {
-            if (ItemSortStatus.GetByIndex(ItemSortStatus.PlayerInventoryIndex).IsSorted()) return;
+            if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return false;
+            if (ItemSortStatus.FilledAndSortedInventories.Contains(ItemSortStatus.PlayerInventoryIndex)) return false;
+            if (ItemSortStatus.PlayerInventory.SortStatusCounts().ContainsKey(index)) return true;
+
+            return !ItemSortStatus.GetByIndex(index).AllBelong();
+        }
+
+        private static async Task<bool> DepositLoop(int index)
+        {
+            if (ItemSortStatus.GetByIndex(ItemSortStatus.PlayerInventoryIndex).AllBelong()) return true;
 
             string name = ItemSortStatus.GetByIndex(index).Name;
             if (BagsFreeSlotCount(index) == 0)
             {
                 LogCritical($"We tried depositing to {name} but their inventory was full!");
-                return;
+                return false;
             }
             Log($"Depositing items to {name}...");
             foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
             {
                 if (BagsFreeSlotCount(index) == 0) break;
-                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).IndexStatus(index) == ItemSortInfo.ItemIndexStatus.BelongsElsewhere)
+                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).IndexStatus(index) == ItemSortInfo.ItemIndexStatus.BelongsInCurrentIndex)
                 {
                     LogSuccess($"Moving {bagSlot.Name} to {name}.");
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
@@ -255,17 +271,19 @@ namespace LlamaLibrary.AutoRetainerSort
                     await Coroutine.Sleep(500);
                 }
             }
+
+            return true;
         }
 
-        private static async Task RetrieveLoop(int index)
+        private static async Task<bool> RetrieveLoop(int index)
         {
-            if (ItemSortStatus.GetByIndex(index).IsSorted()) return;
+            if (ItemSortStatus.GetByIndex(index).AllBelong()) return true;
             
             string name = ItemSortStatus.GetByIndex(index).Name;
             if (InventoryManager.FreeSlots == 0)
             {
                 LogCritical($"We tried to retrieve items from {name} but our player inventory is full!");
-                return;
+                return false;
             }
 
             Log($"Retrieving items from {name}...");
@@ -287,6 +305,8 @@ namespace LlamaLibrary.AutoRetainerSort
                     await Coroutine.Sleep(500);
                 }
             }
+
+            return true;
         }
 
         private static InventoryBagId[] BagIdsByIndex(int index)
@@ -309,7 +329,7 @@ namespace LlamaLibrary.AutoRetainerSort
             var groupedSlots = bagSlots
                 .Where(x => x.IsValid && x.IsFilled && x.Item.StackSize > 1)
                 .GroupBy(x => x.TrueItemId)
-                .Where(x => x.Count() > 1);
+                .Where(x => x.Count(slot => slot.Count < slot.Item.StackSize) > 1);
 
             foreach (var slotGrouping in groupedSlots)
             {

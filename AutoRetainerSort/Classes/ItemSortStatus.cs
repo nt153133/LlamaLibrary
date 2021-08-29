@@ -59,18 +59,19 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static bool AnyUnsorted()
         {
-            if (!PlayerInventory.IsSorted() && !FilledAndSortedInventories.Contains(PlayerInventoryIndex)) return true;
-            if (!SaddlebagInventory.IsSorted() && !FilledAndSortedInventories.Contains(SaddlebagInventoryIndex)) return true;
+            if (!PlayerInventory.AllBelong() && !FilledAndSortedInventories.Contains(PlayerInventoryIndex)) return true;
+            if (!SaddlebagInventory.AllBelong() && !FilledAndSortedInventories.Contains(SaddlebagInventoryIndex)) return true;
             return RetainerInventories
                 .Where(retInv => !FilledAndSortedInventories.Contains(retInv.Key))
-                .Any(retInv => !retInv.Value.IsSorted());
+                .Any(retInv => !retInv.Value.AllBelong());
         }
 
-        public static void UpdateIndex(int index, IEnumerable<BagSlot> bagSlots)
+        public static void UpdateIndex(int index, IEnumerable<Bag> bags)
         {
+            var bagsArray = bags.ToArray();
             CachedInventory cachedInventory = GetByIndex(index);
-            cachedInventory.Update(bagSlots);
-            if (cachedInventory.IsSorted() && cachedInventory.FreeSlotCount() == 0) FilledAndSortedInventories.Add(index);
+            cachedInventory.Update(bagsArray);
+            if (cachedInventory.AllBelong() && cachedInventory.FreeSlots == 0) FilledAndSortedInventories.Add(index);
         }
 
         public static async Task UpdateFromCache(RetainerInfo[] retData)
@@ -92,7 +93,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
             }
 
-            SaddlebagInventory.Update(await ItemFinder.GetCachedSaddlebagInventories());
+            SaddlebagInventory.Update(await ItemFinder.GetCachedSaddlebagInventoryComplete());
             
             var cachedRetInventories = await ItemFinder.SafelyGetCachedRetainerInventories();
 
@@ -105,27 +106,27 @@ namespace LlamaLibrary.AutoRetainerSort
                 {
                     if (RetainerInventories.ContainsKey(i))
                     {
-                        RetainerInventories[i].Update(storedInventory.Inventory);
+                        RetainerInventories[i].Update(storedInventory);
                     }
                     else
                     {
                         RetainerInventories.Add(i, new CachedInventory(retInfo.Name, i));
-                        RetainerInventories[i].Update(storedInventory.Inventory);
+                        RetainerInventories[i].Update(storedInventory);
                     }
                 }
             }
 
-            if (PlayerInventory.IsSorted() && PlayerInventory.FreeSlotCount() == 0)
+            if (PlayerInventory.AllBelong() && PlayerInventory.FreeSlots == 0)
             {
                 FilledAndSortedInventories.Add(PlayerInventoryIndex);
             }
 
-            if (SaddlebagInventory.IsSorted() && SaddlebagInventory.FreeSlotCount() == 0)
+            if (SaddlebagInventory.AllBelong() && SaddlebagInventory.FreeSlots == 0)
             {
                 FilledAndSortedInventories.Add(SaddlebagInventoryIndex);
             }
 
-            foreach (var indexInventoryPair in RetainerInventories.Where(indexInventoryPair => indexInventoryPair.Value.IsSorted() && indexInventoryPair.Value.FreeSlotCount() == 0))
+            foreach (var indexInventoryPair in RetainerInventories.Where(indexInventoryPair => indexInventoryPair.Value.AllBelong() && indexInventoryPair.Value.FreeSlots == 0))
             {
                 FilledAndSortedInventories.Add(indexInventoryPair.Key);
             }

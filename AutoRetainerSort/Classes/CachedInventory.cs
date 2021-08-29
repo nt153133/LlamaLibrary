@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ff14bot.Managers;
+using LlamaLibrary.RetainerItemFinder;
 
 namespace LlamaLibrary.AutoRetainerSort.Classes
 {
@@ -12,6 +14,8 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         public int Index;
 
         public Dictionary<uint, int> ItemSlotCounts;
+
+        public int FreeSlots;
 
         public static int FreeSlotsByIndex(int index)
         {
@@ -26,33 +30,16 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             }
         }
 
-        public int FreeSlotCount()
-        {
-            int freeSlots = FreeSlotsByIndex(Index);
-            foreach (var idCountPair in ItemSlotCounts)
-            {
-                Item itemInfo = ItemSortStatus.GetSortInfo(idCountPair.Key).ItemInfo;
-                if (itemInfo == null) continue;
-                var stackSize = (int)itemInfo.StackSize;
-                int count = idCountPair.Value;
-
-                int slotsTaken = stackSize / count;
-                freeSlots -= slotsTaken;
-            }
-
-            return freeSlots;
-        }
-
         public int this[uint itemId]
         {
             get => ItemSlotCounts[itemId];
             set => ItemSlotCounts[itemId] = value;
         }
 
-        public bool IsSorted() => ItemSlotCounts
+        public bool AllBelong() => ItemSlotCounts
             .Where(x => x.Value > 0)
             .Select(x => ItemSortStatus.GetSortInfo(x.Key))
-            .All(x => x.IndexStatus(Index) == ItemSortInfo.ItemIndexStatus.DontMove);
+            .All(x => (x.IndexStatus(Index) & ItemSortInfo.ItemIndexStatus.DontMove) != 0);
 
         public int UnsortedCount() => ItemSlotCounts
             .Where(x => x.Value > 0)
@@ -90,19 +77,21 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             ItemSlotCounts.Clear();
         }
 
-        public void Update(Dictionary<uint, int> itemFinderDic)
+        public void Update(IStoredInventory storedInventory)
         {
             Clear();
-            foreach (var idCountPair in itemFinderDic)
+            foreach (var idCountPair in storedInventory.Inventory)
             {
                 ItemSlotCounts[idCountPair.Key] = idCountPair.Value;
             }
+
+            FreeSlots = storedInventory.FreeSlots;
         }
 
-        public void Update(IEnumerable<BagSlot> bagSlots)
+        public void Update(Bag[] bags)
         {
             Clear();
-            foreach (BagSlot bagSlot in bagSlots)
+            foreach (BagSlot bagSlot in bags.SelectMany(x => x.FilledSlots))
             {
                 if (bagSlot == null || !bagSlot.IsValid || !bagSlot.IsFilled) continue;
                 if (ItemSlotCounts.ContainsKey(bagSlot.TrueItemId))
@@ -114,6 +103,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
                     ItemSlotCounts.Add(bagSlot.TrueItemId, (int)bagSlot.Count);
                 }
             }
+            FreeSlots = (int)bags.Sum(x => x.FreeSlots);
         }
 
         public CachedInventory(string name, int index)
