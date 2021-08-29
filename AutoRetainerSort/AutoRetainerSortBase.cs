@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Buddy.Coroutines;
@@ -10,13 +11,12 @@ using ff14bot.Behavior;
 using ff14bot.Enums;
 using ff14bot.Helpers;
 using ff14bot.Managers;
+using LlamaLibrary.AutoRetainerSort.Classes;
 using LlamaLibrary.Extensions;
 using LlamaLibrary.Helpers;
 using LlamaLibrary.Memory;
 using LlamaLibrary.RemoteWindows;
-using LlamaLibrary.RetainerItemFinder;
 using LlamaLibrary.Retainers;
-using LlamaLibrary.Structs;
 using TreeSharp;
 
 namespace LlamaLibrary.AutoRetainerSort
@@ -57,16 +57,10 @@ namespace LlamaLibrary.AutoRetainerSort
             _root = new ActionRunCoroutine(r => Run());
         }
 
-        private static bool StillNeedsSorting() => CachedInventoryByIndex.Any(pair => !IsSorted(pair.Key));
-
-        private static bool IsSorted(int index) => CachedInventoryByIndex[index].ItemCounts.All(pair => !BelongsInDifferentIndex(pair.Key, index));
-
         private async Task<bool> Run()
         {
             await GeneralFunctions.StopBusy(true, true, false);
-            
-            BuildItemSortTypeCache();
-            
+
             var retData = await HelperFunctions.GetOrderedRetainerArray(true);
             if (retData.Length == 0)
             {
@@ -74,8 +68,6 @@ namespace LlamaLibrary.AutoRetainerSort
                 TreeRoot.Stop("No retainer data found.");
                 return false;
             }
-
-            await UpdateCachedInventories(retData);
 
             foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
             {
@@ -96,22 +88,28 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
             }
 
-            while (StillNeedsSorting())
-            {
-                var sortStatus = GetSortStatus();
-                await DepositFromPlayer(sortStatus[-2]);
-                await Coroutine.Sleep(250);
-                foreach (int index in GetSortStatus().Keys.Where(x => x > -2))
-                {
-                    if (sortStatus[index].Count == 0) continue;
+            await ItemSortStatus.UpdateFromCache(retData);
 
-                    if (index == -1) await OrganizeSaddlebag();
-                    else await OrganizeRetainer(index);
-                    await Coroutine.Sleep(250);
+            var loopCount = 1;
+            while (ItemSortStatus.AnyUnsorted())
+            {
+                if (ItemSortStatus.FilledAndSortedInventories.Contains(ItemSortStatus.PlayerInventoryIndex))
+                {
+                    LogCritical("Everything currently in the player's inventory belongs there, but it's full! Can't move items like this. I quit.");
+                    break;
                 }
 
+                await DepositFromPlayer();
+                await RetrieveFromInventories();
+
                 await Coroutine.Sleep(500);
-                await UpdateCachedInventories(retData);
+                await ItemSortStatus.UpdateFromCache(retData);
+
+                if (ItemSortStatus.AnyUnsorted())
+                {
+                    LogSuccess($"Loop #{loopCount.ToString()} done but we still have more to sort.");
+                    loopCount++;
+                }
             }
 
             await GeneralFunctions.ExitRetainer(true);
@@ -120,376 +118,202 @@ namespace LlamaLibrary.AutoRetainerSort
             return false;
         }
 
-        private static Dictionary<int, Dictionary<uint, int>> GetSortStatus()
+        private static void PrintMoves(int index)
         {
-            var sortStatus = new Dictionary<int, Dictionary<uint, int>>();
-
-            foreach (var pair in CachedInventoryByIndex)
+            foreach (ItemSortInfo sortInfo in ItemSortStatus.GetByIndex(index).ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
             {
-                sortStatus[pair.Key] = new Dictionary<uint, int>();
-                foreach (uint itemId in pair.Value.ItemCounts.Keys)
+                if (sortInfo.BelongsInIndex(index)) continue;
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
+                bool isFull = ItemSortStatus.FilledAndSortedInventories.Contains(sortInfo.MatchingIndex);
+                sb.Append(isFull ? "... but it's full." : ".");
+                if (isFull)
                 {
-                    int belongingIndex = GetBelongingIndex(itemId);
-                    if (belongingIndex == pair.Key || belongingIndex < -2) continue;
-
-                    sortStatus[pair.Key][itemId] = belongingIndex;
-                }
-            }
-
-            return sortStatus;
-        }
-
-        private static async Task DepositFromPlayer(Dictionary<uint, int> sortInfo)
-        {
-            var indexCounts = new Dictionary<int, int>();
-            foreach (int index in sortInfo.Values)
-            {
-                if (indexCounts.ContainsKey(index))
-                {
-                    indexCounts[index]++;
+                    LogCritical(sb.ToString());
                 }
                 else
                 {
-                    indexCounts.Add(index, 1);
-                }
-            }
-
-            if (!indexCounts.Any()) return;
-
-            foreach (int index in indexCounts.OrderBy(x => x.Value).Select(x => x.Key))
-            {
-                if (index <= -2) continue;
-
-                if (index == -1)
-                {
-                    await OrganizeSaddlebag();
-                }
-                else
-                {
-                    await OrganizeRetainer(index);
+                    Log(sb.ToString());
                 }
             }
         }
 
-        private static bool MainInventoryAnyShouldBeDeposited(int index) => MainBagsFilledSlots.Any(x => GetBelongingIndex(x) == index);
-
-        private static async Task OrganizeSaddlebag()
+        private static async Task DepositFromPlayer()
         {
-            await GeneralFunctions.ExitRetainer(true);
-            Log("Opening Saddlebag...");
-            await InventoryBuddy.Instance.Open();
+            if (ItemSortStatus.PlayerInventory.IsSorted()) return;
 
-            if (SaddlebagFreeSlots() != 0 && MainInventoryAnyShouldBeDeposited(-1))
+            foreach (var indexCountPair in ItemSortStatus.PlayerInventory.SortStatusCounts().OrderByDescending(x => x.Value))
             {
-                Log("Depositing items...");
-                foreach (BagSlot bagSlot in MainBagsFilledSlots)
-                {
-                    if (SaddlebagFreeSlots() == 0) break;
-                    if (BelongsInIndex(bagSlot, -1))
-                    {
-                        LogSuccess($"Moving {bagSlot.EnglishName} to Saddlebag.");
-                        bagSlot.AddToSaddlebagQuantity(bagSlot.Count);
-                        await Coroutine.Sleep(500);
-                    }
-                }
+                if (ItemSortStatus.GetByIndex(indexCountPair.Key).FreeSlotCount() == 0) continue;
+                await SortLoop(indexCountPair.Key);
+            }
+        }
+
+        private static async Task RetrieveFromInventories()
+        {
+            foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
+            {
+                if (cachedInventory.Index <= ItemSortStatus.PlayerInventoryIndex) continue;
+                if (cachedInventory.IsSorted()) continue;
+                await SortLoop(cachedInventory.Index);
+            }
+        }
+
+        private static async Task SortLoop(int index)
+        {
+            if (index < ItemSortStatus.PlayerInventoryIndex)
+            {
+                LogCritical($"Tried to sort index of #{index.ToString()} but that's out of range...");
+                return;
             }
 
-
-            if (InventoryManager.FreeSlots != 0 && SaddlebagShouldAnyBeSorted())
+            if (index < ItemSortStatus.SaddlebagInventoryIndex)
             {
-                Log("Retrieving items...");
-                foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(x => x.FilledSlots))
+                LogCritical($"Tried to sort the player's inventory, but we can't do anything with that alone...");
+                return;
+            }
+            
+            PrintMoves(index);
+
+            bool openingSaddlebag = index == ItemSortStatus.SaddlebagInventoryIndex;
+            await GeneralFunctions.ExitRetainer(openingSaddlebag);
+
+            if (openingSaddlebag)
+            {
+                await InventoryBuddy.Instance.Open();
+
+                if (!InventoryBuddy.Instance.IsOpen)
                 {
-                    if (InventoryManager.FreeSlots == 0) break;
-                    if (BelongsInDifferentIndex(bagSlot, -1))
-                    {
-                        LogSuccess($"Pulling {bagSlot.EnglishName} as it belongs elsewhere.");
-                        bagSlot.RemoveFromSaddlebagQuantity(bagSlot.Count);
-                        await Coroutine.Sleep(500);
-                    }
+                    LogCritical($"We were unable to open the saddlebag!");
+                    return;
+                }
+            }
+            else
+            {
+                await RetainerRoutine.SelectRetainer(index);
+                RetainerTasks.OpenInventory();
+                await Coroutine.Wait(3000, RetainerTasks.IsInventoryOpen);
+
+                if (!RetainerTasks.IsInventoryOpen())
+                {
+                    LogCritical($"We were unable to open Retainer #{index.ToString()}!");
+                    return;
                 }
             }
             
+            while (!ItemSortStatus.GetByIndex(index).IsSorted() && !ItemSortStatus.FilledAndSortedInventories.Contains(index) && InventoryManager.FreeSlots > 0)
+            {
+                await CombineStacks(GeneralFunctions.MainBagsFilledSlots());
+                await CombineStacks(InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
+                
+                await DepositLoop(index);
+                await RetrieveLoop(index);
+                
+                ItemSortStatus.UpdateIndex(ItemSortStatus.PlayerInventoryIndex, GeneralFunctions.MainBagsFilledSlots());
+                ItemSortStatus.UpdateIndex(index, InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
+            }
 
-            Log("Exiting Saddlebag...");
-            InventoryBuddy.Instance.Close();
-            await Coroutine.Wait(3000, () => !InventoryBuddy.Instance.IsOpen);
+            if (openingSaddlebag)
+            {
+                InventoryBuddy.Instance.Close();
+            }
+            else
+            {
+                await GeneralFunctions.ExitRetainer();
+            }
+
             await Coroutine.Sleep(250);
         }
 
-        private static long SaddlebagFreeSlots() => InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).Sum(x => x.FreeSlots);
-
-        private static bool SaddlebagShouldAnyBeSorted()
+        private static async Task DepositLoop(int index)
         {
-            return InventoryManager
-                .GetBagsByInventoryBagId(SaddlebagIds)
-                .SelectMany(x => x.FilledSlots)
-                .Any(x => BelongsInDifferentIndex(x, -1));
-        }
+            if (ItemSortStatus.GetByIndex(ItemSortStatus.PlayerInventoryIndex).IsSorted()) return;
 
-        private static async Task OrganizeRetainer(int index)
-        {
-            Log($"Opening retainer #{index}...");
-            await RetainerRoutine.SelectRetainer(index);
-
-            RetainerTasks.OpenInventory();
-
-            await Coroutine.Wait(3000, RetainerTasks.IsInventoryOpen);
-
-            if (RetainerFreeSlots() != 0 && MainInventoryAnyShouldBeDeposited(index))
+            string name = ItemSortStatus.GetByIndex(index).Name;
+            if (BagsFreeSlotCount(index) == 0)
             {
-                Log("Depositing items...");
-                foreach (BagSlot bagSlot in MainBagsFilledSlots)
+                LogCritical($"We tried depositing to {name} but their inventory was full!");
+                return;
+            }
+            Log($"Depositing items to {name}...");
+            foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
+            {
+                if (BagsFreeSlotCount(index) == 0) break;
+                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).BelongsInIndex(index))
                 {
-                    if (RetainerFreeSlots() == 0) break;
-                    if (BelongsInIndex(bagSlot, index))
+                    LogSuccess($"Moving {bagSlot.Name} to {name}.");
+                    if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
-                        LogSuccess($"Moving {bagSlot.EnglishName} to retainer #{index.ToString()}");
+                        bagSlot.AddToSaddlebagQuantity(bagSlot.Count);
+                    }
+                    else
+                    {
                         bagSlot.RetainerEntrustQuantity(bagSlot.Count);
-                        await Coroutine.Sleep(500);
                     }
+                    await Coroutine.Sleep(500);
                 }
             }
+        }
 
-            if (InventoryManager.FreeSlots != 0 && RetainerShouldAnyBeSorted(index))
+        private static async Task RetrieveLoop(int index)
+        {
+            if (ItemSortStatus.GetByIndex(index).IsSorted()) return;
+            
+            string name = ItemSortStatus.GetByIndex(index).Name;
+            if (InventoryManager.FreeSlots == 0)
             {
-                Log("Retrieving items...");
-                foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(HelperFunctions.RetainerBagIds).SelectMany(x => x.FilledSlots))
+                LogCritical($"We tried to retrieve items from {name} but our player inventory is full!");
+                return;
+            }
+
+            Log($"Retrieving items from {name}...");
+            foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots))
+            {
+                if (InventoryManager.FreeSlots == 0) break;
+                if (ItemSortStatus.GetSortInfo(bagSlot.TrueItemId).BelongsInIndex(index))
                 {
-                    if (InventoryManager.FreeSlots == 0) break;
-                    if (BelongsInDifferentIndex(bagSlot, index))
+                    LogSuccess($"Pulling {bagSlot.Name} as it belongs in {name}.");
+                    if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
-                        LogSuccess($"Pulling {bagSlot.EnglishName} as it belongs elsewhere.");
+                        bagSlot.RemoveFromSaddlebagQuantity(bagSlot.Count);
+                    }
+                    else
+                    {
                         bagSlot.RetainerRetrieveQuantity(bagSlot.Count);
-                        await Coroutine.Sleep(500);
                     }
-                }
-            }
-
-            Log("Exiting retainer...");
-            await GeneralFunctions.ExitRetainer();
-            await Coroutine.Wait(3000, () => RetainerList.Instance.IsOpen);
-            await Coroutine.Sleep(500);
-        }
-
-        private static long RetainerFreeSlots() => InventoryManager.GetBagsByInventoryBagId(HelperFunctions.RetainerBagIds).Sum(x => x.FreeSlots);
-
-        private static bool RetainerShouldAnyBeSorted(int index)
-        {
-            return InventoryManager
-                .GetBagsByInventoryBagId(HelperFunctions.RetainerBagIds)
-                .SelectMany(x => x.FilledSlots)
-                .Any(x => BelongsInDifferentIndex(x, index));
-        }
-
-        private static async Task UpdateCachedInventories(RetainerInfo[] retData)
-        {
-            CachedInventoryByIndex.Clear();
-            var saddleBagInv = await ItemFinder.GetCachedSaddlebagInventories();
-            CachedInventoryByIndex[-1] = new CachedInventoryInfo(saddleBagInv);
-
-            CachedInventoryByIndex[-2] = new CachedInventoryInfo(MainBagsFilledSlots);
-
-            var retainerInventories = await ItemFinder.SafelyGetCachedRetainerInventories();
-
-            for (int i = 0; i < retData.Length; i++)
-            {
-                RetainerInfo retInfo = retData[i];
-                if (!retInfo.Active) continue;
-
-                if (retainerInventories.TryGetValue(retInfo.Unique, out StoredRetainerInventory storedInventory))
-                {
-                    int index = GetRetainerIndexByUnique(retInfo.Unique, retData);
-                    CachedInventoryByIndex[index] = new CachedInventoryInfo(storedInventory);
+                    await Coroutine.Sleep(500);
                 }
             }
         }
 
-        private static int GetRetainerIndexByUnique(ulong uniqueId, RetainerInfo[] retData)
+        private static InventoryBagId[] BagIdsByIndex(int index)
         {
-            for (int i = 0; i < retData.Length; i++)
+            switch (index)
             {
-                if (retData[i].Unique == uniqueId) return i;
-            }
-            
-            LogCritical($"Couldn't find retainer index for {uniqueId.ToString()}");
-            TreeRoot.Stop("Unable to find retainer index.");
-            return int.MinValue;
-        }
-
-        private static readonly Dictionary<int, CachedInventoryInfo> CachedInventoryByIndex = new Dictionary<int, CachedInventoryInfo>();
-        
-        private static readonly InventoryBagId[] SaddlebagIds =
-        {
-            (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
-        };
-
-        private static int GetBelongingIndex(BagSlot slot)
-        {
-            foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
-            {
-                if (pair.Value.Contains(slot)) return pair.Key;
-            }
-
-            return int.MinValue;
-        }
-        
-        private static int GetBelongingIndex(uint itemId)
-        {
-            SortType sortType = GetSortTypeFromId(itemId);
-
-            var belongingIndex = int.MinValue;
-            foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
-            {
-                if (pair.Value.Contains(itemId))
-                {
-                    belongingIndex = pair.Key;
-                    break;
-                }
-
-                if (pair.Value.Contains(sortType))
-                {
-                    belongingIndex = pair.Key;
-                }
-            }
-
-            return belongingIndex;
-        }
-
-        private static bool BelongsInIndex(BagSlot slot, int otherIndex) => GetBelongingIndex(slot) == otherIndex;
-
-        private static bool BelongsInDifferentIndex(BagSlot slot, int currentIndex)
-        {
-            int belongingIndex = GetBelongingIndex(slot);
-            if (belongingIndex == int.MinValue) return false;
-            return belongingIndex != currentIndex;
-        }
-        
-        private static bool BelongsInDifferentIndex(uint itemId, int currentIndex)
-        {
-            int belongingIndex = GetBelongingIndex(itemId);
-            if (belongingIndex == int.MinValue) return false;
-            return belongingIndex != currentIndex;
-        }
-
-        private static SortType GetSortTypeFromId(uint itemId)
-        {
-            const uint collectableOffset = 5000000;
-            const uint highQualityOffset = 1000000;
-            
-            uint adjustedId = itemId;
-            if (adjustedId > collectableOffset) adjustedId -= collectableOffset;
-            else if (adjustedId > highQualityOffset) adjustedId -= highQualityOffset;
-            
-            return cachedSortTypes.ContainsKey(adjustedId) ? cachedSortTypes[adjustedId] : SortType.UNKNOWN;
-        }
-
-        private static Dictionary<uint, SortType> cachedSortTypes;
-
-        private static void BuildItemSortTypeCache()
-        {
-            if (cachedSortTypes != null) return;
-
-            cachedSortTypes = new Dictionary<uint, SortType>();
-
-            foreach (Item itemInfo in DataManager.ItemCache.Values)
-            {
-                if (itemInfo.Id > 1000000) continue;
-                if (cachedSortTypes.ContainsKey(itemInfo.Id)) continue;
-                
-                cachedSortTypes.Add(itemInfo.Id, itemInfo.EquipmentCatagory.GetSortType());
+                case ItemSortStatus.PlayerInventoryIndex:
+                    return GeneralFunctions.MainBags;
+                case ItemSortStatus.SaddlebagInventoryIndex:
+                    return GeneralFunctions.SaddlebagIds;
+                default:
+                    return HelperFunctions.RetainerBagIds;
             }
         }
 
-        private class CachedInventoryInfo
-        {
-            public readonly Dictionary<uint, int> ItemCounts;
-
-            public int this[uint itemId] => ItemCounts[itemId];
-
-            public CachedInventoryInfo(StoredRetainerInventory retInfo)
-            {
-                ItemCounts = retInfo.Inventory;
-            }
-
-            public CachedInventoryInfo(Dictionary<uint, ushort> saddlebagDic)
-            {
-                ItemCounts = new Dictionary<uint, int>();
-                foreach (var pair in saddlebagDic)
-                {
-                    if (ItemCounts.ContainsKey(pair.Key))
-                    {
-                        ItemCounts[pair.Key] += pair.Value;
-                    }
-                    else
-                    {
-                        ItemCounts.Add(pair.Key, pair.Value);
-                    }
-                }
-            }
-
-            public CachedInventoryInfo(IEnumerable<BagSlot> bagSlots)
-            {
-                ItemCounts = new Dictionary<uint, int>();
-                foreach (BagSlot slot in bagSlots)
-                {
-                    if (ItemCounts.ContainsKey(slot.TrueItemId))
-                    {
-                        ItemCounts[slot.TrueItemId] += (int)slot.Count;
-                    }
-                    else
-                    {
-                        ItemCounts.Add(slot.TrueItemId, (int)slot.Count);
-                    }
-                }
-            }
-        }
-        
-        private static readonly InventoryBagId[] MainBags = {
-            InventoryBagId.Bag1,
-            InventoryBagId.Bag2,
-            InventoryBagId.Bag3,
-            InventoryBagId.Bag4,
-        };
-        
-        public static IEnumerable<BagSlot> MainBagsFilledSlots => InventoryManager.GetBagsByInventoryBagId(MainBags).SelectMany(x => x.FilledSlots);
-
-        private class ItemSortInfo
-        {
-            public readonly uint ItemId;
-
-            public int CurrentIndex;
-
-            private int? _belongingIndex;
-            
-            public int BelongingIndex
-            {
-                get
-                {
-                    if (_belongingIndex == null)
-                    {
-                        _belongingIndex = GetBelongingIndex(ItemId);
-                    }
-                    return _belongingIndex.Value;
-                }
-            }
-
-            public ItemSortInfo(uint itemId, int currentIndex)
-            {
-                ItemId = itemId;
-                CurrentIndex = currentIndex;
-            }
-        }
+        private static int BagsFreeSlotCount(int index) => (int)InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).Sum(x => x.FreeSlots);
 
         public static async Task CombineStacks(IEnumerable<BagSlot> bagSlots)
         {
             var groupedSlots = bagSlots
                 .Where(x => x.IsValid && x.IsFilled && x.Item.StackSize > 1)
-                .GroupBy(x => x.RawItemId)
+                .GroupBy(x => x.TrueItemId)
                 .Where(x => x.Count() > 1);
 
             foreach (var slotGrouping in groupedSlots)
             {
+                if (slotGrouping.Key > ItemSortInfo.CollectableOffset) continue;
+                LogSuccess($"Combining stacks of {ItemSortStatus.GetSortInfo(slotGrouping.Key).Name}");
+                
                 var bagSlotArray = slotGrouping.OrderByDescending(x => x.Count).ToArray();
                 int moveToIndex = Array.FindIndex(bagSlotArray, x => x.Count < x.Item.StackSize);
                 if (moveToIndex < 0) continue;

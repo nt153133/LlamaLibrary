@@ -99,15 +99,15 @@ namespace LlamaLibrary.AutoRetainerSort
         public BindingList<SortType> SortTypes;
 
         [JsonProperty("ItemIds")]
-        public BindingList<uint> ItemIds;
+        public BindingList<uint> TrueItemIds;
 
-        public bool Contains(SortType type) => SortTypes.Contains(type);
+        public bool ContainsType(SortType type) => SortTypes.Contains(type);
 
-        public bool Contains(uint itemId) => ItemIds.Contains(itemId);
+        public bool ContainsId(uint trueItemId) => TrueItemIds.Contains(trueItemId);
 
-        public bool Contains(BagSlot bagSlot) => Contains(bagSlot.TrueItemId) || Contains(bagSlot.Item.EquipmentCatagory.GetSortType());
+        public bool ContainsSlot(BagSlot bagSlot) => ContainsId(bagSlot.TrueItemId) || ContainsType(bagSlot.Item.EquipmentCatagory.GetSortType());
 
-        public bool Any() => SortTypes.Any() || ItemIds.Any();
+        public bool Any() => SortTypes.Any() || TrueItemIds.Any();
 
         public override string ToString() => Name;
 
@@ -115,7 +115,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             Name = name;
             SortTypes = new BindingList<SortType>();
-            ItemIds = new BindingList<uint>();
+            TrueItemIds = new BindingList<uint>();
         }
     }
 }

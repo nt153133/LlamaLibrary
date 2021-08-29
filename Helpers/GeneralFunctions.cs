@@ -26,6 +26,15 @@ namespace LlamaLibrary.Helpers
 {
     public static class GeneralFunctions
     {
+        public static readonly InventoryBagId[] MainBags = { InventoryBagId.Bag1, InventoryBagId.Bag2, InventoryBagId.Bag3, InventoryBagId.Bag4 };
+        
+        public static readonly InventoryBagId[] SaddlebagIds =
+        {
+            (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
+        };
+
+        public static IEnumerable<BagSlot> MainBagsFilledSlots() => InventoryManager.GetBagsByInventoryBagId(MainBags).SelectMany(x => x.FilledSlots);
+
         static bool IsJumping => Core.Memory.NoCacheRead<byte>(Offsets.Conditions + Offsets.JumpingCondition) != 0;
 
         #region StopBusy

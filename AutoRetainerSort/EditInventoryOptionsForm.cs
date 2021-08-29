@@ -32,7 +32,7 @@ namespace LlamaLibrary.AutoRetainerSort
             txtBoxName.Text = _sortInfo.Name;
             
             _bsSortTypes = new BindingSource(_sortInfo.SortTypes, "");
-            _bsItemIds = new BindingSource(_sortInfo.ItemIds, "");
+            _bsItemIds = new BindingSource(_sortInfo.TrueItemIds, "");
 
             listBoxSortTypes.DataSource = _bsSortTypes;
             listBoxItemIds.DataSource = _bsItemIds;
@@ -57,13 +57,13 @@ namespace LlamaLibrary.AutoRetainerSort
         private void AddNewSortType_Click(object sender, EventArgs e)
         {
             SortType selected = NewSortType;
-            if (_sortInfo.Contains(selected)) return;
+            if (_sortInfo.ContainsType(selected)) return;
 
             foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
             {
                 if (pair.Key == _index) continue;
 
-                if (!pair.Value.Contains(selected)) continue;
+                if (!pair.Value.ContainsType(selected)) continue;
                 
                 
                 DialogResult dr = MessageBox.Show(
@@ -85,13 +85,13 @@ namespace LlamaLibrary.AutoRetainerSort
         private void AddNewItemId_Click(object sender, EventArgs e)
         {
             uint itemId = NewItemId;
-            if (_sortInfo.Contains(itemId)) return;
+            if (_sortInfo.ContainsId(itemId)) return;
 
             foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
             {
                 if (pair.Key == _index) continue;
 
-                if (!pair.Value.Contains(itemId)) continue;
+                if (!pair.Value.ContainsId(itemId)) continue;
                 
                 DialogResult dr = MessageBox.Show(
                     $"{pair.Value.Name} already contains {itemId.ToString()}!\r\nDo you want to remove it from {pair.Value.Name} and add it to {_sortInfo.Name}?",
@@ -101,7 +101,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
                 if (dr != DialogResult.Yes) return;
                 
-                pair.Value.ItemIds.Remove(itemId);
+                pair.Value.TrueItemIds.Remove(itemId);
                 break;
             }
 
