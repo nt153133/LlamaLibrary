@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
 using ff14bot.Managers;
+using Newtonsoft.Json;
 
 namespace LlamaLibrary.AutoRetainerSort.Classes
 {
-    public class ItemSortInfo
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ItemSortInfo : IEquatable<ItemSortInfo>
     {
         private Item _itemInfo;
 
@@ -63,10 +65,11 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             }
         }
 
-        public uint TrueItemId;
+        [JsonProperty("TrueItemId")]
+        public readonly uint TrueItemId;
         
         public const int CollectableOffset = 5_000_000;
-        private const int QualityOffset = 1_000_000;
+        public const int QualityOffset = 1_000_000;
 
         public uint RawItemId
         {
@@ -147,6 +150,25 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         {
             TrueItemId = trueItemId;
         }
+
+        public bool Equals(ItemSortInfo other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TrueItemId == other.TrueItemId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ItemSortInfo)obj);
+        }
+
+        public override int GetHashCode() => (int)TrueItemId;
+
+        public override string ToString() => Name;
     }
 
     [Flags]

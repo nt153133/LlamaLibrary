@@ -61,6 +61,16 @@ namespace LlamaLibrary.AutoRetainerSort {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} already contains {1}!
+        ///Do you want to remove it from {2} and add it to {3}?.
+        /// </summary>
+        internal static string AddNewItem_AlreadyExists_Warning {
+            get {
+                return ResourceManager.GetString("AddNewItem_AlreadyExists_Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make sure you&apos;ve looked at your saddlebag &amp; retainer inventories recently, and that you were the last one to do so if you&apos;re sharing your account!.
         /// </summary>
         internal static string AutoSetup_CacheAdvice {
@@ -85,6 +95,15 @@ namespace LlamaLibrary.AutoRetainerSort {
         internal static string AutoSetup_OverwriteWarning {
             get {
                 return ResourceManager.GetString("AutoSetup_OverwriteWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string WarningCaption {
+            get {
+                return ResourceManager.GetString("WarningCaption", resourceCulture);
             }
         }
     }
