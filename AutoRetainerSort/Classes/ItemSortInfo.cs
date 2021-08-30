@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using ff14bot.Managers;
 using Newtonsoft.Json;
@@ -140,6 +141,8 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             if (MatchingIndex == index) return ItemIndexStatus.BelongsInCurrentIndex;
 
             if (ItemSortStatus.FilledAndSortedInventories.Contains(MatchingIndex)) return ItemIndexStatus.CantMove;
+
+            if (ItemInfo.Unique && ItemSortStatus.GetByIndex(MatchingIndex).ItemSlotCounts.Keys.Contains(TrueItemId)) return ItemIndexStatus.CantMove;
 
             if (MatchingIndex != index) return ItemIndexStatus.BelongsElsewhere;
 
