@@ -18,7 +18,7 @@ namespace LlamaLibrary.AutoRetainerSort
         public AutoRetainerSortSettings() : base(Path.Combine(CharacterSettingsDirectory, "AutoRetainerSort.json"))
         {
         }
-        
+
         public static AutoRetainerSortSettings Instance => _settings ?? (_settings = new AutoRetainerSortSettings());
 
         private Dictionary<int, InventorySortInfo> _inventoryOptions;
@@ -53,7 +53,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 Save();
             }
         }
-        
+
         [Browsable(false)]
         public Point WindowPosition
         {
@@ -95,7 +95,7 @@ namespace LlamaLibrary.AutoRetainerSort
     {
         [JsonProperty("Name")]
         public string Name;
-        
+
         [JsonProperty("SortTypes")]
         public BindingList<SortType> SortTypes;
 
@@ -105,7 +105,7 @@ namespace LlamaLibrary.AutoRetainerSort
         public bool ContainsType(SortType type) => SortTypes.Contains(type);
 
         public bool ContainsId(uint trueItemId) => SpecificItems.Any(x => x.TrueItemId == trueItemId);
-        
+
         public bool ContainsItem(ItemSortInfo sortInfo) => SpecificItems.Any(x => x.Equals(sortInfo));
 
         public bool ContainsSlot(BagSlot bagSlot) => ContainsId(bagSlot.TrueItemId) || ContainsType(bagSlot.Item.EquipmentCatagory.GetSortType());

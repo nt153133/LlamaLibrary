@@ -42,7 +42,7 @@ namespace LlamaLibrary.Helpers
             {ItemAttribute.Control, 1},
             {ItemAttribute.CP, 1}
         };
-        
+
         private static readonly Dictionary<ItemAttribute, float> DoLWeights = new Dictionary<ItemAttribute, float>
         {
             {ItemAttribute.Gathering, 1},
@@ -86,7 +86,7 @@ namespace LlamaLibrary.Helpers
                 }
             }
         }
-        
+
         /*
         private static List<ItemUiCategory> MainHands => (from itemUi in (ItemUiCategory[]) Enum.GetValues(typeof(ItemUiCategory))
                                                           let name = Enum.GetName(typeof(ItemUiCategory), itemUi)

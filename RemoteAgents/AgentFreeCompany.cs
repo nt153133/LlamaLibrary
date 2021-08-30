@@ -49,7 +49,7 @@ namespace LlamaLibrary.RemoteAgents
             return ptr2;
         }
 
-        
+
         public List<(string, bool)> GetMembers()
         {
             int i = 0;
@@ -92,7 +92,7 @@ namespace LlamaLibrary.RemoteAgents
                 Instance.Toggle(); 
                 await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
             }
-            
+
             if (FreeCompany.Instance.IsOpen)
             {
                 FreeCompany.Instance.SelectActions();
@@ -109,7 +109,7 @@ namespace LlamaLibrary.RemoteAgents
 
             return new FcAction[0];
         }
-        
+
         public async Task<FcAction[]> GetAvailableActions()
         {
             bool wasopen = FreeCompany.Instance.IsOpen;
@@ -136,7 +136,7 @@ namespace LlamaLibrary.RemoteAgents
             return new FcAction[0];
         }
     }
-    
+
     [StructLayout(LayoutKind.Sequential, Size = 0xC)]
     public struct FcAction
     {

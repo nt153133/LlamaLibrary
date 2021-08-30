@@ -678,7 +678,7 @@ namespace LlamaLibrary.Helpers
             BNpcNameKey = name;
         }
     }
-    
+
     public class StoredHuntLocationLisbeth
     {
         public int BNpcNameKey;

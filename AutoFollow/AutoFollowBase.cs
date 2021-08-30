@@ -93,7 +93,7 @@ namespace LlamaLibrary
                 Logger.LogCritical($"set target location {PartyManager.PartyLeader.BattleCharacter.Location}");
                 return PartyManager.PartyLeader.BattleCharacter.Location;
             }
-            
+
             return Vector3.Zero;
         }
 
@@ -105,7 +105,7 @@ namespace LlamaLibrary
 
         public override void Start()
         {
-            
+
             _root = FollowBehavior;
         }
 

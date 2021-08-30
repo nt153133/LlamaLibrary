@@ -26,18 +26,18 @@ namespace ff14bot.NeoProfiles.Tags
     class ExtendedDutyTag : SimpleDutyTag
     {
 		public bool didthething = false;
-		
+
 		public void ResetThing(object sender, EventArgs e)
 		{
 			didthething = false;
 		}
-		
+
 		protected override void OnStart()
 		{
 			ff14bot.NeoProfiles.GameEvents.OnPlayerDied += ResetThing;
 			base.OnStart();
 		}
-		
+
         protected override Composite CreateBehavior()
         {
             return new PrioritySelector(

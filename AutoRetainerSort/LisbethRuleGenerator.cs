@@ -23,7 +23,7 @@ namespace LlamaLibrary.AutoRetainerSort
             }
 
             AutoRetainerSort.Log($"Lisbeth Type {botType.FullName}");
-            
+
             string assemblyLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? string.Empty);
             string settingsPath = botType.GetProperty("SettingsPath")?.GetValue(null) as string ?? string.Empty;
 
@@ -74,9 +74,9 @@ namespace LlamaLibrary.AutoRetainerSort
                     ruleList.Add(new LisbethRetainerRules.ItemRule(itemId));
                 }
             }
-            
+
             SetRules(settingsJObject, knownRules);
-            
+
             using (StreamWriter outputFile = new StreamWriter(settingsPath, false))
             {
                 outputFile.Write(JsonConvert.SerializeObject(settingsJObject, Formatting.None));

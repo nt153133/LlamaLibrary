@@ -26,7 +26,7 @@ namespace LlamaLibrary.OrderbotTags
 
         [XmlAttribute("ZoneId")]
         public int ZoneId { get; set; }
-        
+
         [XmlAttribute("SubZoneId")]
         [DefaultValue(0)]
         public int SubZoneId { get; set; }

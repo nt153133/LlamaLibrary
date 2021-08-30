@@ -48,7 +48,7 @@ namespace ff14bot.NeoProfiles.Tags
 
         [XmlAttribute("RequiresHq")] 
         public bool[] RequiresHq { get; set; }
-        
+
         [XmlAttribute("Amount")] 
         public int[] Amount { get; set; }
 
@@ -102,7 +102,7 @@ namespace ff14bot.NeoProfiles.Tags
                 if (RequiresHq.Length != ItemIds.Length) LogError("RequiresHq must have the same number of items as ItemIds");
                 return;
             }
-            
+
             if (Amount != null)
             {
                 if (Amount.Length != ItemIds.Length) LogError("Amount must have the same number of items as ItemIds");

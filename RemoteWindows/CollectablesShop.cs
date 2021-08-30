@@ -18,7 +18,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             SendAction(2,3,0xE,4,(ulong) job);
         }
-        
+
         public void SelectItem(int line)
         {
             SendAction(2,3,0xC,4,(ulong) line);
@@ -28,7 +28,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             SendAction(2,3,0xf,4,0);
         }
-        
+
         public List<string> ListItems()
         {
             int count = ___Elements()[20].TrimmedData -1;

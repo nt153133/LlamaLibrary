@@ -27,7 +27,7 @@ namespace LlamaLibrary.Helpers
     public static class GeneralFunctions
     {
         public static readonly InventoryBagId[] MainBags = { InventoryBagId.Bag1, InventoryBagId.Bag2, InventoryBagId.Bag3, InventoryBagId.Bag4 };
-        
+
         public static readonly InventoryBagId[] SaddlebagIds =
         {
             (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
@@ -492,7 +492,7 @@ namespace LlamaLibrary.Helpers
             if (!exitList) return RetainerList.Instance.IsOpen;
 
             if (!RetainerList.Instance.IsOpen) return true;
-            
+
             await RetainerRoutine.CloseRetainers();
             await Coroutine.Wait(3000, () => !RetainerList.Instance.IsOpen);
             return !RetainerList.Instance.IsOpen;

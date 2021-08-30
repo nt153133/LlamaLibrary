@@ -16,9 +16,9 @@ namespace LlamaLibrary.RemoteWindows
         {
             _name = WindowName;
         }
-        
+
         public int NumberOfItems =>  ___Elements()[3].TrimmedData;
-        
+
         public List<Item> GetAvailItems()
         {
             var currentElements = ___Elements();

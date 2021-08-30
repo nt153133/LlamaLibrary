@@ -41,7 +41,7 @@ namespace ff14bot.NeoProfiles
 
         [XmlAttribute("MinLevel")]
         public string MinLevel { get; set; }
-		
+
         [XmlAttribute("While")]
         [XmlAttribute("while")]
         public string WhileCondition { get; set; }
@@ -68,7 +68,7 @@ namespace ff14bot.NeoProfiles
         [XmlAttribute("Timeout")]
         [DefaultValue("600")]
         public string timeout { get; set; }
-		
+
         [XmlAttribute("MinProgress")]
         [DefaultValue(0)]
         public int MinProgress { get; set; }		
@@ -118,7 +118,7 @@ namespace ff14bot.NeoProfiles
 
             return false;
         }
-		
+
 		private Func<bool> GetCondition()
         {
             try
@@ -460,7 +460,7 @@ namespace ff14bot.NeoProfiles
                 Position = currentfate.Location;
                 fateid = currentfate.Id;
                 currentstep = 1;
-                
+
 
             }
         }
@@ -599,7 +599,7 @@ namespace ff14bot.NeoProfiles
             Logging.Write("I died {0} times.", Died);
             Logging.Write("--------------------------------------");
         }
-        
+
         private void OnDoneWhile()
         {
             Logging.Write("TREE: Decorator1, Action 1");
@@ -663,14 +663,14 @@ namespace ff14bot.NeoProfiles
 
         public async Task<bool> getFates()
         {
-            
+
             if (FateIds.Length > 0)
             {
                 //Logging.Write("Looking for Fate: {0}.", FateID);
                 currentfate = IsFateActive(FateIds);
                 if (currentfate == null)
                 {
-                    
+
                     return false;
                 }
                 else

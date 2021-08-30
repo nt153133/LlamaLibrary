@@ -14,7 +14,7 @@
             [Offset("Search 81 FB ? ? ? ? 0F 83 ? ? ? ? 48 8D 0D ? ? ? ? Add 2 Read32")]
             internal static int RowenaItemCount;
         }
-        
+
         public static async Task<bool> VerifyRowenaData()
         {
             if (Core.Memory.Read<uint>(Offsets.RowenaItemList) != 0 && LastUpdate < GetCycleEndTime())

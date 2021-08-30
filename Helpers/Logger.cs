@@ -12,17 +12,17 @@ namespace LlamaLibrary.Helpers
         {
             Logging.Write(color, $"[{caller}]" + message);
         }
-        
+
         public static void LogCritical(string text)
         {
             Logging.Write(Colors.OrangeRed, text);
         }
-        
+
         public static void Info(string text)
         {
             Logging.Write(Colors.Aqua, text);
         }
-        
+
         public static void Shuffle<T>(this IList<T> list)  
         {  
             int n = list.Count;  

@@ -14,7 +14,7 @@ namespace LlamaLibrary.Helpers
         {
             [Offset("Search 48 8D 0D ? ? ? ? E8 ? ? ? ? 85 C0 74 ? FF C3 83 FB ? 72 ? 49 8B CF Add 3 TraceRelative")]
             internal static IntPtr ActionManager;
-            
+
             [Offset("Search 48 8B C4 48 89 68 ? 48 89 70 ? 41 56 48 83 EC ? 48 63 F2")]
             internal static IntPtr SetSpell;
 
@@ -26,7 +26,7 @@ namespace LlamaLibrary.Helpers
             [OffsetCN("Search 8B 94 B5 ? ? ? ? 48 8B CD Add 3 Read32")]
             internal static int BluSpellActiveOffset ;
         }
-        
+
         public static uint[] ActiveSpells => Core.Memory.ReadArray<uint>(SpellLocation, Offsets.MaxActive +1);
 
         public static IntPtr SpellLocation => Offsets.ActionManager + Offsets.BluSpellActiveOffset;
@@ -40,7 +40,7 @@ namespace LlamaLibrary.Helpers
                 spellId
             });
         }
-        
+
         public static async Task SetAllSpells(uint[] spells)
         {
             if (spells.Length > Offsets.MaxActive) return;
@@ -51,7 +51,7 @@ namespace LlamaLibrary.Helpers
                 await Coroutine.Sleep(200);
                 index++;
             }
-            
+
             for (int i = index; i < Offsets.MaxActive + 1; i++)
             {
                 SetSpell(i, 0);
@@ -62,7 +62,7 @@ namespace LlamaLibrary.Helpers
         public static async Task SetSpells(uint[] spells)
         {
             if (spells.Length > Offsets.MaxActive) return;
-            
+
             var currentSpells = ActiveSpells;
 
             if (spells.All(i => currentSpells.Contains(i))) return;

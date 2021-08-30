@@ -3,7 +3,7 @@
     public class SatisfactionSupplyResult: RemoteWindow<SatisfactionSupplyResult>
     {
         private const string WindowName = "SatisfactionSupplyResult";
-        
+
         public SatisfactionSupplyResult() : base(WindowName)
         {
             _name = WindowName;

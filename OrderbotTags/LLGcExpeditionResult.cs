@@ -50,13 +50,13 @@ namespace LlamaLibrary.OrderbotTags
         {
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
-            
+
             //Inside Barracks
 
             await Navigation.OffMeshMoveInteract(GameObjectManager.GetObjectByNPCId(GrandCompanyHelper.GetNpcByType(GCNpc.Squadron_Sergeant)));
-                
+
             GameObjectManager.GetObjectByNPCId(GrandCompanyHelper.GetNpcByType(GCNpc.Squadron_Sergeant)).Interact();
-            
+
             await Coroutine.Wait(10000, () => GcArmyExpeditionResult.Instance.IsOpen);
             GcArmyExpeditionResult.Instance.Close();
 

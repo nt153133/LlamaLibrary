@@ -56,7 +56,7 @@ namespace LlamaLibrary.OrderbotTags
                         SelectYesno.Yes();
                 }
             }
-            
+
             if (NeedGreed.Instance.IsOpen)
                 NeedGreed.Instance.Close();
         }

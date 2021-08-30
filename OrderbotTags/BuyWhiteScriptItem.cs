@@ -13,7 +13,7 @@ namespace LlamaLibrary.OrderbotTags
         private bool _isDone;
 
         [XmlAttribute("ItemId")] public int ItemId { get; set; }
-        
+
         [XmlAttribute("SelectString")] 
         [DefaultValue(0)]
         public int SelectStringLine { get; set; }

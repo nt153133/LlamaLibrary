@@ -13,12 +13,12 @@
         {
             SendAction(1,3,0xB);
         }
-        
+
         public void PauseCursor()
         {
             SendAction(1,3,0xF);
         }
-        
+
         public void ResumeCursor()
         {
             SendAction(1,3,0xF);

@@ -20,7 +20,7 @@ using LlamaLibrary.RemoteWindows;
 
 namespace LlamaLibrary.Helpers
 {	
-	
+
     public static class GardenHelper
     {
         private static class Offsets
@@ -30,7 +30,7 @@ namespace LlamaLibrary.Helpers
             [Offset("Search 41 8B 4E ? 8D 93 ? ? ? ? Add 3 Read8")]
             internal static int StructOffset;
         }
-        
+
         public static HousingPlantSelectedItemStruct SoilStruct => Core.Memory.Read<HousingPlantSelectedItemStruct>(AgentHousingPlant.Instance.Pointer + Offsets.StructOffset );
         public static HousingPlantSelectedItemStruct SeedStruct => Core.Memory.Read<HousingPlantSelectedItemStruct>(AgentHousingPlant.Instance.Pointer + Offsets.StructOffset  + GreyMagic.MarshalCache<HousingPlantSelectedItemStruct>.Size);
 
@@ -40,7 +40,7 @@ namespace LlamaLibrary.Helpers
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             var house = WorldManager.AvailableLocations.FirstOrDefault(i => i.AetheryteId == AE);
-			
+
             Log($"Teleporting to housing: (ZID: {DataManager.ZoneNameResults[house.ZoneId]}, AID: {house.AetheryteId}) {house.Name}");
             await CommonTasks.Teleport(house.AetheryteId);
 
@@ -56,7 +56,7 @@ namespace LlamaLibrary.Helpers
             }
         }
 				*/
-        
+
 				public static async Task GoGarden(uint AE, Vector3 gardenLoc, List<Tuple<uint, uint>> plantPlan)
         {
             if (gardenLoc != default(Vector3))
@@ -81,7 +81,7 @@ namespace LlamaLibrary.Helpers
                 Log("No Garden Location set. Exiting Task.");
             }
         }		
-		
+
          public static bool AlwaysWater { get; set; }
 
         //public static void Log(string text, params object[] args) { Logger.Info(text, args); }
@@ -213,7 +213,7 @@ namespace LlamaLibrary.Helpers
                 {
                     await Navigation.FlightorMove(plant.Location);
                 }
-                
+
                 if (plant.IsWithinInteractRange)
                 {
                     plant.Interact();

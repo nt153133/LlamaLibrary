@@ -11,7 +11,7 @@ namespace LlamaLibrary.RemoteWindows
     public class FreeCompanyExchange: RemoteWindow<FreeCompanyExchange>
     {
         private const string WindowName = "FreeCompanyExchange";
-        
+
         public static List<FcActionShopItem> FcShopActions = new List<FcActionShopItem>()
         {
             new FcActionShopItem(1, 5, 3010, 0, "The Heat of Battle"),
@@ -55,7 +55,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             _name = WindowName;
         }
-        
+
         public async Task<bool> BuyAction(int actionId)
         {
             if (IsOpen)
@@ -74,7 +74,7 @@ namespace LlamaLibrary.RemoteWindows
             }
             return true;
         }
-        
+
         public void ClickItem(int index)
         {
             if (index >= 0)

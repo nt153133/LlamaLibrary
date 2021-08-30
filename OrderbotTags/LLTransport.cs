@@ -55,7 +55,7 @@ namespace ff14bot.NeoProfiles.Tags
         [XmlAttribute("BlacklistAfter")]
         [DefaultValue(false)]
         public bool BlacklistAfter { get; set; }
-        
+
         [DefaultValue(-1)]
         [XmlAttribute("DialogOption")]
         public int DialogOption { get; set; }
@@ -80,7 +80,7 @@ namespace ff14bot.NeoProfiles.Tags
             var gameobj = GameObjectManager.GetObjectByNPCId((uint) NpcId);
 
             if (gameobj == default(GameObject)) {_done = true; return;}
-            
+
             await LlamaLibrary.Helpers.Navigation.OffMeshMoveInteract(gameobj);
 
             if (gameobj.IsWithinInteractRange)
@@ -99,15 +99,15 @@ namespace ff14bot.NeoProfiles.Tags
                     {
                         Conversation.SelectLine(0);
                     }
-                    
+
                     await Coroutine.Wait(20000, () => !Conversation.IsOpen || CommonBehaviors.IsLoading);
-                    
+
                 }
             }
 
             _done = true;
         }
-        
+
         protected override void OnStart()
         {
 
@@ -115,12 +115,12 @@ namespace ff14bot.NeoProfiles.Tags
 
         protected override void OnDone()
         {
-            
+
         }
 
         protected override void OnResetCachedDone()
         {
-            
+
         }
     }
 }

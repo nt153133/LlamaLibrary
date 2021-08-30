@@ -164,7 +164,7 @@ namespace ff14bot.NeoProfiles
                 Log($"Saying {Say}.");
                 ChatManager.SendChat("/s " + Say);
             }
-			
+
             if (Shout!= null)
             {
                 Log($"Shouting {Shout}.");

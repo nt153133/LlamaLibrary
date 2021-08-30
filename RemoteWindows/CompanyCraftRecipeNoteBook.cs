@@ -6,23 +6,23 @@ namespace LlamaLibrary.RemoteWindows
     public class CompanyCraftRecipeNoteBook: RemoteWindow<CompanyCraftRecipeNoteBook>
     {
         private const string WindowName = "CompanyCraftRecipeNoteBoo";
-        
+
         public CompanyCraftRecipeNoteBook() : base(WindowName)
         {
             _name = WindowName;
         }
-        
+
         public void SelectWheelsCategory()
         {
             SendAction( 4, 3,2,0,0,4,0,4,2);
         }
-        
+
         public void SelectWheel(uint ItemId)
         {
             if (WheelIndexes.Any(i=> i.Value == ItemId))
                 SendAction(8, 3,1,0,0,0,0,0,0,4,WheelIndexes.First(i=> i.Value == ItemId).Key,0,0,0,0,0,0);
         }
-        
+
         public static Dictionary<ulong, uint> WheelIndexes = new Dictionary<ulong, uint>
         {
             {6, 9653}, //Grade 2 Wheel of Confrontation

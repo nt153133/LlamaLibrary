@@ -40,7 +40,7 @@ namespace LlamaLibrary.AutoTrade
 
             // PluginManager.Plugins.Add(pmc);
         }
-        
+
         public override void OnButtonPress()
         {
             if (_settings == null || _settings.IsDisposed)
@@ -99,7 +99,7 @@ namespace LlamaLibrary.AutoTrade
         {
             TradeQueue.Clear();
             BattleCharacter target = GameObjectManager.Target as BattleCharacter;
-            
+
             if (target == null)
             {
                 Log("No target found to trade to.");
@@ -120,13 +120,13 @@ namespace LlamaLibrary.AutoTrade
                 Log("Target is too far away to interact with.");
                 return false;
             }
-            
+
             Log($"Starting to trade with {target.Name}.");
 
             await QueueTradeItems(AutoTradeSettings.ItemsToTrade);
 
             await TradeItems(TradeQueue, target);
-            
+
             if (FailedTradeCount >= 5)
             {
                 LogCritical("Too many failed trades, exiting.");
@@ -151,7 +151,7 @@ namespace LlamaLibrary.AutoTrade
                 Trade.Close();
                 await Coroutine.Wait(5000, () => !Trade.IsOpen);
             }
-            
+
             TradeQueue.TrimExcess();
 
             TreeRoot.Stop("Finished trading.");
@@ -159,7 +159,7 @@ namespace LlamaLibrary.AutoTrade
         }
 
         private static int FailedTradeCount;
-        
+
         private static readonly Queue<QueuedTradeItem> TradeQueue = new Queue<QueuedTradeItem>();
         private static readonly List<WatchedBagSlot> WatchedBagSlots = new List<WatchedBagSlot>();
 
@@ -179,7 +179,7 @@ namespace LlamaLibrary.AutoTrade
                     LogCritical("Our trading partner ran away from us!");
                     break;
                 }
-                
+
                 int result = target.OpenTradeWindow();
 
                 if (result != 0)
@@ -199,7 +199,7 @@ namespace LlamaLibrary.AutoTrade
                     await Coroutine.Sleep(3000);
                     continue;
                 }
-                
+
                 LogSuccess("Trading window opened.");
 
                 int gilAmount = 0;
@@ -266,7 +266,7 @@ namespace LlamaLibrary.AutoTrade
                     LogCritical("Our target still hasn't accepted the trade... aborting.");
                     break;
                 }
-                
+
                 LogSuccess("Trade completed.");
 
                 // Arbitrary wait to let values update after trade is complete.
@@ -301,7 +301,7 @@ namespace LlamaLibrary.AutoTrade
                 LogCritical("InputNumeric never opened!");
             }
         }
-        
+
         private static bool WatchedSlotsUnchanged(IReadOnlyCollection<WatchedBagSlot> watchedSlots)
         {
             if (!watchedSlots.Any()) return false;
@@ -328,7 +328,7 @@ namespace LlamaLibrary.AutoTrade
                     await CombineStacks(item.TrueItemId);
                     await CombineStacks(item.TrueItemId);
                 }
-                
+
                 int quotient = Math.DivRem(item.QtyToTrade, item.StackSize, out int remainder);
                 if (quotient > 0)
                 {
@@ -374,7 +374,7 @@ namespace LlamaLibrary.AutoTrade
         {
             Logging.Write(Colors.Orange, "[AutoTrade] " + text);
         }
-        
+
         public static void LogCritical(string text)
         {
             Logging.Write(Colors.OrangeRed, "[AutoTrade] " + text);

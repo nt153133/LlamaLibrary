@@ -13,7 +13,7 @@ namespace LlamaLibrary.OrderbotTags
             private bool _isDone;
 
             [XmlAttribute("ItemId")] public int ItemId { get; set; }
-        
+
             [XmlAttribute("Count")] 
             [DefaultValue(1)]
             public int Count { get; set; }
@@ -47,5 +47,5 @@ namespace LlamaLibrary.OrderbotTags
                 _isDone = true;
             }
         }
-    
+
 }

@@ -34,7 +34,7 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("count")]
         [DefaultValue(1)]
         public int count { get; set; }
-        
+
         [XmlAttribute("Dialog")]
         [XmlAttribute("dialog")]
         [DefaultValue(false)]

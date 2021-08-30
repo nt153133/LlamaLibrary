@@ -36,7 +36,7 @@ namespace LlamaLibrary.Structs
 
         [FieldOffset(0x14)]
         private readonly short short1;
-        
+
         [FieldOffset(0x16)]
         private readonly short short2;
 
@@ -57,10 +57,10 @@ namespace LlamaLibrary.Structs
 
         [FieldOffset(0x28)]
         public readonly byte StarLevel;
-        
+
         [FieldOffset(0x29)]
         public readonly byte byte2;
-        
+
         [FieldOffset(0x2A)]
         public readonly byte byte3;
 
@@ -94,7 +94,7 @@ namespace LlamaLibrary.Structs
 
         [FieldOffset(0x98)]
         public readonly int int1;
-        
+
         [FieldOffset(0x9C)]
         public readonly byte N000000BF;
 
@@ -103,7 +103,7 @@ namespace LlamaLibrary.Structs
 
         [FieldOffset(0x9E)]
         public readonly byte N000000C8; 
-        
+
         [FieldOffset(0x9F)]
         public readonly byte N000000BB;
 
@@ -115,7 +115,7 @@ namespace LlamaLibrary.Structs
 
         [FieldOffset(0xa6)]
         public readonly short short3;
-        
+
 
         public bool Starred => (_Starred > 0);
 
@@ -126,7 +126,7 @@ namespace LlamaLibrary.Structs
         {
             return ff14bot.Helpers.Utils.DynamicString(this);
         }
-        
+
         public override string ToString()
         {
             FieldInfo[] fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
@@ -143,8 +143,8 @@ namespace LlamaLibrary.Structs
             stringBuilder.AppendFormat(" {0}, ", Enabled);
             return stringBuilder.ToString();
         }
-        
-        
+
+
     }
 
     public enum ScripType : uint

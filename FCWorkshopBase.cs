@@ -36,19 +36,19 @@ namespace LlamaLibrary
             InventoryBagId.Retainer_Page4, InventoryBagId.Retainer_Page5, InventoryBagId.Retainer_Page6,
             InventoryBagId.Retainer_Page7
         };
-        
+
         private static readonly ItemUiCategory[] GatheringCategories =
         {
             ItemUiCategory.Lumber, ItemUiCategory.Stone //,ItemUiCategory.Reagent,ItemUiCategory.Metal
         };
-        
+
         private static readonly ItemUiCategory[] CountCategories =
         {
             ItemUiCategory.Miscellany, ItemUiCategory.Minion, ItemUiCategory.Other, ItemUiCategory.Seasonal_Miscellany
         };
 
         private static Dictionary<ItemUiCategory, List<ItemStored>> categoryCount = new Dictionary<ItemUiCategory, List<ItemStored>>();
-        
+
         private static List<ItemStored> retainerItems = new List<ItemStored>();
 
         public static List<uint> TimedNodeIds = new List<uint>
@@ -62,7 +62,7 @@ namespace LlamaLibrary
             19916, 23221, 10, 20012, 11, 19937, 9, 20010, 23220, 8, 20009, 12, 20011, 22417, 23179, 24255, 22418, 22419, 23180, 22420, 24240, 24241, 24242, 24243, 27816, 27726, 27833, 27836, 27822, 27828, 27835, 27688, 28716, 27761, 27727,
             27728, 27729, 27730, 27731, 27705, 28717, 27704, 27805, 27809, 27806, 27810, 27807, 27808
         };
-        
+
         public static List<uint> ItemsToLower = new List<uint>
             {4835,4840,4843,4852,4858,4860,5118,5232,5259,5260,5270,5280,5282,5284,5291,5292,5296,5317,5326,5345,5350,5384,5385,5386,5389,5436,5491,5496,5508,5518,5525,5527,5536,7588,9518,12525,12539,12548,12565,12566,12569,12576,12583,12592,12602,12614,12615,12629,12630,12632,12639,12874,12936,12937,12939,15648,16729,19846,19865,19867,19869,19874,19891,19911,19913,19914,19915,19920,19928,19932,19933,19945,19947,19953,19954,19956,19957,19958,19959,19970,19971,19972,19973,19985,19987,19989,20006,20008,20014,20015,20016,21085,21180,22412,22416,22417,23183,24246,24250,24253,24255,27683,27690,27696,27697,27706,27708,27726,27727,27732,27738,27739,27746,27765,27766,27802,27820,27825,27827,27833,27850};
 
@@ -108,21 +108,21 @@ namespace LlamaLibrary
         {
             //await PrintMasterPieceList();
             await FCWorkshop();
-            
+
             //await PullExcludeId();
-            
+
             //await GenerateList();
 
             //await LowerItemsById();
 
             //await GenerateList();
-            
+
             //await Pullorder();
 
             //await MoveItemsAroundMain();
 
            // await Facet();
-            
+
            // await LeveWindow(1018997);
 
             TreeRoot.Stop("Stop Requested");
@@ -189,19 +189,19 @@ namespace LlamaLibrary
                 outputFile.Write(JsonConvert.SerializeObject(orderList, Formatting.None));
             }
         }
-        
+
         public async Task PullExcludeId()
         {
             await RetainerRoutine.ReadRetainers(CheckForItemsById);
         }
-        
+
         public async Task GenerateList()
         {
             foreach (var category in CountCategories)
             {
                 categoryCount.Add(category, new List<ItemStored>());
             }
-            
+
             await RetainerRoutine.ReadRetainers(CountCategoryItems);
 
             foreach (var category in CountCategories)
@@ -213,7 +213,7 @@ namespace LlamaLibrary
                     {
                         outputFile.WriteLine($"{itemStored}");
                     }
-                
+
                 }
             }
         }
@@ -228,8 +228,8 @@ namespace LlamaLibrary
                 gearSets.First().Activate();
                 await Coroutine.Sleep(1000);
             }
-            
-            
+
+
         }
 
         public async Task<bool> Facet()
@@ -248,9 +248,9 @@ namespace LlamaLibrary
 
                 Navigator.PlayerMover.MoveStop();
             }
-            
+
             npcId.Interact();
-            
+
             await Coroutine.Wait(5000, () => Talk.DialogOpen);
 
             while (Talk.DialogOpen)
@@ -267,8 +267,8 @@ namespace LlamaLibrary
                 if (InventoryManager.FilledSlots.Count(i => i.RawItemId == HugeCraftworksSupply.Instance.TurnInItemId) > 0)
                 {
                     Logger.Info($"Found {HugeCraftworksSupply.Instance.TurnInItemId}");
-                    
-                    
+
+
                     await HugeCraftworksSupply.Instance.HandOverItems();
                     return true;
                 }
@@ -281,7 +281,7 @@ namespace LlamaLibrary
             return false;
         }
 
-        
+
 
         public async Task<bool> Shop()
         {
@@ -349,13 +349,13 @@ namespace LlamaLibrary
             await PullItems(orderList);
             return true;
         }
-        
+
         public async Task<bool> PullListItems()
         {
             await PullItemsByID(ItemsToLower);
             return true;
         }
-        
+
         public async Task<bool> CountCategoryItems()
         {
             await ListItemsByCategories(CountCategories);
@@ -373,16 +373,16 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(1000);
             }
             await Coroutine.Sleep(1000);
-            
+
             await RetainerRoutine.ReadRetainers(RetainerRoutine.DumpItems());
         }
-        
+
         public async Task DumpItemsByCategoryMain(int index)
         {
             await DumpItemsByCategories(retainerCategoryStorage[index].ToArray());
             await Coroutine.Sleep(1000);
         }
-        
+
         public async Task PullItemsByCategoryMain(int index)
         {
             var cats = retainerCategoryStorage.Where(i => i.Key != index).SelectMany(x => x.Value).ToArray();
@@ -391,10 +391,10 @@ namespace LlamaLibrary
                 Logger.Info($"Pulling {cat}");
             }
             await PullItemsByCategories(retainerCategoryStorage.Where(i => i.Key != index).SelectMany(x => x.Value).ToArray());
-            
+
             await Coroutine.Sleep(1000);
         }
-        
+
         public async Task MoveItemsAroundMain()
         {
             //await RetainerRoutine.ReadRetainers(DumpItemsByCategoryMain);
@@ -403,13 +403,13 @@ namespace LlamaLibrary
             await Coroutine.Sleep(1000);
             await RetainerRoutine.ReadRetainers(DumpItemsByCategoryMain);
         }
-        
+
         public async Task<bool> CheckForItemsById()
         {
             await PullItems(TimedNodeIds);
             return true;
         }
-        
+
         internal static async Task PullItems(List<LisbethOrder> ids)
         {
             var itemIds = ids.Select(x => x.Item).ToList(); // SelectMany(x => x.Id);
@@ -423,7 +423,7 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(200);
             }
         }
-        
+
         internal static async Task PullItems(List<uint> ids)
         {
             //var itemIds = ids.Select(x => x.Item).ToList(); // SelectMany(x => x.Id);
@@ -437,7 +437,7 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(200);
             }
         }
-        
+
         internal static async Task PullItemsByID(List<uint> ids)
         {
             //var itemIds = ids.Select(x => x.Item).ToList(); // SelectMany(x => x.Id);
@@ -451,13 +451,13 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(200);
             }
         }
-        
+
         internal static async Task ListItems()
         {
             var retItems = InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).Where(i=> i.Item.ItemLevel < 400 && i.Item.MyItemRole() == MyItemRole.CraftingMaterial).Select(y => new ItemStored(y.RawItemId, y.IsHighQuality, y.Count,y.Item.ItemLevel, y.Item.EquipmentCatagory.ToString(), y.EnglishName));
             retainerItems.AddRange(retItems);
         }
-        
+
         internal static async Task ListItemsByCategories(ItemUiCategory[] categories)
         {
             foreach (var cat in categories)
@@ -468,7 +468,7 @@ namespace LlamaLibrary
             }
 
         }
-        
+
         internal static async Task PullItemsByCategories(ItemUiCategory[] categories)
         {
             foreach (var cat in categories)
@@ -476,7 +476,7 @@ namespace LlamaLibrary
                 RetainerRoutine.LogLoud($"Category {cat}");
                 var retItems = InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).Select(i => i.FilledSlots).SelectMany(x => x).Where(i => i.Item.EquipmentCatagory == cat && i.Item.MyItemRole() != MyItemRole.Map);
                 RetainerRoutine.LogLoud($"Category {retItems.Count()}");
-                
+
                 foreach (var slot in retItems)
                 {
                     RetainerRoutine.LogLoud($"Want to move PULL {slot} - {slot.Count}");
@@ -487,7 +487,7 @@ namespace LlamaLibrary
             }
 
         }
-        
+
         internal static async Task DumpItemsByCategories(ItemUiCategory[] categories)
         {
                 var myItems = InventoryManager.FilledSlots.Where(i => categories.Contains(i.Item.EquipmentCatagory) && i.Item.MyItemRole() != MyItemRole.Map);

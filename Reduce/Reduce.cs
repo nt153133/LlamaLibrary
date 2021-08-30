@@ -227,7 +227,7 @@ namespace LlamaLibrary.Reduce
                 await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) != 0);
                 await Coroutine.Wait(20000, () => Core.Memory.Read<uint>(Offsets.Conditions + Offsets.DesynthLock) == 0);
             }
-            
+
             AtkAddonControl windowByName = RaptureAtkUnitManager.GetWindowByName("PurifyResult");
             if (windowByName != null)
             {
@@ -270,7 +270,7 @@ namespace LlamaLibrary.Reduce
                 SalvageResult.Close();
                 await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
             }
-            
+
             if (SalvageAutoDialog.Instance.IsOpen)
             {
                 SalvageAutoDialog.Instance.Close();
@@ -291,7 +291,7 @@ namespace LlamaLibrary.Reduce
                     return false;
                 }
             }
-            
+
             List<BagSlot> toDesynthList = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                                                            .SelectMany(bag => bag.FilledSlots
                                                                                  .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs)))).ToList();
@@ -303,15 +303,15 @@ namespace LlamaLibrary.Reduce
             /*            var itemsToDesynth = InventoryManager.GetBagsByInventoryBagId(BagsToCheck())
                             .SelectMany(bag => bag.FilledSlots
                                 .FindAll(bs => bs.IsDesynthesizable && (ShouldDesynth(bs.Item.EnglishName) || ExtraCheck(bs))));*/
-            
 
-            
+
+
             if (!toDesynthList.Any())
             {
                 Log("No items to desynth.");
                 return false;
             }
-            
+
             Log($"# of slots to Desynth: {toDesynthList.Count()}");
 
             foreach (var bagSlot in toDesynthList)
@@ -330,7 +330,7 @@ namespace LlamaLibrary.Reduce
                 SalvageResult.Close();
                 await Coroutine.Wait(5000, () => !SalvageResult.IsOpen);
             }
-            
+
             if (SalvageAutoDialog.Instance.IsOpen)
             {
                 SalvageAutoDialog.Instance.Close();
@@ -381,7 +381,7 @@ namespace LlamaLibrary.Reduce
                     await Coroutine.Wait(5000, () => !SalvageAutoDialog.Instance.IsOpen);
                     continue;
                 }
-                
+
                 if (IsBusy)
                     break;
             }

@@ -20,6 +20,6 @@ using ff14bot.Managers;
         }
 
         public IntPtr RetainerShopPointer => Core.Memory.Read<IntPtr>(Pointer + Offsets.ShopOffset);
-        
+
     }
 }

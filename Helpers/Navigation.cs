@@ -39,18 +39,18 @@ namespace LlamaLibrary.Helpers
                 await Coroutine.Sleep(2000);
                 return await FlightorMove(XYZ);
             }*/
-            
+
             if (ZoneId == 401 && WorldManager.ZoneId == ZoneId)
             {
                 return await FlightorMove(XYZ);
             }
             var path = await GenerateNodes(ZoneId, XYZ );
-            
+
             if (ZoneId == 399 && path == null && WorldManager.ZoneId != ZoneId)
             {
                 await GetToMap399();
             }
-            
+
             if (path == null && WorldManager.ZoneId != ZoneId)
             {
                 if (WorldManager.AetheryteIdsForZone(ZoneId).Length >= 1)
@@ -66,7 +66,7 @@ namespace LlamaLibrary.Helpers
                 {
                     return false;
                 }
-                
+
             }
 
             if (path == null)
@@ -75,13 +75,13 @@ namespace LlamaLibrary.Helpers
                 Navigator.Stop();
                 return result;
             }
-            
+
             if (path.Count < 1)
             {
                 LogCritical($"Couldn't get a path to {XYZ} on {ZoneId}, Stopping.");
                 return false;
             }
-            
+
             object object_0 = new object();
             var composite =  NavGraph.NavGraphConsumer(j => path);
 
@@ -96,12 +96,12 @@ namespace LlamaLibrary.Helpers
                 composite.Stop(object_0);
                 await Coroutine.Yield();
             }
-            
+
             Navigator.Stop();
 
             return Navigator.InPosition(Core.Me.Location, XYZ, 3);
         }
-        
+
         public static void LogCritical(string text)
         {
             Logging.Write(Colors.OrangeRed, text);
@@ -119,7 +119,7 @@ namespace LlamaLibrary.Helpers
 
             Navigator.PlayerMover.MoveStop();
         }
-        
+
         public static async Task<bool> OffMeshMoveInteract(GameObject _target)
         {
             waitTimer_0.Reset();
@@ -133,7 +133,7 @@ namespace LlamaLibrary.Helpers
             Navigator.PlayerMover.MoveStop();
             return _target.IsWithinInteractRange;
         }
-        
+
         public static async Task UseNpcTransition(uint oldzone, Vector3 transition, uint npcId, uint dialogOption)
         {
             await GetTo(oldzone, transition);
@@ -149,9 +149,9 @@ namespace LlamaLibrary.Helpers
             unit.Interact();
 
             await Coroutine.Wait(5000, () => SelectIconString.IsOpen || DialogOpen);
-            
+
             if (DialogOpen) Next();
-            
+
             if (SelectIconString.IsOpen)
             {
                 SelectIconString.ClickSlot(dialogOption);
@@ -179,7 +179,7 @@ namespace LlamaLibrary.Helpers
             if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);
             return (WorldManager.ZoneId == 399);
         }
-        
+
         internal static async Task<bool> FlightorMove(Vector3 loc)
         {
             var moving = MoveResult.GeneratingPath;
@@ -197,7 +197,7 @@ namespace LlamaLibrary.Helpers
             Navigator.PlayerMover.MoveStop();
             return moving == MoveResult.ReachedDestination;
         }
-        
+
         internal static async Task<bool> FlightorMove(FateData fate)
         {
             if (fate == null) return false;
@@ -220,11 +220,11 @@ namespace LlamaLibrary.Helpers
         public static async Task<bool> GetToIslesOfUmbra()
         {
             if (WorldManager.ZoneId == 138 && (WorldManager.SubZoneId == 461 || WorldManager.SubZoneId == 228)) return true;
-            
+
             await GetTo(138, new Vector3(317.4333f, -36.325f, 352.8649f));
 
             await UseNpcTransition(138, new Vector3(317.4333f, -36.325f, 352.8649f), 1003584, 2);
-            
+
             await Coroutine.Sleep(1000);
 
             if (CommonBehaviors.IsLoading) await Coroutine.Wait(-1, () => !CommonBehaviors.IsLoading);

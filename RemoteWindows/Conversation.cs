@@ -28,7 +28,7 @@ namespace LlamaLibrary.RemoteWindows
             else if (CutSceneSelectString.IsOpen)
                 CutSceneSelectString.ClickSlot(line);
         }
-        
+
         public static void SelectQuit()
         {
             uint line;

@@ -20,13 +20,13 @@ namespace LlamaLibrary.RemoteAgents
         protected AgentHousingSelectBlock(IntPtr pointer) : base(pointer)
         {
         }
-        
+
         public int WardNumber
         {
             get => Core.Memory.Read<int>(Pointer + Offsets.WardNumber);
             set => Core.Memory.Write(Pointer + Offsets.WardNumber, value);
         }
-        
+
         public byte[] ReadPlots(int count)
         {
             return Core.Memory.ReadArray<byte>(Pointer+ Offsets.PlotOffset, count);

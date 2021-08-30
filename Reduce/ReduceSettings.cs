@@ -21,7 +21,7 @@ namespace LlamaLibrary.Reduce
         public ReduceSettings() : base(Path.Combine(CharacterSettingsDirectory, "Reduce.json"))
         {
         }
-        
+
         public static ReduceSettings Instance
         {
             get
@@ -61,7 +61,7 @@ namespace LlamaLibrary.Reduce
                     Save();
                 }
         }
-        
+
         [Setting]
         [Description("Stay constantly running")]
         [DefaultValue(false)]
@@ -75,7 +75,7 @@ namespace LlamaLibrary.Reduce
                 Save();
             }
         }
-        
+
         [Setting]
         [Description("Open Coffers")]
         [DefaultValue(false)]
@@ -88,7 +88,7 @@ namespace LlamaLibrary.Reduce
                 Save();
             }
         }
-        
+
         [Setting]
         [Description("ZoneID to check for AE reduction")]
         [DefaultValue(0)]
@@ -102,7 +102,7 @@ namespace LlamaLibrary.Reduce
                 Save();
             }
         }
-        
+
         [Setting]
         [Description("Only Reduce in set zone")]
         [DefaultValue(false)]

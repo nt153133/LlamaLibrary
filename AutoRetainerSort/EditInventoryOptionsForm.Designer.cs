@@ -180,7 +180,7 @@ namespace LlamaLibrary.AutoRetainerSort
         private System.Windows.Forms.Button btnAddNewItem;
         private System.Windows.Forms.ComboBox comboBoxSortType;
         private System.Windows.Forms.Button btnDeleteItemId;
-        
+
         private System.Windows.Forms.Button btnAddSortType;
 
         private System.Windows.Forms.TextBox txtBoxName;

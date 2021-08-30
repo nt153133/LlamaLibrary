@@ -39,7 +39,7 @@ namespace LlamaLibrary.Extensions
                    type == ClassJobType.Alchemist ||
                    type == ClassJobType.Culinarian;
         }
-        
+
         internal static bool IsDol(this ClassJobType type)
         {
             return type == ClassJobType.Miner ||

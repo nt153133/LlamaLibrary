@@ -98,7 +98,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 "Careful!",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
-            
+
             DialogResult warningResult = MessageBox.Show(
                 Strings.AutoSetup_OverwriteWarning,
                 "Warning!",
@@ -167,7 +167,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 int desiredIndex = typeDicPair.Value.OrderByDescending(x => x.Value).First().Key;
                 AutoRetainerSortSettings.Instance.InventoryOptions[desiredIndex].SortTypes.Add(sortType);
             }
-            
+
             AutoRetainerSortSettings.Instance.Save();
             ResetBindingSource();
             AutoRetainerSort.LogSuccess("Auto-Setup done!");

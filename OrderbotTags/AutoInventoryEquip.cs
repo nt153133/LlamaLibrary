@@ -13,12 +13,12 @@ namespace LlamaLibrary.OrderbotTags
     {
 
             private bool _isDone;
-            
+
             [XmlAttribute("UpdateGearSet")]
             [XmlAttribute("updategearset")]
             [DefaultValue(true)]
             private bool UpdateGearSet { get; set; }
-            
+
             [XmlAttribute("RecommendEquip")]
             [XmlAttribute("recommendequip")]
             [DefaultValue(true)]
@@ -59,5 +59,5 @@ namespace LlamaLibrary.OrderbotTags
                 _isDone = true;
             }
     }
-    
+
 }

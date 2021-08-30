@@ -34,7 +34,7 @@ namespace LlamaLibrary.AutoRetainerSort
             }
 
             txtBoxName.Text = _sortInfo.Name;
-            
+
             _bsSortTypes = new BindingSource(_sortInfo.SortTypes, "");
             _bsItems = new BindingSource(_sortInfo.SpecificItems, "");
 
@@ -42,7 +42,7 @@ namespace LlamaLibrary.AutoRetainerSort
             listBoxItems.DataSource = _bsItems;
 
             comboBoxSortType.DataSource = Enum.GetValues(typeof(SortType));
-            
+
             if (Owner != null)
             {
                 int ownerCenterX = Owner.Location.X + (Owner.Width / 2) - (Width / 2);
@@ -73,8 +73,8 @@ namespace LlamaLibrary.AutoRetainerSort
                 if (pair.Key == _index) continue;
 
                 if (!pair.Value.ContainsType(selected)) continue;
-                
-                
+
+
                 DialogResult dr = MessageBox.Show(
                     string.Format(Strings.AddNewItem_AlreadyExists_Warning, pair.Value.Name, selected.ToString(), pair.Value.Name, _sortInfo.Name),
                     Strings.WarningCaption,
@@ -101,7 +101,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
                 SearchResult selectedItem = newItemForm.SelectedSearchResult;
                 if (selectedItem == null || selectedItem.RawItemId == 0) return;
-                
+
                 if (newItemForm.ModifierNone)
                 {
                     toAddIds.Add(selectedItem.RawItemId);
@@ -134,7 +134,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 {
                     if (indexInfoPair.Key == _index) continue;
                     if (!indexInfoPair.Value.ContainsItem(sortInfo)) continue;
-                    
+
                     DialogResult dr = MessageBox.Show(
                         string.Format(Strings.AddNewItem_AlreadyExists_Warning, indexInfoPair.Value.Name, sortInfo.Name, indexInfoPair.Value.Name, _sortInfo.Name),
                         Strings.WarningCaption,

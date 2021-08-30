@@ -24,12 +24,12 @@ namespace LlamaLibrary.RemoteWindows
                 return ___Elements()[62].TrimmedData;
             }
         }
-        
+
         public int GetAccumulatedScore()
         {
             return ___Elements()[17+CurrentClassSelected()].TrimmedData;
         }
-        
+
         public int NumberOfKupoTickets()
         {
             if (Translator.Language == Language.Chn)

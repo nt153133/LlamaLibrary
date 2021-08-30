@@ -8,22 +8,22 @@ namespace LlamaLibrary.Structs
     {
         [FieldOffset(0x0)]
         public ushort Grade;
-        
+
         [FieldOffset(0x2)]
         public byte InUse;
-        
+
         [FieldOffset(0x6)]
         public int MinutesLeft;
-        
+
         [FieldOffset(0x8E)]
         public uint ItemId;
-        
+
         [FieldOffset(0xA6)]
         public uint StartingItemId;
-        
+
         [FieldOffset(0xAA)]
         public uint TotalMinutes;
-        
+
         [FieldOffset(0xAE)]
         public uint ResultingItemId;
 
@@ -32,7 +32,7 @@ namespace LlamaLibrary.Structs
 
         [FieldOffset(0xB6)]
         public byte SlotIndex;
-        
+
         public Item Item => DataManager.GetItem(ItemId);
 
         public override string ToString()

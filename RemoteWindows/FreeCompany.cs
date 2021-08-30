@@ -3,7 +3,7 @@
     public class FreeCompany: RemoteWindow<FreeCompany>
     {
         private const string WindowName = "FreeCompany";
-        
+
         public FreeCompany() : base(WindowName)
         {
             _name = WindowName;

@@ -21,7 +21,7 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("ItemId")]
         [DefaultValue(new int[0])]
         private int[] ItemIds { get; set; }
-        
+
         private bool _isDone;
 
         public override bool HighPriority => true;
@@ -61,7 +61,7 @@ namespace LlamaLibrary.OrderbotTags
                 _isDone = true;
                 return;
             }
-            
+
             await StopBusy(leaveDuty:false, dismount:false);
 
             foreach (var slot in slots)

@@ -20,19 +20,19 @@ namespace LlamaLibrary.OrderbotTags
         private bool _isDone;
 
         [XmlAttribute("DutyId")] public int DutyId { get; set; }
-        
+
         [XmlAttribute("Trial")] 
         [DefaultValue(false)]
         public bool Trial { get; set; }
-		
+
         [XmlAttribute("Raid")] 
         [DefaultValue(false)]
         public bool Raid { get; set; }		
-		
+
         [XmlAttribute("Undersized")] 
         [DefaultValue(true)]
         public bool Undersized { get; set; }		
-        
+
         public override bool HighPriority => true;
 
         public override bool IsDone => _isDone;
@@ -129,9 +129,9 @@ namespace LlamaLibrary.OrderbotTags
 	           }
 	           await Coroutine.Sleep(500);
            }
-           
+
            if (DutyManager.QueueState == QueueState.None) return;
-           
+
            await Coroutine.Sleep(500);
 			   if (CommonBehaviors.IsLoading)
 			   {
@@ -151,7 +151,7 @@ namespace LlamaLibrary.OrderbotTags
 			   }
 
 			   Logging.WriteDiagnostic("Should be in duty");
-			   
+
 			   var director = ((ff14bot.Directors.InstanceContentDirector) DirectorManager.ActiveDirector);
 			   if (director !=null)
 			   {
@@ -185,7 +185,7 @@ namespace LlamaLibrary.OrderbotTags
 			   {
 				Logging.WriteDiagnostic("Director is null");
 			   }
-				   
+
 			  Logging.WriteDiagnostic("Should be ready");
 
 				_isDone = true;

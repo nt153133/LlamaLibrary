@@ -1,7 +1,7 @@
 ﻿namespace LlamaLibrary.RemoteAgents
 {
     //Class no longer needed due to rowena supply not rotating any more
-    
+
     /*public class AgentMasterPieceSupply : AgentInterface<AgentMasterPieceSupply>, IAgent
     {
         public IntPtr RegisteredVtable => Offsets.VTable;

@@ -31,7 +31,7 @@ namespace MasterPieceSupplyTest
     {
         private Composite _root;
         public override string Name => _name;
-        
+
         public static string _name => "GCDailyLisbeth";
         public override PulseFlags PulseFlags => PulseFlags.All;
 
@@ -67,7 +67,7 @@ namespace MasterPieceSupplyTest
             Navigator.NavigationProvider = new ServiceNavigationProvider();
 
             var items = Core.Memory.ReadArray<GCTurninItem>(Offsets.GCTurnin, Offsets.GCTurninCount);
-            
+
             /*
             foreach (var item in items)
             {

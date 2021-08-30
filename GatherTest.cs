@@ -27,7 +27,7 @@ namespace LlamaLibrary
 {
     public class GatherTest : BotBase
     {
-        
+
        // public static InstanceContentDirector Director => DirectorManager.ActiveDirector as InstanceContentDirector;
        public int TimerOffset;
 
@@ -40,7 +40,7 @@ namespace LlamaLibrary
             new Vector3(-606.6253f, 331.0921f, 427.3463f),
             new Vector3(-579.6904f, 329.4015f, 424.7657f)
         };
-        
+
         //Red Flare Mining
         private static readonly Vector3[] umbralFlare =
         {
@@ -67,41 +67,41 @@ namespace LlamaLibrary
             new Vector3(409.6448f, 293.4354f, 568.1148f),
             new Vector3(379.7924f, 292.971f, 569.1271f)
         };
-        
+
         private static readonly Vector3[] afkSpots2 =
         {
             new Vector3(60.57302f, 246.5133f, -290.3074f),
             new Vector3(168.4951f, 170.8651f, 72.97058f),
             new Vector3(-9.105042f, 158.3274f, 129.1192f)
         };
-        
+
         private static readonly Vector3[] afkSpots =
         {
 //-182.1712, 0.8445628, -298.0846
             new Vector3(-182.1712f, 0.8445628f, -298.0846f),
-            
+
             new Vector3(214.7894f, -144.3608f, -267.1053f),
-            
+
             new Vector3(318.1068f, -4.934579f, 408.4625f)
         };
-        
+
         //Above orange
         private static readonly Vector3 umbralDuststormAbove = new Vector3(409.9393f, 314.985f, 560.1671f);
-        
+
         //above green
         private static readonly Vector3 umbralTempestAbove = new Vector3(-578.7819f, 349.9304f, 462.1082f);
-        
+
         //above purple
         private static readonly Vector3 umbralLevinAbove = new Vector3(602.6203f, 276.4863f, -394.3397f);
 
         //above red
         private static readonly Vector3 umbralFlareAbove = new Vector3(-396.0904f, 340.3934f, -557.02f);
-        
+
         //above start
         private static readonly Vector3 startAbove = new Vector3(-645.4365f, 300.4301f, -151.262f);
 
         private static Vector3 standBy = new Vector3(-164.3966f, -1.072426f, -302.2528f);
-        
+
         private static int[] weatherNodes = new[] {33229, 33230, 33231, 33232,33584, 33585, 33586, 33587, 33836, 33837,33838,33839};
 
         private static int lastWeather = 0;
@@ -173,13 +173,13 @@ namespace LlamaLibrary
 
             lastChange = new WaitTimer(new TimeSpan(0,7,0));
             Log($"Current Weather: {WorldManager.CurrentWeather}  {WorldManager.CurrentWeatherId}");
-            
+
             Random time = new Random();
 
             int minutes = time.Next(10, 20);
             int sec = time.Next(0, 59);
             standBy = afkSpots[time.Next(0, afkSpots.Length)];
-            
+
             while (TimeLeftInDiadem > new TimeSpan(0,minutes,sec))
             {
                 switch (WorldManager.CurrentWeatherId)
@@ -223,7 +223,7 @@ namespace LlamaLibrary
                         //*/
                         await StandBy(); break;
                 } 
-                
+
                 await Coroutine.Sleep(1000);
             }
 
@@ -239,10 +239,10 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(10000);
                 }
             }
-          
-           
+
+
         }
-        
+
         public async Task UseCordial()
         {
             if (Core.Me.CurrentGP < 500)
@@ -282,7 +282,7 @@ namespace LlamaLibrary
             lastWeather = WorldManager.CurrentWeatherId;
             lastChange.Reset();
             await SwitchToJob(jobType);
-            
+
             //await FlyTo(above);
             var safeSpot = safeSpots.ToList().OrderBy(i => i.DistanceSqr(Core.Me.Location)).First();
             await FlyTo(safeSpot);
@@ -303,7 +303,7 @@ namespace LlamaLibrary
                     await Coroutine.Wait(2000, () => !MovementManager.IsFlying);
                     MovementManager.StopDescending();
                 }*/
-                
+
                 var _target = node.Location;
                 Navigator.PlayerMover.MoveTowards(_target);
                 while (_target.Distance2DSqr(Core.Me.Location) >= 3)
@@ -313,18 +313,18 @@ namespace LlamaLibrary
                 }
 
                 Navigator.PlayerMover.MoveStop();
-                
+
                 if (Core.Player.IsMounted)
                 {
                     ActionManager.Dismount();
                     await Coroutine.Sleep(2000);
                 }
-                
+
                 //await UseCordial();
-                
+
                 node = WeatherNodeList.FirstOrDefault();
                 node.Interact();
-                
+
                 await Coroutine.Sleep(200);
                 await Coroutine.Wait(2000, () => GatheringManager.WindowOpen);
                 await Coroutine.Sleep(500);
@@ -333,7 +333,7 @@ namespace LlamaLibrary
                     await testMine();
                 else if (Core.Me.CurrentJob == ClassJobType.Botanist)
                     await testBtn();
-                
+
                 //await UseCordial();
                 Log("Done Test Gather");
                 /*DutyManager.LeaveActiveDuty();
@@ -349,9 +349,9 @@ namespace LlamaLibrary
         public static async Task SwitchToJob(ClassJobType job)
         {
             if (Core.Me.CurrentJob == job) return;
-            
+
             var gearSets = GearsetManager.GearSets.Where(i => i.InUse);
-            
+
             if (gearSets.Any(gs => gs.Class == job))
             {
                 Logging.Write(Colors.Fuchsia, $"[ChangeJob] Found GearSet");
@@ -359,11 +359,11 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(1000);
             }
         }
-        
+
         public static List<GatheringPointObject> NodeList => GameObjectManager.GetObjectsOfType<GatheringPointObject>().OrderBy(r=>r.Distance()).ToList();
-        
+
         public static List<GatheringPointObject> WeatherNodeList => GameObjectManager.GetObjectsOfType<GatheringPointObject>().Where(i => weatherNodes.Contains(i.Base()) && i.IsVisible).OrderBy(r=>r.Distance()).ToList();
-        
+
         public async Task testGather()
         {
             var GatherLock = Core.Memory.Read<uint>(Offsets.Conditions + 0x2A);
@@ -382,7 +382,7 @@ namespace LlamaLibrary
                 }
             }
         }
-        
+
         public async Task testMine()
         {
             //Log("in Test Gather");
@@ -396,7 +396,7 @@ namespace LlamaLibrary
                     ActionManager.DoAction(241, Core.Me);
                     await Coroutine.Sleep(2500);
                 }
-                
+
                 /*
                 if (Core.Me.CurrentGP >= 250)
                 {
@@ -423,7 +423,7 @@ namespace LlamaLibrary
                 }
             }
         }
-        
+
         public async Task testBtn()
         {
             //Log("in Test Gather");
@@ -436,7 +436,7 @@ namespace LlamaLibrary
                     ActionManager.DoAction(224, Core.Me);
                     await Coroutine.Sleep(2500);
                 }
-                
+
                 /*
                 if (Core.Me.CurrentGP >= 250)
                 {
@@ -445,7 +445,7 @@ namespace LlamaLibrary
                     await Coroutine.Sleep(2500);
                 }
                 */
-                
+
                 Log($"Gathering: {items}");
 
                 while (GatheringManager.SwingsRemaining > 0)
@@ -491,7 +491,7 @@ namespace LlamaLibrary
                     SelectString.ClickSlot(0);
                     await Coroutine.Wait(3000, () => SelectYesno.IsOpen);
                     SelectYesno.Yes();
-                    
+
                     await Coroutine.Wait(30000, () => ContentsFinderConfirm.IsOpen);
 
                     await Coroutine.Yield();
@@ -509,8 +509,8 @@ namespace LlamaLibrary
                 }
             }
         }
-        
-        
+
+
         internal static async Task<bool> FlyTo2(Vector3 loc)
         {
             var moving = MoveResult.GeneratingPath;
@@ -529,7 +529,7 @@ namespace LlamaLibrary
 
             return true;
         }
-        
+
         internal static async Task<bool> FlyTo(Vector3 loc)
         {
             return await Lisbeth.TravelTo("The Diadem", loc);

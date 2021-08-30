@@ -67,7 +67,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
 
         [JsonProperty("TrueItemId")]
         public readonly uint TrueItemId;
-        
+
         public const int CollectableOffset = 5_000_000;
         public const int QualityOffset = 1_000_000;
 
@@ -136,7 +136,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         public ItemIndexStatus IndexStatus(int index)
         {
             if (MatchingIndex == int.MinValue) return ItemIndexStatus.Unknown;
-            
+
             if (MatchingIndex == index) return ItemIndexStatus.BelongsInCurrentIndex;
 
             if (ItemSortStatus.FilledAndSortedInventories.Contains(MatchingIndex)) return ItemIndexStatus.CantMove;

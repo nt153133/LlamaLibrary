@@ -13,7 +13,7 @@ namespace LlamaLibrary.RemoteWindows
         public Mobhunt() : base(WindowName)
         {
             _name = WindowName;
-            
+
         }
 
         public void Accept()

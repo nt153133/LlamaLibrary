@@ -4,7 +4,7 @@
     {
 
         private const string WindowName = "Character";
-        
+
         public Character() : base(WindowName)
         {
             _name = WindowName;

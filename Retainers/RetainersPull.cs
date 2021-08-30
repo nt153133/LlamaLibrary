@@ -134,7 +134,7 @@ namespace LlamaLibrary.Retainers
         {
             var verified = await VerifiedRetainerData();
             if (!verified) return;
-            
+
             var count = await HelperFunctions.GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
             var now = (int) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
@@ -148,7 +148,7 @@ namespace LlamaLibrary.Retainers
                     Log("Something went wrong");
                     return;
                 }
-                
+
                 var bell = await GoToSummoningBell();
 
                 if (bell == false)
@@ -264,7 +264,7 @@ namespace LlamaLibrary.Retainers
                     Log($"Venture will be done at {RetainerInfo.UnixTimeStampToDateTime(retainer.VentureEndTimestamp)}");
                 }
             }
-            
+
             return true;
         }
 

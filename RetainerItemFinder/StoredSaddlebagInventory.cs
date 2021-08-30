@@ -18,7 +18,7 @@ namespace LlamaLibrary.RetainerItemFinder
                     FreeSlots++;
                     continue;
                 }
-                
+
                 if (Inventory.ContainsKey(itemIds[i]))
                 {
                     Inventory[itemIds[i]] += itemQuantities[i];

@@ -156,11 +156,11 @@ namespace LlamaLibrary.Retainers
             Log("====================Retainers=====================");
             Log("==================================================");
             Log(" ");
-            
+
             var count = await HelperFunctions.GetNumberOfRetainers();
             var rets = Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, count);
-            
-           
+
+
             //var retainerIndex = 0;
 
             //Settings variables
@@ -214,7 +214,7 @@ namespace LlamaLibrary.Retainers
             }
 
             ventures = RetainerList.Instance.NumberOfVentures;
-            
+
             for (var retainerIndex = 0; retainerIndex < ordered.Length; retainerIndex++)
             {
                 if (!ordered[retainerIndex].Active) continue;
@@ -544,7 +544,7 @@ namespace LlamaLibrary.Retainers
 
             return true;
         }
-        
+
         public async Task<bool> RetainerHandleVentures()
         {
             if (!SelectString.IsOpen)

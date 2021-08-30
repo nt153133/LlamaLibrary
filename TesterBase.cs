@@ -77,19 +77,19 @@ namespace LlamaLibrary
         private Composite _root;
 
         public Dictionary<string, List<Composite>> hooks;
-        
+
         private static readonly InventoryBagId[] RetainerBagIds =
         {
             InventoryBagId.Retainer_Page1, InventoryBagId.Retainer_Page2, InventoryBagId.Retainer_Page3,
             InventoryBagId.Retainer_Page4, InventoryBagId.Retainer_Page5, InventoryBagId.Retainer_Page6,
             InventoryBagId.Retainer_Page7
         };
-        
+
         private static readonly InventoryBagId[] SaddlebagIds =
         {
             (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
         };
-        
+
         private static uint[] npcids = new uint[] {196818, 196833, 196834, 196835, 196836, 196837, 197084};
 
 
@@ -114,7 +114,7 @@ namespace LlamaLibrary
         public override Composite Root => _root;
 
         public override bool WantButton { get; } = true;
-        
+
         private static Random _rand = new Random();
 
 
@@ -164,9 +164,9 @@ namespace LlamaLibrary
                var Plant = DataManager.GetItem(Lua.GetReturnVal<uint>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantCrop();"));
                var PlantIndex = Lua.GetReturnVal<int>($"return _G['{plant.LuaString}']:GetHousingGardeningPlantIndex();");
                plants.Add((GardenIndex,PlantIndex,Plant.CurrentLocaleName));
-               
+
             }
-            
+
             foreach (var plantgroup in plants.GroupBy(i=> i.gardenIndex))
             {
                 foreach (var plant in plantgroup.OrderBy(j=> j.plantIndex))
@@ -350,7 +350,7 @@ namespace LlamaLibrary
                 }
             }
         }
-        
+
         internal async Task RetrieveFromSaddleBagsRetainer()
         {
             if (await InventoryBuddy.Instance.Open())
@@ -358,18 +358,18 @@ namespace LlamaLibrary
                 Log("Saddlebags window open");
 
                 var saddleInventory = InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i => i.FilledSlots);
-                
+
                 var overlap = saddleInventory.Where(i => InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).SelectMany(k => k.FilledSlots).Any(j => j.TrueItemId == i.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize));
                 if (overlap.Any())
                 {
                     foreach (var slot in overlap)
                     {
                         var haveSlot = InventoryManager.GetBagsByInventoryBagId(RetainerBagIds).SelectMany(k => k.FilledSlots).FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
-                        
+
                         if (haveSlot == default(BagSlot)) break;
-                        
+
                         slot.RetainerEntrustQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
-                        
+
                         Log($"(Saddlebag) Entrust {slot.Item.CurrentLocaleName}");
 
                         await Coroutine.Sleep(500);
@@ -399,11 +399,11 @@ namespace LlamaLibrary
                         foreach (var slot in overlap)
                         {
                             var haveSlot = InventoryManager.FilledSlots.FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
-                            
+
                             if (haveSlot == default(BagSlot)) break;
-                            
+
                             var result = slot.RemoveFromSaddlebagQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
-                            
+
                             Log($"Retrieve {slot.Name} {result}");
                             if (!result)
                                 break;
@@ -415,20 +415,20 @@ namespace LlamaLibrary
                 foreach (var slot in InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i=> i.FilledSlots))
                 {
                     if (InventoryManager.FreeSlots < 1) break;
-                    
+
                     var result = slot.RemoveFromSaddlebagQuantity(slot.Count);
                     Log($"Retrieve {slot.Name} {result}");
                     if (!result)
                         break;
                     await Coroutine.Sleep(500);
                 }
-                
+
                 InventoryBuddy.Instance.Close();
                 await Coroutine.Wait(5000, () => !InventoryBuddy.Instance.IsOpen);
                 Log("Saddlebags window closed");
             }
         }
-        
+
         internal async Task AddToSaddleBags()
         {
             if (await InventoryBuddy.Instance.Open())
@@ -446,11 +446,11 @@ namespace LlamaLibrary
                         foreach (var slot in overlap)
                         {
                             var haveSlot = InventoryManager.FilledSlots.FirstOrDefault(j => j.TrueItemId == slot.TrueItemId && j.Item.StackSize > 1 && j.Count < j.Item.StackSize);
-                            
+
                             if (haveSlot == default(BagSlot)) break;
-                            
+
                             var result = slot.RemoveFromSaddlebagQuantity(Math.Min(haveSlot.Item.StackSize - haveSlot.Count, slot.Count));
-                            
+
                             Log($"Retrieve {slot.Name} {result}");
                             if (!result)
                                 break;
@@ -468,7 +468,7 @@ namespace LlamaLibrary
                         break;
                     await Coroutine.Sleep(_rand.Next(300,400));
                 }
-                
+
                 InventoryBuddy.Instance.Close();
                 await Coroutine.Wait(5000, () => !InventoryBuddy.Instance.IsOpen);
                 Log("Saddlebags window closed");
@@ -481,7 +481,7 @@ namespace LlamaLibrary
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             //InventoryManager.GetBagByInventoryBagId(InventoryBagId.Bag1).Pointer
             //         Log(Core.Memory.GetRelative(func));
-            
+
             var retData = await HelperFunctions.GetOrderedRetainerArray(true);
 
             //Log($"Current {HelperFunctions.CurrentRetainer}");
@@ -494,21 +494,21 @@ namespace LlamaLibrary
             }
 
             var retainerInventoryPointers = ItemFinder.GetCachedRetainerInventories();
-            
+
             Log($"retainerInventoryPointers: {retainerInventoryPointers.Count}");
-            
+
             Log($"Pointer: {ItemFinder.Pointer.ToString("X")}");
             Log($"ParentStart: {ItemFinder.ParentStart.ToString("X")}");
 
             var testRet = retainerInventoryPointers.First();
-        
+
             Log($"{retData.First(i => i.Unique == testRet.Key).Name}");
 
             foreach (var pair in testRet.Value.Inventory)
             {
                 Log($"{BagSlotExtensions.GetItemName(pair.Key)} x {pair.Value}");
             }
-            
+
             Log("SaddleBags");
 
             var saddlebags = await ItemFinder.GetCachedSaddlebagInventories();
@@ -524,7 +524,7 @@ namespace LlamaLibrary
             Log(AgentBagSlot.Instance.PointerForAether);
             //Chargering Wheels
 
-            
+
             if (!AetherialWheel.Instance.IsOpen)
             {
                 await OpenWheelStand();
@@ -580,13 +580,13 @@ namespace LlamaLibrary
                 }
             }
             */
-            
-            
+
+
             //Need to check for stacks first, also need to toggle saddle bags window 
-            
+
             /*
             var _rand = new Random();
-            
+
             foreach (var slot in InventoryManager.FilledSlots)
             {
                 Log($"Move {slot.Name}");
@@ -594,13 +594,13 @@ namespace LlamaLibrary
                     break;
                 await Coroutine.Sleep(_rand.Next(300,400));
             }
-            
+
             Log("Getting items back");
             await Coroutine.Sleep(500);
             */
-            
-            
-            
+
+
+
             /*
             foreach (var slot in InventoryManager.GetBagsByInventoryBagId(SaddlebagIds).SelectMany(i=> i.FilledSlots))
             {
@@ -612,15 +612,15 @@ namespace LlamaLibrary
                 await Coroutine.Sleep(500);
             }
             */
-            
-            
-            
+
+
+
             TreeRoot.Stop("Stop Requested");
             return true;
 
             return true;
         }
-        
+
 
         private void Log(IntPtr instancePointer)
         {
@@ -671,7 +671,7 @@ namespace LlamaLibrary
                 Navigator.NavigationProvider?.OnPulse();
                 Thread.Sleep(25);
                 Thread.Yield();
-                
+
             }
             Navigator.PlayerMover.MoveStop();
             return moving == MoveResult.ReachedDestination;
@@ -1165,7 +1165,7 @@ namespace LlamaLibrary
             Logging.Write(Colors.Green, text);
         }
 
-        
+
 
         private async Task<bool> MoveSummoningBell(Vector3 loc)
         {
@@ -1635,7 +1635,7 @@ namespace LlamaLibrary
         {
             /*await testKupoTickets();
 
-   
+
    foreach (var item in InventoryManager.FilledSlots.Where(i=> i.EnglishName.ToLowerInvariant().Contains("magicked prism")))
    {
        Log($"Discarding {item.Name}");
@@ -1662,14 +1662,14 @@ namespace LlamaLibrary
                 if (!windows.ContainsKey(control.Name))
                 {
                     AgentInterface agentInterface = null;
-                    
+
                     try
                     {
                         agentInterface = control.TryFindAgentInterface();
                     }
                     catch
                     {
-                        
+
                     }
                     int agentid = agentInterface?.Id ?? -1;
                     windows.Add(control.Name, agentid);
@@ -1677,16 +1677,16 @@ namespace LlamaLibrary
                         Log($"{control.Name} - Agent {agentid}");
                 }
             }
-            
+
             using (var outputFile = new StreamWriter($"agents.csv", false))
             {
                 foreach (var window in windows.Where(i=> i.Value >0))
                 {
                     outputFile.WriteLine($"{window.Key},{window.Value},{new IntPtr(AgentModule.AgentVtables[window.Value].ToInt64() - Core.Memory.ImageBase.ToInt64()).ToString("X")}");
                 }
-                
+
             }
-            
+
             using (var outputFile = new StreamWriter($"windows.json", false))
             {
                 outputFile.Write(JsonConvert.SerializeObject(windows));
@@ -1760,7 +1760,7 @@ namespace LlamaLibrary
             await Coroutine.Sleep(1000);
             Log($"{await GrandCompanyShop.BuyKnownItem(21072, 3)}"); //ventures
             await Coroutine.Sleep(1000);
-            
+
             TreeRoot.Stop("Stop Requested");
             return true;
             */
@@ -1806,7 +1806,7 @@ namespace LlamaLibrary
 
             if (Core.Me.IsMounted)
                 await CommonTasks.StopAndDismount();
-           
+
             mob.Target();
             await Coroutine.Sleep(300);
             await RoutineManager.Current.PreCombatBuffBehavior.ExecuteCoroutine();
@@ -1844,18 +1844,18 @@ namespace LlamaLibrary
                        var huntLocation = HuntHelper.DailyHunts[huntLocation1];
                        // LogCritical($"Can't get to {huntLocation1} {huntLocation.BNpcNameKey} {huntLocation.Map} {huntLocation.Location} {DataManager.ZoneNameResults[huntLocation.Map].CurrentLocaleName}");
                        LogSucess($"Going to {huntLocation1}");
-       
+
                        if (huntLocation1 == 107 || huntLocation1 == 247)
                            await Navigation.GetToIslesOfUmbra();
-       
-       
+
+
                        var path = await Navigation.GetTo(huntLocation.Map, huntLocation.Location);
-       
+
                        if (MovementManager.IsFlying)
                        {
                            await CommonTasks.Land();
                        }
-       
+
                        if (Core.Me.Location.DistanceSqr(huntLocation.Location) > 40 && GameObjectManager.GameObjects.All(i => i.NpcId != huntLocation.BNpcNameKey))
                        {
                            cantGetTo.Add(huntLocation1);
@@ -1879,12 +1879,12 @@ namespace LlamaLibrary
                            }
                            LogSucess($"Can get to {huntLocation1}");
                        }
-       
+
                        //await Coroutine.Sleep(2000);
                    }
-       
+
                    LogCritical($"\n {string.Join(",", cantGetTo)}\n");
-       
+
        */
 
 
@@ -1920,7 +1920,7 @@ namespace LlamaLibrary
             {
                 outputFile.Write(sb.ToString());
             }
-            
+
             */
             //var pat = "48 89 0D ? ? ? ? 0F B7 89 ? ? ? ? Add 3 TraceRelative";
 
@@ -1948,7 +1948,7 @@ namespace LlamaLibrary
                     outputFile.Write(JsonConvert.SerializeObject(newHunts));
                 }
             }
-            
+
 
             using (var outputFile = new StreamWriter($"hunts1.json", false))
             {
@@ -2000,7 +2000,7 @@ namespace LlamaLibrary
 
             /*
             var failed = new Dictionary<int, StoredHuntLocation>();
-            
+
             if (File.Exists("hunts_failed.json"))
                 failed = JsonConvert.DeserializeObject<Dictionary<int, StoredHuntLocation>>((new StreamReader("hunts_failed.json")).ReadToEnd());
             var start = 76; 
@@ -2067,16 +2067,16 @@ namespace LlamaLibrary
 
             var PrivateHouses = AE.Where(x => privateHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
             var FCHouses = AE.Where(x => FCHousing.Contains(x.AetheryteId)).OrderBy(x => x.GilCost);
-            
+
             bool HavePrivateHousing = PrivateHouses.Any();
             bool HaveFCHousing = FCHouses.Any();
 
 
             Log($"Private House Access: {HavePrivateHousing} FC House Access: {HaveFCHousing}");
-            
+
             //await GoToHousingBell(FCHouses.First());
-            
-            
+
+
             if (HavePrivateHousing)
             {
                 await GoToHousingBell(PrivateHouses.First());
@@ -2111,7 +2111,7 @@ namespace LlamaLibrary
                 Log($"Finished {start}");
                 start++;
             }
-            
+
             using (var outputFile = new StreamWriter($"hunts_failed.json", false))
             {
                 outputFile.Write(JsonConvert.SerializeObject(failed));
@@ -2121,12 +2121,12 @@ namespace LlamaLibrary
 
             /*AgentFreeCompany.Instance.Toggle();
             await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
-            
+
             foreach (var buff in buffs)
             {
                 Log($"Current Buffs: {buff.Name}");
             }
-            
+
             var FCActionListCur = await AgentFreeCompany.Instance.GetAvailableActions();
             int cnt = 0;
             foreach (var action in FCActionListCur)
@@ -2134,14 +2134,14 @@ namespace LlamaLibrary
                 Log($"{cnt} - {FreeCompanyExchange.FcShopActions.First(i=> i.ActionId == action.id).Name}");
                 cnt++;
             }
-            
+
             var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
             Log($"# Currently Active Actions: {curActions.Length}");
             if (curActions.Length < 2)
             {
                 await FreeCompanyActions.ActivateBuffs(31, 41, GrandCompany.Maelstrom);
             }
-            
+
             if (FreeCompany.Instance.IsOpen)
                 FreeCompany.Instance.Close();*/
             /*

@@ -13,12 +13,12 @@ namespace LlamaLibrary
 
         public AutoFollowSettings() : base(Path.Combine(CharacterSettingsDirectory, "AutoFollow.json"))
         {
-            
+
         }
-        
+
         public static AutoFollowSettings Instance => _settings ?? (_settings = new AutoFollowSettings());
-        
-        
+
+
         [Description("Follow the Party Leader")]
         [DefaultValue(true)] //shift +x
         public bool FollowLeader
@@ -31,7 +31,7 @@ namespace LlamaLibrary
                 Save();
             }
         }
-        
+
         [Description("Paused")]
         [DefaultValue(false)] //shift +x
         public bool IsPaused
@@ -44,7 +44,7 @@ namespace LlamaLibrary
                 Save();
             }
         } 
-        
+
         [Description("Follow target name")]
         public string FollowTargetName
         {
@@ -56,6 +56,6 @@ namespace LlamaLibrary
                 Save();
             }
         }
-        
+
     }
 }

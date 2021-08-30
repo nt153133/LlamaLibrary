@@ -6,23 +6,23 @@ namespace LlamaLibrary.GCExpertTurnin
 {
     public class GCExpertSettings : JsonSettings
     {
-        
+
         private bool _accepted;
-        
+
         private bool _craft;
 
         private int _itemId;
 
         private int _sealReward;
-        
+
         private static GCExpertSettings _settings;
 
         public static GCExpertSettings Instance => _settings ?? (_settings = new GCExpertSettings());
-        
+
         public GCExpertSettings() :base(Path.Combine(CharacterSettingsDirectory, "GCExpertSettings.json"))
         {
         }
-        
+
         [Description("I understand anything in my inventory bags might be turned in")]
         [DefaultValue(false)] //shift +x
         public bool AcceptedRisk
@@ -37,7 +37,7 @@ namespace LlamaLibrary.GCExpertTurnin
                 }
             }
         }
-        
+
         [Description("Craft itemId until max seals")]
         [DefaultValue(false)] //shift +x
         public bool Craft
@@ -52,7 +52,7 @@ namespace LlamaLibrary.GCExpertTurnin
                 }
             }
         }
-        
+
         [Description("ItemId of item to craft")]
         [DefaultValue(4380)] //shift +x
         public int ItemId
@@ -67,7 +67,7 @@ namespace LlamaLibrary.GCExpertTurnin
                 }
             }
         }
-        
+
         [Description("Number of seals you get as a reward for handing in the above item")]
         [DefaultValue(317)] //shift +x
         public int SealReward

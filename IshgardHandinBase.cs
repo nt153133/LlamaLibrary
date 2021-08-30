@@ -136,7 +136,7 @@ namespace LlamaLibrary
                     Log($"Discarding {item.Name}");
                     await Coroutine.Sleep(3000);
                 }
-                
+
             }
 
 
@@ -780,7 +780,7 @@ namespace LlamaLibrary
                     Log($"Discarding {item.Name}");
                     await Coroutine.Sleep(3000);
                 }
-                
+
                 foreach (var item in InventoryManager.FilledSlots.Where(i => items513.Contains(i.RawItemId) && i.IsCollectable && i.Collectability < 5800))
                 {
                     item.Discard();
@@ -1553,7 +1553,7 @@ namespace LlamaLibrary
 
             return true;
         }
-        
+
         private static void Log(string text, params object[] args)
         {
             var msg = string.Format("[Ishgard Handin] " + text, args);

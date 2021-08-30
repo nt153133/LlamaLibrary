@@ -18,7 +18,7 @@ namespace LlamaLibrary.OrderbotTags
         public override bool HighPriority => true;
 
         public override bool IsDone => _isDone;
-        
+
         [XmlAttribute("NpcId")] public int NpcId { get; set; }
 
         protected override void OnStart()
@@ -44,7 +44,7 @@ namespace LlamaLibrary.OrderbotTags
             var gameobj = GameObjectManager.GetObjectByNPCId(NpcId);
 
             if (gameobj == default(GameObject)) {_isDone = true; return;}
-            
+
             await Navigation.FlightorMove(gameobj.Location);
 
             if (gameobj.IsWithinInteractRange)

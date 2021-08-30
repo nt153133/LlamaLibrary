@@ -38,7 +38,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             OffsetManager.Init();
         }
-        
+
         public override async void OnButtonPress()
         {
             HelperFunctions.ForceGetRetainerDataSync();
@@ -76,7 +76,7 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
             {
                 if (pair.Key < 0) continue;
-                
+
                 if (pair.Key >= retData.Length)
                 {
                     LogCritical($"{pair.Value.Name}'s index of {pair.Key.ToString()} doesn't exist in retainer data.");
@@ -95,7 +95,7 @@ namespace LlamaLibrary.AutoRetainerSort
             await ItemFinder.FlashSaddlebags();
 
             ItemSortStatus.UpdateFromCache(retData);
-            
+
             while (ItemSortStatus.AnyUnsorted())
             {
                 if (ItemSortStatus.FilledAndSortedInventories.Contains(ItemSortStatus.PlayerInventoryIndex))
@@ -144,7 +144,7 @@ namespace LlamaLibrary.AutoRetainerSort
                     LogCritical("Couldn't find Lisbeth settings path! We won't auto-generate retainer rules.");
                 }
             }
-            
+
             TreeRoot.Stop("Done sorting inventories.");
             return false;
         }
@@ -208,7 +208,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 LogCritical($"Tried to sort the player's inventory, but we can't do anything with that alone...");
                 return;
             }
-            
+
             /*
             PrintMoves(index);
             PrintMoves(ItemSortStatus.PlayerInventoryIndex);
@@ -254,10 +254,10 @@ namespace LlamaLibrary.AutoRetainerSort
                 ItemSortStatus.UpdateIndex(index, InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)));
 
                 await Coroutine.Sleep(250);
-                
+
                 if (!depositResult || !retrieveResult) break;
             }
-            
+
             if (openingSaddlebag)
             {
                 InventoryBuddy.Instance.Close();
@@ -315,7 +315,7 @@ namespace LlamaLibrary.AutoRetainerSort
         private static async Task<bool> RetrieveLoop(int index)
         {
             if (ItemSortStatus.GetByIndex(index).AllBelong()) return true;
-            
+
             string name = ItemSortStatus.GetByIndex(index).Name;
             if (InventoryManager.FreeSlots == 0)
             {
@@ -372,7 +372,7 @@ namespace LlamaLibrary.AutoRetainerSort
             {
                 if (slotGrouping.Key > ItemSortInfo.CollectableOffset) continue;
                 LogSuccess($"Combining stacks of {ItemSortStatus.GetSortInfo(slotGrouping.Key).Name}");
-                
+
                 var bagSlotArray = slotGrouping.OrderByDescending(x => x.Count).ToArray();
                 int moveToIndex = Array.FindIndex(bagSlotArray, x => x.Count < x.Item.StackSize);
                 if (moveToIndex < 0) continue;
@@ -411,7 +411,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             Logging.Write(Colors.Orange, "[AutoRetainerSort] " + text);
         }
-        
+
         public static void LogCritical(string text)
         {
             Logging.Write(Colors.OrangeRed, "[AutoRetainerSort] " + text);

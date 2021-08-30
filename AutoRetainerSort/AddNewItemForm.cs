@@ -68,7 +68,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 searchResults.Add(new SearchResult(idNamePair.Key, itemName));
                 if (++foundCount >= 10) break;
             }
-            
+
             _bsSearchResults.DataSource = searchResults;
             _bsSearchResults.ResetBindings(true);
             listBoxSearchResults.ClearSelected();

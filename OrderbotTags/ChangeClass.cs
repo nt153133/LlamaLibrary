@@ -24,7 +24,7 @@ namespace ff14bot
         public override bool HighPriority => true;
 
         [XmlAttribute("Job")] public string job { get; set; }
-        
+
         [XmlAttribute("Force")] 
         [XmlAttribute("force")] 
         [DefaultValue(false)]
@@ -61,40 +61,40 @@ namespace ff14bot
             {
                 Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Found GearSet");
                 gearSets.First(gs => gs.Class == newjob).Activate();
-                
+
                 await Coroutine.Wait(3000, () => SelectYesno.IsOpen);
                 if (SelectYesno.IsOpen)
                 {
                     SelectYesno.Yes();
                     await Coroutine.Sleep(3000);
                 }
-                
+
                 // await Coroutine.Sleep(1000);
             }
-            
+
             else if (foundJob)
             {
                 job = job.Trim() + ("s_Primary_Tool");
 
                 ItemUiCategory category;
                 var categoryFound = Enum.TryParse(job, true, out category);
-                
+
                 if (categoryFound)
                 {
                     Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Found Item Category: {categoryFound} Category:{category}");
                     var item = InventoryManager.FilledInventoryAndArmory.Where(i => i.Item.EquipmentCatagory == category).OrderByDescending(i=> i.Item.ItemLevel).FirstOrDefault();
                     BagSlot EquipSlot = InventoryManager.GetBagByInventoryBagId(InventoryBagId.EquippedItems)[EquipmentSlot.MainHand];
-                    
+
                     Logging.Write(Colors.Fuchsia, $"[ChangeJobTag] Found Item {item}");
                     if (item != null)
                     {
                         item.Move(EquipSlot);
                     }
-                    
+
                     await Coroutine.Sleep(1000);
-                    
+
                     ChatManager.SendChat("/gs save");
-                    
+
                     await Coroutine.Sleep(1000);
                 }
                 else

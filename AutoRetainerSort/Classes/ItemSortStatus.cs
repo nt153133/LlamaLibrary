@@ -71,7 +71,7 @@ namespace LlamaLibrary.AutoRetainerSort
                     return true;
                 }
             }
-            
+
             return false;
         }
 
@@ -92,7 +92,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
             StoredSaddleBagInventory storedSaddlebagInventory = ItemFinder.GetCachedSaddlebagInventoryComplete();
             SaddlebagInventory.Update(storedSaddlebagInventory);
-            
+
             var cachedRetInventories = ItemFinder.GetCachedRetainerInventories();
 
             for (var i = 0; i < retData.Length; i++)

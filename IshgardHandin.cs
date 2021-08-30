@@ -31,16 +31,16 @@ namespace LlamaLibrary
 
         private GameObject Npc => GameObjectManager.GameObjects.FirstOrDefault(i => ids.Contains(i.NpcId) && i.IsVisible);
         private GameObject VendorNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031680 && i.IsVisible);
-        
+
         private GameObject GatherNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031693 && i.IsVisible);
-        
+
         private GameObject KupoNpc => GameObjectManager.GameObjects.FirstOrDefault(i => i.NpcId == 1031692 && i.IsVisible);
 
         public async Task<bool> HandInGatheringItem(int job)
         {
             if ((!HWDGathereInspect.Instance.IsOpen && GatherNpc == null) || GatherNpc.Location.Distance(Core.Me.Location) > 5f) 
                 await Navigation.GetTo(886,new Vector3(-20.04274f, -16f, 141.3337f));
-            
+
             if (!HWDGathereInspect.Instance.IsOpen && GatherNpc.Location.Distance(Core.Me.Location) > 4f)
             {
                 await Navigation.OffMeshMove(GatherNpc.Location);
@@ -66,7 +66,7 @@ namespace LlamaLibrary
             {
                 HWDGathereInspect.Instance.ClickClass(job);
                 await Coroutine.Sleep(500);
-                
+
                 if(HWDGathereInspect.Instance.CanAutoSubmit());
                 {
                    HWDGathereInspect.Instance.ClickAutoSubmit();
@@ -90,7 +90,7 @@ namespace LlamaLibrary
 
             return false;
         }
-        
+
         public async Task<bool> HandInKupoTicket(int slot)
         {
             if ((!HWDLottery.Instance.IsOpen && KupoNpc == null) || KupoNpc.Location.Distance(Core.Me.Location) > 5f) 
@@ -101,7 +101,7 @@ namespace LlamaLibrary
                 await Navigation.OffMeshMove(KupoNpc.Location);
                 await Coroutine.Sleep(500);
             }
-            
+
             if (!HWDLottery.Instance.IsOpen && KupoNpc != null)
             {
                 KupoNpc.Interact();
@@ -172,7 +172,7 @@ namespace LlamaLibrary
                 await Navigation.OffMeshMove(Npc.Location);
                 await Coroutine.Sleep(500);
             }
-            
+
             if (!HWDSupply.Instance.IsOpen)
             {
                 //NpcId = GameObjectManager.GameObjects.First(i => i.EnglishName == EnglishName).NpcId;
@@ -267,7 +267,7 @@ namespace LlamaLibrary
                     {
                         SelectYesno.Yes();
                     }
-                    
+
                     await Coroutine.Sleep(1000);
                     if (!InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
                     {
@@ -297,7 +297,7 @@ namespace LlamaLibrary
                     await Coroutine.Wait(2000, () => !HWDSupply.Instance.IsOpen);
                 }
             }
-            
+
             if (InventoryManager.FilledSlots.Any(i => i.RawItemId == itemId))
                 await HandInItem(itemId, index, job, stopScripMax);
             return false;
@@ -305,7 +305,7 @@ namespace LlamaLibrary
 
         public async Task<bool> BuyItem(uint itemId, int SelectStringLine = 0)
         {
-            
+
             if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
                 await Navigation.GetTo(886,new Vector3(36.33978f, -16f, 145.3877f));
 
@@ -353,7 +353,7 @@ namespace LlamaLibrary
 
         public async Task<bool> BuyItem(uint itemId, int maxCount, int SelectStringLine = 0)
         {
-            
+
             if ((!ShopExchangeCurrency.Open && VendorNpc == null) || VendorNpc.Location.Distance(Core.Me.Location) > 5f) 
                 await Navigation.GetTo(886,new Vector3(36.33978f, -16f, 145.3877f));
 
@@ -388,7 +388,7 @@ namespace LlamaLibrary
                 await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
 
                 SelectYesno.ClickYes();
-                
+
                 await Coroutine.Wait(500, () => !SelectYesno.IsOpen);
                 await Coroutine.Wait(500, () => SelectYesno.IsOpen);
                 if (SelectYesno.IsOpen)
@@ -406,7 +406,7 @@ namespace LlamaLibrary
 
             return false;
         }
-        
+
         internal static uint Purchase(uint itemId, uint itemCount)
         {
             var windowByName = RaptureAtkUnitManager.GetWindowByName("ShopExchangeCurrency");
@@ -526,7 +526,7 @@ namespace LlamaLibrary
 
             Navigator.PlayerMover.MoveStop();
 
-            
+
             target = VendorNpc.Location;
             Navigator.PlayerMover.MoveTowards(target);
             while (target.Distance2D(Core.Me.Location) >= 4)
@@ -635,7 +635,7 @@ namespace LlamaLibrary
 
             return Npc.Location.Distance(Core.Me.Location) <= 5f;
         }
-        
+
         public async Task<bool> GetToGatherNpc()
         {
             if (WorldManager.ZoneId != ZoneId && WorldManager.ZoneId != 886)
@@ -726,7 +726,7 @@ namespace LlamaLibrary
 
             return Npc.Location.Distance(Core.Me.Location) <= 5f;
         }
-        
+
         private static void Log(string text, params object[] args)
         {
             var msg = string.Format("[Ishgard Handin] " + text, args);

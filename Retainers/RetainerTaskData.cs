@@ -27,7 +27,7 @@ namespace LlamaLibrary.Retainers
                 else
                     return DataManager.GetItem((uint)ItemId).CurrentLocaleName;
             }
-            
+
         }
 
         [JsonConstructor]

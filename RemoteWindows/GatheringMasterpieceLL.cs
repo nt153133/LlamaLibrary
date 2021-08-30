@@ -9,7 +9,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             _name = WindowName;
         }
-        
+
         public static readonly Dictionary<string, int> Properties = new Dictionary<string, int>
         {
             {
@@ -80,7 +80,7 @@ namespace LlamaLibrary.RemoteWindows
                 SendAction(3,3,0x65,0,0,2,0);
             }
         }
-        
+
         public void SetCollectorsIntuition(bool value = true)
         {
             if (value)
