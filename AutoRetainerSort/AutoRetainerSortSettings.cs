@@ -7,6 +7,7 @@ using System.Linq;
 using ff14bot.Helpers;
 using ff14bot.Managers;
 using LlamaLibrary.AutoRetainerSort.Classes;
+using LlamaLibrary.Helpers;
 using Newtonsoft.Json;
 
 namespace LlamaLibrary.AutoRetainerSort
@@ -15,7 +16,7 @@ namespace LlamaLibrary.AutoRetainerSort
     {
         private static AutoRetainerSortSettings _settings;
 
-        public AutoRetainerSortSettings() : base(Path.Combine(CharacterSettingsDirectory, "AutoRetainerSort.json"))
+        public AutoRetainerSortSettings() : base(Path.Combine(JsonHelper.UniqueCharacterSettingsDirectory, "AutoRetainerSort.json"))
         {
         }
 
