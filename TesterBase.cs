@@ -477,6 +477,8 @@ namespace LlamaLibrary
 
         private async Task<bool> Run()
         {
+            Log($"HomeWorldId: {WorldHelper.HomeWorldId}, CurrentWorldId: {WorldHelper.CurrentWorldId}, DataCenterId: {WorldHelper.DataCenterId}");
+            
             Navigator.PlayerMover = new SlideMover();
             Navigator.NavigationProvider = new ServiceNavigationProvider();
             //InventoryManager.GetBagByInventoryBagId(InventoryBagId.Bag1).Pointer
