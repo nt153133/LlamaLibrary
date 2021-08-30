@@ -344,6 +344,7 @@ namespace LlamaLibrary.AutoRetainerSort
             {
                 if (InventoryManager.FreeSlots == 0) break;
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
+                if (sortInfo.ItemInfo.Unique && InventoryManager.FilledSlots.Any(x => x.TrueItemId == sortInfo.TrueItemId)) continue;
                 if (sortInfo.IndexStatus(index) == ItemIndexStatus.BelongsElsewhere)
                 {
                     LogSuccess($"Retrieving {sortInfo.Name}. It belongs in {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}.");
