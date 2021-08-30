@@ -321,7 +321,13 @@ namespace LlamaLibrary.AutoRetainerSort
                     {
                         bagSlot.RetainerEntrustQuantity(bagSlot.Count);
                     }
+
                     await Coroutine.Sleep(500);
+
+                    if (bagSlot.IsValid && bagSlot.Count != 0)
+                    {
+                        LogCritical($"Something went wrong with depositing {sortInfo.Name}, it's still in the same slot!");
+                    }
                 }
             }
 
@@ -355,7 +361,13 @@ namespace LlamaLibrary.AutoRetainerSort
                     {
                         bagSlot.RetainerRetrieveQuantity(bagSlot.Count);
                     }
+
                     await Coroutine.Sleep(500);
+
+                    if (bagSlot.IsValid && bagSlot.Count != 0)
+                    {
+                        LogCritical($"Something went wrong with depositing {sortInfo.Name}, it's still in the same slot!");
+                    }
                 }
             }
 
