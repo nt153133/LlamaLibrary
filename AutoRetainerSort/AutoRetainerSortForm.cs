@@ -60,6 +60,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private void ResetBindingSource()
         {
+            _bsInventories = new BindingSource(AutoRetainerSortSettings.Instance, "InventoryOptions");
             _bsInventories.ResetBindings(true);
             listBoxInventoryOptions.ResetBindings();
             listBoxInventoryOptions.Refresh();

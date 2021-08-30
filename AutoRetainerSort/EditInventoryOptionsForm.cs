@@ -97,10 +97,11 @@ namespace LlamaLibrary.AutoRetainerSort
             using (AddNewItemForm newItemForm = new AddNewItemForm())
             {
                 DialogResult dr = newItemForm.ShowDialog(this);
-                if (dr != DialogResult.Yes) return;
-                
+                if (dr != DialogResult.OK) return;
+
                 SearchResult selectedItem = newItemForm.SelectedSearchResult;
                 if (selectedItem == null || selectedItem.RawItemId == 0) return;
+                
                 if (newItemForm.ModifierNone)
                 {
                     toAddIds.Add(selectedItem.RawItemId);
@@ -128,7 +129,7 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (uint toAddId in toAddIds)
             {
                 ItemSortInfo sortInfo = ItemSortStatus.GetSortInfo(toAddId);
-                var shouldAdd = false;
+                var shouldAdd = true;
                 foreach (var indexInfoPair in AutoRetainerSortSettings.Instance.InventoryOptions)
                 {
                     if (indexInfoPair.Key == _index) continue;
@@ -140,16 +141,22 @@ namespace LlamaLibrary.AutoRetainerSort
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning);
 
-                    if (dr != DialogResult.Yes) break;
-                    shouldAdd = true;
-                    break;
+                    if (dr == DialogResult.Yes)
+                    {
+                        indexInfoPair.Value.SpecificItems.Remove(sortInfo);
+                    }
+                    else
+                    {
+                        shouldAdd = false;
+                        break;
+                    }
                 }
 
                 if (!shouldAdd) continue;
-
-                _bsItems.Add(new ItemSortInfo(toAddId));
+                AutoRetainerSort.LogSuccess($"Added {sortInfo.Name} to {_sortInfo.Name}!");
+                _bsItems.Add(sortInfo);
             }
-            
+
             AutoRetainerSortSettings.Instance.Save();
         }
 

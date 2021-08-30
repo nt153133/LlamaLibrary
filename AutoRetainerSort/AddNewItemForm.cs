@@ -31,8 +31,6 @@ namespace LlamaLibrary.AutoRetainerSort
             }
         }
 
-        public static string GetAdjustedItemName(uint rawItemId) => ItemNameCache.TryGetValue(rawItemId, out string name) ? name : "UNKNOWN";
-
         public AddNewItemForm()
         {
             InitializeComponent();
@@ -46,7 +44,10 @@ namespace LlamaLibrary.AutoRetainerSort
                 int ownerCenterY = Owner.Location.Y + (Owner.Height / 2) - (Width / 2);
                 Location = new Point(ownerCenterX, ownerCenterY);
             }
+            listBoxSearchResults.DataSource = _bsSearchResults;
         }
+
+        private readonly BindingSource _bsSearchResults = new BindingSource();
 
         private void SearchBox_TextChanged(object sender, EventArgs e)
         {
@@ -57,16 +58,20 @@ namespace LlamaLibrary.AutoRetainerSort
             foreach (var idNamePair in ItemNameCache)
             {
                 string itemName = idNamePair.Value;
+                int matchCount = 0;
                 for (int i = 0; i < splitSearchText.Length; i++)
                 {
                     if (itemName.IndexOf(splitSearchText[i], StringComparison.OrdinalIgnoreCase) < 0) continue;
+                    matchCount++;
                 }
+                if (matchCount < splitSearchText.Length) continue;
                 searchResults.Add(new SearchResult(idNamePair.Key, itemName));
                 if (++foundCount >= 10) break;
             }
-
-            listBoxSearchResults.SelectedIndex = -1;
-            listBoxSearchResults.DataSource = searchResults;
+            
+            _bsSearchResults.DataSource = searchResults;
+            _bsSearchResults.ResetBindings(true);
+            listBoxSearchResults.ClearSelected();
             listBoxSearchResults.ResetBindings();
             listBoxSearchResults.Refresh();
         }
@@ -75,11 +80,13 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             if (listBoxSearchResults.SelectedIndex < 0)
             {
+                txtBoxItem.Text = string.Empty;
                 return;
             }
 
             if (!(listBoxSearchResults.SelectedItem is SearchResult selectedItem))
             {
+                txtBoxItem.Text = string.Empty;
                 return;
             }
 

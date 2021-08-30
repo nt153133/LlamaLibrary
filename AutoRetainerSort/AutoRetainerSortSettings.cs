@@ -8,7 +8,6 @@ using ff14bot.Helpers;
 using ff14bot.Managers;
 using LlamaLibrary.AutoRetainerSort.Classes;
 using Newtonsoft.Json;
-using static LlamaLibrary.AutoRetainerSort.Classes.ItemSortInfo;
 
 namespace LlamaLibrary.AutoRetainerSort
 {
@@ -100,7 +99,7 @@ namespace LlamaLibrary.AutoRetainerSort
         [JsonProperty("SortTypes")]
         public BindingList<SortType> SortTypes;
 
-        [JsonProperty("ItemIds")]
+        [JsonProperty("SpecificItems")]
         public BindingList<ItemSortInfo> SpecificItems;
 
         public bool ContainsType(SortType type) => SortTypes.Contains(type);
