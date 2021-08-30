@@ -119,12 +119,6 @@ namespace LlamaLibrary.AutoRetainerSort
                     break;
                 }
 
-                if (InventoryManager.FreeSlots == 0)
-                {
-                    LogCritical("Player inventory is completely full! Can't move items around like this... give me at least a slot of free space!");
-                    break;
-                }
-
                 await DepositFromPlayer();
                 await RetrieveFromInventories();
 
@@ -339,7 +333,7 @@ namespace LlamaLibrary.AutoRetainerSort
             if (ItemSortStatus.GetByIndex(index).AllBelong()) return true;
 
             string name = ItemSortStatus.GetByIndex(index).Name;
-            if (InventoryManager.FreeSlots <= 1)
+            if (InventoryManager.FreeSlots == 0)
             {
                 LogCritical($"We tried to retrieve items from {name} but our player inventory is full!");
                 return false;
@@ -348,7 +342,7 @@ namespace LlamaLibrary.AutoRetainerSort
             Log($"Retrieving items from {name}...");
             foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots))
             {
-                if (InventoryManager.FreeSlots <= 1) break;
+                if (InventoryManager.FreeSlots == 0) break;
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
                 if (sortInfo.IndexStatus(index) == ItemIndexStatus.BelongsElsewhere)
                 {
