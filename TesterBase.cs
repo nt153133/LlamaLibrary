@@ -484,6 +484,7 @@ namespace LlamaLibrary
             //InventoryManager.GetBagByInventoryBagId(InventoryBagId.Bag1).Pointer
             //         Log(Core.Memory.GetRelative(func));
 
+            /*
             var retData = await HelperFunctions.GetOrderedRetainerArray(true);
 
             //Log($"Current {HelperFunctions.CurrentRetainer}");
@@ -519,6 +520,7 @@ namespace LlamaLibrary
             {
                 Log($"{BagSlotExtensions.GetItemName(pair.Key)} x {pair.Value}");
             }
+            */
 
 
             /*
