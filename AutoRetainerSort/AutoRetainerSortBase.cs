@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Buddy.Coroutines;
 using ff14bot;
@@ -113,7 +114,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
             foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
             {
-                foreach (var sortInfo in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
+                foreach (ItemSortInfo sortInfo in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
                 {
                     if (sortInfo.MatchingIndex < ItemSortStatus.PlayerInventoryIndex) continue;
                     if (sortInfo.IndexStatus(cachedInventory.Index) == ItemIndexStatus.CantMove)
@@ -124,6 +125,25 @@ namespace LlamaLibrary.AutoRetainerSort
             }
 
             await GeneralFunctions.ExitRetainer(true);
+
+            if (AutoRetainerSortSettings.Instance.AutoGenLisbeth)
+            {
+                string lisbethSettingsPath = LisbethRuleGenerator.GetSettingsPath();
+                if (string.IsNullOrEmpty(lisbethSettingsPath))
+                {
+                    LisbethRuleGenerator.PopulateSettings(lisbethSettingsPath);
+                    LogSuccess("Auto-populated Lisbeth's retainer item rules!");
+                    MessageBox.Show(
+                        Strings.LisbethRules_RestartRB,
+                        "Just Letting You Know...",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    LogCritical("Couldn't find Lisbeth settings path! We won't auto-generate retainer rules.");
+                }
+            }
             
             TreeRoot.Stop("Done sorting inventories.");
             return false;

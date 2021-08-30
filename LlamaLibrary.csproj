@@ -86,6 +86,7 @@
     <Compile Include="AutoRetainerSort\EditInventoryOptionsForm.Designer.cs">
       <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AutoRetainerSort\LisbethRuleGenerator.cs" />
     <Compile Include="AutoRetainerSort\SortType.cs" />
     <Compile Include="AutoRetainerSort\Strings.Designer.cs">
       <DesignTime>True</DesignTime>

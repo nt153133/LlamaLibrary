@@ -99,6 +99,15 @@ namespace LlamaLibrary.AutoRetainerSort {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You should restart RebornBuddy now before opening any Lisbeth windows, or else the changed Lisbeth settings won&apos;t apply!.
+        /// </summary>
+        internal static string LisbethRules_RestartRB {
+            get {
+                return ResourceManager.GetString("LisbethRules_RestartRB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
         internal static string WarningCaption {
