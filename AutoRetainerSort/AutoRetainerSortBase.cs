@@ -360,7 +360,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
                     if (bagSlot.IsValid && bagSlot.Count != 0)
                     {
-                        LogCritical($"Something went wrong with depositing {sortInfo.Name}, it's still in the same slot!");
+                        LogCritical($"Something went wrong with retrieving {sortInfo.Name}, it's still in the same slot!");
                     }
                 }
             }
