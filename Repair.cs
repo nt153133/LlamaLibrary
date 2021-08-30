@@ -40,8 +40,8 @@ namespace AutoRepair
         public override string Name => _Name;
         public override bool WantButton => false;
         public static string _Name => "AutoRepair";
-        
-        
+
+
 
         public Composite CreateVendorBehavior
         {
@@ -128,8 +128,8 @@ namespace AutoRepair
         private void OnBotStop(BotBase bot)
         {
             RemoveHooks();
-            
-            
+
+
         }
 
         private void OnBotStart(BotBase bot)

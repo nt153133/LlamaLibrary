@@ -16,7 +16,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             // _instance = new T();
         }
-        
+
         protected RemoteWindow(string name, AgentInterface agent) : base(name, agent)
         {
             // _instance = new T();
@@ -33,7 +33,7 @@ namespace LlamaLibrary.RemoteWindows
         public virtual bool IsOpen => WindowByName != null;
 
         public virtual string Name => _name;
-        
+
         public virtual AgentInterface Agent => _agent;
 
         public virtual AtkAddonControl WindowByName => RaptureAtkUnitManager.GetWindowByName(Name);
@@ -91,11 +91,11 @@ namespace LlamaLibrary.RemoteWindows
             if (IsOpen)
                 WindowByName.SendAction(pairCount, param);
         }
-        
+
         public virtual async Task<bool> Open()
         {
             if (IsOpen) return true;
-            
+
             Agent.Toggle();
             return await WaitTillWindowOpen(5000);
             //return SyncRoutines.WaitUntil(() => IsOpen, 50, 5000, true);

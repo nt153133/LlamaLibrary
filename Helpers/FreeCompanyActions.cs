@@ -16,7 +16,7 @@ namespace LlamaLibrary.Helpers
                 AgentFreeCompany.Instance.Toggle();
                 await Coroutine.Wait(5000, () => FreeCompany.Instance.IsOpen);
             }
-            
+
             var curActions = await AgentFreeCompany.Instance.GetCurrentActions();
             var fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
 
@@ -51,7 +51,7 @@ namespace LlamaLibrary.Helpers
                         buffs1 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff1);
                     }
                 }
-                
+
             }
             await Coroutine.Sleep(500);
             fcActions = await AgentFreeCompany.Instance.GetAvailableActions();
@@ -77,9 +77,9 @@ namespace LlamaLibrary.Helpers
                         buffs2 = fcActions.Select((n,index) => new {Action = n, Index = index}).FirstOrDefault(n => n.Action.id == buff2);
                     }
                 }
-                
+
             }
-            
+
             if (curActions.Length == 0)
             {
                 //Log($"No Buffs: Activating");
@@ -142,7 +142,7 @@ namespace LlamaLibrary.Helpers
                     }
                 }
             }
-            
+
             if (FreeCompany.Instance.IsOpen)
                 FreeCompany.Instance.Close();
         }

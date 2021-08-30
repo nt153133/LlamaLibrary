@@ -75,13 +75,13 @@ namespace LlamaLibrary.OrderbotTags
             if (Conversation.IsOpen)
             {
                 Conversation.SelectLine((uint) selectString);
-                
+
                 await Coroutine.Wait(5000, () => DialogOpen || FreeShop.Instance.IsOpen);
 
                 if (DialogOpen) Next();
-                
+
                 await Coroutine.Wait(5000, () => FreeShop.Instance.IsOpen);
-                
+
                 if (FreeShop.Instance.IsOpen)
                 {
                     //Log("Opened");
@@ -97,8 +97,8 @@ namespace LlamaLibrary.OrderbotTags
                     await Coroutine.Sleep(500);
                 }
 
-                
-                
+
+
                 if (FreeShop.Instance.IsOpen)
                 {
                     FreeShop.Instance.Close();

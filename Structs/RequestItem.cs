@@ -49,9 +49,9 @@ namespace LlamaLibrary.Structs
         private readonly byte unkByte4;
         //[FieldOffset(0x8F)]
         private readonly byte unkByte6; 
-        
+
         public string Name => DataManager.GetItem(ItemId).CurrentLocaleName;
-        
+
         public bool HQ => (_HQ > 0);
         public bool Collectable => (_HQ > 0);
     }

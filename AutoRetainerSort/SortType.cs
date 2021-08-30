@@ -39,7 +39,7 @@ namespace LlamaLibrary.AutoRetainerSort
         AirshipSubmersible,
         Soul_Crystal,
     }
-    
+
     public static class SortExtensions
     {
         public static SortType GetSortType(this ItemUiCategory category)

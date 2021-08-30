@@ -16,7 +16,7 @@ using ff14bot.Managers;
         protected AgentRetainerCharacter(IntPtr pointer) : base(pointer)
         {
         }
-        
+
         public int iLvl => Core.Memory.Read<byte>(Pointer + 0xa78);
     }
 }

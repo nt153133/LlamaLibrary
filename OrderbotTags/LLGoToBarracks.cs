@@ -66,11 +66,11 @@ namespace LlamaLibrary.OrderbotTags
                 {
                     Log($"Waiting for zoning to finish...");
                     await Coroutine.Wait(-1, () => (!CommonBehaviors.IsLoading));
-                    
+
                 }               
-                
-            
- 
+
+
+
 
 				_isDone = true;
         }

@@ -34,7 +34,7 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("Count")]
         [DefaultValue(1)]
         public int count { get; set; }
-		
+
         [XmlAttribute("Dialog")]
         [XmlAttribute("dialog")]
         [DefaultValue(false)]
@@ -77,7 +77,7 @@ namespace LlamaLibrary.OrderbotTags
             }
 
             unit.Interact();
-			
+
             if (dialog)
             {
                 await Coroutine.Wait(5000, () => Talk.DialogOpen);
@@ -94,7 +94,7 @@ namespace LlamaLibrary.OrderbotTags
             if (Conversation.IsOpen)
             {
                 Conversation.SelectLine((uint) selectString);
-			
+
                 if (dialog)
                 {
                     await Coroutine.Wait(5000, () => Talk.DialogOpen);

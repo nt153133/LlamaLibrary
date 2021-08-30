@@ -13,15 +13,15 @@ namespace LlamaLibrary.Helpers
         public static string SummoningBell => Summoning_Bell[Language];
 
         public static string VentureCompleteText => Addon2385[Language];
-        
+
         public static string AssignVentureText => Addon2386[Language];
-        
+
         public static string AssignVentureInProgressText => Addon2387[Language];
-        
+
         public static string SellInventory => Addon2380[Language];
-        
+
         public static string SellRetainer => Addon2381[Language];
-        
+
         public static string EntrustRetainer => Addon2378[Language];
 
         static Translator()
@@ -29,7 +29,7 @@ namespace LlamaLibrary.Helpers
             Language = (Language) typeof(DataManager).GetFields(BindingFlags.Static | BindingFlags.NonPublic)
                 .First(i => i.FieldType == typeof(Language)).GetValue(null);
         }
-        
+
         //Addon # 2378
         static Dictionary<Language, string> Addon2378 = new Dictionary<Language, string>
         {
@@ -49,7 +49,7 @@ namespace LlamaLibrary.Helpers
             { Language.Ger, "Krämerklingel"},
             { Language.Chn, "传唤铃" }
         };
-        
+
         //Addon # 2385
         static Dictionary<Language, string> Addon2385 = new Dictionary<Language, string>
         {
@@ -109,7 +109,7 @@ namespace LlamaLibrary.Helpers
             { Language.Ger, "Abgeschlossen"},
             { Language.Chn, "结束" }
         };
-        
+
         //Addon # 2380
         static Dictionary<Language, string> Addon2380 = new Dictionary<Language, string>
         {

@@ -63,6 +63,12 @@
     <Compile Include="AutoRetainerSort\AddNewInventoryForm.Designer.cs">
       <DependentUpon>AddNewInventoryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AutoRetainerSort\AddNewItemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoRetainerSort\AddNewItemForm.Designer.cs">
+      <DependentUpon>AddNewItemForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="AutoRetainerSort\AutoRetainerSortForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,7 +86,13 @@
     <Compile Include="AutoRetainerSort\EditInventoryOptionsForm.Designer.cs">
       <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AutoRetainerSort\LisbethRuleGenerator.cs" />
     <Compile Include="AutoRetainerSort\SortType.cs" />
+    <Compile Include="AutoRetainerSort\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="AutoTrade\AutoTrade.cs" />
     <Compile Include="AutoTrade\AutoTradeSettings.cs">
       <SubType>Form</SubType>
@@ -326,11 +338,18 @@
     <EmbeddedResource Include="AutoRetainerSort\AddNewInventoryForm.resx">
       <DependentUpon>AddNewInventoryForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AutoRetainerSort\AddNewItemForm.resx">
+      <DependentUpon>AddNewItemForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AutoRetainerSort\AutoRetainerSortForm.resx">
       <DependentUpon>AutoRetainerSortForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AutoRetainerSort\EditInventoryOptionsForm.resx">
       <DependentUpon>EditInventoryOptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AutoRetainerSort\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Materia\MateriaSettingsFrm.resx">
       <DependentUpon>MateriaSettingsFrm.cs</DependentUpon>

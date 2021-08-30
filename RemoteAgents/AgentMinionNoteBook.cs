@@ -35,7 +35,7 @@ namespace LlamaLibrary.RemoteAgents
             var count = Core.Memory.Read<uint>(Offsets.MinionCount);
             return Core.Memory.ReadArray<MinionStruct>(address1, (int) count);
         }
-        
+
         public static string GetMinionName(int index)
         {
             var result = Core.Memory.CallInjected64<IntPtr>(Offsets.GetCompanion, index);
@@ -53,5 +53,5 @@ namespace LlamaLibrary.RemoteAgents
         [FieldOffset(2)]
         public ushort unknown;
     }
-    
+
 }

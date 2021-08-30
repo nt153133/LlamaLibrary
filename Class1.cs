@@ -17,16 +17,16 @@ namespace LlamaLibrary
                 {
                     Log($"{item.Count} {item.Pointer.ToInt64():X}");
                 }
-                
+
 
             }
         }
 
         public void Log(string t)
         {
-            
+
         }
-        
+
         public Composite TradeAcceptBehavior
         {
             get
@@ -53,6 +53,6 @@ namespace LlamaLibrary
                 );
             }
         }
-        
+
     }
 }

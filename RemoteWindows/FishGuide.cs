@@ -10,7 +10,7 @@ namespace LlamaLibrary.RemoteWindows
         public FishGuide() : base(WindowName)
         {
             _name = WindowName;
-            
+
         }
 
         public void ClickTab(int index)
@@ -21,6 +21,6 @@ namespace LlamaLibrary.RemoteWindows
 
 
     }
-    
+
 
 }

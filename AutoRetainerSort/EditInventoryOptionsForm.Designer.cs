@@ -32,18 +32,16 @@ namespace LlamaLibrary.AutoRetainerSort
         private void InitializeComponent()
         {
             this.listBoxSortTypes = new System.Windows.Forms.ListBox();
-            this.listBoxItemIds = new System.Windows.Forms.ListBox();
+            this.listBoxItems = new System.Windows.Forms.ListBox();
             this.txtBoxName = new System.Windows.Forms.TextBox();
             this.labelName = new System.Windows.Forms.Label();
             this.labelSortTypes = new System.Windows.Forms.Label();
             this.labelItemIds = new System.Windows.Forms.Label();
             this.comboBoxSortType = new System.Windows.Forms.ComboBox();
             this.btnAddSortType = new System.Windows.Forms.Button();
-            this.btnAddItemId = new System.Windows.Forms.Button();
-            this.numUpDownItemId = new System.Windows.Forms.NumericUpDown();
+            this.btnAddNewItem = new System.Windows.Forms.Button();
             this.btnDeleteSortType = new System.Windows.Forms.Button();
             this.btnDeleteItemId = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numUpDownItemId)).BeginInit();
             this.SuspendLayout();
             // 
             // listBoxSortTypes
@@ -52,19 +50,19 @@ namespace LlamaLibrary.AutoRetainerSort
             this.listBoxSortTypes.Location = new System.Drawing.Point(12, 65);
             this.listBoxSortTypes.Name = "listBoxSortTypes";
             this.listBoxSortTypes.ScrollAlwaysVisible = true;
-            this.listBoxSortTypes.Size = new System.Drawing.Size(240, 329);
+            this.listBoxSortTypes.Size = new System.Drawing.Size(224, 329);
             this.listBoxSortTypes.TabIndex = 0;
             this.listBoxSortTypes.TabStop = false;
             // 
-            // listBoxItemIds
+            // listBoxItems
             // 
-            this.listBoxItemIds.FormattingEnabled = true;
-            this.listBoxItemIds.Location = new System.Drawing.Point(288, 65);
-            this.listBoxItemIds.Name = "listBoxItemIds";
-            this.listBoxItemIds.ScrollAlwaysVisible = true;
-            this.listBoxItemIds.Size = new System.Drawing.Size(175, 329);
-            this.listBoxItemIds.TabIndex = 1;
-            this.listBoxItemIds.TabStop = false;
+            this.listBoxItems.FormattingEnabled = true;
+            this.listBoxItems.Location = new System.Drawing.Point(288, 65);
+            this.listBoxItems.Name = "listBoxItems";
+            this.listBoxItems.ScrollAlwaysVisible = true;
+            this.listBoxItems.Size = new System.Drawing.Size(315, 329);
+            this.listBoxItems.TabIndex = 1;
+            this.listBoxItems.TabStop = false;
             // 
             // txtBoxName
             // 
@@ -92,24 +90,24 @@ namespace LlamaLibrary.AutoRetainerSort
             // 
             // labelItemIds
             // 
-            this.labelItemIds.Location = new System.Drawing.Point(285, 41);
+            this.labelItemIds.Location = new System.Drawing.Point(288, 41);
             this.labelItemIds.Name = "labelItemIds";
-            this.labelItemIds.Size = new System.Drawing.Size(74, 19);
+            this.labelItemIds.Size = new System.Drawing.Size(32, 19);
             this.labelItemIds.TabIndex = 5;
-            this.labelItemIds.Text = "True Item Ids";
+            this.labelItemIds.Text = "Items";
             // 
             // comboBoxSortType
             // 
             this.comboBoxSortType.FormattingEnabled = true;
             this.comboBoxSortType.Location = new System.Drawing.Point(12, 400);
             this.comboBoxSortType.Name = "comboBoxSortType";
-            this.comboBoxSortType.Size = new System.Drawing.Size(152, 21);
+            this.comboBoxSortType.Size = new System.Drawing.Size(136, 21);
             this.comboBoxSortType.TabIndex = 6;
             this.comboBoxSortType.TabStop = false;
             // 
             // btnAddSortType
             // 
-            this.btnAddSortType.Location = new System.Drawing.Point(170, 399);
+            this.btnAddSortType.Location = new System.Drawing.Point(154, 400);
             this.btnAddSortType.Name = "btnAddSortType";
             this.btnAddSortType.Size = new System.Drawing.Size(82, 21);
             this.btnAddSortType.TabIndex = 3;
@@ -117,27 +115,15 @@ namespace LlamaLibrary.AutoRetainerSort
             this.btnAddSortType.UseVisualStyleBackColor = true;
             this.btnAddSortType.Click += new System.EventHandler(this.AddNewSortType_Click);
             // 
-            // btnAddItemId
+            // btnAddNewItem
             // 
-            this.btnAddItemId.Location = new System.Drawing.Point(402, 398);
-            this.btnAddItemId.Name = "btnAddItemId";
-            this.btnAddItemId.Size = new System.Drawing.Size(61, 21);
-            this.btnAddItemId.TabIndex = 4;
-            this.btnAddItemId.Text = "Add";
-            this.btnAddItemId.UseVisualStyleBackColor = true;
-            this.btnAddItemId.Click += new System.EventHandler(this.AddNewItemId_Click);
-            // 
-            // numUpDownItemId
-            // 
-            this.numUpDownItemId.Location = new System.Drawing.Point(288, 398);
-            this.numUpDownItemId.Maximum = new decimal(new int[] {
-            4000000,
-            0,
-            0,
-            0});
-            this.numUpDownItemId.Name = "numUpDownItemId";
-            this.numUpDownItemId.Size = new System.Drawing.Size(108, 20);
-            this.numUpDownItemId.TabIndex = 10;
+            this.btnAddNewItem.Location = new System.Drawing.Point(288, 400);
+            this.btnAddNewItem.Name = "btnAddNewItem";
+            this.btnAddNewItem.Size = new System.Drawing.Size(91, 21);
+            this.btnAddNewItem.TabIndex = 4;
+            this.btnAddNewItem.Text = "Add New";
+            this.btnAddNewItem.UseVisualStyleBackColor = true;
+            this.btnAddNewItem.Click += new System.EventHandler(this.AddNewItem_Click);
             // 
             // btnDeleteSortType
             // 
@@ -151,7 +137,7 @@ namespace LlamaLibrary.AutoRetainerSort
             // 
             // btnDeleteItemId
             // 
-            this.btnDeleteItemId.Location = new System.Drawing.Point(365, 39);
+            this.btnDeleteItemId.Location = new System.Drawing.Point(326, 39);
             this.btnDeleteItemId.Name = "btnDeleteItemId";
             this.btnDeleteItemId.Size = new System.Drawing.Size(98, 21);
             this.btnDeleteItemId.TabIndex = 1;
@@ -163,29 +149,27 @@ namespace LlamaLibrary.AutoRetainerSort
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(475, 432);
+            this.ClientSize = new System.Drawing.Size(615, 435);
             this.Controls.Add(this.btnDeleteItemId);
             this.Controls.Add(this.btnDeleteSortType);
-            this.Controls.Add(this.numUpDownItemId);
-            this.Controls.Add(this.btnAddItemId);
+            this.Controls.Add(this.btnAddNewItem);
             this.Controls.Add(this.btnAddSortType);
             this.Controls.Add(this.comboBoxSortType);
             this.Controls.Add(this.labelItemIds);
             this.Controls.Add(this.labelSortTypes);
             this.Controls.Add(this.labelName);
             this.Controls.Add(this.txtBoxName);
-            this.Controls.Add(this.listBoxItemIds);
+            this.Controls.Add(this.listBoxItems);
             this.Controls.Add(this.listBoxSortTypes);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EditInventoryOptionsForm";
             this.ShowIcon = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Edit Sort Options";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.Form_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.numUpDownItemId)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -193,11 +177,10 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private System.Windows.Forms.Button btnDeleteSortType;
 
-        private System.Windows.Forms.Button btnAddItemId;
-        private System.Windows.Forms.NumericUpDown numUpDownItemId;
+        private System.Windows.Forms.Button btnAddNewItem;
         private System.Windows.Forms.ComboBox comboBoxSortType;
         private System.Windows.Forms.Button btnDeleteItemId;
-        
+
         private System.Windows.Forms.Button btnAddSortType;
 
         private System.Windows.Forms.TextBox txtBoxName;
@@ -206,7 +189,7 @@ namespace LlamaLibrary.AutoRetainerSort
         private System.Windows.Forms.Label labelItemIds;
 
         private System.Windows.Forms.ListBox listBoxSortTypes;
-        private System.Windows.Forms.ListBox listBoxItemIds;
+        private System.Windows.Forms.ListBox listBoxItems;
 
         #endregion
     }

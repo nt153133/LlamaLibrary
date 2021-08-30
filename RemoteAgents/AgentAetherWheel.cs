@@ -21,13 +21,13 @@ namespace LlamaLibrary.RemoteAgents
         protected AgentAetherWheel(IntPtr pointer) : base(pointer)
         {
         }
-        
+
         public AetherWheelSlot[] GetWheelSlots()
         {
             int count = 6;
-            
+
             if (AetherialWheel.Instance.IsOpen) count = AetherialWheel.Instance.MaxSlots;
-            
+
             using (Core.Memory.TemporaryCacheState(enabledTemporarily: false))
             {
                 return Core.Memory.ReadArray<AetherWheelSlot>(Pointer + Offsets.ArrayOffset, count); 

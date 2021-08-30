@@ -21,10 +21,10 @@ namespace LlamaLibrary.Helpers
             [Offset("Search 0F B6 43 ? 3A C8 0F 83 ? ? ? ? Add 3 Read8")]
             internal static int ItemCount2;
         }
-        
+
         public static ushort ItemCount => Core.Memory.Read<ushort>(Offsets.RequestInfo + Offsets.ItemCount);
         public static ushort ItemCount2 => Core.Memory.Read<ushort>(Offsets.RequestInfo + Offsets.ItemCount2);
-        
+
         public static IntPtr ItemListStart => new IntPtr((long) (Offsets.RequestInfo + Offsets.ItemListStart));
 
         public static RequestItem[] GetItems()
@@ -52,7 +52,7 @@ namespace LlamaLibrary.Helpers
         public static bool HandOver()
         {
             if (!Request.IsOpen || !HaveTurninItems()) return false;
-            
+
             foreach (var item in GetItems())
             {
                 var items = InventoryManager.FilledSlots.Where(i => i.RawItemId == item.ItemId && i.Count >= item.Count);

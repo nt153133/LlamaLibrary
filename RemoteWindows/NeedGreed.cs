@@ -8,9 +8,9 @@
         {
             _name = WindowName;
         }
-        
+
         public int NumberOfItems =>  ___Elements()[3].TrimmedData;
-        
+
         public uint[] ItemIds
         {
             get

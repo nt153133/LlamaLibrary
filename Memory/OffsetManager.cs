@@ -40,11 +40,11 @@ using LlamaLibrary.RemoteAgents;
         {
             if (initDone)
                 return;
-            
+
             var q1 = from t in Assembly.GetExecutingAssembly().GetTypes()
                      where t.Namespace != null && (t.IsClass && t.Namespace.Contains("LlamaLibrary") && t.GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Static).Any(i => i.Name == "Offsets"))
                      select t.GetNestedType("Offsets", BindingFlags.NonPublic | BindingFlags.Static);
-            
+
             var types = typeof(Offsets).GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance).Concat(q1.SelectMany(j => j.GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance)));
             using (var pf = new PatternFinder(Core.Memory))
                 Parallel.ForEach(types, type =>
@@ -81,7 +81,7 @@ using LlamaLibrary.RemoteAgents;
                                              {
                                                  LogError($"Error on {type.Name}");
                                              }
-                                             
+
                                          }
                                      }
                                  }
@@ -122,7 +122,7 @@ using LlamaLibrary.RemoteAgents;
             if (_debug)
                 Log($"\n {sb}");
         }
-        
+
         internal static void AddNamespacesToScriptManager(params string[] param)
         {
             var field =
@@ -193,7 +193,7 @@ using LlamaLibrary.RemoteAgents;
                         Log($"[{field.DeclaringType.Name}:{field.Name:,27}] Not Found");
                     }
                 }
-                
+
             }
             else
             {
@@ -232,7 +232,7 @@ using LlamaLibrary.RemoteAgents;
             {
                 return result;
             }
-            
+
             if (offset!=null)
                 if (field.DeclaringType != null && field.DeclaringType.IsNested && field.FieldType != typeof(int))
                 {
@@ -257,7 +257,7 @@ using LlamaLibrary.RemoteAgents;
 
             if (valna != null)
                 sb.AppendLine($"{field.DeclaringType.Name},{field.Name},{valna}");
-            
+
             if(field.DeclaringType != null && field.DeclaringType.IsNested)
                 Log($"[{field.DeclaringType.DeclaringType.Name}:{field.Name:,27}] {result.ToInt64():X}");
             else
@@ -273,7 +273,7 @@ using LlamaLibrary.RemoteAgents;
         {
             Logger.External(Name, text, Colors.RosyBrown);
         }
-        
+
         private static void LogError(string text)
         {
             Logger.External(Name, text, Colors.Red);

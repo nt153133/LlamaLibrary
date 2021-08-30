@@ -13,13 +13,13 @@ namespace LlamaLibrary.OrderbotTags
     {
         private bool _isDone;
         [XmlAttribute("Spells")] public int[] Spells { get; set; }
-        
+
         [XmlAttribute("Clear")]
         [DefaultValue(false)]
         public bool Clear { get; set; }
 
         public override bool HighPriority => true;
-        
+
         protected override void OnStart()
         {
         }
@@ -32,7 +32,7 @@ namespace LlamaLibrary.OrderbotTags
         {
             _isDone = false;
         }
-        
+
         protected override Composite CreateBehavior()
         {
             return new ActionRunCoroutine(r => SetBlueActiveSpells(Spells));

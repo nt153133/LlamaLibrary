@@ -15,7 +15,7 @@ namespace LlamaLibrary.Structs
         public uint[] ItemIds;
         public ushort ZoneId;
         public Vector3[] Locations;
-		
+
         public GatheringNodeData()
         {
         }

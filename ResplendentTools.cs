@@ -26,7 +26,7 @@ namespace ResplendentTools
     {
         private Composite _root;
         public override string Name => _name;
-        
+
         public static string _name => "ResplendentTools";
         public override PulseFlags PulseFlags => PulseFlags.All;
 

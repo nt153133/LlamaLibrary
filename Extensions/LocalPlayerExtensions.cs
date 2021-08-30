@@ -23,7 +23,7 @@ namespace LlamaLibrary.Extensions
             [Offset("Search 48 8B 05 ? ? ? ? 48 8D 0D ? ? ? ? 41 8B DC Add 3 TraceRelative")]
             internal static IntPtr PlayerID;
         }
-        
+
         /*internal static byte GatheringStatus(this LocalPlayer player)
         {
             return Core.Memory.Read<byte>(player.Pointer + Offsets.GatheringStateOffset);
@@ -48,7 +48,7 @@ namespace LlamaLibrary.Extensions
                                                              Rank);
             return Core.Memory.Read<int>(rankRow);
         }
-        
+
         public static ulong PlayerId(this LocalPlayer player)
         {
             return Core.Memory.Read<ulong>(Offsets.PlayerID);

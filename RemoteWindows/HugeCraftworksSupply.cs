@@ -15,7 +15,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             _name = WindowName;
         }
-    
+
         public int TurnInItemId =>  ___Elements()[9].TrimmedData;
 
         public void Deliver()
@@ -43,7 +43,7 @@ namespace LlamaLibrary.RemoteWindows
             }
 
             await Coroutine.Sleep(500);
-            
+
             Deliver();
 
             await Coroutine.Wait(5000, () => Talk.DialogOpen);

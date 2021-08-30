@@ -33,6 +33,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabPageMain = new System.Windows.Forms.TabPage();
+            this.btnAutoSetup = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnAddNew = new System.Windows.Forms.Button();
             this.labelInventoryInfo = new System.Windows.Forms.Label();
@@ -51,12 +52,13 @@ namespace LlamaLibrary.AutoRetainerSort
             this.tabControlMain.Location = new System.Drawing.Point(0, 0);
             this.tabControlMain.Name = "tabControlMain";
             this.tabControlMain.SelectedIndex = 0;
-            this.tabControlMain.Size = new System.Drawing.Size(294, 329);
+            this.tabControlMain.Size = new System.Drawing.Size(321, 356);
             this.tabControlMain.TabIndex = 0;
             this.tabControlMain.TabStop = false;
             // 
             // tabPageMain
             // 
+            this.tabPageMain.Controls.Add(this.btnAutoSetup);
             this.tabPageMain.Controls.Add(this.btnDelete);
             this.tabPageMain.Controls.Add(this.btnAddNew);
             this.tabPageMain.Controls.Add(this.labelInventoryInfo);
@@ -64,14 +66,25 @@ namespace LlamaLibrary.AutoRetainerSort
             this.tabPageMain.Location = new System.Drawing.Point(4, 22);
             this.tabPageMain.Name = "tabPageMain";
             this.tabPageMain.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMain.Size = new System.Drawing.Size(286, 303);
+            this.tabPageMain.Size = new System.Drawing.Size(313, 330);
             this.tabPageMain.TabIndex = 0;
             this.tabPageMain.Text = "Main";
             this.tabPageMain.UseVisualStyleBackColor = true;
             // 
+            // btnAutoSetup
+            // 
+            this.btnAutoSetup.Location = new System.Drawing.Point(232, 6);
+            this.btnAutoSetup.Name = "btnAutoSetup";
+            this.btnAutoSetup.Size = new System.Drawing.Size(73, 22);
+            this.btnAutoSetup.TabIndex = 4;
+            this.btnAutoSetup.TabStop = false;
+            this.btnAutoSetup.Text = "Auto Setup";
+            this.btnAutoSetup.UseVisualStyleBackColor = true;
+            this.btnAutoSetup.Click += new System.EventHandler(this.AutoSetup_Click);
+            // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(75, 276);
+            this.btnDelete.Location = new System.Drawing.Point(75, 300);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(61, 22);
             this.btnDelete.TabIndex = 3;
@@ -82,7 +95,7 @@ namespace LlamaLibrary.AutoRetainerSort
             // 
             // btnAddNew
             // 
-            this.btnAddNew.Location = new System.Drawing.Point(8, 276);
+            this.btnAddNew.Location = new System.Drawing.Point(8, 300);
             this.btnAddNew.Name = "btnAddNew";
             this.btnAddNew.Size = new System.Drawing.Size(61, 22);
             this.btnAddNew.TabIndex = 2;
@@ -94,7 +107,7 @@ namespace LlamaLibrary.AutoRetainerSort
             // labelInventoryInfo
             // 
             this.labelInventoryInfo.AutoSize = true;
-            this.labelInventoryInfo.Location = new System.Drawing.Point(8, 3);
+            this.labelInventoryInfo.Location = new System.Drawing.Point(8, 27);
             this.labelInventoryInfo.Name = "labelInventoryInfo";
             this.labelInventoryInfo.Size = new System.Drawing.Size(178, 13);
             this.labelInventoryInfo.TabIndex = 1;
@@ -103,9 +116,9 @@ namespace LlamaLibrary.AutoRetainerSort
             // listBoxInventoryOptions
             // 
             this.listBoxInventoryOptions.FormattingEnabled = true;
-            this.listBoxInventoryOptions.Location = new System.Drawing.Point(8, 19);
+            this.listBoxInventoryOptions.Location = new System.Drawing.Point(8, 43);
             this.listBoxInventoryOptions.Name = "listBoxInventoryOptions";
-            this.listBoxInventoryOptions.Size = new System.Drawing.Size(272, 251);
+            this.listBoxInventoryOptions.Size = new System.Drawing.Size(297, 251);
             this.listBoxInventoryOptions.TabIndex = 0;
             this.listBoxInventoryOptions.TabStop = false;
             this.listBoxInventoryOptions.DoubleClick += new System.EventHandler(this.Listbox_DoubleClick);
@@ -116,7 +129,7 @@ namespace LlamaLibrary.AutoRetainerSort
             this.tabPageSettings.Location = new System.Drawing.Point(4, 22);
             this.tabPageSettings.Name = "tabPageSettings";
             this.tabPageSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSettings.Size = new System.Drawing.Size(286, 303);
+            this.tabPageSettings.Size = new System.Drawing.Size(313, 330);
             this.tabPageSettings.TabIndex = 1;
             this.tabPageSettings.Text = "Settings";
             this.tabPageSettings.UseVisualStyleBackColor = true;
@@ -126,7 +139,7 @@ namespace LlamaLibrary.AutoRetainerSort
             this.propertyGridSettings.Location = new System.Drawing.Point(6, 6);
             this.propertyGridSettings.Name = "propertyGridSettings";
             this.propertyGridSettings.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.propertyGridSettings.Size = new System.Drawing.Size(274, 294);
+            this.propertyGridSettings.Size = new System.Drawing.Size(304, 321);
             this.propertyGridSettings.TabIndex = 0;
             this.propertyGridSettings.TabStop = false;
             // 
@@ -134,7 +147,7 @@ namespace LlamaLibrary.AutoRetainerSort
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 327);
+            this.ClientSize = new System.Drawing.Size(321, 356);
             this.Controls.Add(this.tabControlMain);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -162,5 +175,6 @@ namespace LlamaLibrary.AutoRetainerSort
         private System.Windows.Forms.Button btnAddNew;
         private System.Windows.Forms.Label labelInventoryInfo;
         private System.Windows.Forms.ListBox listBoxInventoryOptions;
+        private System.Windows.Forms.Button btnAutoSetup;
     }
 }

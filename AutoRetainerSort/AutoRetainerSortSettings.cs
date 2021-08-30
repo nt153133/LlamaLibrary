@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using ff14bot.Helpers;
 using ff14bot.Managers;
+using LlamaLibrary.AutoRetainerSort.Classes;
 using Newtonsoft.Json;
 
 namespace LlamaLibrary.AutoRetainerSort
@@ -17,12 +18,12 @@ namespace LlamaLibrary.AutoRetainerSort
         public AutoRetainerSortSettings() : base(Path.Combine(CharacterSettingsDirectory, "AutoRetainerSort.json"))
         {
         }
-        
+
         public static AutoRetainerSortSettings Instance => _settings ?? (_settings = new AutoRetainerSortSettings());
 
         private Dictionary<int, InventorySortInfo> _inventoryOptions;
 
-        private bool _autoGenLisbeth = true;
+        private bool _autoGenLisbeth;
 
         private Point _windowPosition = Point.Empty;
 
@@ -35,8 +36,8 @@ namespace LlamaLibrary.AutoRetainerSort
 
                 _inventoryOptions = new Dictionary<int, InventorySortInfo>
                 {
-                    {-2, new InventorySortInfo("Player Inventory")},
-                    {-1, new InventorySortInfo("Chocobo Saddlebag")},
+                    {ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory")},
+                    {ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag")},
                 };
 
                 return _inventoryOptions;
@@ -52,7 +53,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 Save();
             }
         }
-        
+
         [Browsable(false)]
         public Point WindowPosition
         {
@@ -72,7 +73,7 @@ namespace LlamaLibrary.AutoRetainerSort
         [Setting]
         [DisplayName("Auto-Gen Lisbeth")]
         [Description("Auto-generate Lisbeth storage rules for the current setup?")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool AutoGenLisbeth
         {
             get => _autoGenLisbeth;
@@ -94,20 +95,22 @@ namespace LlamaLibrary.AutoRetainerSort
     {
         [JsonProperty("Name")]
         public string Name;
-        
+
         [JsonProperty("SortTypes")]
         public BindingList<SortType> SortTypes;
 
-        [JsonProperty("ItemIds")]
-        public BindingList<uint> TrueItemIds;
+        [JsonProperty("SpecificItems")]
+        public BindingList<ItemSortInfo> SpecificItems;
 
         public bool ContainsType(SortType type) => SortTypes.Contains(type);
 
-        public bool ContainsId(uint trueItemId) => TrueItemIds.Contains(trueItemId);
+        public bool ContainsId(uint trueItemId) => SpecificItems.Any(x => x.TrueItemId == trueItemId);
+
+        public bool ContainsItem(ItemSortInfo sortInfo) => SpecificItems.Any(x => x.Equals(sortInfo));
 
         public bool ContainsSlot(BagSlot bagSlot) => ContainsId(bagSlot.TrueItemId) || ContainsType(bagSlot.Item.EquipmentCatagory.GetSortType());
 
-        public bool Any() => SortTypes.Any() || TrueItemIds.Any();
+        public bool Any() => SortTypes.Any() || SpecificItems.Any();
 
         public override string ToString() => Name;
 
@@ -115,7 +118,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             Name = name;
             SortTypes = new BindingList<SortType>();
-            TrueItemIds = new BindingList<uint>();
+            SpecificItems = new BindingList<ItemSortInfo>();
         }
     }
 }

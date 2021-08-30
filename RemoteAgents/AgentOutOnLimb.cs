@@ -19,25 +19,25 @@ namespace LlamaLibrary.RemoteAgents
         }
         public IntPtr addressLocation = IntPtr.Zero;
         Random rnd = new Random();
-        
+
         protected AgentOutOnLimb(IntPtr pointer) : base(pointer)
         {
         }
-        
+
         public bool CursorLocked
         {
             get => Core.Memory.Read<byte>(Pointer + Offsets.CursorLocked) != 1;
             set => Core.Memory.Write(Pointer + Offsets.CursorLocked, (byte) (value ? 0:1));
         }
-        
+
         public int CursorLocation
         {
             get => Core.Memory.Read<ushort>(addressLocation);
             set => Core.Memory.Write(addressLocation, locationValue(value));
         }
-        
+
         public bool IsReadyBotanist => Core.Memory.Read<byte>(Pointer + Offsets.IsReady) == 3;
-        
+
         public bool IsReadyAimg => Core.Memory.Read<byte>(Pointer + Offsets.IsReady) == 2;
 
         public void Refresh()

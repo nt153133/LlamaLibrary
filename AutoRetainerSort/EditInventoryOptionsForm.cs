@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
+using LlamaLibrary.AutoRetainerSort.Classes;
+using static LlamaLibrary.AutoRetainerSort.Classes.ItemSortInfo;
 
 namespace LlamaLibrary.AutoRetainerSort
 {
@@ -30,23 +34,28 @@ namespace LlamaLibrary.AutoRetainerSort
             }
 
             txtBoxName.Text = _sortInfo.Name;
-            
+
             _bsSortTypes = new BindingSource(_sortInfo.SortTypes, "");
-            _bsItemIds = new BindingSource(_sortInfo.TrueItemIds, "");
+            _bsItems = new BindingSource(_sortInfo.SpecificItems, "");
 
             listBoxSortTypes.DataSource = _bsSortTypes;
-            listBoxItemIds.DataSource = _bsItemIds;
+            listBoxItems.DataSource = _bsItems;
 
             comboBoxSortType.DataSource = Enum.GetValues(typeof(SortType));
+
+            if (Owner != null)
+            {
+                int ownerCenterX = Owner.Location.X + (Owner.Width / 2) - (Width / 2);
+                int ownerCenterY = Owner.Location.Y + (Owner.Height / 2) - (Width / 2);
+                Location = new Point(ownerCenterX, ownerCenterY);
+            }
         }
 
         private BindingSource _bsSortTypes;
 
-        private BindingSource _bsItemIds;
+        private BindingSource _bsItems;
 
         private SortType NewSortType => Enum.TryParse(comboBoxSortType.SelectedValue.ToString(), out SortType sortType) ? sortType : SortType.UNKNOWN;
-
-        private uint NewItemId => (uint)numUpDownItemId.Value;
 
         private void Name_TextChanged(object sender, EventArgs e)
         {
@@ -64,11 +73,11 @@ namespace LlamaLibrary.AutoRetainerSort
                 if (pair.Key == _index) continue;
 
                 if (!pair.Value.ContainsType(selected)) continue;
-                
-                
+
+
                 DialogResult dr = MessageBox.Show(
-                    $"{pair.Value.Name} already contains {selected.ToString()}!\r\nDo you want to remove it from {pair.Value.Name} and add it to {_sortInfo.Name}?",
-                    "Warning",
+                    string.Format(Strings.AddNewItem_AlreadyExists_Warning, pair.Value.Name, selected.ToString(), pair.Value.Name, _sortInfo.Name),
+                    Strings.WarningCaption,
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning);
 
@@ -82,30 +91,72 @@ namespace LlamaLibrary.AutoRetainerSort
             AutoRetainerSortSettings.Instance.Save();
         }
 
-        private void AddNewItemId_Click(object sender, EventArgs e)
+        private void AddNewItem_Click(object sender, EventArgs e)
         {
-            uint itemId = NewItemId;
-            if (_sortInfo.ContainsId(itemId)) return;
-
-            foreach (var pair in AutoRetainerSortSettings.Instance.InventoryOptions)
+            var toAddIds = new HashSet<uint>();
+            using (AddNewItemForm newItemForm = new AddNewItemForm())
             {
-                if (pair.Key == _index) continue;
+                DialogResult dr = newItemForm.ShowDialog(this);
+                if (dr != DialogResult.OK) return;
 
-                if (!pair.Value.ContainsId(itemId)) continue;
-                
-                DialogResult dr = MessageBox.Show(
-                    $"{pair.Value.Name} already contains {itemId.ToString()}!\r\nDo you want to remove it from {pair.Value.Name} and add it to {_sortInfo.Name}?",
-                    "Warning",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning);
+                SearchResult selectedItem = newItemForm.SelectedSearchResult;
+                if (selectedItem == null || selectedItem.RawItemId == 0) return;
 
-                if (dr != DialogResult.Yes) return;
-                
-                pair.Value.TrueItemIds.Remove(itemId);
-                break;
+                if (newItemForm.ModifierNone)
+                {
+                    toAddIds.Add(selectedItem.RawItemId);
+                }
+                else if (newItemForm.ModifierHQ)
+                {
+                    toAddIds.Add(selectedItem.RawItemId + QualityOffset);
+                }
+                else if (newItemForm.ModifierCollectable)
+                {
+                    toAddIds.Add(selectedItem.RawItemId + CollectableOffset);
+                }
+                else return;
+
+                if (newItemForm.IncludeHQ)
+                {
+                    toAddIds.Add(selectedItem.RawItemId + QualityOffset);
+                }
+                if (newItemForm.IncludeCollectable)
+                {
+                    toAddIds.Add(selectedItem.RawItemId + CollectableOffset);
+                }
             }
 
-            _bsItemIds.Add(itemId);
+            foreach (uint toAddId in toAddIds)
+            {
+                ItemSortInfo sortInfo = ItemSortStatus.GetSortInfo(toAddId);
+                var shouldAdd = true;
+                foreach (var indexInfoPair in AutoRetainerSortSettings.Instance.InventoryOptions)
+                {
+                    if (indexInfoPair.Key == _index) continue;
+                    if (!indexInfoPair.Value.ContainsItem(sortInfo)) continue;
+
+                    DialogResult dr = MessageBox.Show(
+                        string.Format(Strings.AddNewItem_AlreadyExists_Warning, indexInfoPair.Value.Name, sortInfo.Name, indexInfoPair.Value.Name, _sortInfo.Name),
+                        Strings.WarningCaption,
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+
+                    if (dr == DialogResult.Yes)
+                    {
+                        indexInfoPair.Value.SpecificItems.Remove(sortInfo);
+                    }
+                    else
+                    {
+                        shouldAdd = false;
+                        break;
+                    }
+                }
+
+                if (!shouldAdd) continue;
+                AutoRetainerSort.LogSuccess($"Added {sortInfo.Name} to {_sortInfo.Name}!");
+                _bsItems.Add(sortInfo);
+            }
+
             AutoRetainerSortSettings.Instance.Save();
         }
 
@@ -116,7 +167,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private void DeleteSelectedItemId_Click(object sender, EventArgs e)
         {
-            _bsItemIds.Remove(listBoxItemIds.SelectedItem);
+            _bsItems.Remove(listBoxItems.SelectedItem);
         }
     }
 }

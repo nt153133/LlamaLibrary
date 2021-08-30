@@ -21,26 +21,26 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("ItemId")]
         [DefaultValue(new int[0])]
         private int[] ItemIds { get; set; }
-        
+
         [XmlAttribute("ForceLower")]
         [XmlAttribute("forcelower")]
         [XmlAttribute("Force")]
         [XmlAttribute("force")]
         [DefaultValue(false)]
         private bool ForceLower { get; set; }
-        
+
         [XmlAttribute("AllItems")]
         [XmlAttribute("allitems")]
         [XmlAttribute("All")]
         [XmlAttribute("all")]
         [DefaultValue(false)]
         private bool AllItems { get; set; }
-        
+
         [XmlAttribute("IgnoreGear")]
         [XmlAttribute("ignoregear")]
         [DefaultValue(true)]
         private bool IgnoreGear { get; set; }
-        
+
         private bool _isDone;
 
         public override bool HighPriority => true;
@@ -104,9 +104,9 @@ namespace LlamaLibrary.OrderbotTags
                 _isDone = true;
                 return;
             }
-            
+
             await StopBusy(leaveDuty:false, dismount: false);
-            
+
             foreach (var itemId in toLower)
             {
                 await LowerQualityAndCombine((int) itemId);

@@ -117,7 +117,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         public static void RetainerEntrustQuantity(this BagSlot bagSlot, int amount)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -135,7 +135,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         public static void RetainerSellItem(this BagSlot bagSlot)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -169,7 +169,7 @@ namespace LlamaLibrary.Extensions
 
             }
         }
-        
+
         public static void Reduce(this BagSlot bagSlot)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -186,7 +186,7 @@ namespace LlamaLibrary.Extensions
 
             }
         }
-        
+
         public static void ExtractMateria(this BagSlot bagSlot)
         {
             if ((int) bagSlot.SpiritBond != 100) return;
@@ -203,7 +203,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         public static void AffixMateria(this BagSlot bagSlot, BagSlot materia)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -216,7 +216,7 @@ namespace LlamaLibrary.Extensions
                     });
             }
         }
-        
+
         public static void OpenMeldInterface(this BagSlot bagSlot)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -231,7 +231,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         public static bool HasMateria(this BagSlot bagSlot)
         {
             var materiaType = Core.Memory.ReadArray<ushort>(bagSlot.Pointer + 0x20, 5);
@@ -242,7 +242,7 @@ namespace LlamaLibrary.Extensions
 
             return false;
         }
-        
+
         public static int MateriaCount(this BagSlot bagSlot)
         {
             var materiaType = Core.Memory.ReadArray<ushort>(bagSlot.Pointer + 0x20, 5);
@@ -254,7 +254,7 @@ namespace LlamaLibrary.Extensions
 
             return count;
         }
-        
+
         public static void TradeItem(this BagSlot bagSlot)
         {
             uint result = 0;
@@ -284,12 +284,12 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         public static bool CanTrade(this BagSlot slot)
         {
             return !slot.Item.Untradeable && !slot.IsCollectable && !(slot.SpiritBond > 0);
         }
-        
+
         public static void PlaceAetherWheel(this BagSlot bagSlot)
         {
             PlaceAetherWheel((uint) bagSlot.BagId, bagSlot.Slot);
@@ -299,7 +299,7 @@ namespace LlamaLibrary.Extensions
         { 
             return AddToSaddleCall(Offsets.ItemFuncParam, (uint) bagSlot.BagId, bagSlot.Slot, (uint) amount) == IntPtr.Zero;
         }
-        
+
         public static bool RemoveFromSaddlebagQuantity(this BagSlot bagSlot, uint amount)
         {
             return RemoveFromSaddleCall(Offsets.ItemFuncParam, (uint) bagSlot.BagId, bagSlot.Slot, (uint) amount) == IntPtr.Zero;
@@ -324,7 +324,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         internal static IntPtr RemoveFromSaddleCall(IntPtr InventoryManager, uint inventoryContainer, ushort inventorySlot, uint count)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -339,7 +339,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         internal static IntPtr AddToSaddleCall(IntPtr InventoryManager, uint inventoryContainer, ushort inventorySlot, uint count)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -354,7 +354,7 @@ namespace LlamaLibrary.Extensions
                 }
             }
         }
-        
+
         internal static IntPtr PlaceAetherWheel(uint inventoryContainer, ushort inventorySlot)
         {
             lock (Core.Memory.Executor.AssemblyLock)
@@ -375,7 +375,7 @@ namespace LlamaLibrary.Extensions
         {
             bagSlot.RetainerEntrustQuantity((int)amount);
         }
-        
+
         public static void RetainerRetrieveQuantity(this BagSlot bagSlot, uint amount)
         {
             bagSlot.RetainerRetrieveQuantity((int)amount);
@@ -385,7 +385,7 @@ namespace LlamaLibrary.Extensions
         {
             return GetItemName(bagSlot.TrueItemId);
         }
-        
+
         public static string GetItemName(uint ItemId)
         {
             if (ItemId >= 1000000)

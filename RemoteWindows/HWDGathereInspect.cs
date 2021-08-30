@@ -6,18 +6,18 @@ namespace LlamaLibrary.RemoteWindows
     {
 
         private const string WindowName = "HWDGathereInspect";
-        
+
         public HWDGathereInspect() : base(WindowName)
         {
             _name = WindowName;
         }
-        
+
         public void ClickAutoSubmit()
         {
             if (CanAutoSubmit())
                 SendAction(1, 3, 0xC);
         }
-        
+
         public void ClickRequestInspection()
         {
             if (CanRequestInspection())
@@ -38,7 +38,7 @@ namespace LlamaLibrary.RemoteWindows
 
             return false;
         }
-        
+
         public bool CanRequestInspection()
         {
             var button = WindowByName.FindButton(10);
@@ -48,7 +48,7 @@ namespace LlamaLibrary.RemoteWindows
 
             return false;
         }
-        
+
         public override void Close()
         {
             SendAction(1, 3, UInt64.MaxValue);

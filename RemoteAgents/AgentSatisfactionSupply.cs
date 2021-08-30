@@ -38,11 +38,11 @@ namespace LlamaLibrary.RemoteAgents
             [Offset("Search 4C 8D 43 ? 48 8B CB E8 ? ? ? ? BA ? ? ? ? Add 3 Read8")]
             //[OffsetCN("Search 4C 8D 43 ? 8B 53 ? 48 8B CB Add 3 Read8")]
             internal static int NpcId;
-                
+
         }
         protected AgentSatisfactionSupply(IntPtr pointer) : base(pointer)
         {
-            
+
         }
 
         public byte DeliveriesRemaining => Core.Memory.Read<byte>(Pointer + Offsets.DeliveriesRemaining);
@@ -51,7 +51,7 @@ namespace LlamaLibrary.RemoteAgents
         public uint DoLItemId => Core.Memory.Read<ushort>(Pointer + Offsets.DoLItemId);
         public uint FshItemId => Core.Memory.Read<ushort>(Pointer + Offsets.FshItemId);
         public byte Npc => Core.Memory.Read<byte>(Pointer + Offsets.Npc);
-        
+
         public uint NpcId => Core.Memory.Read<uint>(Pointer + Offsets.NpcId);
         public uint CurrentRep => Core.Memory.Read<ushort>(Pointer + Offsets.CurrentRep);
         public uint MaxRep => Core.Memory.Read<ushort>(Pointer + Offsets.MaxRep);
@@ -69,15 +69,15 @@ namespace LlamaLibrary.RemoteAgents
                 SatisfactionSupply.Instance.Close();
                 await Coroutine.Wait(5000, () => !SatisfactionSupply.Instance.IsOpen);
             }
-            
+
             Core.Memory.CallInjected64<IntPtr>(Offsets.OpenWindow,
                                                Pointer,
                                                (uint)0,
                                                (npc),
                                                (uint)1);
-            
+
             await Coroutine.Wait(5000, () => SatisfactionSupply.Instance.IsOpen);
-            
+
             if (SatisfactionSupply.Instance.IsOpen)
             {
                 SatisfactionSupply.Instance.Close();

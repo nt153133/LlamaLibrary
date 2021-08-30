@@ -1,10 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Clio.Utilities;
 using LlamaLibrary.RemoteWindows;
-using LlamaLibrary.Retainers;
-using LlamaLibrary.Structs;
 
 namespace LlamaLibrary.AutoRetainerSort
 {
@@ -53,7 +51,13 @@ namespace LlamaLibrary.AutoRetainerSort
             }
             cmbRetainers.SelectedIndex = 0;
             cmbRetainers.DisplayMember = "DisplayName";
-            
+
+            if (Owner != null)
+            {
+                int ownerCenterX = Owner.Location.X + (Owner.Width / 2) - (Width / 2);
+                int ownerCenterY = Owner.Location.Y + (Owner.Height / 2) - (Width / 2);
+                Location = new Point(ownerCenterX, ownerCenterY);
+            }
         }
 
         private void cmbRetainers_SelectedIndexChanged(object sender, EventArgs e)

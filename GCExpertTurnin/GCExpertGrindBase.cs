@@ -31,15 +31,15 @@ namespace LlamaLibrary.GCExpertTurnin
 
         public override bool IsAutonomous => true;
         public override bool RequiresProfile => false;
-        
+
         private GCExpertSettingsFrm settings;
 
         public override Composite Root => _root;
 
         private Composite _root;
-        
+
         public override bool WantButton => true;
-        
+
         public override void OnButtonPress()
         {
             if (settings == null || settings.IsDisposed)
@@ -72,11 +72,11 @@ namespace LlamaLibrary.GCExpertTurnin
                 TreeRoot.Stop("Stop Requested");
                 return true;
             }
-            
+
             await GeneralFunctions.StopBusy();
-            
+
             Log("Turning in current items:");
-            
+
             await HandInExpert();
 
             if (GCExpertSettings.Instance.Craft)

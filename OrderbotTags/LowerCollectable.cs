@@ -18,9 +18,9 @@ namespace LlamaLibrary.OrderbotTags
         private bool _isDone;
 
         [XmlAttribute("Collectability")] public int MaxCollectability { get; set; }
-        
+
         public override bool HighPriority => true;
-        
+
         protected override void OnStart()
         {
         }
@@ -33,7 +33,7 @@ namespace LlamaLibrary.OrderbotTags
         {
             _isDone = false;
         }
-        
+
         protected override Composite CreateBehavior()
         {
             return new ActionRunCoroutine(r => LowerQualityAndCombine(MaxCollectability));
@@ -77,6 +77,6 @@ namespace LlamaLibrary.OrderbotTags
 
         public override bool IsDone => _isDone;
     }
-    
-    
+
+
 }

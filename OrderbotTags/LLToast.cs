@@ -15,7 +15,7 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("Message")]
         [XmlAttribute("message")] 
 		public string message { get; set; }
-        
+
         public override bool HighPriority => true;
 
         public override bool IsDone => _isDone;

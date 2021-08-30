@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using Clio.Utilities;
 using ff14bot.Enums;
 using LlamaLibrary.PersonalTester;
@@ -12,7 +11,7 @@ namespace LlamaLibrary.Structs
     {
         //0x0
         public ulong Unique;
-        
+
         //0x8
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
         public byte[] name_bytes;
@@ -34,28 +33,28 @@ namespace LlamaLibrary.Structs
 
         //0x30
         public RetainerCity MarketZone;
-        
+
         //0x31
         public byte NumberOfMbItems;
-        
+
         //0x32
         private byte Unknown1;
-        
+
         //0x33
         private byte Unknown2;
-        
+
         //0x34
         public int MBTimeOutTimestamp;
-        
+
         //0x38
         public int VentureTask;
-        
+
         //0x3C
         public int VentureEndTimestamp;
-        
+
         //0x40
         private int Unknown3;
-        
+
         //0x44
         private int Unknown4;
 
@@ -69,7 +68,7 @@ namespace LlamaLibrary.Structs
         {
             return $"{Name} ({(enabled == 1 ? "enabled" : "disabled")}) - {Job} ({Level}) Gil: {Gil} Selling: {NumberOfMbItems} Venture: {VentureTask} VentureEnd: {UnixTimeStampToDateTime(VentureEndTimestamp)} {Unique}";
         }
-        
+
         public static DateTime UnixTimeStampToDateTime( double unixTimeStamp )
         {
             // Unix timestamp is seconds past epoch

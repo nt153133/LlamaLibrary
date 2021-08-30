@@ -15,7 +15,7 @@ namespace LlamaLibrary.OrderbotTags
         [XmlAttribute("waittime")]
         [DefaultValue(500)]
         private int WaitTime { get; set; }
-        
+
         private bool _isDone;
 
         public override bool HighPriority => true;

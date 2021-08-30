@@ -20,12 +20,12 @@ namespace LlamaLibrary.RemoteWindows
         {
             SendAction(3,3,0xB,3,0,3,0);
         }
-        
+
         public void PauseCursor()
         {
             SendAction(1,3,0xF);
         }
-        
+
         public void ResumeCursor()
         {
             SendAction(1,3,0xF);

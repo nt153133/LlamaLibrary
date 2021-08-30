@@ -90,7 +90,7 @@ namespace LlamaLibrary.Helpers
 
             return await (Task<bool>) _orderMethod.Invoke(_lisbeth, new object[] {json, false});
         }
-        
+
         internal static async Task<bool> ExecuteOrdersIgnoreHome(string json)
         {
             if (_orderMethod != null) return await (Task<bool>) _orderMethod.Invoke(_lisbeth, new object[] {json, true});
@@ -112,18 +112,18 @@ namespace LlamaLibrary.Helpers
 
             return await _travelToWithArea(area, position);
         }
-        
+
         public static async Task<bool> TravelToZones(uint zoneId, uint subzoneId, Vector3 position)
         {
             return await _travelTo(zoneId, subzoneId, position);
         }
-        
+
         public static async Task<bool> TravelToZones(uint zoneId, Vector3 position)
         {
             Logging.Write($"Lisbeth Travel: Zone:{zoneId}  Pos:{position}");
             return await _travelToWithoutSubzone(zoneId, position);
         }
-        
+
         public static async Task StopGently()
         {
             await _stopGently();
@@ -144,7 +144,7 @@ namespace LlamaLibrary.Helpers
         {
             return _getHookList?.Invoke();
         }
-        
+
         public static Task<bool> ExitCrafting()
         {
             return _exitCrafting?.Invoke();

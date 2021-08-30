@@ -61,7 +61,7 @@ namespace LlamaLibrary.Helpers
             {
                 if (_savedTimers[cycle].IsValid)
                     return _savedTimers[cycle].ResetTime;
-                
+
                 Log($"Timer Invalid getting new one for cycle: {cycle}");
                 _savedTimers[cycle] = new SavedTimer(DateTimeOffset.FromUnixTimeSeconds(Timers.GetNextCycle(cycle)).LocalDateTime, Timers.CurrentTime);
             }
@@ -71,21 +71,21 @@ namespace LlamaLibrary.Helpers
                 _savedTimers.Add(cycle, new SavedTimer(DateTimeOffset.FromUnixTimeSeconds(Timers.GetNextCycle(cycle)).LocalDateTime, Timers.CurrentTime));
             }
             Save();
-            
+
             return _savedTimers[cycle].ResetTime;
         }
-        
+
         private void Log(string text)
         {
             Logging.Write(Colors.Tomato, $"[{GetType().Name}] {text}");
         }
     }
-    
+
     public class SavedTimer
     {
         public DateTimeOffset ResetTime;
         public DateTimeOffset LastChecked;
-        
+
         public SavedTimer(DateTimeOffset resetTime, DateTimeOffset lastChecked)
         {
             ResetTime = resetTime;

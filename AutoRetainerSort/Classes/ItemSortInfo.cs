@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text;
 using ff14bot.Managers;
+using Newtonsoft.Json;
 
 namespace LlamaLibrary.AutoRetainerSort.Classes
 {
-    public class ItemSortInfo
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ItemSortInfo : IEquatable<ItemSortInfo>
     {
         private Item _itemInfo;
 
@@ -63,10 +65,11 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             }
         }
 
-        public uint TrueItemId;
-        
+        [JsonProperty("TrueItemId")]
+        public readonly uint TrueItemId;
+
         public const int CollectableOffset = 5_000_000;
-        private const int QualityOffset = 1_000_000;
+        public const int QualityOffset = 1_000_000;
 
         public uint RawItemId
         {
@@ -134,28 +137,52 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         {
             if (MatchingIndex == int.MinValue) return ItemIndexStatus.Unknown;
 
-            if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return ItemIndexStatus.CantMove;
-
             if (MatchingIndex == index) return ItemIndexStatus.BelongsInCurrentIndex;
+
+            if (ItemSortStatus.FilledAndSortedInventories.Contains(MatchingIndex)) return ItemIndexStatus.CantMove;
 
             if (MatchingIndex != index) return ItemIndexStatus.BelongsElsewhere;
 
             return ItemIndexStatus.Unknown;
         }
 
-        [Flags]
-        public enum ItemIndexStatus
-        {
-            BelongsElsewhere = 1 << 0,
-            BelongsInCurrentIndex = 1 << 1,
-            CantMove = 1 << 2,
-            Unknown = 1 << 3,
-            DontMove = BelongsInCurrentIndex | CantMove | Unknown
-        }
-
         public ItemSortInfo(uint trueItemId)
         {
             TrueItemId = trueItemId;
         }
+
+        public bool Equals(ItemSortInfo other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TrueItemId == other.TrueItemId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ItemSortInfo)obj);
+        }
+
+        public override int GetHashCode() => (int)TrueItemId;
+
+        public override string ToString() => Name;
+    }
+
+    [Flags]
+    public enum ItemIndexStatus
+    {
+        BelongsElsewhere = 1 << 0,
+        BelongsInCurrentIndex = 1 << 1,
+        CantMove = 1 << 2,
+        Unknown = 1 << 3,
+        DontMove = BelongsInCurrentIndex | CantMove | Unknown
+    }
+
+    public static class IndexExtensions
+    {
+        public static bool ShouldMove(this ItemIndexStatus indexStatus) => (indexStatus & ItemIndexStatus.DontMove) == 0;
     }
 }

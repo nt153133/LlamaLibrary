@@ -12,23 +12,23 @@ namespace LlamaLibrary.RemoteWindows
         {
             _name = WindowName;
         }
-        
+
         public int NumberOfWards =>  ___Elements()[3].TrimmedData;
-        
+
         public int NumberOfPlots =>  ___Elements()[34].TrimmedData;
-        
+
         public string HousingWard => Core.Memory.ReadString((IntPtr) ___Elements()[2].Data, Encoding.UTF8);
 
         public string PlotPrice(int plot)
         {
             return Core.Memory.ReadString((IntPtr) ___Elements()[37 + (plot * 7)].Data, Encoding.UTF8);
         }
-        
+
         public string PlotString(int plot)
         {
             return Core.Memory.ReadString((IntPtr) ___Elements()[36 + (plot * 7)].Data, Encoding.UTF8);
         }
-        
+
         public string PlotString1(int plot)
         {
             return Core.Memory.ReadString((IntPtr) ___Elements()[36 + (plot * 7)].Data, Encoding.Unicode);
@@ -38,7 +38,7 @@ namespace LlamaLibrary.RemoteWindows
         {
             SendAction(2,3,1,3,(ulong) index);
         }
-        
+
         public void GoToWard(int index)
         {
             SendAction(2,3,0,3,(ulong) index);

@@ -14,7 +14,7 @@ namespace LlamaLibrary.RemoteAgents
         }
         protected AgentGoldSaucerInfo(IntPtr pointer) : base(pointer)
         {
-            
+
         }
     }
 }

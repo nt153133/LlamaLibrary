@@ -239,7 +239,7 @@ namespace LlamaLibrary.Retainers
             uint[] bellIds = { 2000072, 2000401, 2000403, 2000439, 2000441, 2000661, 2001271, 2001358, 2006565, 2010284, 196630 };
             return GameObjectManager.GameObjects.Where(i => i.IsVisible && bellIds.Contains(i.NpcId)).OrderBy(r => r.DistanceSqr()).FirstOrDefault();
         }
-        
+
         public static async Task<bool> OpenRetainerList()
         {
             if (!RetainerList.Instance.IsOpen)
@@ -255,7 +255,7 @@ namespace LlamaLibrary.Retainers
 
             return RetainerList.Instance.IsOpen;
         }
-        
+
         public static async Task<bool> CloseRetainerList()
         {
             if (RetainerList.Instance.IsOpen)
@@ -283,7 +283,7 @@ namespace LlamaLibrary.Retainers
             await ForceGetRetainerData();
             return Core.Memory.Read<uint>(Offsets.RetainerData) != 0;
         }
-        
+
         internal static bool VerifiedRetainerDataSync()
         {
             if (Core.Memory.Read<uint>(Offsets.RetainerData) != 0)
@@ -301,7 +301,7 @@ namespace LlamaLibrary.Retainers
             await Coroutine.Wait(3000, () => Core.Memory.Read<uint>(Offsets.RetainerData) != 0);
             await Coroutine.Wait(3000, () => Core.Memory.Read<byte>(Offsets.RetainerData + Offsets.RetainerDataLoaded) != 0);
         }
-        
+
         public static void ForceGetRetainerDataSync()
         {
             RequestRetainerData();
@@ -313,7 +313,7 @@ namespace LlamaLibrary.Retainers
         {
             return Core.Memory.ReadArray<RetainerInfo>(Offsets.RetainerData, FuncNumberOfRetainers());
         }
-        
+
         public static RetainerInfo[] GetRetainerArraySync(bool force = false)
         {
             if (force)
@@ -353,7 +353,7 @@ namespace LlamaLibrary.Retainers
             var retainers = await GetRetainerArray(force);
             return retainers.Length == 0 ? retainers : GetOrderedRetainerArray(retainers);
         }
-        
+
         public static RetainerInfo[] GetOrderedRetainerArraySync(bool force = false)
         {
             var retainers = GetRetainerArraySync(force);
@@ -420,7 +420,7 @@ namespace LlamaLibrary.Retainers
                                                    (uint)0);
             }
         }
-        
+
         private static bool WaitUntil(Func<bool> condition, int frequency = 25, int timeout = -1, bool checkWindows = false)
         {
             var t = Task.Run(async () =>

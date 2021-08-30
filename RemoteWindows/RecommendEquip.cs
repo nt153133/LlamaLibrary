@@ -4,7 +4,7 @@
     {
 
         private const string WindowName = "RecommendEquip";
-        
+
         public RecommendEquip() : base(WindowName)
         {
             _name = WindowName;

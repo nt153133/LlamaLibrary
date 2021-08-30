@@ -18,9 +18,9 @@ namespace LlamaLibrary.Helpers
 
             [Offset("Search 48 8D 0D ? ? ? ? 44 8D 42 ? E8 ? ? ? ? 85 C0 Add 3 TraceRelative")]
             internal static IntPtr ActionManagerParam;
-            
+
             //41 B8 ? ? ? ? 89 5C 24 ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 84 C0 75 ?
-            
+
             [Offset("Search 41 B8 ? ? ? ? 89 5C 24 ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 84 C0 75 ? Add 2 Read32")]
             internal static int DecipherSpell;
         }
@@ -38,7 +38,7 @@ namespace LlamaLibrary.Helpers
                 0 //a6 + 0x30
             }) == 1;
         }
-        
+
         public static bool HasMap()
         {
             uint[] questMaps = new uint[]{2001351,2001705,2001772,200974};

@@ -35,7 +35,7 @@ namespace ff14bot.NeoProfiles
 		private string NewProfilePath;
 		protected override void OnStart()
         {
-			
+
 			var CurrentProfile = NeoProfileManager.CurrentProfile.Path;
             // Support for store profiles.
             // Absolute path to a store profile.
@@ -44,7 +44,7 @@ namespace ff14bot.NeoProfiles
                 NewProfilePath = Slashify(ProfileName);
                 return;
             }
-			
+
             // Relative path to a store profile
             if (IsStoreProfile(CurrentProfile))
             {
@@ -57,10 +57,10 @@ namespace ff14bot.NeoProfiles
             absolutePath = Path.GetFullPath(absolutePath);
             var canonicalPath = new Uri(absolutePath).LocalPath;
             NewProfilePath = Slashify(canonicalPath);
-			
+
 			Log("Changing profile to {0}",ProfileName);
         }
-		
+
         /// <summary>
         /// This gets called when a while loop starts over so reset anything that is used inside the IsDone check
         /// </summary>
@@ -73,8 +73,8 @@ namespace ff14bot.NeoProfiles
         {
 
         }
-		
-		
+
+
 		private bool IsStoreProfile(string path)
         {
             return path.StartsWith("store://");

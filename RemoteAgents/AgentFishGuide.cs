@@ -22,7 +22,7 @@ namespace LlamaLibrary.RemoteAgents
         }
         protected AgentFishGuide(IntPtr pointer) : base(pointer)
         {
-            
+
         }
         public FishGuideItem[] GetTabList()
         {
@@ -33,9 +33,9 @@ namespace LlamaLibrary.RemoteAgents
             }
         }
 
-        
+
     }
-    
+
     [StructLayout(LayoutKind.Sequential, Size = 0x8)]
     public struct FishGuideItem
     {

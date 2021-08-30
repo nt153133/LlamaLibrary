@@ -23,7 +23,7 @@ namespace LlamaLibrary
     public static class RetainerRoutine
     {
         public static string Name = "RetainerRoutine";
-        
+
         private static readonly InventoryBagId[] SaddlebagIds =
         {
             (InventoryBagId) 0xFA0,(InventoryBagId) 0xFA1//, (InventoryBagId) 0x1004,(InventoryBagId) 0x1005 
@@ -35,7 +35,7 @@ namespace LlamaLibrary
             {
                 return false;
             }
-            
+
             foreach (var retainer in RetainerList.Instance.OrderedRetainerList.Where(i=> i.Active))
             {
                 Log($"Selecting {retainer.Name}");
@@ -268,7 +268,7 @@ namespace LlamaLibrary
         {
             //Log($"Selecting retainer {retainerContentId}");
             if (RetainerList.Instance.IsOpen) return await RetainerList.Instance.SelectRetainer(retainerContentId);
-            
+
             if (RetainerTasks.IsOpen)
             {
                 if (CurrentRetainer == retainerContentId) return true;
@@ -293,13 +293,13 @@ namespace LlamaLibrary
             RetainerTasks.CloseTasks();
 
             await Coroutine.Wait(3000, () => DialogOpen || SelectYesno.IsOpen);
-            
+
             if (SelectYesno.IsOpen)
             {
                 SelectYesno.Yes();
                 await Coroutine.Wait(3000, () => DialogOpen || RetainerList.Instance.IsOpen);
             }
-            
+
             while (!RetainerList.Instance.IsOpen)
             {
                 if (DialogOpen)

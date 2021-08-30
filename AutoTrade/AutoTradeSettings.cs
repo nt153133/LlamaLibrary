@@ -20,7 +20,7 @@ namespace LlamaLibrary.AutoTrade
             SetDoubleBuffer(dataGridToTrade, true);
             bindingSourceToTrade.DataSource = ItemsToTrade;
         }
-        
+
         private static void SetDoubleBuffer(Control dataGridView, bool doublebuffered)
         {
             typeof(Control).InvokeMember("DoubleBuffered",
@@ -29,7 +29,7 @@ namespace LlamaLibrary.AutoTrade
                 dataGridView,
                 new object[] {doublebuffered});
         }
-        
+
         private static void ResizeAndRefreshGrid(DataGridView grid)
         {
             foreach (DataGridViewColumn col in grid.Columns)
@@ -49,7 +49,7 @@ namespace LlamaLibrary.AutoTrade
             listBoxInventory.Refresh();
             ResizeAndRefreshGrid(dataGridToTrade);
         }
-        
+
         private static readonly InventoryBagId[] MainBags = {
             InventoryBagId.Bag1,
             InventoryBagId.Bag2,
@@ -57,13 +57,13 @@ namespace LlamaLibrary.AutoTrade
             InventoryBagId.Bag4,
             InventoryBagId.Crystals
         };
-        
+
         public static ParallelQuery<BagSlot> MainBagsFilledSlots => InventoryManager.GetBagsByInventoryBagId(MainBags).AsParallel().SelectMany(x => x.FilledSlots);
-        
+
         internal static int CurrentGil => ScriptConditions.Helpers.GilCount();
-        
+
         private CultureInfo _culture;
-        
+
         private List<ItemToTrade> _inventoryItems = new List<ItemToTrade>();
         public static readonly List<ItemToTrade> ItemsToTrade = new List<ItemToTrade>();
         private List<ItemToTrade> _crystalList;
@@ -84,9 +84,9 @@ namespace LlamaLibrary.AutoTrade
 
             // Assign current culture for number formatting.
             _culture = CultureInfo.CurrentCulture;
-            
+
             AcceptTrades = cBoxReceive.Checked;
-            
+
             RefreshLists();
         }
 
@@ -115,13 +115,13 @@ namespace LlamaLibrary.AutoTrade
             {
                 item.QtyToTrade = item.QtyAvailable;
             }
-            
+
             // Assign data sources.
             bindingSourceInventory.DataSource = _inventoryItems;
             bindingSourceToTrade.DataSource = ItemsToTrade;
             listBoxInventory.DataSource = bindingSourceInventory;
             dataGridToTrade.DataSource = bindingSourceToTrade;
-            
+
             UpdateUI();
         }
 
@@ -195,7 +195,7 @@ namespace LlamaLibrary.AutoTrade
             txtBoxGil.Text = string.Format(_culture, "{0:N0}", valueBefore);
             int newSelection = Math.Max(txtBoxGil.TextLength - selectionFromRight, 0);
             txtBoxGil.Select(newSelection, 0);
-            
+
             int.TryParse(gilText, NumberStyles.AllowThousands, _culture, out int value);
             if (value > 0) GilToTrade = value;
         }
@@ -232,7 +232,7 @@ namespace LlamaLibrary.AutoTrade
                 bindingSourceInventory.DataSource = _inventoryItems
                     .Where(x => x.ItemName.IndexOf(txtBoxFilter.Text, StringComparison.OrdinalIgnoreCase) >= 0)
                     .ToList();
-            
+
             UpdateUI();
         }
     }
@@ -241,7 +241,7 @@ namespace LlamaLibrary.AutoTrade
     {
         [Browsable(false)]
         internal readonly BagSlot BagSlot;
-        
+
         [Browsable(false)]
         public readonly uint TrueItemId;
 
@@ -282,7 +282,7 @@ namespace LlamaLibrary.AutoTrade
 
             if (obj != null && obj.GetType() == typeof(ItemToTrade))
                 return TrueItemId == (obj as ItemToTrade)?.TrueItemId;
-            
+
             return base.Equals(obj);
         }
     }

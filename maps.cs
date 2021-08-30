@@ -18,7 +18,7 @@ namespace LlamaLibrary
             [Offset("Search 48 8d 0d ?? ?? ?? ?? e8 ?? ?? ?? ?? 48 8d 0d ?? ?? ?? ?? 0f b7 d8 e8 ?? ?? ?? ?? Add 3 TraceRelative")]
             internal static IntPtr CurrentMap;
         }
-        
+
         /// <summary>
         ///     Provides a KeyItem => TreasureHuntRank lookup because the client does the same thing.
         /// </summary>
@@ -71,6 +71,6 @@ namespace LlamaLibrary
         }
 
         public static short SecondaryKey => Core.Memory.Read<short>(Offsets.CurrentMap);
-        
+
     }
 }

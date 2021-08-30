@@ -19,7 +19,7 @@ namespace LlamaLibrary.RemoteAgents
          }
         protected AgentHandIn(IntPtr pointer) : base(pointer)
         {
-            
+
         }
 
         public void HandIn(BagSlot slot)
@@ -32,6 +32,6 @@ namespace LlamaLibrary.RemoteAgents
                     (int)slot.BagId
                 });
         }
-        
+
     }
 }

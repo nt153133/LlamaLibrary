@@ -61,7 +61,7 @@ namespace LlamaLibrary.Helpers
             Log($"Getting Cycle: ({index})"); 
             return row.FirstCycle + row.Cycle * ((uint)(ushort)(((uint)CurrentTimeStamp - row.FirstCycle) / row.Cycle) + 1);
         }
-        
+
         private static void Log(string text)
         {
             Logging.Write(Colors.Peru, $"[{Name}] {text}");
@@ -75,7 +75,7 @@ namespace LlamaLibrary.Helpers
 
             if (CyclePtr != IntPtr.Zero)
                 return Core.Memory.Read<CycleTime>(CyclePtr);
-            
+
             return new CycleTime();
         }
 
@@ -90,6 +90,6 @@ namespace LlamaLibrary.Helpers
         }
 
     }
-    
+
 
 }

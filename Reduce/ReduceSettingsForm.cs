@@ -10,12 +10,12 @@ namespace LlamaLibrary.Reduce
         {
             InitializeComponent();
         }
-        
+
         private void DEindexCheck_CheckedChanged(object sender, EventArgs e)
         {
             ReduceSettings.Instance.IncludeDE10000 = DEindexCheck.Checked;
         }
-        
+
         private void ArmoryCheck_CheckedChanged(object sender, EventArgs e)
         {
             ReduceSettings.Instance.IncludeArmory = ArmoryCheck.Checked;

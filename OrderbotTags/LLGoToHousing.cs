@@ -24,17 +24,17 @@ namespace LlamaLibrary.OrderbotTags
     public class LLGoToHousing : ProfileBehavior
     {
         private bool _isDone;
-        
+
         [XmlAttribute("District")] 
         [XmlAttribute("district")] 
         [DefaultValue("Mists")]
         public string District { get; set; }    
-        
+
         [XmlAttribute("Ward")] 
         [XmlAttribute("ward")] 
         [DefaultValue(0)]
         public int Ward { get; set; }
-		
+
 
         public override bool HighPriority => true;
 
@@ -86,7 +86,7 @@ namespace LlamaLibrary.OrderbotTags
                     Logging.WriteDiagnostic("Please complete the quest 'Where the Heart Is (The Lavender Beds)'");
                 }
 
-                
+
             }
 
             if (District.Equals("Mists", StringComparison.InvariantCultureIgnoreCase))
@@ -111,7 +111,7 @@ namespace LlamaLibrary.OrderbotTags
                     Logging.WriteDiagnostic("Please complete the quest 'Where the Heart Is (The Mists)'");
                 }
 
-                
+
             }
 
             if (District.Equals("Goblet", StringComparison.InvariantCultureIgnoreCase))
@@ -159,7 +159,7 @@ namespace LlamaLibrary.OrderbotTags
                     Logging.WriteDiagnostic("Please complete the quest 'I Dream of Shirogane'");
                 } 
             }
-            
+
 
             _isDone = true;
         }

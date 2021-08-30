@@ -19,15 +19,15 @@ namespace LlamaLibrary.OrderbotTags
         private bool _isOpening;
 
         public override bool IsDone => _isDone;
-        
+
         static uint[] npcIds = {1001617, 1003077, 1003633, 1012301, 1013397, 1019458, 1027541, 1031501};
 
         [XmlAttribute("ItemId")] public int ItemId { get; set; }
-        
+
         [XmlAttribute("SelectString")] public int selectString { get; set; }
-        
+
         [XmlAttribute("Count")] public int count { get; set; }
-        
+
         public override bool HighPriority => true;
 
         protected override void OnStart()
@@ -51,7 +51,7 @@ namespace LlamaLibrary.OrderbotTags
         {
             await Coroutine.Sleep(500);
 
-            
+
 
             var unit = GameObjectManager.GetObjectsByNPCIds<Character>(npcIds).OrderBy(r => r.Distance()).FirstOrDefault();
 
@@ -66,7 +66,7 @@ namespace LlamaLibrary.OrderbotTags
                 await Navigation.OffMeshMove(unit.Location);
                 await Coroutine.Sleep(500);
             }
-            
+
             unit.Interact();
 
             await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
@@ -74,17 +74,17 @@ namespace LlamaLibrary.OrderbotTags
             if (SelectIconString.IsOpen)
             {
                 SelectIconString.ClickSlot((uint) 0);
-                
+
                 await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                
+
                 SelectString.ClickSlot((uint) selectString);
-                
+
                 await Coroutine.Wait(5000, () => ShopExchangeCurrency.Open);
 
                 if (ShopExchangeCurrency.Open)
                 {
                     ShopExchangeCurrency.Purchase((uint) itemId, (uint) count);
-                    
+
                     await Coroutine.Wait(5000, () => SelectYesno.IsOpen);
 
                     SelectYesno.ClickYes();
@@ -92,18 +92,18 @@ namespace LlamaLibrary.OrderbotTags
                     await Coroutine.Sleep(1000);
 
                     ShopExchangeCurrency.Close();
-                    
+
                     await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                    
+
                     SelectString.ClickSlot((uint) (SelectString.LineCount -1) );
-                    
+
                     await Coroutine.Wait(5000, () => SelectString.IsOpen);
-                    
+
                 }
             }
-            
+
             _isDone = true;
         }
-        
+
     }
 }

@@ -29,7 +29,7 @@ namespace LlamaLibrary
         private Composite _root;
 
         public override string Name => NameStatic;
-        
+
         public static string NameStatic => "Housing Checker";
         public override PulseFlags PulseFlags => PulseFlags.All;
 
@@ -70,10 +70,10 @@ namespace LlamaLibrary
             bool large = false;
             var outputMed = new List<string>();
             var outputLarge = new List<string>();
-            
+
             if (ConditionParser.HasAetheryte(2))
                 output.AddRange(await GetLavenderPlots());
-            
+
             foreach (var line in output)
             {
                 if (line.Contains("Medium"))
@@ -87,7 +87,7 @@ namespace LlamaLibrary
                     outputLarge.Add(line);
                 }
             }
-            
+
             if (large)
             {
                 string message = string.Join("\n", outputLarge); 
@@ -97,7 +97,7 @@ namespace LlamaLibrary
 
             if (ConditionParser.HasAetheryte(8))
                 output.AddRange(await GetMistsPlots());
-            
+
             foreach (var line in output)
             {
                 if (line.Contains("Medium"))
@@ -111,7 +111,7 @@ namespace LlamaLibrary
                     outputLarge.Add(line);
                 }
             }
-            
+
 
             if (large)
             {
@@ -122,7 +122,7 @@ namespace LlamaLibrary
 
             if (ConditionParser.HasAetheryte(9))
                 output.AddRange(await GetGobletPlots());
-            
+
             foreach (var line in output)
             {
                 if (line.Contains("Medium"))
@@ -136,7 +136,7 @@ namespace LlamaLibrary
                     outputLarge.Add(line);
                 }
             }
-            
+
 
             if (large)
             {
@@ -147,7 +147,7 @@ namespace LlamaLibrary
 
             if (ConditionParser.HasAetheryte(111))
                 output.AddRange(await GetShiroganePlots());
-            
+
             if(!output.Any())
                 Log1($"No Housing Plots For Sale");
 
@@ -358,8 +358,8 @@ namespace LlamaLibrary
             unit.Interact();
 
             await Coroutine.Wait(5000, () => SelectIconString.IsOpen);
-            
-            
+
+
 
             if (SelectIconString.IsOpen)
             {
@@ -384,7 +384,7 @@ namespace LlamaLibrary
                     SelectString.ClickLineContains("移动到指定小区");
                 else
                     SelectString.ClickLineContains("Go to specified");
-                
+
 
                 await Coroutine.Wait(5000, () => HousingSelectBlock.Instance.IsOpen);
             }
@@ -500,7 +500,7 @@ namespace LlamaLibrary
                 for (var i = 0; i < HousingSelectBlock.Instance.NumberOfWards; i++)
                 {
                     HousingSelectBlock.Instance.SelectWard(i);
-                
+
                     await Coroutine.Sleep(500);
                     //Log($"Ward {AgentHousingSelectBlock.Instance.WardNumber + 1}");
                     var plotStatus = AgentHousingSelectBlock.Instance.ReadPlots(HousingSelectBlock.Instance.NumberOfPlots);
@@ -531,7 +531,7 @@ namespace LlamaLibrary
                             output.Add($"{HousingSelectBlock.Instance.HousingWard} Plot {j + 1} {size} -  {price}");
                         }
                     }
-                    
+
                     await Coroutine.Sleep(200);
                 }
 
@@ -543,13 +543,13 @@ namespace LlamaLibrary
             var msg = string.Format("[Housing Checker] " + text, args);
             Logging.Write(Colors.Pink, msg);
         }
-        
+
         private static void Log1(string text, params object[] args)
         {
             var msg = string.Format("[" + NameStatic + "] " + text, args);
             Logging.Write(Colors.Yellow, msg);
         }
-        
+
         private void Log2(string text, params object[] args)
         {
             var msg = string.Format("[" + NameStatic + "] " + text, args);

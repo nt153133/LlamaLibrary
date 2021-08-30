@@ -304,7 +304,7 @@ namespace LlamaLibrary
                 {
                     foreach (var hunt in dailies.Where(i => !i.IsFinished))
                     {
-                       
+
                 }
             }*/
 
