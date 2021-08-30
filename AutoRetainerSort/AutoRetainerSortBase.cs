@@ -129,7 +129,7 @@ namespace LlamaLibrary.AutoRetainerSort
             if (AutoRetainerSortSettings.Instance.AutoGenLisbeth)
             {
                 string lisbethSettingsPath = LisbethRuleGenerator.GetSettingsPath();
-                if (string.IsNullOrEmpty(lisbethSettingsPath))
+                if (!string.IsNullOrEmpty(lisbethSettingsPath))
                 {
                     LisbethRuleGenerator.PopulateSettings(lisbethSettingsPath);
                     LogSuccess("Auto-populated Lisbeth's retainer item rules!");
