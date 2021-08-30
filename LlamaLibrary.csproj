@@ -139,6 +139,7 @@
     <Compile Include="Helpers\HuntHelper.cs" />
     <Compile Include="Helpers\ItemConditionals.cs" />
     <Compile Include="Helpers\ItemWeight.cs" />
+    <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\Lisbeth.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\Navigation.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Helpers\TimersSettings.cs" />
     <Compile Include="Helpers\Translator.cs" />
     <Compile Include="Helpers\GardenHelper.cs" />
+    <Compile Include="Helpers\WorldHelper.cs" />
     <Compile Include="HouseChecker.cs" />
     <Compile Include="HuntBase.cs" />
     <Compile Include="IshgardHandin.cs" />
