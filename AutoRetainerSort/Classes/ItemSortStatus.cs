@@ -34,6 +34,8 @@ namespace LlamaLibrary.AutoRetainerSort
             }
         }
 
+        public static bool AnyRulesExist() => AutoRetainerSortSettings.Instance.InventoryOptions.Values.Any(invOptions => invOptions.Any());
+
         public static CachedInventory GetByIndex(int index)
         {
             switch (index)

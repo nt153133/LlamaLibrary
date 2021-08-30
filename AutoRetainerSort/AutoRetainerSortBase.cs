@@ -62,6 +62,13 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private async Task<bool> Run()
         {
+            if (!ItemSortStatus.AnyRulesExist())
+            {
+                LogCritical("You don't have any sorting rules set up... maybe go hit the Auto-Setup button?");
+                TreeRoot.Stop("No sort settings.");
+                return false;
+            }
+            
             LogCritical($"The journey begins! {Strings.AutoSetup_CacheAdvice}");
             await GeneralFunctions.StopBusy(true, true, false);
 
@@ -95,6 +102,14 @@ namespace LlamaLibrary.AutoRetainerSort
             await ItemFinder.FlashSaddlebags();
 
             ItemSortStatus.UpdateFromCache(retData);
+
+            if (AutoRetainerSortSettings.Instance.PrintMoves)
+            {
+                foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
+                {
+                    PrintMoves(cachedInventory.Index);
+                }
+            }
 
             while (ItemSortStatus.AnyUnsorted())
             {
@@ -208,11 +223,6 @@ namespace LlamaLibrary.AutoRetainerSort
                 LogCritical($"Tried to sort the player's inventory, but we can't do anything with that alone...");
                 return;
             }
-
-            /*
-            PrintMoves(index);
-            PrintMoves(ItemSortStatus.PlayerInventoryIndex);
-            */
 
             bool openingSaddlebag = index == ItemSortStatus.SaddlebagInventoryIndex;
             await GeneralFunctions.ExitRetainer(openingSaddlebag);

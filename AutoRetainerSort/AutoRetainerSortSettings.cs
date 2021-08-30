@@ -26,6 +26,8 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private bool _autoGenLisbeth;
 
+        private bool _printMoves;
+
         private Point _windowPosition = Point.Empty;
 
         [Browsable(false)]
@@ -86,6 +88,25 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
 
                 _autoGenLisbeth = value;
+                Save();
+            }
+        }
+        
+        [Setting]
+        [DisplayName("Print Moves")]
+        [Description("Print to console all the moves we want to perform. A little spammy, but can help figure out what, if anything, might be going wrong.")]
+        [DefaultValue(false)]
+        public bool PrintMoves
+        {
+            get => _printMoves;
+            set
+            {
+                if (_printMoves == value)
+                {
+                    return;
+                }
+
+                _printMoves = value;
                 Save();
             }
         }
