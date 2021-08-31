@@ -48,6 +48,7 @@ namespace LlamaLibrary.AutoRetainerSort
             {
                 _settingsForm.Show();
                 _settingsForm.Activate();
+                ItemSortStatus.UpdateFromCache(RetainerList.Instance.OrderedRetainerList);
             }
             catch (ArgumentOutOfRangeException)
             {
