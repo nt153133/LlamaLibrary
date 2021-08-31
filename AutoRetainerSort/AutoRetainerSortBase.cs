@@ -216,7 +216,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
                 else
                 {
-                    sb.Append($"to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name}");
+                    sb.Append($" to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name}");
                 }
 
                 if (sortInfo.ItemInfo.Unique && isFull)
