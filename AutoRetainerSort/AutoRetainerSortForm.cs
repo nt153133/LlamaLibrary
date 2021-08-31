@@ -60,7 +60,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private void ResetBindingSource()
         {
-            _bsInventories = new BindingSource(AutoRetainerSortSettings.Instance, "InventoryOptions");
+            _bsInventories.DataSource = AutoRetainerSortSettings.Instance;
             _bsInventories.ResetBindings(true);
             listBoxInventoryOptions.ResetBindings();
             listBoxInventoryOptions.Refresh();
@@ -165,11 +165,11 @@ namespace LlamaLibrary.AutoRetainerSort
                 if (indexCount > 1 && conflictUnsorted) continue;
 
                 int desiredIndex = typeDicPair.Value.OrderByDescending(x => x.Value).First().Key;
-                AutoRetainerSortSettings.Instance.InventoryOptions[desiredIndex].SortTypes.Add(sortType);
+                AutoRetainerSortSettings.Instance.InventoryOptions[desiredIndex].SortTypes.Add(new SortTypeWithCount(sortType));
             }
 
-            AutoRetainerSortSettings.Instance.Save();
             ResetBindingSource();
+            AutoRetainerSortSettings.Instance.Save();
             AutoRetainerSort.LogSuccess("Auto-Setup done!");
         }
     }

@@ -119,12 +119,12 @@ namespace LlamaLibrary.AutoRetainerSort
         public string Name;
 
         [JsonProperty("SortTypes")]
-        public BindingList<SortType> SortTypes;
+        public BindingList<SortTypeWithCount> SortTypes;
 
         [JsonProperty("SpecificItems")]
         public BindingList<ItemSortInfo> SpecificItems;
 
-        public bool ContainsType(SortType type) => SortTypes.Contains(type);
+        public bool ContainsType(SortType type) => SortTypes.Any(x => x.Equals(type));
 
         public bool ContainsId(uint trueItemId) => SpecificItems.Any(x => x.TrueItemId == trueItemId);
 
@@ -134,12 +134,28 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public bool Any() => SortTypes.Any() || SpecificItems.Any();
 
+        public bool RemoveType(SortType type)
+        {
+            var toRemove = new List<SortTypeWithCount>();
+            foreach (var sortTypeWithCount in SortTypes)
+            {
+                if (sortTypeWithCount.SortType == type) toRemove.Add(sortTypeWithCount);
+            }
+
+            foreach (var sortTypeWithCount in toRemove)
+            {
+                SortTypes.Remove(sortTypeWithCount);
+            }
+
+            return toRemove.Any();
+        }
+
         public override string ToString() => Name;
 
         public InventorySortInfo(string name)
         {
             Name = name;
-            SortTypes = new BindingList<SortType>();
+            SortTypes = new BindingList<SortTypeWithCount>();
             SpecificItems = new BindingList<ItemSortInfo>();
         }
     }

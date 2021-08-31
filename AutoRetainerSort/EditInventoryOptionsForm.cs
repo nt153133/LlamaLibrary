@@ -74,7 +74,6 @@ namespace LlamaLibrary.AutoRetainerSort
 
                 if (!pair.Value.ContainsType(selected)) continue;
 
-
                 DialogResult dr = MessageBox.Show(
                     string.Format(Strings.AddNewItem_AlreadyExists_Warning, pair.Value.Name, selected.ToString(), pair.Value.Name, _sortInfo.Name),
                     Strings.WarningCaption,
@@ -83,11 +82,11 @@ namespace LlamaLibrary.AutoRetainerSort
 
                 if (dr != DialogResult.Yes) return;
 
-                pair.Value.SortTypes.Remove(selected);
+                pair.Value.RemoveType(selected);
                 break;
             }
 
-            _bsSortTypes.Add(selected);
+            _bsSortTypes.Add(new SortTypeWithCount(selected));
             AutoRetainerSortSettings.Instance.Save();
         }
 

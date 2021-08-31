@@ -1,5 +1,8 @@
 ﻿// ReSharper disable InconsistentNaming
+using System;
+using System.Linq;
 using ff14bot.Enums;
+using Newtonsoft.Json;
 
 namespace LlamaLibrary.AutoRetainerSort
 {
@@ -38,6 +41,53 @@ namespace LlamaLibrary.AutoRetainerSort
         Fishing_Tackle = 30,
         AirshipSubmersible = 31,
         Soul_Crystal = 32,
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class SortTypeWithCount : IEquatable<SortTypeWithCount>, IEquatable<SortType>
+    {
+        [JsonProperty("SortType")]
+        public readonly SortType SortType;
+
+        public int Count =>
+            ItemSortStatus.GetAllInventories()
+                .Sum(inv => inv.ItemSlotsTakenCounts
+                    .Where(pair => ItemSortStatus.GetSortInfo(pair.Key).SortType == SortType)
+                    .Sum(pair => pair.Value));
+
+        public SortTypeWithCount(SortType sortType)
+        {
+            SortType = sortType;
+        }
+
+        public override string ToString() => $"{SortType.ToString()} [{Count.ToString()}]";
+
+        public bool Equals(SortTypeWithCount other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return SortType == other.SortType;
+        }
+
+        public bool Equals(SortType other)
+        {
+            return other == SortType;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            Type type = obj.GetType();
+            if (type == typeof(SortType)) return Equals((SortType)obj);
+            if (type != GetType()) return false;
+            return Equals((SortTypeWithCount)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)SortType;
+        }
     }
 
     public static class SortExtensions
