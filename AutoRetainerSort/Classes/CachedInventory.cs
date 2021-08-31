@@ -107,7 +107,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
                 else
                 {
                     ItemCounts.Add(bagSlot.TrueItemId, (int)bagSlot.Count);
-                    ItemSlotsTakenCounts.Add(bagSlot.TrueItemId, (int)bagSlot.Count);
+                    ItemSlotsTakenCounts.Add(bagSlot.TrueItemId, 1);
                 }
             }
             FreeSlots = (int)bags.Sum(x => x.FreeSlots);
