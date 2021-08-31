@@ -5,6 +5,8 @@ namespace LlamaLibrary.RetainerItemFinder
     public class StoredSaddleBagInventory : IStoredInventory
     {
         public Dictionary<uint, int> Inventory { get; } = new Dictionary<uint, int>();
+        
+        public Dictionary<uint, int> SlotCount { get; } = new Dictionary<uint, int>();
 
         public int FreeSlots { get; }
 
@@ -22,10 +24,12 @@ namespace LlamaLibrary.RetainerItemFinder
                 if (Inventory.ContainsKey(itemIds[i]))
                 {
                     Inventory[itemIds[i]] += itemQuantities[i];
+                    SlotCount[itemIds[i]]++;
                 }
                 else
                 {
                     Inventory.Add(itemIds[i], itemQuantities[i]);
+                    SlotCount.Add(itemIds[i], 1);
                 }
             }
         }

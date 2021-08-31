@@ -11,6 +11,8 @@ namespace LlamaLibrary.RetainerItemFinder
 
         public Dictionary<uint, int> Inventory { get; } = new Dictionary<uint, int>();
 
+        public Dictionary<uint, int> SlotCount { get; } = new Dictionary<uint, int>();
+
         public int FreeSlots { get; }
 
         public List<uint> EquippedItems;
@@ -34,6 +36,7 @@ namespace LlamaLibrary.RetainerItemFinder
                 }
 
                 Inventory.Add(crystalIds[i], crystalQtys[i]);
+                SlotCount.Add(crystalIds[i], 1);
             }
 
             for (int i = 0; i < 175; i++)
@@ -44,13 +47,15 @@ namespace LlamaLibrary.RetainerItemFinder
                     continue;
                 }
 
-                if (!Inventory.ContainsKey(itemIds[i]))
+                if (Inventory.ContainsKey(itemIds[i]))
                 {
-                    Inventory.Add(itemIds[i], qtys[i]);
+                    Inventory[itemIds[i]] += qtys[i];
+                    SlotCount[itemIds[i]]++;
                 }
                 else
                 {
-                    Inventory[itemIds[i]] += qtys[i];
+                    Inventory.Add(itemIds[i], qtys[i]);
+                    SlotCount.Add(itemIds[i], 1);
                 }
             }
         }
