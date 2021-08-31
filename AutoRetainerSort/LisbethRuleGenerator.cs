@@ -69,7 +69,7 @@ namespace LlamaLibrary.AutoRetainerSort
             {
                 if (!knownRules.RulesByIndex.ContainsKey(cachedInventory.Index)) continue;
                 var ruleList = knownRules.RulesByIndex[cachedInventory.Index];
-                foreach (uint itemId in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key).RawItemId).Distinct())
+                foreach (uint itemId in cachedInventory.ItemCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key).RawItemId).Distinct())
                 {
                     ruleList.Add(new LisbethRetainerRules.ItemRule(itemId));
                 }

@@ -134,6 +134,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 {
                     if (indexInfoPair.Key == _index) continue;
                     if (!indexInfoPair.Value.ContainsItem(sortInfo)) continue;
+                    if (sortInfo.ItemInfo.Unique) continue;
 
                     DialogResult dr = MessageBox.Show(
                         string.Format(Strings.AddNewItem_AlreadyExists_Warning, indexInfoPair.Value.Name, sortInfo.Name, indexInfoPair.Value.Name, _sortInfo.Name),

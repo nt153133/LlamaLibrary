@@ -24,6 +24,10 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static readonly HashSet<int> FilledAndSortedInventories = new HashSet<int>();
 
+        public static readonly HashSet<uint> TryingToMoveUniques = new HashSet<uint>();
+
+        public static readonly HashSet<uint> PlayerInventoryUniques = new HashSet<uint>();
+
         public static IEnumerable<CachedInventory> GetAllInventories()
         {
             yield return PlayerInventory;
@@ -123,11 +127,21 @@ namespace LlamaLibrary.AutoRetainerSort
                     FilledAndSortedInventories.Add(cachedInventory.Index);
                 }
             }
+
+            foreach (ItemSortInfo sortInfo in PlayerInventory.ItemCounts.Select(x => GetSortInfo(x.Key)))
+            {
+                if (sortInfo.ItemInfo.Unique)
+                {
+                    PlayerInventoryUniques.Add(sortInfo.TrueItemId);
+                }
+            }
         }
 
         public static void ClearAll()
         {
             FilledAndSortedInventories.Clear();
+            PlayerInventoryUniques.Clear();
+            TryingToMoveUniques.Clear();
             GetAllInventories().ForEach(x => x.Clear());
         }
     }

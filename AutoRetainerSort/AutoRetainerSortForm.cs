@@ -143,7 +143,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
             foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
             {
-                foreach (SortType sortType in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key).SortType))
+                foreach (SortType sortType in cachedInventory.ItemCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key).SortType))
                 {
                     var indexCountDic = sortTypeCounts[sortType];
                     if (indexCountDic.ContainsKey(cachedInventory.Index))

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ff14bot.Managers;
@@ -103,48 +104,77 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
             }
         }
 
-        private int _matchingIndex = int.MaxValue;
+        private bool _checkedIndexes;
 
-        public int MatchingIndex
+        private int[] _matchingIndexes = Array.Empty<int>();
+
+        public int[] MatchingIndexes
         {
             get
             {
-                if (_matchingIndex == int.MaxValue)
+                // Special unique-only loop first. Don't cache the result because it might end up in a different inventory due to uniques.
+                if (ItemInfo.Unique)
                 {
-                    var index = int.MinValue;
-
+                    var indexList = new HashSet<int>();
                     foreach (var sortInfoPair in AutoRetainerSortSettings.Instance.InventoryOptions)
                     {
                         if (sortInfoPair.Value.ContainsId(TrueItemId))
                         {
-                            index = sortInfoPair.Key;
-                            break;
+                            indexList.Add(sortInfoPair.Key);
                         }
+                    }
+                    
+                    // OrderByDescending so we place any uniques in Player Inventory last.
+                    return indexList.Any() ? indexList.OrderByDescending(x => x).ToArray() : Array.Empty<int>();
+                }
 
+                // Second loop for finding by SortType and ID both. Cache this result. We don't care about ordering here.
+                if (!_checkedIndexes && _matchingIndexes.Length == 0)
+                {
+                    var indexList = new HashSet<int>();
+
+                    foreach (var sortInfoPair in AutoRetainerSortSettings.Instance.InventoryOptions)
+                    {
                         if (sortInfoPair.Value.ContainsType(SortType))
                         {
-                            index = sortInfoPair.Key;
+                            indexList.Add(sortInfoPair.Key);
+                        }
+                        if (sortInfoPair.Value.ContainsId(TrueItemId))
+                        {
+                            indexList.Add(sortInfoPair.Key);
+                            break;
                         }
                     }
 
-                    _matchingIndex = index;
+                    _matchingIndexes = indexList.Any() ? indexList.OrderByDescending(x => x).ToArray() : Array.Empty<int>();
+                    _checkedIndexes = true;
                 }
 
-                return _matchingIndex;
+                return _matchingIndexes;
             }
         }
 
         public ItemIndexStatus IndexStatus(int index)
         {
-            if (MatchingIndex == int.MinValue) return ItemIndexStatus.Unknown;
+            int[] localMatchCache = MatchingIndexes.ToArray();
 
-            if (MatchingIndex == index) return ItemIndexStatus.BelongsInCurrentIndex;
+            if (localMatchCache.Length == 0) return ItemIndexStatus.NoMatchingIndex;
 
-            if (ItemSortStatus.FilledAndSortedInventories.Contains(MatchingIndex)) return ItemIndexStatus.CantMove;
+            if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return ItemIndexStatus.NoSpaceInIndex;
 
-            if (ItemInfo.Unique && ItemSortStatus.GetByIndex(MatchingIndex).ItemSlotCounts.Keys.Contains(TrueItemId)) return ItemIndexStatus.CantMove;
+            if (localMatchCache.All(x => ItemSortStatus.FilledAndSortedInventories.Contains(x))) return ItemIndexStatus.CantMove;
+            
+            if (localMatchCache.Length == 1 && localMatchCache[0] == index) return ItemIndexStatus.BelongsInIndex;
 
-            if (MatchingIndex != index) return ItemIndexStatus.BelongsElsewhere;
+            if (localMatchCache.Length > 1 && localMatchCache.Any(x => x == index)) return ItemIndexStatus.BelongsInIndexAndOthers;
+
+            if (ItemInfo.Unique)
+            {
+                if (localMatchCache.All(x => ItemSortStatus.GetByIndex(x).ItemCounts.ContainsKey(TrueItemId))) return ItemIndexStatus.UniqueButNoSpace;
+                if (localMatchCache.All(x => ItemSortStatus.GetByIndex(x).ItemCounts.ContainsKey(TrueItemId))) return ItemIndexStatus.UniqueButNoSpace;
+            }
+
+            if (localMatchCache.All(x => x != index && x != int.MinValue)) return ItemIndexStatus.BelongsElsewhere;
 
             return ItemIndexStatus.Unknown;
         }
@@ -178,14 +208,51 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
     public enum ItemIndexStatus
     {
         BelongsElsewhere = 1 << 0,
-        BelongsInCurrentIndex = 1 << 1,
-        CantMove = 1 << 2,
-        Unknown = 1 << 3,
-        DontMove = BelongsInCurrentIndex | CantMove | Unknown
+        BelongsInIndex = 1 << 1,
+        BelongsInIndexAndOthers = BelongsInIndex | BelongsElsewhere,
+        UniqueButNoSpace = 1 << 2,
+        CantMove = 1 << 3,
+        NoSpaceInIndex = 1 << 4,
+        NoMatchingIndex = 1 << 5,
+        Unknown = 1 << 6,
+    }
+
+    public enum SortStatus
+    {
+        Unknown = 0,
+        NoMatchingIndex = 1,
+        BelongsInIndex = 2,
+        MoveButUnable = 3,
+        Move = 4
     }
 
     public static class IndexExtensions
     {
-        public static bool ShouldMove(this ItemIndexStatus indexStatus) => (indexStatus & ItemIndexStatus.DontMove) == 0;
+        public static SortStatus SortStatus(this ItemSortInfo sortInfo, int index)
+        {
+            switch (sortInfo.IndexStatus(index))
+            {
+                case ItemIndexStatus.NoMatchingIndex:
+                    return Classes.SortStatus.NoMatchingIndex;
+
+                case ItemIndexStatus.BelongsInIndexAndOthers:
+                case ItemIndexStatus.BelongsInIndex:
+                    return Classes.SortStatus.BelongsInIndex;
+
+                case ItemIndexStatus.CantMove:
+                case ItemIndexStatus.NoSpaceInIndex:
+                case ItemIndexStatus.UniqueButNoSpace:
+                    return Classes.SortStatus.MoveButUnable;
+
+                case ItemIndexStatus.BelongsElsewhere:
+                    return Classes.SortStatus.Move;
+
+                case ItemIndexStatus.Unknown:
+                    return Classes.SortStatus.Unknown;
+
+                default:
+                    return Classes.SortStatus.Unknown;
+            }
+        }
     }
 }

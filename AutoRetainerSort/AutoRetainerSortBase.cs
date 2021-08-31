@@ -105,6 +105,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
             if (AutoRetainerSortSettings.Instance.PrintMoves)
             {
+                alreadyPrintedUniques.Clear();
                 foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
                 {
                     PrintMoves(cachedInventory.Index);
@@ -129,12 +130,31 @@ namespace LlamaLibrary.AutoRetainerSort
 
             foreach (CachedInventory cachedInventory in ItemSortStatus.GetAllInventories())
             {
-                foreach (ItemSortInfo sortInfo in cachedInventory.ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
+                foreach (ItemSortInfo sortInfo in cachedInventory.ItemCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
                 {
-                    if (sortInfo.MatchingIndex < ItemSortStatus.PlayerInventoryIndex) continue;
-                    if (sortInfo.IndexStatus(cachedInventory.Index) == ItemIndexStatus.CantMove)
+                    int[] localIndexCache = sortInfo.MatchingIndexes.ToArray();
+                    if (localIndexCache.Length == 0) continue;
+                    if (sortInfo.SortStatus(cachedInventory.Index) == SortStatus.MoveButUnable)
                     {
-                        LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name} but it's full and everything there belongs. Too bad!");
+                        if (cachedInventory.FreeSlots == 0)
+                        {
+                            LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name} but it's full and everything there belongs. Too bad!");
+                        }
+                        else if (sortInfo.ItemInfo.Unique)
+                        {
+                            if (localIndexCache.Length == 1)
+                            {
+                                LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name} but it's unique and that inventory already has one. Too bad!");
+                            }
+                            else
+                            {
+                                LogCritical($"We want to move {sortInfo.Name} but it's unique and all inventories set for it already have one. Too bad!");
+                            }
+                        }
+                        else
+                        {
+                            LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name} but it can't be moved there. Too bad!");
+                        }
                     }
                 }
             }
@@ -164,17 +184,54 @@ namespace LlamaLibrary.AutoRetainerSort
             return false;
         }
 
+        private static readonly HashSet<uint> alreadyPrintedUniques = new HashSet<uint>();
+
         private static void PrintMoves(int index)
         {
-            foreach (ItemSortInfo sortInfo in ItemSortStatus.GetByIndex(index).ItemSlotCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
+            foreach (ItemSortInfo sortInfo in ItemSortStatus.GetByIndex(index).ItemCounts.Select(x => ItemSortStatus.GetSortInfo(x.Key)))
             {
-                ItemIndexStatus indexStatus = sortInfo.IndexStatus(index);
-                if (indexStatus == ItemIndexStatus.BelongsInCurrentIndex || indexStatus == ItemIndexStatus.Unknown) continue;
+                if (sortInfo.SortStatus(index) != SortStatus.Move) continue;
+                if (alreadyPrintedUniques.Contains(sortInfo.TrueItemId)) continue;
 
+                if (sortInfo.ItemInfo.Unique)
+                {
+                    alreadyPrintedUniques.Add(sortInfo.TrueItemId);
+                }
+
+                int[] localIndexCache = sortInfo.MatchingIndexes.ToArray();
                 StringBuilder sb = new StringBuilder();
-                sb.Append($"We want to move {sortInfo.Name} from {ItemSortStatus.GetByIndex(index).Name} to {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}");
-                bool isFull = ItemSortStatus.FilledAndSortedInventories.Contains(sortInfo.MatchingIndex);
-                sb.Append(isFull ? "... but it's full." : ".");
+                sb.Append($"We want to move {sortInfo.Name} from {ItemSortStatus.GetByIndex(index).Name}");
+                bool isFull = localIndexCache.All(x => ItemSortStatus.FilledAndSortedInventories.Contains(x));
+                if (sortInfo.ItemInfo.Unique)
+                {
+                    var uniqueNoSpace = true;
+                    for (int i = 0; i < localIndexCache.Length; i++)
+                    {
+                        if (ItemSortStatus.GetByIndex(localIndexCache[i]).ItemCounts.ContainsKey(sortInfo.TrueItemId)) continue;
+                        sb.Append($" to {ItemSortStatus.GetByIndex(localIndexCache[i]).Name}");
+                        uniqueNoSpace = false;
+                        break;
+                    }
+                    isFull = uniqueNoSpace;
+                }
+                else
+                {
+                    sb.Append($"to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name}");
+                }
+
+                if (sortInfo.ItemInfo.Unique && isFull)
+                {
+                    sb.Append("... but it's unique and there's no available space.");
+                }
+                else if (isFull)
+                {
+                    sb.Append("... but it's full.");
+                }
+                else
+                {
+                    sb.Append(".");
+                }
+
                 if (isFull)
                 {
                     LogCritical(sb.ToString());
@@ -193,7 +250,10 @@ namespace LlamaLibrary.AutoRetainerSort
                 return;
             }
 
-            foreach (var indexCountPair in ItemSortStatus.PlayerInventory.SortStatusCounts().OrderByDescending(x => x.Value))
+            var orderedSortStatusCounts = ItemSortStatus.PlayerInventory.DestinationCountsByIndex()
+                .OrderByDescending(x => x.Value);
+
+            foreach (var indexCountPair in orderedSortStatusCounts)
             {
                 if (ItemSortStatus.GetByIndex(indexCountPair.Key).FreeSlots == 0) continue;
                 await SortLoop(indexCountPair.Key);
@@ -258,10 +318,14 @@ namespace LlamaLibrary.AutoRetainerSort
             while (ShouldSortLoop(index))
             {
                 bool depositResult = await DepositLoop(index);
+
+                UpdatePlayerInventory();
+                UpdateOpenedInventory(index);
+
                 bool retrieveResult = await RetrieveLoop(index);
 
-                ItemSortStatus.UpdateIndex(ItemSortStatus.PlayerInventoryIndex, InventoryManager.GetBagsByInventoryBagId(GeneralFunctions.MainBags));
-                ItemSortStatus.UpdateIndex(index, InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)));
+                UpdatePlayerInventory();
+                UpdateOpenedInventory(index);
 
                 await Coroutine.Sleep(250);
 
@@ -280,11 +344,21 @@ namespace LlamaLibrary.AutoRetainerSort
             await Coroutine.Sleep(250);
         }
 
+        private static void UpdatePlayerInventory()
+        {
+            ItemSortStatus.UpdateIndex(ItemSortStatus.PlayerInventoryIndex, InventoryManager.GetBagsByInventoryBagId(GeneralFunctions.MainBags));
+        }
+
+        private static void UpdateOpenedInventory(int index)
+        {
+            ItemSortStatus.UpdateIndex(index, InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)));
+        }
+
         private static bool ShouldSortLoop(int index)
         {
             if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return false;
             if (ItemSortStatus.FilledAndSortedInventories.Contains(ItemSortStatus.PlayerInventoryIndex)) return false;
-            if (ItemSortStatus.PlayerInventory.SortStatusCounts().ContainsKey(index)) return true;
+            if (ItemSortStatus.PlayerInventory.DestinationCountsByIndex().ContainsKey(index)) return true;
 
             return !ItemSortStatus.GetByIndex(index).AllBelong();
         }
@@ -304,21 +378,28 @@ namespace LlamaLibrary.AutoRetainerSort
             {
                 if (BagsFreeSlotCount(index) == 0) break;
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
-                if (sortInfo.IndexStatus(index) == ItemIndexStatus.BelongsInCurrentIndex)
+                if (sortInfo.SortStatus(index) == SortStatus.BelongsInIndex)
                 {
-                    LogSuccess($"Depositing {sortInfo.Name}.");
+                    bool moveResult;
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
-                        bagSlot.AddToSaddlebagQuantity(bagSlot.Count);
+                        moveResult = await bagSlot.TryAddToSaddlebag(bagSlot.Count);
                     }
                     else
                     {
-                        bagSlot.RetainerEntrustQuantity(bagSlot.Count);
+                        moveResult = await bagSlot.TryEntrustToRetainer(bagSlot.Count);
                     }
 
-                    await Coroutine.Sleep(500);
-
-                    if (bagSlot.IsValid && bagSlot.Count != 0)
+                    if (moveResult)
+                    {
+                        LogSuccess($"Deposited {sortInfo.Name}.");
+                        if (sortInfo.ItemInfo.Unique)
+                        {
+                            ItemSortStatus.PlayerInventoryUniques.Remove(sortInfo.TrueItemId);
+                            ItemSortStatus.TryingToMoveUniques.Remove(sortInfo.TrueItemId);
+                        }
+                    }
+                    else
                     {
                         LogCritical($"Something went wrong with depositing {sortInfo.Name}, it's still in the same slot!");
                     }
@@ -345,21 +426,40 @@ namespace LlamaLibrary.AutoRetainerSort
                 if (InventoryManager.FreeSlots == 0) break;
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
                 if (sortInfo.ItemInfo.Unique && InventoryManager.FilledSlots.Any(x => x.TrueItemId == sortInfo.TrueItemId)) continue;
-                if (sortInfo.IndexStatus(index) == ItemIndexStatus.BelongsElsewhere)
+                if (sortInfo.SortStatus(index) == SortStatus.Move)
                 {
-                    LogSuccess($"Retrieving {sortInfo.Name}. It belongs in {ItemSortStatus.GetByIndex(sortInfo.MatchingIndex).Name}.");
+                    bool moveResult;
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
-                        bagSlot.RemoveFromSaddlebagQuantity(bagSlot.Count);
+                        moveResult = await bagSlot.TryRemoveFromSaddlebag(bagSlot.Count);
                     }
                     else
                     {
-                        bagSlot.RetainerRetrieveQuantity(bagSlot.Count);
+                        moveResult = await bagSlot.TryRetrieveFromRetainer(bagSlot.Count);
                     }
 
-                    await Coroutine.Sleep(500);
-
-                    if (bagSlot.IsValid && bagSlot.Count != 0)
+                    if (moveResult)
+                    {
+                        string belongsInName = ItemSortStatus.GetByIndex(sortInfo.MatchingIndexes[0]).Name;
+                        if (sortInfo.ItemInfo.Unique)
+                        {
+                            var localIndexCache = sortInfo.MatchingIndexes.ToArray();
+                            for (int i = 0; i < localIndexCache.Length; i++)
+                            {
+                                var cachedInventory = ItemSortStatus.GetByIndex(localIndexCache[i]);
+                                if (cachedInventory.ItemCounts.ContainsKey(sortInfo.TrueItemId)) continue;
+                                belongsInName = cachedInventory.Name;
+                                break;
+                            }
+                        }
+                        LogSuccess($"Retrieved {sortInfo.Name}. It belongs in {belongsInName}.");
+                        if (sortInfo.ItemInfo.Unique)
+                        {
+                            ItemSortStatus.PlayerInventoryUniques.Add(sortInfo.TrueItemId);
+                            ItemSortStatus.TryingToMoveUniques.Remove(sortInfo.TrueItemId);
+                        }
+                    }
+                    else
                     {
                         LogCritical($"Something went wrong with retrieving {sortInfo.Name}, it's still in the same slot!");
                     }
