@@ -136,7 +136,7 @@ namespace LlamaLibrary.AutoRetainerSort
                     if (localIndexCache.Length == 0) continue;
                     if (sortInfo.SortStatus(cachedInventory.Index) == SortStatus.MoveButUnable)
                     {
-                        if (cachedInventory.FreeSlots == 0)
+                        if (ItemSortStatus.FilledAndSortedInventories.Contains(cachedInventory.Index) || (cachedInventory.FreeSlots == 0 && cachedInventory.AllBelong()))
                         {
                             LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name} but it's full and everything there belongs. Too bad!");
                         }
@@ -153,7 +153,8 @@ namespace LlamaLibrary.AutoRetainerSort
                         }
                         else
                         {
-                            LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name} but it can't be moved there. Too bad!");
+                            LogCritical($"We want to move {sortInfo.Name} to {ItemSortStatus.GetByIndex(localIndexCache[0]).Name} " +
+                                        $"but it can't be moved there for... some reason. IndexStatus: {sortInfo.IndexStatus(cachedInventory.Index).ToString()}");
                         }
                     }
                 }
