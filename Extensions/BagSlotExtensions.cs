@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Buddy.Coroutines;
 using ff14bot;
 using ff14bot.Managers;
 using LlamaLibrary.Memory;
@@ -394,6 +397,54 @@ namespace LlamaLibrary.Extensions
             }
 
             return DataManager.GetItem(ItemId).CurrentLocaleName;
+        }
+        
+        public const int DefaultBagSlotMoveWait = 600;
+
+        private static async Task<bool> BagSlotMoveWait(BagSlot bagSlot, uint curSlotCount, int waitMs = DefaultBagSlotMoveWait)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            if (await Coroutine.Wait(waitMs, () => !bagSlot.IsValid || !bagSlot.IsFilled || bagSlot.Count < curSlotCount))
+            {
+                sw.Stop();
+                int remainingMs = waitMs - (int)sw.ElapsedMilliseconds;
+                if (remainingMs > 0)
+                {
+                    await Coroutine.Sleep(remainingMs);
+                }
+                return true;
+            }
+            sw.Stop();
+            return false;
+        }
+
+        public static async Task<bool> TryAddToSaddlebag(this BagSlot bagSlot, uint moveCount, int waitMs = DefaultBagSlotMoveWait)
+        {
+            uint curSlotCount = bagSlot.Count;
+            bagSlot.AddToSaddlebagQuantity(moveCount);
+            return await BagSlotMoveWait(bagSlot, curSlotCount, waitMs);
+        }
+        
+        public static async Task<bool> TryRemoveFromSaddlebag(this BagSlot bagSlot, uint moveCount, int waitMs = DefaultBagSlotMoveWait)
+        {
+            uint curSlotCount = bagSlot.Count;
+            bagSlot.RemoveFromSaddlebagQuantity(moveCount);
+            return await BagSlotMoveWait(bagSlot, curSlotCount, waitMs);
+        }
+        
+        public static async Task<bool> TryEntrustToRetainer(this BagSlot bagSlot, uint moveCount, int waitMs = DefaultBagSlotMoveWait)
+        {
+            uint curSlotCount = bagSlot.Count;
+            bagSlot.RetainerEntrustQuantity(moveCount);
+            return await BagSlotMoveWait(bagSlot, curSlotCount, waitMs);
+        }
+        
+        public static async Task<bool> TryRetrieveFromRetainer(this BagSlot bagSlot, uint moveCount, int waitMs = DefaultBagSlotMoveWait)
+        {
+            uint curSlotCount = bagSlot.Count;
+            bagSlot.RetainerRetrieveQuantity(moveCount);
+            return await BagSlotMoveWait(bagSlot, curSlotCount, waitMs);
         }
     }
 }
