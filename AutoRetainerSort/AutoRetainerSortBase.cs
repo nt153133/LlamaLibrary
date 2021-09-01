@@ -372,7 +372,7 @@ namespace LlamaLibrary.AutoRetainerSort
             if (ItemSortStatus.GetByIndex(ItemSortStatus.PlayerInventoryIndex).AllBelong())
             {
                 LogCritical($"We tried depositing to {name} but everything in the Player Inventory belongs there...?");
-                return true;
+                return false;
             }
             if (BagsFreeSlotCount(index) == 0)
             {
@@ -382,7 +382,10 @@ namespace LlamaLibrary.AutoRetainerSort
             Log($"Depositing items to {name}...");
             foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
             {
-                if (BagsFreeSlotCount(index) == 0) break;
+                if (BagsFreeSlotCount(index) == 0)
+                {
+                    return false;
+                }
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
                 if (sortInfo.SortStatus(index) == SortStatus.BelongsInIndex)
                 {
@@ -421,7 +424,7 @@ namespace LlamaLibrary.AutoRetainerSort
             if (ItemSortStatus.GetByIndex(index).AllBelong())
             {
                 LogCritical($"We tried to retrieve items from {name} but everything in their inventory already belongs there...?");
-                return true;
+                return false;
             }
             if (InventoryManager.FreeSlots == 0)
             {
@@ -432,7 +435,10 @@ namespace LlamaLibrary.AutoRetainerSort
             Log($"Retrieving items from {name}...");
             foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots))
             {
-                if (InventoryManager.FreeSlots == 0) break;
+                if (InventoryManager.FreeSlots == 0)
+                {
+                    return false;
+                }
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
                 if (sortInfo.ItemInfo.Unique && InventoryManager.FilledSlots.Any(x => x.TrueItemId == sortInfo.TrueItemId)) continue;
                 if (sortInfo.SortStatus(index) == SortStatus.Move)
