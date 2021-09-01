@@ -22,7 +22,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static AutoRetainerSortSettings Instance => _settings ?? (_settings = new AutoRetainerSortSettings());
 
-        private Dictionary<int, InventorySortInfo> _inventoryOptions;
+        private Dictionary<int, InventorySortInfo> _inventoryOptions = new Dictionary<int, InventorySortInfo>();
 
         private bool _autoGenLisbeth;
 
@@ -37,13 +37,11 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             get
             {
-                if (_inventoryOptions != null) return _inventoryOptions;
-
-                _inventoryOptions = new Dictionary<int, InventorySortInfo>
+                if (_inventoryOptions.Count == 0)
                 {
-                    {ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory")},
-                    {ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag")},
-                };
+                    _inventoryOptions.Add(ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory"));
+                    _inventoryOptions.Add(ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag"));
+                }
 
                 return _inventoryOptions;
             }
