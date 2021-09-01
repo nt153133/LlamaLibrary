@@ -88,7 +88,14 @@ namespace LlamaLibrary.AutoRetainerSort
                 if (dr != DialogResult.Yes) return;
             }
 
-            _bsInventories.Remove(listBoxInventoryOptions.SelectedItem);
+            if (AutoRetainerSortSettings.Instance.InventoryOptions.Remove(selectedItem.Key))
+            {
+                AutoRetainerSort.LogSuccess($"We've removed {selectedItem.Value.Name} from the list. Good bye, so long!");
+            }
+            else
+            {
+                AutoRetainerSort.LogCritical($"Something went wrong with trying to remove {selectedItem.Value.Name} from the list... Index: {selectedItem.Key.ToString()}");
+            }
             AutoRetainerSortSettings.Instance.Save();
             ResetBindingSource();
         }
