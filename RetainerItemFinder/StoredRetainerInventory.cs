@@ -7,8 +7,6 @@ namespace LlamaLibrary.RetainerItemFinder
 {
     public class StoredRetainerInventory : IStoredInventory
     {
-        private static uint[] crystalIds = new uint[] { 2, 8, 14, 3, 9, 15, 4, 7, 13, 5, 11, 17, 6, 12, 18, 7, 13, 19 };
-
         public Dictionary<uint, int> Inventory { get; } = new Dictionary<uint, int>();
 
         public Dictionary<uint, int> SlotCount { get; } = new Dictionary<uint, int>();
@@ -35,8 +33,8 @@ namespace LlamaLibrary.RetainerItemFinder
                     continue;
                 }
 
-                Inventory.Add(crystalIds[i], crystalQtys[i]);
-                SlotCount.Add(crystalIds[i], 1);
+                Inventory.Add((uint)(i + 2), crystalQtys[i]);
+                SlotCount.Add((uint)(i + 2), 1);
             }
 
             for (int i = 0; i < 175; i++)
