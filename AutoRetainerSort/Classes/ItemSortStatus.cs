@@ -30,8 +30,14 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static IEnumerable<CachedInventory> GetAllInventories()
         {
-            yield return PlayerInventory;
-            yield return SaddlebagInventory;
+            if (AutoRetainerSortSettings.Instance.InventoryOptions.ContainsKey(PlayerInventoryIndex))
+            {
+                yield return PlayerInventory;
+            }
+            if (AutoRetainerSortSettings.Instance.InventoryOptions.ContainsKey(SaddlebagInventoryIndex))
+            {
+                yield return SaddlebagInventory;
+            }
             foreach (CachedInventory retainerInventory in RetainerInventories.Values)
             {
                 yield return retainerInventory;
