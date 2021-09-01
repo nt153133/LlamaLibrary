@@ -26,7 +26,9 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private bool _autoGenLisbeth;
 
-        private bool _printMoves;
+        private bool _printMoves = true;
+
+        private int _itemMoveWaitMs = 600;
 
         private Point _windowPosition = Point.Empty;
 
@@ -95,7 +97,7 @@ namespace LlamaLibrary.AutoRetainerSort
         [Setting]
         [DisplayName("Print Moves")]
         [Description("Print to console all the moves we want to perform. A little spammy, but can help figure out what, if anything, might be going wrong.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool PrintMoves
         {
             get => _printMoves;
@@ -107,6 +109,25 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
 
                 _printMoves = value;
+                Save();
+            }
+        }
+
+        [Setting]
+        [DisplayName("Item Moving Wait Time")]
+        [Description("Time to wait in ms between moving items. If you're getting a lot of failed moves, try increasing this value.")]
+        [DefaultValue(600)]
+        public int ItemMoveWaitMs
+        {
+            get => _itemMoveWaitMs;
+            set
+            {
+                if (_itemMoveWaitMs == value)
+                {
+                    return;
+                }
+
+                _itemMoveWaitMs = value;
                 Save();
             }
         }

@@ -385,11 +385,11 @@ namespace LlamaLibrary.AutoRetainerSort
                     bool moveResult;
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
-                        moveResult = await bagSlot.TryAddToSaddlebag(bagSlot.Count);
+                        moveResult = await bagSlot.TryAddToSaddlebag(bagSlot.Count, AutoRetainerSortSettings.Instance.ItemMoveWaitMs);
                     }
                     else
                     {
-                        moveResult = await bagSlot.TryEntrustToRetainer(bagSlot.Count);
+                        moveResult = await bagSlot.TryEntrustToRetainer(bagSlot.Count, AutoRetainerSortSettings.Instance.ItemMoveWaitMs);
                     }
 
                     if (moveResult)
@@ -433,11 +433,11 @@ namespace LlamaLibrary.AutoRetainerSort
                     bool moveResult;
                     if (index == ItemSortStatus.SaddlebagInventoryIndex)
                     {
-                        moveResult = await bagSlot.TryRemoveFromSaddlebag(bagSlot.Count);
+                        moveResult = await bagSlot.TryRemoveFromSaddlebag(bagSlot.Count, AutoRetainerSortSettings.Instance.ItemMoveWaitMs);
                     }
                     else
                     {
-                        moveResult = await bagSlot.TryRetrieveFromRetainer(bagSlot.Count);
+                        moveResult = await bagSlot.TryRetrieveFromRetainer(bagSlot.Count, AutoRetainerSortSettings.Instance.ItemMoveWaitMs);
                     }
 
                     if (moveResult)
