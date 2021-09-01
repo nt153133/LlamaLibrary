@@ -316,8 +316,8 @@ namespace LlamaLibrary.AutoRetainerSort
 
             await CombineStacks(GeneralFunctions.MainBagsFilledSlots());
             await CombineStacks(InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
-
-            while (ShouldSortLoop(index))
+            
+            while (ShouldSortLoop(index) && InventoryManager.FreeSlots > 0)
             {
                 bool depositResult = await DepositLoop(index);
 
@@ -367,9 +367,13 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static async Task<bool> DepositLoop(int index)
         {
-            if (ItemSortStatus.GetByIndex(ItemSortStatus.PlayerInventoryIndex).AllBelong()) return true;
-
             string name = ItemSortStatus.GetByIndex(index).Name;
+            
+            if (ItemSortStatus.GetByIndex(ItemSortStatus.PlayerInventoryIndex).AllBelong())
+            {
+                LogCritical($"We tried depositing to {name} but everything in the Player Inventory belongs there...?");
+                return true;
+            }
             if (BagsFreeSlotCount(index) == 0)
             {
                 LogCritical($"We tried depositing to {name} but their inventory was full!");
@@ -413,9 +417,12 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static async Task<bool> RetrieveLoop(int index)
         {
-            if (ItemSortStatus.GetByIndex(index).AllBelong()) return true;
-
             string name = ItemSortStatus.GetByIndex(index).Name;
+            if (ItemSortStatus.GetByIndex(index).AllBelong())
+            {
+                LogCritical($"We tried to retrieve items from {name} but everything in their inventory already belongs there...?");
+                return true;
+            }
             if (InventoryManager.FreeSlots == 0)
             {
                 LogCritical($"We tried to retrieve items from {name} but our player inventory is full!");
