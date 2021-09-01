@@ -20,7 +20,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static readonly Dictionary<int, CachedInventory> RetainerInventories = new Dictionary<int, CachedInventory>();
 
-        private static readonly Dictionary<uint, ItemSortInfo> ItemMatchingIndexCache = new Dictionary<uint, ItemSortInfo>();
+        internal static readonly Dictionary<uint, ItemSortInfo> ItemMatchingIndexCache = new Dictionary<uint, ItemSortInfo>();
 
         public static readonly HashSet<int> FilledAndSortedInventories = new HashSet<int>();
 

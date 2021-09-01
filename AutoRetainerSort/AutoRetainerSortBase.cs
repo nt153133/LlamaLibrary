@@ -112,6 +112,8 @@ namespace LlamaLibrary.AutoRetainerSort
                     return false;
                 }
             }
+            
+            ItemSortStatus.ItemMatchingIndexCache.Clear();
 
             await ItemFinder.FlashSaddlebags();
 
