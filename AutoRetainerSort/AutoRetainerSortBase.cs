@@ -486,10 +486,13 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static int BagsFreeSlotCount(int index) => (int)InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).Sum(x => x.FreeSlots);
 
-        public static async Task CombineStacks(IEnumerable<BagSlot> bagSlots)
+        public static async Task CombineStacks(IEnumerable<BagSlot> bagSlotsEnumerable)
         {
+            var bagSlots = bagSlotsEnumerable.ToArray();
+            if (!bagSlots.Any()) return;
+
             var groupedSlots = bagSlots
-                .Where(x => x.IsValid && x.IsFilled && x.Item.StackSize > 1)
+                .Where(x => x.IsValid && x.IsFilled && (x.Item?.StackSize ?? 0) > 1)
                 .GroupBy(x => x.TrueItemId)
                 .Where(x => x.Count(slot => slot.Count < slot.Item.StackSize) > 1);
 
