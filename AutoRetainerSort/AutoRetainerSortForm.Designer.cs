@@ -86,10 +86,10 @@ namespace LlamaLibrary.AutoRetainerSort
             // 
             this.btnDelete.Location = new System.Drawing.Point(75, 300);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(61, 22);
+            this.btnDelete.Size = new System.Drawing.Size(99, 22);
             this.btnDelete.TabIndex = 3;
             this.btnDelete.TabStop = false;
-            this.btnDelete.Text = "Delete";
+            this.btnDelete.Text = "Delete Selected";
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.Delete_Click);
             // 
@@ -162,7 +162,6 @@ namespace LlamaLibrary.AutoRetainerSort
             this.tabPageMain.PerformLayout();
             this.tabPageSettings.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
         #endregion

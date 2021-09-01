@@ -69,7 +69,7 @@ namespace LlamaLibrary.AutoRetainerSort
         private void Delete_Click(object sender, EventArgs e)
         {
             var selectedItem = (KeyValuePair<int, InventorySortInfo>)listBoxInventoryOptions.SelectedItem;
-            if (selectedItem.Key >= 0)
+            if (selectedItem.Key >= ItemSortStatus.SaddlebagInventoryIndex)
             {
                 DialogResult dr = MessageBox.Show(
                     $"Are you sure you want to delete {selectedItem.Value.Name}?",
@@ -77,18 +77,20 @@ namespace LlamaLibrary.AutoRetainerSort
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Exclamation);
                 if (dr != DialogResult.Yes) return;
-                _bsInventories.Remove(listBoxInventoryOptions.SelectedItem);
-                AutoRetainerSortSettings.Instance.Save();
-                listBoxInventoryOptions.Refresh();
             }
             else
             {
-                MessageBox.Show(
-                    "Can't delete Player Inventory or Chocobo Saddlebag!",
-                    "Can't Do That",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                DialogResult dr = MessageBox.Show(
+                    $"Are you REALLY sure you want to delete the Player Inventory from being sorted?{Environment.NewLine}This is probably going to break things... don't blame me.",
+                    Strings.WarningCaption,
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Hand);
+                if (dr != DialogResult.Yes) return;
             }
+
+            _bsInventories.Remove(listBoxInventoryOptions.SelectedItem);
+            AutoRetainerSortSettings.Instance.Save();
+            ResetBindingSource();
         }
 
         private void AutoSetup_Click(object sender, EventArgs e)
