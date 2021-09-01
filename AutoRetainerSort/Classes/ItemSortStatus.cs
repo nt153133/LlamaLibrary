@@ -20,7 +20,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static readonly Dictionary<int, CachedInventory> RetainerInventories = new Dictionary<int, CachedInventory>();
 
-        internal static readonly Dictionary<uint, ItemSortInfo> ItemMatchingIndexCache = new Dictionary<uint, ItemSortInfo>();
+        internal static readonly Dictionary<uint, ItemSortInfo> ItemSortInfoCache = new Dictionary<uint, ItemSortInfo>();
 
         public static readonly HashSet<int> FilledAndSortedInventories = new HashSet<int>();
 
@@ -61,12 +61,12 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static ItemSortInfo GetSortInfo(uint trueItemId)
         {
-            if (ItemMatchingIndexCache.TryGetValue(trueItemId, out ItemSortInfo sortInfo))
+            if (ItemSortInfoCache.TryGetValue(trueItemId, out ItemSortInfo sortInfo))
             {
                 return sortInfo;
             }
-            ItemMatchingIndexCache.Add(trueItemId, new ItemSortInfo(trueItemId));
-            return ItemMatchingIndexCache[trueItemId];
+            ItemSortInfoCache.Add(trueItemId, new ItemSortInfo(trueItemId));
+            return ItemSortInfoCache[trueItemId];
         }
 
         public static bool AnyUnsorted()
