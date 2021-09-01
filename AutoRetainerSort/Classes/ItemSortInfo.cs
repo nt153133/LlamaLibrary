@@ -162,7 +162,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
 
             if (ItemSortStatus.FilledAndSortedInventories.Contains(index)) return ItemIndexStatus.NoSpaceInIndex;
 
-            if (localMatchCache.All(x => ItemSortStatus.FilledAndSortedInventories.Contains(x))) return ItemIndexStatus.CantMove;
+            if (localMatchCache.All(x => ItemSortStatus.FilledAndSortedInventories.Contains(x))) return ItemIndexStatus.NoSpaceInAnyIndex;
             
             if (localMatchCache.Length == 1 && localMatchCache[0] == index) return ItemIndexStatus.BelongsInIndex;
 
@@ -211,7 +211,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         BelongsInIndex = 1 << 1,
         BelongsInIndexAndOthers = BelongsInIndex | BelongsElsewhere,
         UniqueButNoSpace = 1 << 2,
-        CantMove = 1 << 3,
+        NoSpaceInAnyIndex = 1 << 3,
         NoSpaceInIndex = 1 << 4,
         NoMatchingIndex = 1 << 5,
         Unknown = 1 << 6,
@@ -239,7 +239,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
                 case ItemIndexStatus.BelongsInIndex:
                     return Classes.SortStatus.BelongsInIndex;
 
-                case ItemIndexStatus.CantMove:
+                case ItemIndexStatus.NoSpaceInAnyIndex:
                 case ItemIndexStatus.NoSpaceInIndex:
                 case ItemIndexStatus.UniqueButNoSpace:
                     return Classes.SortStatus.MoveButUnable;
