@@ -22,7 +22,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static AutoRetainerSortSettings Instance => _settings ?? (_settings = new AutoRetainerSortSettings());
 
-        private Dictionary<int, InventorySortInfo> _inventoryOptions = new Dictionary<int, InventorySortInfo>();
+        private Dictionary<int, InventorySortInfo> _inventoryOptions;
 
         private bool _autoGenLisbeth;
 
@@ -35,17 +35,7 @@ namespace LlamaLibrary.AutoRetainerSort
         [Browsable(false)]
         public Dictionary<int, InventorySortInfo> InventoryOptions
         {
-            get
-            {
-                if (_inventoryOptions.Count == 0)
-                {
-                    AutoRetainerSort.LogCritical("We had no inventories set up, so I've gone ahead and added the Player Inventory and Chocobo Saddlebag for you! <3");
-                    _inventoryOptions.Add(ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory"));
-                    _inventoryOptions.Add(ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag"));
-                }
-
-                return _inventoryOptions;
-            }
+            get => _inventoryOptions ?? (_inventoryOptions = new Dictionary<int, InventorySortInfo>());
             set
             {
                 if (_inventoryOptions == value)

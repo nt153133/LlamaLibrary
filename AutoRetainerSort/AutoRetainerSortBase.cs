@@ -46,6 +46,12 @@ namespace LlamaLibrary.AutoRetainerSort
                 _settingsForm = new AutoRetainerSortForm();
             try
             {
+                if (AutoRetainerSortSettings.Instance.InventoryOptions.Count == 0)
+                {
+                    LogCritical("We had no inventories set up, so I've gone ahead and added the Player Inventory and Chocobo Saddlebag for you! <3");
+                    AutoRetainerSortSettings.Instance.InventoryOptions.Add(ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory"));
+                    AutoRetainerSortSettings.Instance.InventoryOptions.Add(ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag"));
+                }
                 _settingsForm.Show();
                 _settingsForm.Activate();
                 ItemSortStatus.UpdateFromCache(RetainerList.Instance.OrderedRetainerList);
@@ -63,6 +69,13 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private async Task<bool> Run()
         {
+            if (AutoRetainerSortSettings.Instance.InventoryOptions.Count == 0)
+            {
+                LogCritical("You don't have any inventories (or sorting rules for them) added yet! Go check the settings?");
+                TreeRoot.Stop("No sort settings.");
+                return false;
+            }
+            
             if (!ItemSortStatus.AnyRulesExist())
             {
                 LogCritical("You don't have any sorting rules set up... maybe go hit the Auto-Setup button?");
@@ -249,6 +262,7 @@ namespace LlamaLibrary.AutoRetainerSort
         {
             if (ItemSortStatus.PlayerInventory.AllBelong())
             {
+                LogCritical("Everything in our player inventory belongs there already! How am I supposed to deposit items like this?");
                 return;
             }
 
@@ -274,6 +288,8 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static async Task SortLoop(int index)
         {
+            Log($"We're gonna go try to sort {ItemSortStatus.GetByIndex(index).Name}!");
+            
             if (index < ItemSortStatus.PlayerInventoryIndex)
             {
                 LogCritical($"Tried to sort index of #{index.ToString()} but that's out of range...");
