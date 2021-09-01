@@ -317,7 +317,7 @@ namespace LlamaLibrary.AutoRetainerSort
             await CombineStacks(GeneralFunctions.MainBagsFilledSlots());
             await CombineStacks(InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots));
             
-            while (ShouldSortLoop(index) && InventoryManager.FreeSlots > 0)
+            while (ShouldSortLoop(index))
             {
                 bool depositResult = await DepositLoop(index);
 
@@ -380,10 +380,12 @@ namespace LlamaLibrary.AutoRetainerSort
                 return false;
             }
             Log($"Depositing items to {name}...");
+            var moveCount = 0;
             foreach (BagSlot bagSlot in GeneralFunctions.MainBagsFilledSlots())
             {
                 if (BagsFreeSlotCount(index) == 0)
                 {
+                    LogCritical($"Stopping deposits to {name} because their inventory is full!");
                     return false;
                 }
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
@@ -407,6 +409,8 @@ namespace LlamaLibrary.AutoRetainerSort
                             ItemSortStatus.PlayerInventoryUniques.Remove(sortInfo.TrueItemId);
                             ItemSortStatus.TryingToMoveUniques.Remove(sortInfo.TrueItemId);
                         }
+
+                        moveCount++;
                     }
                     else
                     {
@@ -415,7 +419,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
             }
 
-            return true;
+            return moveCount > 0;
         }
 
         private static async Task<bool> RetrieveLoop(int index)
@@ -433,10 +437,12 @@ namespace LlamaLibrary.AutoRetainerSort
             }
 
             Log($"Retrieving items from {name}...");
+            var movedCount = 0;
             foreach (BagSlot bagSlot in InventoryManager.GetBagsByInventoryBagId(BagIdsByIndex(index)).SelectMany(x => x.FilledSlots))
             {
                 if (InventoryManager.FreeSlots == 0)
                 {
+                    LogCritical($"Stopping retrievals from {name} because our player inventory is full!");
                     return false;
                 }
                 var sortInfo = ItemSortStatus.GetSortInfo(bagSlot.TrueItemId);
@@ -473,6 +479,8 @@ namespace LlamaLibrary.AutoRetainerSort
                             ItemSortStatus.PlayerInventoryUniques.Add(sortInfo.TrueItemId);
                             ItemSortStatus.TryingToMoveUniques.Remove(sortInfo.TrueItemId);
                         }
+
+                        movedCount++;
                     }
                     else
                     {
@@ -481,7 +489,7 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
             }
 
-            return true;
+            return movedCount > 0;
         }
 
         private static InventoryBagId[] BagIdsByIndex(int index)
