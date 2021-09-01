@@ -102,6 +102,26 @@ namespace LlamaLibrary.Retainers
 
             return trueItemId;
         }
+        
+        public static GameObject NearestSummoningBell()
+        {
+            var list = GameObjectManager.GameObjects
+                .Where(r => r.Name == Translator.SummoningBell)
+                .OrderBy(j => j.DistanceSqr())
+                .ToList();
+
+            if (list.Count <= 0)
+            {
+                LogCritical("No Summoning Bell Found");
+                return null;
+            }
+
+            var bell = list[0];
+
+            LogCritical($"Found nearest bell: {bell} Distance: {bell.Distance2D(Core.Me.Location)}");
+
+            return bell;
+        }
 
         private static void LogCritical(string text, params object[] args)
         {
