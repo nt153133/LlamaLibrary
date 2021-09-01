@@ -38,4 +38,7 @@ Do you want to remove it from {2} and add it to {3}?</value>
     <data name="LisbethRules_RestartRB" xml:space="preserve">
         <value>You should restart RebornBuddy now before opening any Lisbeth windows, or else the changed Lisbeth settings won't apply!</value>
     </data>
+    <data name="LogPrefix" xml:space="preserve">
+        <value>[AutoRetainerSort] </value>
+    </data>
 </root>

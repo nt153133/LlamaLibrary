@@ -30,6 +30,8 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private int _itemMoveWaitMs = 600;
 
+        private bool _debugLog;
+
         private Point _windowPosition = Point.Empty;
 
         [Browsable(false)]
@@ -117,6 +119,25 @@ namespace LlamaLibrary.AutoRetainerSort
                 }
 
                 _itemMoveWaitMs = value;
+                Save();
+            }
+        }
+        
+        [Setting]
+        [DisplayName("Debug Logging")]
+        [Description("Whether or not to print debug logs to console... lots of info.")]
+        [DefaultValue(false)]
+        public bool DebugLogging
+        {
+            get => _debugLog;
+            set
+            {
+                if (_debugLog == value)
+                {
+                    return;
+                }
+
+                _debugLog = value;
                 Save();
             }
         }

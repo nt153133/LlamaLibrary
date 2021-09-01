@@ -288,7 +288,7 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private static async Task SortLoop(int index)
         {
-            Log($"We're gonna go try to sort {ItemSortStatus.GetByIndex(index).Name}!");
+            LogDebug($"We're gonna go try to sort {ItemSortStatus.GetByIndex(index).Name}!");
             
             if (index < ItemSortStatus.PlayerInventoryIndex)
             {
@@ -299,6 +299,12 @@ namespace LlamaLibrary.AutoRetainerSort
             if (index < ItemSortStatus.SaddlebagInventoryIndex)
             {
                 LogCritical($"Tried to sort the player's inventory, but we can't do anything with that alone...");
+                return;
+            }
+
+            if (InventoryManager.FreeSlots == 0 && ItemSortStatus.GetByIndex(index).FreeSlots == 0)
+            {
+                LogCritical($"Both our player inventory and {ItemSortStatus.GetByIndex(index).Name} are completely full! Can't move anything around like this.");
                 return;
             }
 
@@ -574,17 +580,23 @@ namespace LlamaLibrary.AutoRetainerSort
 
         public static void Log(string text)
         {
-            Logging.Write(Colors.Orange, "[AutoRetainerSort] " + text);
+            Logging.Write(Colors.Orange, Strings.LogPrefix + text);
         }
 
         public static void LogCritical(string text)
         {
-            Logging.Write(Colors.OrangeRed, "[AutoRetainerSort] " + text);
+            Logging.Write(Colors.OrangeRed, Strings.LogPrefix + text);
         }
 
         public static void LogSuccess(string text)
         {
-            Logging.Write(Colors.Green, "[AutoRetainerSort] " + text);
+            Logging.Write(Colors.Green, Strings.LogPrefix + text);
+        }
+
+        public static void LogDebug(string text)
+        {
+            if (!AutoRetainerSortSettings.Instance.DebugLogging) return;
+            Logging.Write(Colors.Aquamarine, Strings.LogPrefix + text);
         }
     }
 }
