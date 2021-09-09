@@ -32,7 +32,7 @@ namespace LlamaLibrary.Helpers
             }
         }
 
-        private static readonly Dictionary<byte, string> DataCenterNamesDictionary = new Dictionary<byte, string>
+        public static readonly Dictionary<byte, string> DataCenterNamesDictionary = new Dictionary<byte, string>
         {
             { 0, "INVALID" },
             { 1, "Elemental" },
@@ -50,7 +50,7 @@ namespace LlamaLibrary.Helpers
 
         public static ushort HomeWorldId => Core.Memory.NoCacheRead<ushort>(Core.Me.Pointer + Offsets.HomeWorld);
 
-        private static readonly Dictionary<ushort, string> WorldNamesDictionary = new Dictionary<ushort, string>
+        public static readonly Dictionary<ushort, string> WorldNamesDictionary = new Dictionary<ushort, string>
         {
             { 0, "INVALID" },
             { 23, "Asura" },

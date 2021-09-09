@@ -100,7 +100,7 @@ namespace LlamaLibrary.RemoteWindows
 
     public static class Extensions
     {
-        internal static int IndexInList(this RetainerInfo[] list, ulong contentId)
+        public static int IndexInList(this RetainerInfo[] list, ulong contentId)
         {
             for (var index = 0; index < list.Length; index++)
             {
