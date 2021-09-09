@@ -22,10 +22,17 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
                     {
                         _itemInfo = DataManager.GetItem(RawItemId);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        AutoRetainerSort.LogCritical($"Warning! Couldn't get item data for ID {RawItemId.ToString()}, sorting results may be invalid.");
+                        AutoRetainerSort.LogCritical($"Error! Couldn't get item data for ID {RawItemId.ToString()}.");
+                        throw new ArgumentException($"Unable to get ItemInfo. TrueId: {TrueItemId}, RawId: {RawItemId}", "ItemInfo", ex);
                     }
+                }
+                // Check again to make sure it's not still null.
+                if (_itemInfo == null)
+                {
+                    AutoRetainerSort.LogCritical($"Error! Couldn't get item data for ID {RawItemId.ToString()}.");
+                    throw new ArgumentException($"Unable to get ItemInfo. TrueId: {TrueItemId}, RawId: {RawItemId}", "ItemInfo");
                 }
 
                 return _itemInfo;

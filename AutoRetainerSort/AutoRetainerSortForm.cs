@@ -102,6 +102,36 @@ namespace LlamaLibrary.AutoRetainerSort
 
         private void AutoSetup_Click(object sender, EventArgs e)
         {
+            if (!AutoRetainerSortSettings.Instance.InventoryOptions.ContainsKey(ItemSortStatus.PlayerInventoryIndex))
+            {
+                DialogResult dr = MessageBox.Show(
+                    "It looks like you don't have the player inventory added to the indexes... somehow. Do you want me to re-add that for you?",
+                    "Um.",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning
+                );
+
+                if (dr == DialogResult.Yes)
+                {
+                    AutoRetainerSortSettings.Instance.InventoryOptions.Add(ItemSortStatus.PlayerInventoryIndex, new InventorySortInfo("Player Inventory"));
+                }
+            }
+            
+            if (!AutoRetainerSortSettings.Instance.InventoryOptions.ContainsKey(ItemSortStatus.SaddlebagInventoryIndex))
+            {
+                DialogResult dr = MessageBox.Show(
+                    "It looks like you don't have the chocobo saddlebag added to the indexes. Do you want me to re-add that for you?",
+                    "Hey Listen!",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information
+                );
+
+                if (dr == DialogResult.Yes)
+                {
+                    AutoRetainerSortSettings.Instance.InventoryOptions.Add(ItemSortStatus.SaddlebagInventoryIndex, new InventorySortInfo("Chocobo Saddlebag"));
+                }
+            }
+            
             MessageBox.Show(
                 Strings.AutoSetup_CacheAdvice,
                 "Careful!",
