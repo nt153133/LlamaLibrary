@@ -130,6 +130,11 @@ namespace LlamaLibrary.Helpers
         {
             await _stopGently();
         }
+        
+        public static void OpenSettings()
+        {
+            _openWindow();
+        }
 
 
         public static void AddHook(string name, Func<Task> function)
