@@ -24,6 +24,7 @@ namespace LlamaLibrary.Helpers
         private static Func<string, Vector3, Task<bool>> _travelToWithArea;
         private static Func<uint, uint, Vector3, Task<bool>> _travelTo;
         private static Func<uint, Vector3, Task<bool>> _travelToWithoutSubzone;
+        private static System.Action _openWindow;
 
         static Lisbeth()
         {
@@ -63,6 +64,7 @@ namespace LlamaLibrary.Helpers
                         _travelTo = (Func<uint, uint, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<uint, uint, Vector3, Task<bool>>), apiObject, "TravelTo");
                         _travelToWithArea = (Func<string, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<string, Vector3, Task<bool>>), apiObject, "TravelToWithArea");
                         _travelToWithoutSubzone = (Func<uint, Vector3, Task<bool>>) Delegate.CreateDelegate(typeof(Func<uint, Vector3, Task<bool>>), apiObject, "TravelToWithoutSubzone");
+                        _openWindow = (System.Action) Delegate.CreateDelegate(typeof(System.Action), apiObject, "OpenWindow");
                     }
                     catch (Exception e)
                     {
