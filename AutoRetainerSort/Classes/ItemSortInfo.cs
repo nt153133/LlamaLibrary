@@ -77,7 +77,7 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         [JsonProperty("TrueItemId")]
         public readonly uint TrueItemId;
 
-        public const int CollectableOffset = 5_000_000;
+        public const int CollectableOffset = 500_000;
         public const int QualityOffset = 1_000_000;
 
         public uint RawItemId
