@@ -84,15 +84,15 @@ namespace LlamaLibrary.AutoRetainerSort.Classes
         {
             get
             {
-                if (IsCollectable) return TrueItemId - CollectableOffset;
                 if (IsHighQuality) return TrueItemId - QualityOffset;
+                if (IsCollectable) return TrueItemId - CollectableOffset;
                 return TrueItemId;
             }
         }
 
-        private bool IsCollectable => TrueItemId > CollectableOffset;
+        private bool IsCollectable => TrueItemId > CollectableOffset && TrueItemId < QualityOffset;
 
-        private bool IsHighQuality => TrueItemId > QualityOffset && TrueItemId < CollectableOffset;
+        private bool IsHighQuality => TrueItemId > QualityOffset;
 
         private SortType? _sortType;
 
