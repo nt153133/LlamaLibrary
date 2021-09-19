@@ -902,7 +902,7 @@ namespace LlamaLibrary
             var sb = new StringBuilder();
             var sb1 = new StringBuilder();
             var sb2 = new StringBuilder();
-            foreach (var patternItem in OffsetManager.patterns)
+            foreach (var patternItem in OffsetManager.patterns.OrderBy((k=> k.Key)))
             {
                 var name = patternItem.Key;
                 var pattern = patternItem.Value.Replace("Search ", "");
