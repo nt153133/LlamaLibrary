@@ -35,7 +35,7 @@ using LlamaLibrary.RemoteAgents;
         public static Dictionary<string, string> patterns = new Dictionary<string, string>();
         public static Dictionary<string, string> constants = new Dictionary<string, string>();
 
-        private static readonly bool _debug = true;
+        private static readonly bool _debug = false;
         internal static void Init()
         {
             if (initDone)
