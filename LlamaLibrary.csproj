@@ -118,6 +118,10 @@
     <Compile Include="Extensions\LocalPlayerExtensions.cs" />
     <Compile Include="Extensions\RetainerTaskAskExtensions.cs" />
     <Compile Include="FCWorkshopBase.cs" />
+    <Compile Include="RemoteAgents\AgentFateProgress.cs" />
+    <Compile Include="RemoteWindows\FateProgress.cs" />
+    <Compile Include="Structs\SharedFateProgress.cs" />
+    <Compile Include="Helpers\SharedFateHelper.cs" />
     <Compile Include="GatherTest.cs" />
     <Compile Include="GCExpertTurnin\GCExpertGrindBase.cs" />
     <Compile Include="GCExpertTurnin\GCExpertSettings.cs" />
