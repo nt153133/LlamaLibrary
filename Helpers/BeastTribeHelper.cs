@@ -39,7 +39,7 @@ namespace LlamaLibrary.Helpers
         {
             List<BeastTribeExd> tribes= new List<BeastTribeExd>();
 
-            for (int i = 1; i < Offsets.BeastTribeCount; i++)
+						for (int i = 1; i <= Offsets.BeastTribeCount; i++)
             {
                 var result = Core.Memory.CallInjected64<IntPtr>(Offsets.GetBeastTribeExd, i);
                 tribes.Add(Core.Memory.Read<BeastTribeExd>(result));
@@ -98,7 +98,7 @@ namespace LlamaLibrary.Helpers
         public static BeastTribeStat[] GetBeastTribes()
         {
             //Log($"{(Offsets.QuestPointer + Offsets.BeastTribeStart).ToString("X")} {Offsets.BeastTribeStart}");
-            return Core.Memory.ReadArray<BeastTribeStat>(Offsets.QuestPointer + Offsets.BeastTribeStart, Offsets.BeastTribeCount-1);
+            return Core.Memory.ReadArray<BeastTribeStat>(Offsets.QuestPointer + Offsets.BeastTribeStart, Offsets.BeastTribeCount);
         }
 
         public static int GetBeastTribeRank(int tribe)
