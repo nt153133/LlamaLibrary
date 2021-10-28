@@ -71,7 +71,11 @@ namespace ff14bot.NeoProfiles
 
         [XmlAttribute("MinProgress")]
         [DefaultValue(0)]
-        public int MinProgress { get; set; }		
+        public int MinProgress { get; set; }	
+        
+        [XmlAttribute("CheckShareFate")]
+        [DefaultValue(false)]
+        public bool SharedFate { get; set; }    
 
         private BattleCharacter npc;
         private FatebotSettings fatebotInstance = FatebotSettings.Instance;
@@ -262,9 +266,9 @@ namespace ff14bot.NeoProfiles
 
                   new Decorator(ret => currentfate == null && currentstep == 0,
                   new Sequence(
-                  new Action(r =>
+                  new ActionRunCoroutine(async r =>
                   {
-                      getFates();
+                      await getFates();
                       if (currentfate != null)
                       { GoFate(); }
                       else
@@ -663,7 +667,9 @@ namespace ff14bot.NeoProfiles
 
         public async Task<bool> getFates()
         {
-
+            if (SharedFate)
+                await LlamaLibrary.ScriptConditions.Extras.UpdateSharedFates();
+            
             if (FateIds.Length > 0)
             {
                 //Logging.Write("Looking for Fate: {0}.", FateID);
