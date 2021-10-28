@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ff14bot.Enums;
 using ff14bot.Managers;
 using ff14bot.Objects;
@@ -80,5 +81,14 @@ namespace LlamaLibrary.ScriptConditions
 			return true;
         }		
 
+        public static int SharedFateRank(int zoneID)
+        {
+            return SharedFateHelper.CachedProgress.FirstOrDefault(i => i.Zone == (uint) zoneID).Rank;
+        }
+
+        public static async Task UpdateSharedFates()
+        {
+            await SharedFateHelper.CachedRead();
+        }
     }
 }
