@@ -12,7 +12,7 @@ namespace LlamaLibrary.Helpers
     {
         private static DateTime LastWindowCheck;
 
-        private static SharedFateProgress[] CachedProgress;
+        public static SharedFateProgress[] CachedProgress;
 
         private static TimeSpan CachePeriod = new TimeSpan(0, 1, 0);
 
