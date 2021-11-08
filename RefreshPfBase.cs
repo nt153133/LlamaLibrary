@@ -70,7 +70,7 @@ namespace LlamaLibrary
                             if (PfConditionWindow != null)
                             {
                                 var elements = ___Elements(PfConditionWindow);
-                                var data = Core.Memory.ReadString((IntPtr) elements[187].Data, Encoding.UTF8);
+                                var data = Core.Memory.ReadString((IntPtr) elements[184].Data, Encoding.UTF8);
                                 if (data != "")
                                 {
                                     PfConditionWindow.SendAction(1, 3, 0x0);
