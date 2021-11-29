@@ -36,7 +36,7 @@ namespace ff14bot.NeoProfiles.Tags
         {
             get
             {
-                return FinalizedPath?.Count == 0;
+                return _generatedNodes == true;
             }
         }
 
@@ -65,14 +65,13 @@ namespace ff14bot.NeoProfiles.Tags
 
         private async Task<bool> GenerateNodes()
         {
-            var path = await NavGraph.GetPathAsync((uint)ZoneId, XYZ);
-            if (path == null)
+            var path = await Lisbeth.TravelToZones((uint)ZoneId, (uint)0, XYZ);
+            if (path == false)
             {
                 LogError($"Couldn't get a path to {XYZ} on {ZoneId}, Stopping.");
                 return true;
             }
             _generatedNodes = true;
-            FinalizedPath = path;
             return true;
         }
 
@@ -83,7 +82,7 @@ namespace ff14bot.NeoProfiles.Tags
 
                 //new Decorator(r => !_generatedNodes, new ActionRunCoroutine(r => GenerateNodes())),
                 //NavGraph.NavGraphConsumer(r => FinalizedPath)
-                new Decorator(r => !_generatedNodes, new ActionRunCoroutine(t => Lisbeth.TravelTo(ZoneId.ToString(), XYZ)))
+                new Decorator(r => !_generatedNodes, new ActionRunCoroutine(t => GenerateNodes()))
                 );
         }
 
