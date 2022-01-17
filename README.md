@@ -1,3 +1,10 @@
+# [CLICK HERE for the NEW LlamaLibrary][__ll]!
+
+This version of `LlamaLibrary` has been replaced with [`__LlamaLibrary`][__ll] and is no longer updated. If yours is installed in BotBases or isn't named `__LlamaLibrary`, you should [migrate to the new version][__ll-install].
+
+[__ll]: https://github.com/nt153133/__LlamaLibrary
+[__ll-install]: https://github.com/nt153133/__LlamaLibrary#installation
+
 <a class="bmc-button" target="_blank" href="https://www.buymeacoffee.com/soACz8y"><img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Buy me a coffee"><span style="margin-left:5px;font-size:28px !important;">Buy me a coffee</span></a>
 
 # LlamaLibrary
